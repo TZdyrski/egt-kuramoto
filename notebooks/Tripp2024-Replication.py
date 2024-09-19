@@ -17,7 +17,7 @@
 
 # %%
 import numpy as np
-import axelrod as axl
+import egttools as egt
 
 # %% [markdown]
 # ## Setup
@@ -145,50 +145,16 @@ def fitness(selection_strength: float, scores: np.array) -> np.array:
 nb_players = 20
 
 # %%
-from axelrod.player import Player
-class PureStrategy(Player):
-    name = "PureStrategy"
-    classifier = {
-        "memory_depth": 0,
-        "stochastic": False,
-        "long_run_time": False,
-        "inspects_source": False,
-        "manipulates_source": False,
-        "manipulates_state": False,
-    }
-    def __init__(self, strategy_idx) -> None:
-        self.strategy_idx = strategy_idx
-        super().__init__()
+from collections import Counter
 
-    def strategy(self, opponent: Player) -> int:
-        return self.strategy_idx
-
-
-# %%
-import warnings
 # Define initial population
 nb_strategies = 2*nb_phases
 np.random.seed(0)
-strategy_idxs = np.random.randint(nb_strategies, size=nb_players)
-with warnings.catch_warnings():
-    warnings.filterwarnings("ignore", message="Initializing player with seed from Axelrod module random number generator")
-    initial_population = [PureStrategy(strategy_idx) for strategy_idx in strategy_idxs]
-# Define population of all players for setting up the game
-player_population = [PureStrategy(strategy_idx) for strategy_idx in range(nb_strategies)]
-
-# %%
-from networkx import complete_graph
-# Complete graph with and without self-loops
-comp_graph = complete_graph(nb_players)
-
-comp_graph_loops = comp_graph.copy()
-comp_graph_loops.add_edges_from(
-    [(i,i) for i in comp_graph_loops.nodes()])
-
-from axelrod.graph import Graph
-# Define well-mixed topology
-interaction_graph = Graph(comp_graph.edges())
-reproduction_graph = Graph(comp_graph_loops.edges())
+initial_strategies = np.random.randint(nb_strategies, size=nb_players)
+# Convert array of strategies indexed by player to array of (number of) players indexed by strategy
+initial_population = np.zeros(nb_strategies)
+for key, value in Counter(initial_strategies).items():
+    initial_population[key] = value
 
 # %% [markdown]
 # ### Define Dynamics
@@ -203,41 +169,16 @@ mutation_rate = 0.0001
 from functools import partial
 
 # Create Moran process
-def create_moran_game(turns, selection_strength, player_population, **kwargs) -> iter:
+def create_moran_game(nb_players, nb_strategies, selection_strength, cache_size = 10, **kwargs) -> iter:
     payoff_matrix = create_payoff_matrix(**kwargs)
-    game = axl.AsymmetricGame(payoff_matrix, payoff_matrix.transpose())
-    moran = axl.MoranProcess(
-        players=initial_population,
-        game=game,
-        #interaction_graph=interaction_graph,
-        #reproduction_graph=reproduction_graph,
-        mutation_rate=mutation_rate,
-        fitness_transformation=partial(fitness,selection_strength),
-        turns=turns,
-        seed=1,
+    game = egt.games.Matrix2PlayerGameHolder(nb_strategies = nb_strategies,
+                                             payoff_matrix = payoff_matrix)
+    moran = egt.numerical.PairwiseComparisonNumerical(
+        pop_size = nb_players,
+        game = game,
+        cache_size = cache_size,
     )
-    # Ensure that the set of mutation targets includes all possible phases, even if the initial population didn't
-    strat_strs = [str(player) for player in player_population]
-    moran.mutation_targets = {strat_str: player_population for strat_str in strat_strs}
     return moran
-
-
-# %% [markdown]
-# ## Optimize Axelrod Engine
-
-# %%
-from typing import Tuple
-from axelrod.game import Score
-def scoreSimpl(
-       self, pair: Tuple[int, int]
-    ) -> Tuple[Score, Score]:
-    (row, col) = pair
-    return (self.A[row, col], self.B[row, col])
-def __initSimpl__(self, A: np.array, B: np.array) -> None:
-    self.A = A
-    self.B = B
-axl.game.AsymmetricGame.score = scoreSimpl
-axl.game.AsymmetricGame.__init__ = __initSimpl__
 
 
 # %% [markdown]
@@ -345,50 +286,21 @@ def extract_order_parameters(players_per_strategy: np.array, **kwargs) -> np.arr
 # ## Play the Game
 
 # %%
-from collections import Counter
-def convert_counter_to_populations_by_strategy(population_counter: Counter) -> np.array:
-    # Convert array of strategies indexed by player to array of (number of) players indexed by strategy
-    populations_by_strategy = np.zeros(nb_strategies)
-    for key, value in Counter(population_counter).items():
-        strategy_idx = int(key.split(": ")[-1])
-        populations_by_strategy[strategy_idx] = value
-    return populations_by_strategy
+def run_and_get_all_populations(time_steps, selection_strength, initial_population, **kwargs) -> list:
+    mp = create_moran_game(turns=time_steps, selection_strength=selection_strength, **kwargs)
+    egt.Random.init(1)
+    results = mp.run(nb_generations = time_steps,
+           beta = selection_strength,
+           init_state = initial_population)
+    return results
 
 
 # %%
-def run_and_get_all_populations(time_steps, **kwargs) -> list:
-    mp = create_moran_game(turns=time_steps, **kwargs)
-    for _ in range(time_steps):
-        next(mp)
-    populations_list = [convert_counter_to_populations_by_strategy(population)
-                   for population in mp.populations]
-    populations = np.stack(populations_list)
-    return populations
-
-
-# %%
-def run_and_get_cumulative_populations(time_steps, **kwargs) -> np.array:
-    mp = create_moran_game(turns=time_steps, **kwargs)
-    cumulative_populations_counter = Counter()
-    for _ in range(time_steps):
-        next(mp)
-        cumulative_populations_counter += Counter(mp.population_distribution())
-    cumulative_populations = convert_counter_to_populations_by_strategy(cumulative_populations_counter)
+def run_and_get_cumulative_populations(**kwargs) -> np.array:
+    results = run_and_get_all_populations(**kwargs)
+    cumulative_populations = np.sum(results, 0)
     return cumulative_populations
 
-
-# %%
-import cProfile
-cProfile.run('all_population_strong = run_and_get_all_populations( \
-        mutual_benefit_synchronous = B_timeseries, \
-        unilateral_benefit_synchronous = 0.9*B_timeseries, \
-        selection_strength = selection_strength_strong, \
-        time_steps = 2000, \
-        nb_players = nb_players, \
-        nb_strategies = nb_strategies, \
-        initial_population = initial_population, \
-        player_population = player_population, \
-        cost = cost)')
 
 # %% [markdown]
 # ## Long time limit
@@ -396,7 +308,7 @@ cProfile.run('all_population_strong = run_and_get_all_populations( \
 # %%
 # Define parameters
 time_steps = int(2E9)
-time_steps = 20
+time_steps = int(2E4)
 
 # %%
 # Define Bs on which to run
@@ -415,7 +327,6 @@ cumulative_populations_weak = [run_and_get_cumulative_populations(
         time_steps = time_steps,
         nb_players = nb_players,
         nb_strategies = nb_strategies,
-        player_population = player_population,
         cost = cost)
     for B in Bs]
 
@@ -439,7 +350,6 @@ cumulative_populations_strong = [run_and_get_cumulative_populations(
         time_steps = time_steps,
         nb_players = nb_players,
         nb_strategies = nb_strategies,
-        player_population = player_population,
         cost = cost)
     for B in Bs]
 
@@ -540,7 +450,6 @@ all_population_strong = run_and_get_all_populations(
         time_steps = time_steps,
         nb_players = nb_players,
         nb_strategies = nb_strategies,
-        player_population = player_population,
         initial_population = initial_population,
         cost = cost)
 
@@ -588,7 +497,6 @@ all_population_very_strong = run_and_get_all_populations(
         time_steps = time_steps,
         nb_players = nb_players,
         nb_strategies = nb_strategies,
-        player_population = player_population,
         initial_population = initial_population,
         cost = cost)
 

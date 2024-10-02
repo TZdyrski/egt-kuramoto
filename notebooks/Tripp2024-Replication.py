@@ -145,54 +145,23 @@ def fitness(selection_strength: float, scores: np.array) -> np.array:
 nb_players = 20
 
 # %%
-from axelrod.evolvable_player import EvolvablePlayer
 from axelrod.player import Player
-# Define EGT player
-class EGTPlayer(EvolvablePlayer):
-    name = "EGTPlayer"
+class PureStrategy(Player):
+    name = "PureStrategy"
     classifier = {
-        'manipulates_state': False,
-        'long_run_time': False,
-        'stochastic': True,
-        'manipulates_source': False,
-        'inspects_source': False,
-        'memory_depth': 0,
+        "memory_depth": 0,
+        "stochastic": False,
+        "long_run_time": False,
+        "inspects_source": False,
+        "manipulates_source": False,
+        "manipulates_state": False,
     }
-    def __init__(self, nb_strategies: int, mutation_rate: float, strategy_idx: int, seed: int = None) -> None:
-        self.nb_strategies = nb_strategies
-        self.mutation_rate = mutation_rate
+    def __init__(self, strategy_idx) -> None:
         self.strategy_idx = strategy_idx
-        super().__init__(seed=seed)
+        super().__init__()
 
     def strategy(self, opponent: Player) -> int:
         return self.strategy_idx
-
-    def mutate(self) -> EvolvablePlayer:
-        if self._random.random() <= self.mutation_rate:
-            # Create new, random strategy
-            strategy_idx = self._random.randint(self.nb_strategies)
-        else:
-            strategy_idx = self.strategy_idx
-        return self.create_new(strategy_idx = strategy_idx)
-
-    def __repr__(self) -> str:
-        """The string method for the strategy.
-        Appends the `__init__` parameters to the strategy's name."""
-        name = self.name
-        prefix = ": "
-        
-        gen = (
-            value for key, value in self.init_kwargs.items() if value is not None and key != "seed"
-        )
-        for value in gen:
-            try:
-                if issubclass(value, Player):
-                    value = value.name
-            except TypeError:
-                pass
-            name = "".join([name, prefix, str(value)])
-            prefix = ", "
-        return name      
 
 
 # %%
@@ -203,7 +172,9 @@ np.random.seed(0)
 strategy_idxs = np.random.randint(nb_strategies, size=nb_players)
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore", message="Initializing player with seed from Axelrod module random number generator")
-    initial_population = [EGTPlayer(nb_strategies, mutation_rate, strategy_idx) for strategy_idx in strategy_idxs]
+    initial_population = [PureStrategy(strategy_idx) for strategy_idx in strategy_idxs]
+# Define population of all players for setting up the game
+player_population = [PureStrategy(strategy_idx) for strategy_idx in range(nb_strategies)]
 
 # %%
 from networkx import complete_graph
@@ -232,21 +203,41 @@ mutation_rate = 0.0001
 from functools import partial
 
 # Create Moran process
-def create_moran_game(turns, selection_strength, **kwargs) -> iter:
+def create_moran_game(turns, selection_strength, player_population, **kwargs) -> iter:
     payoff_matrix = create_payoff_matrix(**kwargs)
     game = axl.AsymmetricGame(payoff_matrix, payoff_matrix.transpose())
     moran = axl.MoranProcess(
         players=initial_population,
         game=game,
-        interaction_graph=interaction_graph,
-        reproduction_graph=reproduction_graph,
+        #interaction_graph=interaction_graph,
+        #reproduction_graph=reproduction_graph,
         mutation_rate=mutation_rate,
         fitness_transformation=partial(fitness,selection_strength),
         turns=turns,
-        mutation_method='atomic',
         seed=1,
     )
+    # Ensure that the set of mutation targets includes all possible phases, even if the initial population didn't
+    strat_strs = [str(player) for player in player_population]
+    moran.mutation_targets = {strat_str: player_population for strat_str in strat_strs}
     return moran
+
+
+# %% [markdown]
+# ## Optimize Axelrod Engine
+
+# %%
+from typing import Tuple
+from axelrod.game import Score
+def scoreSimpl(
+       self, pair: Tuple[int, int]
+    ) -> Tuple[Score, Score]:
+    (row, col) = pair
+    return (self.A[row, col], self.B[row, col])
+def __initSimpl__(self, A: np.array, B: np.array) -> None:
+    self.A = A
+    self.B = B
+axl.game.AsymmetricGame.score = scoreSimpl
+axl.game.AsymmetricGame.__init__ = __initSimpl__
 
 
 # %% [markdown]
@@ -359,7 +350,7 @@ def convert_counter_to_populations_by_strategy(population_counter: Counter) -> n
     # Convert array of strategies indexed by player to array of (number of) players indexed by strategy
     populations_by_strategy = np.zeros(nb_strategies)
     for key, value in Counter(population_counter).items():
-        strategy_idx = int(key.split(", ")[-1])
+        strategy_idx = int(key.split(": ")[-1])
         populations_by_strategy[strategy_idx] = value
     return populations_by_strategy
 
@@ -386,6 +377,19 @@ def run_and_get_cumulative_populations(time_steps, **kwargs) -> np.array:
     return cumulative_populations
 
 
+# %%
+import cProfile
+cProfile.run('all_population_strong = run_and_get_all_populations( \
+        mutual_benefit_synchronous = B_timeseries, \
+        unilateral_benefit_synchronous = 0.9*B_timeseries, \
+        selection_strength = selection_strength_strong, \
+        time_steps = 2000, \
+        nb_players = nb_players, \
+        nb_strategies = nb_strategies, \
+        initial_population = initial_population, \
+        player_population = player_population, \
+        cost = cost)')
+
 # %% [markdown]
 # ## Long time limit
 
@@ -411,6 +415,7 @@ cumulative_populations_weak = [run_and_get_cumulative_populations(
         time_steps = time_steps,
         nb_players = nb_players,
         nb_strategies = nb_strategies,
+        player_population = player_population,
         cost = cost)
     for B in Bs]
 
@@ -434,6 +439,7 @@ cumulative_populations_strong = [run_and_get_cumulative_populations(
         time_steps = time_steps,
         nb_players = nb_players,
         nb_strategies = nb_strategies,
+        player_population = player_population,
         cost = cost)
     for B in Bs]
 
@@ -534,6 +540,7 @@ all_population_strong = run_and_get_all_populations(
         time_steps = time_steps,
         nb_players = nb_players,
         nb_strategies = nb_strategies,
+        player_population = player_population,
         initial_population = initial_population,
         cost = cost)
 
@@ -581,6 +588,7 @@ all_population_very_strong = run_and_get_all_populations(
         time_steps = time_steps,
         nb_players = nb_players,
         nb_strategies = nb_strategies,
+        player_population = player_population,
         initial_population = initial_population,
         cost = cost)
 

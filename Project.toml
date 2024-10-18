@@ -1,4 +1,6 @@
+name = "2024_EGT_Kuramoto"
 [deps]
+DrWatson = "634d3b9d-ee7a-5ddf-bec9-22491ea816e1"
 BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
 BlockArrays = "8e7c35d0-a365-5155-bbbb-fb81a777f24e"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
@@ -15,3 +17,6 @@ Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
 XLSX = "fdbf4ff8-1666-58a4-91e7-1b58723a45e0"
+[compat]
+julia = "1.11.0"
+DrWatson = "2.18.0"

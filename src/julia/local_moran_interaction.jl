@@ -13,6 +13,7 @@ using BenchmarkTools
 using InteractiveUtils
 using LaTeXStrings
 using DataToolkit
+using DrWatson
 
 function payoff_matrix(mutual_benefit_synchronous::Real, unilateral_benefit_synchronous::Real, cost::Real, nb_phases::Integer)
     template = [(1 + cos(2*pi*(phi_j - phi_i)))/2 for phi_i in (0:(nb_phases-1))/nb_phases, phi_j in (0:(nb_phases-1))/nb_phases]
@@ -449,14 +450,15 @@ function extract_counts(strategies_per_player::Vector{<:Integer}, nb_strategies:
     return counts
 end
 
-function calc_and_plot_cumulative(selection_strength::Real, adj_matrix_source::String="well-mixed", payoff_update_method::String="single-update")
+function calc_cumulative(config::Dict)
+	# Unpack values
+	@unpack selection_strength, adj_matrix_source, payoff_update_method, time_steps = config
+
 	# Define system
 	cost = 0.1
 	nb_phases = 20
 	nb_strategies = nb_phases*2
 	mutation_rate = 0.0001
-	#time_steps = 2_000_000_000
-	time_steps = 200_000
 
 	# Define interaction graph without loops
 	if adj_matrix_source == "well-mixed"
@@ -488,26 +490,39 @@ function calc_and_plot_cumulative(selection_strength::Real, adj_matrix_source::S
         nb_communicative = [extract_num_communicative(final_population) for final_population in cumulative_populations]
         fraction_communicative = nb_communicative./(time_steps*nb_players)
 
+	# Package results
+	return @strdict(Bs,nb_players,cost,fraction_communicative)
+end
+
+function plot_cumulative(selection_strength::Real, adj_matrix_source::String="well-mixed", payoff_update_method::String="single-update",time_steps::Integer=2_000_000)
+
+	# Load results
+	config = @strdict(adj_matrix_source,payoff_update_method,time_steps,selection_strength)
+	data, _ = produce_or_load(calc_cumulative, config, datadir("cumulative"))
+
 	# Disable printing plots to screen
 	ENV["GKSwstype"]="nul"
 
-	plt = scatter(Bs, fraction_communicative, title=L"Selection $\delta = $"*string(round(selection_strength,sigdigits=2)),
+	plt = scatter(data["Bs"], data["fraction_communicative"], title=L"Selection $\delta = $"*string(round(selection_strength,sigdigits=2)),
 		label="Simulation", xlabel=L"Maximum benefit of mutual communication, $B(0)$", ylabel="Frequency of communicative strategies", ylims=(0,1))
-	plot!(plt, B0 -> 1/(1+exp(selection_strength*(nb_players-1)*((nb_players-1)*cost-(nb_players-2)/2*B0))), label="Theory")
+	plot!(plt, B0 -> 1/(1+exp(selection_strength*(data["nb_players"]-1)*((data["nb_players"]-1)*data["cost"]-(data["nb_players"]-2)/2*B0))), label="Theory")
 
-	filename = "./cumulative"*string(round(selection_strength,sigdigits=2))
+	# Save figure
+	filename = plotsdir("cumulative", savename(config))
 	png(plt, filename)
 
 	return plt
 end
 
-function calc_and_plot_timeseries(B_factor::Real, selection_strength::Real, adj_matrix_source::String="well-mixed", payoff_update_method::String="single-update")
+function calc_timeseries(config::Dict)
+	# Unpack variables
+	@unpack B_factor, selection_strength, adj_matrix_source, payoff_update_method, time_steps = config
+
 	# Define system
 	cost = 0.1
 	nb_phases = 20
 	nb_strategies = nb_phases*2
 	mutation_rate = 0.0001
-	time_steps = 80_000
 	B = cost*B_factor
 
 	# Define interaction graph without loops
@@ -538,6 +553,15 @@ function calc_and_plot_timeseries(B_factor::Real, selection_strength::Real, adj_
                 0.9*B, cost, nb_phases, nb_strategies), counts, dims=1), dims=1)
         order_parameters = dropdims(mapslices(x -> extract_order_parameters(x, nb_phases), counts, dims=1), dims=1)
 
+	# Package results
+	return @strdict(fraction_communicative,order_parameters,most_common_game_types)
+end
+
+function plot_timeseries(B_factor::Real, selection_strength::Real, adj_matrix_source::String="well-mixed", payoff_update_method::String="single-update",time_steps::Integer=80_000)
+	# Load results
+	config = @strdict(adj_matrix_source,payoff_update_method,time_steps,B_factor,selection_strength)
+	data, _ = produce_or_load(calc_timeseries, config, datadir("timeseries"))
+
         # Create array of times
         # Note: the populations include the initial data, so we need one more than time-steps
         times = 1:(time_steps+1)
@@ -547,46 +571,26 @@ function calc_and_plot_timeseries(B_factor::Real, selection_strength::Real, adj_
 
         plt = plot(
             # Plot fraction communcative
-            plot(times[begin:100:end], [fraction_communicative[begin:100:end], order_parameters[begin:100:end]], line_z=Integer.(most_common_game_types), label=["frequency_communicative" "Order parameter"], title=raw"Strong selection $\delta = 0.2$", xlabel=raw"Time", ylabel="Frequency of communicative strategies", ylims=(0,1)),
+            plot(times[begin:100:end], [data["fraction_communicative"][begin:100:end], data["order_parameters"][begin:100:end]], line_z=Integer.(data["most_common_game_types"]), label=["frequency_communicative" "Order parameter"], title=raw"Strong selection $\delta = 0.2$", xlabel=raw"Time", ylabel="Frequency of communicative strategies", ylims=(0,1)),
             # Plot histogram of game types
-            bar(countmap(String.(Symbol.(most_common_game_types))), title=raw"Strong selection $\delta = 0.2$", legend=false),
+            bar(countmap(String.(Symbol.(data["most_common_game_types"]))), title=raw"Strong selection $\delta = 0.2$", legend=false),
             layout=(2,1)
         )
 
-	filename = "./timeseries"*string(round(B,sigdigits=2))*"_"*string(round(selection_strength,sigdigits=2))
+	# Save figure
+	filename = plotsdir("timeseries", savename(config))
 	png(plt, filename)
 
 	return plt
 end
 
-function calc_and_plot_cumulative_all()
-	calc_and_plot_cumulative(0.005)
-	calc_and_plot_cumulative(0.2)
-end
+function save_heatmap()
+	plt = heatmap(payoff_matrix(1, 0.5, 0.1, 20))
 
-function calc_and_plot_cumulative_all(adj_matrix_source::String)
-	calc_and_plot_cumulative(0.005,adj_matrix_source)
-	calc_and_plot_cumulative(0.2,adj_matrix_source)
-end
+	filename = plotsdir("heatmap")
+	png(plt, filename)
 
-function calc_and_plot_timeseries_all(adj_matrix_source::String)
-	calc_and_plot_timeseries(1.5,0.2,adj_matrix_source)
-	calc_and_plot_timeseries(2.5,5,adj_matrix_source)
-end
-
-function calc_and_plot_timeseries_all()
-	calc_and_plot_timeseries(1.5,0.2)
-	calc_and_plot_timeseries(2.5,5)
-end
-
-function calc_and_plot_all(adj_matrix_source::String)
-	calc_and_plot_cumulative_all(adj_matrix_source)
-	calc_and_plot_timeseries_all(adj_matrix_source)
-end
-
-function calc_and_plot_all()
-	calc_and_plot_cumulative_all()
-	calc_and_plot_timeseries_all()
+	return plt
 end
 
 function get_connectome()
@@ -596,15 +600,6 @@ function get_connectome()
 	# Replace "Missing" data with zeros
 	replace!(connectome, missing => 0)
 	return connectome
-end
-
-function save_heatmap()
-	plt = heatmap(payoff_matrix(1, 0.5, 0.1, 20))
-
-	filename = "./heatmap"
-	png(plt, filename)
-
-	return plt
 end
 
 end

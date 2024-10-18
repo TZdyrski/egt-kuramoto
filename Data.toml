@@ -1,0 +1,21 @@
+data_config_version = 0
+uuid = "fb6b3653-b53d-4039-9a33-e92ca9f1d87b"
+name = "juliaGameTheory"
+plugins = ["store", "defaults", "memorise"]
+
+[config.defaults.storage._]
+checksum = "auto"
+
+[[connectome-cook]]
+uuid = "3390cb2b-6d63-4564-8841-af0330d26d1a"
+description = "Cook 2019 C. elegans connectome"
+
+    [[connectome-cook.storage]]
+    driver = "web"
+    checksum = "k12:33f530402e3f4ac495d8fafe8515269f"
+    url = "https://github.com/openworm/ConnectomeToolbox/raw/05c50d5d197bdb7b1607c480a4f9e4aef9287232/cect/data/SI%205%20Connectome%20adjacency%20matrices.xlsx"
+
+    [[connectome-cook.loader]]
+    driver = "xlsx"
+    range = "D4:QN303"
+    sheet = "hermaphrodite chemical"

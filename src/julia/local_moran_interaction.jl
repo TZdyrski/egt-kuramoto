@@ -466,8 +466,7 @@ function calc_cumulative(config::Dict)
 	    reproduction_adj_matrix = interaction_adj_matrix + I
         elseif adj_matrix_source == "c-elegans"
 	    interaction_adj_matrix = round.(get_connectome())
-	    reproduction_adj_matrix = copy(interaction_adj_matrix)
-	    reproduction_adj_matrix[diagind(reproduction_adj_matrix)] .= 1.0
+	    reproduction_adj_matrix = interaction_adj_matrix
 	else
 	    throw(ArgumentError("adj_matrix_source must be a string in set [\"well-mixed\", \"c-elegans\"]"))
         end
@@ -531,8 +530,7 @@ function calc_timeseries(config::Dict)
 	    reproduction_adj_matrix = interaction_adj_matrix + I
         elseif adj_matrix_source == "c-elegans"
 	    interaction_adj_matrix = round.(get_connectome())
-	    reproduction_adj_matrix = copy(interaction_adj_matrix)
-	    reproduction_adj_matrix[diagind(reproduction_adj_matrix)] .= 1.0
+	    reproduction_adj_matrix = interaction_adj_matrix
 	else
 	    throw(ArgumentError("adj_matrix_source must be a string in set [\"well-mixed\", \"c-elegans\"]"))
         end

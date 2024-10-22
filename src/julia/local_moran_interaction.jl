@@ -464,6 +464,9 @@ function calc_cumulative(config::Dict)
 	if adj_matrix_source == "well-mixed"
 	    interaction_adj_matrix = ones(Int64,20,20) - I
 	    reproduction_adj_matrix = interaction_adj_matrix + I
+        elseif adj_matrix_source == "c-elegans-unweighted"
+	    interaction_adj_matrix = collect(round.(get_connectome()) .!= 0)
+	    reproduction_adj_matrix = interaction_adj_matrix
         elseif adj_matrix_source == "c-elegans"
 	    interaction_adj_matrix = round.(get_connectome())
 	    reproduction_adj_matrix = interaction_adj_matrix
@@ -528,6 +531,9 @@ function calc_timeseries(config::Dict)
 	if adj_matrix_source == "well-mixed"
 	    interaction_adj_matrix = ones(Int64,20,20) - I
 	    reproduction_adj_matrix = interaction_adj_matrix + I
+	elseif adj_matrix_source == "c-elegans-unweighted"
+	    interaction_adj_matrix = collect(round.(get_connectome()) .!= 0)
+	    reproduction_adj_matrix = interaction_adj_matrix
         elseif adj_matrix_source == "c-elegans"
 	    interaction_adj_matrix = round.(get_connectome())
 	    reproduction_adj_matrix = interaction_adj_matrix

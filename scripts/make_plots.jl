@@ -8,7 +8,7 @@ update_method="single-update"
 
 # Plot cumulative
 for num_time_steps in Int.([2E3,2E6,2E8])
-    for adj_matrix_source in ["well-mixed", "c-elegans"]
+    for adj_matrix_source in ["well-mixed", "c-elegans", "c-elegans-unweighted"]
 	for selection_strength in [0.005, 0.2]
 	    local_moran_interaction.plot_cumulative(selection_strength, adj_matrix_source, update_method, num_time_steps)
 	end
@@ -16,7 +16,7 @@ for num_time_steps in Int.([2E3,2E6,2E8])
 end
 
 # Plot time-series
-for adj_matrix_source in ["well-mixed", "c-elegans"]
+for adj_matrix_source in ["well-mixed", "c-elegans", "c-elegans-unweighted"]
     for (B_factor, selection_strength) in zip([1.5,2.5],[0.2,5])
         local_moran_interaction.plot_timeseries(B_factor, selection_strength, adj_matrix_source)
     end

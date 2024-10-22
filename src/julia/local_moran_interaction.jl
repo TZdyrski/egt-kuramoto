@@ -573,9 +573,11 @@ function plot_timeseries(B_factor::Real, selection_strength::Real, adj_matrix_so
 	# Disable printing plots to screen
 	ENV["GKSwstype"]="nul"
 
+	# Only plot subset of points to prevent large file sizes
+	plot_times = [1:Int(floor(length(times)/1000)):length(times)]
         plt = plot(
             # Plot fraction communcative
-            plot(times[begin:100:end], [data["fraction_communicative"][begin:100:end], data["order_parameters"][begin:100:end]], line_z=Integer.(data["most_common_game_types"]), label=["frequency_communicative" "Order parameter"], title=raw"Strong selection $\delta = 0.2$", xlabel=raw"Time", ylabel="Frequency of communicative strategies", ylims=(0,1)),
+            plot(times[plot_times], [data["fraction_communicative"][plot_times], data["order_parameters"][plot_times]], line_z=Integer.(data["most_common_game_types"]), label=["frequency_communicative" "Order parameter"], title=raw"Strong selection $\delta = 0.2$", xlabel=raw"Time", ylabel="Frequency of communicative strategies", ylims=(0,1)),
             # Plot histogram of game types
             bar(countmap(String.(Symbol.(data["most_common_game_types"]))), title=raw"Strong selection $\delta = 0.2$", legend=false),
             layout=(2,1)

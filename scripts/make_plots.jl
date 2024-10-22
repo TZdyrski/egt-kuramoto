@@ -18,7 +18,10 @@ end
 # Plot time-series
 for adj_matrix_source in ["well-mixed", "c-elegans", "c-elegans-unweighted"]
     for (B_factor, selection_strength) in zip([1.5,2.5],[0.2,5])
-        local_moran_interaction.plot_timeseries(B_factor, selection_strength, adj_matrix_source)
+	for num_time_steps in Int.([8E4, 8E5, 8E6])
+            local_moran_interaction.plot_timeseries(B_factor, selection_strength,
+						    adj_matrix_source, update_method, num_time_steps)
+	end
     end
 end
 

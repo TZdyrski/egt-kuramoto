@@ -6,7 +6,26 @@
 \begin{enumerate}
   \item \emph{C.\ Elegans}
   \begin{itemize}
-    \item Weighted vs.\ unweighted: weighting reduces synchronization
+    \item Weighted (connectome) vs.\ unweighted (connectome w/o
+      weights): weighting reduces synchronization
+    \item Connectome is connected, weighted, directed cyclic graph
+    \begin{itemize}
+      \item Therefore, \emph{cannot} directly use
+        \textcite{allen2017evolutionary}, since it only applies to undirected
+        graphs
+    \end{itemize}
+    \item Low selection strength ($0.005$) keeps mostly around synchronicity
+      $\approx 1.0$, with a small break to 0.8 \emph{before} $B_{\text{crit}}$
+    \item High selection strength ($0.2$) has low synchronicity
+      ($\approx 0.0$) before $B_{\text{crit}}$ but increases (at roughly
+      $B_{\text{crit}}$) to $\approx 0.5$
+    \item Hence, it seems that
+    \begin{enumerate}
+      \item Neither low nor high selection strength corresponds to
+        well-mixed case
+      \item Low and high selection strengths do not appear to be simple
+        stretching about $B_{\text{crit}}$ as in the well-mixed case
+    \end{enumerate}
   \end{itemize}
 \end{enumerate}
 \end{document}

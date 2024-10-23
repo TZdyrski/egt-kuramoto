@@ -597,13 +597,14 @@ function plot_timeseries(B_factor::Real, selection_strength::Real, adj_matrix_so
 
 	# Only plot subset of points to prevent large file sizes
 	plot_times = 1:Int(floor(length(times)/1000)):length(times)
-        plt = plot(
-            # Plot fraction communcative
-            plot(times[plot_times], [data["fraction_communicative"][plot_times], data["order_parameters"][plot_times]], line_z=Integer.(data["most_common_game_types"]), label=["frequency_communicative" "Order parameter"], title=raw"Strong selection $\delta = 0.2$", xlabel=raw"Time", ylabel="Frequency of communicative strategies", ylims=(0,1)),
-            # Plot histogram of game types
-            bar(countmap(String.(Symbol.(data["most_common_game_types"]))), title=raw"Strong selection $\delta = 0.2$", legend=false),
-            layout=(2,1)
-        )
+        # Plot fraction communcative
+        plt1 = plot(times[plot_times], data["fraction_communicative"][plot_times], line_z=Integer.(data["most_common_game_types"]), label="frequency_communicative", title=raw"Strong selection $\delta = 0.2$", xlabel=raw"Time", ylabel="Frequency of communicative strategies", ylims=(0,1))
+        plot!(plt1, times[plot_times], data["order_parameters"][plot_times], label="Order parameter")
+        # Plot histogram of game types
+        plt2 = bar(countmap(String.(Symbol.(data["most_common_game_types"]))), title=raw"Strong selection $\delta = 0.2$", legend=false)
+
+	# Combine plots
+        plt = plot(plt1, plt2, layout=(2,1))
 
 	# Save figure
 	filename = plotsdir("timeseries", savename(config))

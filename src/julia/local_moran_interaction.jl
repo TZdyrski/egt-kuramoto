@@ -467,11 +467,22 @@ function calc_cumulative(config::Dict)
         elseif adj_matrix_source == "c-elegans-unweighted"
 	    interaction_adj_matrix = collect(round.(get_connectome()) .!= 0)
 	    reproduction_adj_matrix = interaction_adj_matrix
+	elseif adj_matrix_source == "c-elegans-undirected"
+	    interaction_adj_matrix = round.(get_connectome())
+	    interaction_adj_matrix = interaction_adj_matrix + transpose(interaction_adj_matrix)
+	    reproduction_adj_matrix = interaction_adj_matrix
+	elseif adj_matrix_source == "c-elegans-undirected-unweighted"
+	    interaction_adj_matrix = round.(get_connectome())
+	    interaction_adj_matrix = interaction_adj_matrix + transpose(interaction_adj_matrix)
+	    interaction_adj_matrix = collect(interaction_adj_matrix .!= 0)
+	    reproduction_adj_matrix = interaction_adj_matrix
         elseif adj_matrix_source == "c-elegans"
 	    interaction_adj_matrix = round.(get_connectome())
 	    reproduction_adj_matrix = interaction_adj_matrix
 	else
-	    throw(ArgumentError("adj_matrix_source must be a string in set [\"well-mixed\", \"c-elegans\"]"))
+	    throw(ArgumentError("adj_matrix_source must be a string in set [\"well-mixed\", "
+				*"\"c-elegans\", \"c-elegans-unweighted\", "
+				*"\"c-elegans-undirected\", \"c-elegans-undirected-unweighted\"]"))
         end
 	# Define reproduction graph with loops
 	# Specify number of players
@@ -534,11 +545,22 @@ function calc_timeseries(config::Dict)
 	elseif adj_matrix_source == "c-elegans-unweighted"
 	    interaction_adj_matrix = collect(round.(get_connectome()) .!= 0)
 	    reproduction_adj_matrix = interaction_adj_matrix
+	elseif adj_matrix_source == "c-elegans-undirected"
+	    interaction_adj_matrix = round.(get_connectome())
+	    interaction_adj_matrix = interaction_adj_matrix + transpose(interaction_adj_matrix)
+	    reproduction_adj_matrix = interaction_adj_matrix
+	elseif adj_matrix_source == "c-elegans-undirected-unweighted"
+	    interaction_adj_matrix = round.(get_connectome())
+	    interaction_adj_matrix = interaction_adj_matrix + transpose(interaction_adj_matrix)
+	    interaction_adj_matrix = collect(interaction_adj_matrix .!= 0)
+	    reproduction_adj_matrix = interaction_adj_matrix
         elseif adj_matrix_source == "c-elegans"
 	    interaction_adj_matrix = round.(get_connectome())
 	    reproduction_adj_matrix = interaction_adj_matrix
 	else
-	    throw(ArgumentError("adj_matrix_source must be a string in set [\"well-mixed\", \"c-elegans\"]"))
+	    throw(ArgumentError("adj_matrix_source must be a string in set [\"well-mixed\", "
+				*"\"c-elegans\", \"c-elegans-unweighted\", "
+				*"\"c-elegans-undirected\", \"c-elegans-undirected-unweighted\"]"))
         end
 	# Define reproduction graph with loops
 	# Specify number of players

@@ -377,7 +377,7 @@ function fraction_communicative(cumulative_populations, time_steps, nb_players)
     return fraction_communicative
 end
 
-@enum GameType all_communicative all_noncommunicative prisoners_dilemma snowdrift coordination mutualism unknown
+@enum GameType all_communicative all_noncommunicative prisoners_dilemma snowdrift coordination mutualism deadlock unknown
 
 function combine_communicative_noncommunicative(
         players_per_strategy::Vector{<:Integer},
@@ -429,18 +429,23 @@ function extract_most_common_game_types(
     mutualism_matrix = (reward_submatrix .>= temptation_submatrix) .&
         (temptation_submatrix .>= punishment_submatrix) .&
         (punishment_submatrix .>= sucker_submatrix)
+    deadlock_matrix = (temptation_submatrix .>= punishment_submatrix) .&
+        (punishment_submatrix .>= reward_submatrix) .&
+        (reward_submatrix .>= sucker_submatrix)
 
     # Calculate number of games for each game type
     nb_prisoners_dilemma = dot(players_per_phase, prisoners_dilemma_matrix, players_per_phase)
     nb_snowdrift = dot(players_per_phase, snowdrift_matrix, players_per_phase)
     nb_coordination = dot(players_per_phase, coordination_matrix, players_per_phase)
     nb_mutualism = dot(players_per_phase, mutualism_matrix, players_per_phase)
+    nb_deadlock = dot(players_per_phase, deadlock_matrix, players_per_phase)
 
     # Find most common game type
     game_counts = Dict{GameType, Integer}(prisoners_dilemma => nb_prisoners_dilemma,
                    snowdrift => nb_snowdrift,
                    coordination => nb_coordination,
-                   mutualism => nb_mutualism)
+                   mutualism => nb_mutualism,
+                   deadlock => nb_deadlock)
     most_common_game_type = findmax(game_counts)[2]
 
     return most_common_game_type
@@ -670,6 +675,8 @@ function plot_payoff_regions()
           fillcolor = :green, label = "Coordination")
     plot!(plt, Ge(R, T) & Ge(T, P) & Ge(P, S),
           fillcolor = :blue, label = "Mutualism")
+    plot!(plt, Ge(T, P) & Ge(P, R) & Ge(R, S),
+          fillcolor = :purple, label = "Deadlock")
 
     # Plot guide lines
     Plots.abline!(plt, 1, 0, color=:grey, label = nothing)

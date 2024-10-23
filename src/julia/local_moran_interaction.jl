@@ -598,7 +598,14 @@ function plot_timeseries(B_factor::Real, selection_strength::Real, adj_matrix_so
 	# Only plot subset of points to prevent large file sizes
 	plot_times = 1:Int(floor(length(times)/1000)):length(times)
         # Plot fraction communcative
-        plt1 = plot(times[plot_times], data["fraction_communicative"][plot_times], line_z=Integer.(data["most_common_game_types"]), label="frequency_communicative", title=raw"Strong selection $\delta = 0.2$", xlabel=raw"Time", ylabel="Frequency of communicative strategies", ylims=(0,1))
+	colors = Dict(all_noncommunicative => :darkgrey,
+		      all_communicative => :lightgrey,
+		      mutualism => :green,
+		      coordination => :blue,
+		      snowdrift => :yellow,
+		      prisoners_dilemma => :red)
+	color_values = get.(Ref(colors), data["most_common_game_types"][plot_times], :purple)
+        plt1 = plot(times[plot_times], data["fraction_communicative"][plot_times], color=color_values, label="frequency_communicative", title=raw"Strong selection $\delta = 0.2$", xlabel=raw"Time", ylabel="Frequency of communicative strategies", ylims=(0,1))
         plot!(plt1, times[plot_times], data["order_parameters"][plot_times], label="Order parameter")
         # Plot histogram of game types
         plt2 = bar(countmap(String.(Symbol.(data["most_common_game_types"]))), title=raw"Strong selection $\delta = 0.2$", legend=false)

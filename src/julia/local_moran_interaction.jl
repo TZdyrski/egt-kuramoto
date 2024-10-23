@@ -14,10 +14,27 @@ using InteractiveUtils
 using LaTeXStrings
 using DataToolkit
 using DrWatson
+using ImplicitEquations
 
-function payoff_matrix(mutual_benefit_synchronous::Real, unilateral_benefit_synchronous::Real, cost::Real, nb_phases::Integer)
-    template = [(1 + cos(2*pi*(phi_j - phi_i)))/2 for phi_i in (0:(nb_phases-1))/nb_phases, phi_j in (0:(nb_phases-1))/nb_phases]
-    return Matrix(mortar([[mutual_benefit_synchronous*template .- cost,unilateral_benefit_synchronous*template] [unilateral_benefit_synchronous*template .- cost,zeros(nb_phases, nb_phases)]]) .+ cost);
+function payoff_matrix_template(benefit_scaling::AbstractMatrix,
+		mutual_benefit_synchronous::Real,
+		unilateral_benefit_synchronous::Real, cost::Real)
+  payoff_matrix = Matrix(mortar([[mutual_benefit_synchronous*benefit_scaling .- cost,
+				  unilateral_benefit_synchronous*benefit_scaling];;
+				 [unilateral_benefit_synchronous*benefit_scaling .- cost,
+				 zeros(eltype(benefit_scaling), size(benefit_scaling))]]) .+ cost);
+  return payoff_matrix
+end
+
+function payoff_matrix(mutual_benefit_synchronous::Real,
+		unilateral_benefit_synchronous::Real, cost::Real,
+		nb_phases::Integer)
+    phase_dependence = [(1 + cos(2*pi*(phi_j - phi_i)))/2 for phi_i in (0:(nb_phases-1))/nb_phases, phi_j in (0:(nb_phases-1))/nb_phases]
+    payoff_matrix = payoff_matrix_template(phase_dependence,
+					   mutual_benefit_synchronous,
+					   unilateral_benefit_synchronous,
+					   cost)
+    return payoff_matrix
 end;
 
 struct LocalMoranInteraction{N,T1<:Real,S<:Integer,S2<:Integer,T2<:Real,T3<:Real,AT1<:AbstractMatrix{<:T1},AT2<:AbstractMatrix{<:T1},AS1<:AbstractMatrix{S2},AS2<:AbstractMatrix{S2},AS3<:AbstractMatrix{S2},AS4<:AbstractMatrix{S2}}
@@ -627,6 +644,46 @@ function save_heatmap()
 	png(plt, filename)
 
 	return plt
+end
+
+function plot_payoff_regions()
+    @variables B_on_c beta_on_c
+    payoff_matrix = payoff_matrix_template(ones(Int64,1,1), B_on_c, beta_on_c, 1)
+
+    R = build_function(payoff_matrix[1,1], B_on_c, beta_on_c, expression=Val{false}) # Reward
+    S = build_function(payoff_matrix[1,2], B_on_c, beta_on_c, expression=Val{false}) # Sucker's payoff
+    T = build_function(payoff_matrix[2,1], B_on_c, beta_on_c, expression=Val{false}) # Temptation
+    P = build_function(payoff_matrix[2,2], B_on_c, beta_on_c, expression=Val{false}) # Punishment
+
+    # Disable printing plots to screen
+    ENV["GKSwstype"]="nul"
+
+    # Plot regions
+    plt = plot(Ge(T, R) & Ge(R, P) & Ge(P, S),
+	       fillcolor = :red, label = "Prisoner's Dilemma",
+	       xlims=(0,4), ylims=(0,4),
+	       xlabel=L"Benefit of mutual communication $B(\delta \phi)/c$",
+	       ylabel=L"Benefit of unilateral communication $\beta(\delta \phi)/c$")
+    plot!(plt, Ge(T, R) & Ge(R, S) & Ge(S, P),
+          fillcolor = :yellow, label = "Snowdrift")
+    plot!(plt, Ge(R, T) & Ge(T, S) & Ge(S, P),
+          fillcolor = :green, label = "Coordination")
+    plot!(plt, Ge(R, T) & Ge(T, P) & Ge(P, S),
+          fillcolor = :blue, label = "Mutualism")
+
+    # Plot guide lines
+    Plots.abline!(plt, 1, 0, color=:grey, label = nothing)
+    Plots.abline!(plt, 1, -1, color=:grey, label = nothing)
+    Plots.hline!(plt, [1], color=:grey, label = nothing)
+    Plots.vline!(plt, [1], color=:grey, label = nothing)
+
+    # Add legend
+    plot!(legend = true)
+
+    filename = plotsdir("payoff_regions")
+    png(plt, filename)
+
+    return plt
 end
 
 function get_connectome()

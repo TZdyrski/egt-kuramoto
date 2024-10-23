@@ -29,3 +29,6 @@ end
 
 # Plot heatmap
 local_moran_interaction.save_heatmap()
+
+# Plot game-type regions
+local_moran_interaction.plot_payoff_regions()

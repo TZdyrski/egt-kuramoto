@@ -403,7 +403,8 @@ function extract_most_common_game_types(
         unilateral_benefit_synchronous::Real,
         cost::Real,
         nb_phases::Integer,
-        nb_strategies::Integer)
+        nb_strategies::Integer,
+        interaction_adj_matrix::AbstractMatrix{<:Integer})
 
     nb_players = length(strategies_per_player)
     players_per_strategy = extract_counts(strategies_per_player, nb_strategies)
@@ -415,8 +416,7 @@ function extract_most_common_game_types(
         return all_communicative
     end
 
-    # Combine communicative and noncommunicative strategies
-    players_per_phase = combine_communicative_noncommunicative(players_per_strategy, nb_phases)
+    players_per_phase = mod1.(strategies_per_player, nb_phases)
 
     # Define payoff response submatrices
     payoff = payoff_matrix(mutual_benefit_synchronous, unilateral_benefit_synchronous, cost, nb_phases)
@@ -424,6 +424,7 @@ function extract_most_common_game_types(
     sucker_submatrix = payoff[1:nb_phases, (nb_phases+1):(2*nb_phases)]
     temptation_submatrix = payoff[(nb_phases+1):(2*nb_phases), 1:nb_phases]
     punishment_submatrix = payoff[(nb_phases+1):(2*nb_phases), (nb_phases+1):(2*nb_phases)]
+
     # Define mask matrix for each game type
     prisoners_dilemma_matrix = (temptation_submatrix .>= reward_submatrix) .&
         (reward_submatrix .>= punishment_submatrix) .&
@@ -441,19 +442,43 @@ function extract_most_common_game_types(
         (punishment_submatrix .>= reward_submatrix) .&
         (reward_submatrix .>= sucker_submatrix)
 
-    # Calculate number of games for each game type
-    nb_prisoners_dilemma = dot(players_per_phase, prisoners_dilemma_matrix, players_per_phase)
-    nb_snowdrift = dot(players_per_phase, snowdrift_matrix, players_per_phase)
-    nb_coordination = dot(players_per_phase, coordination_matrix, players_per_phase)
-    nb_mutualism = dot(players_per_phase, mutualism_matrix, players_per_phase)
-    nb_deadlock = dot(players_per_phase, deadlock_matrix, players_per_phase)
+    # Define game type per strategy pair
+    game_types = fill(unknown, nb_phases, nb_phases)
+    for idx in eachindex(game_types)
+        if prisoners_dilemma_matrix[idx]
+	    game_type = prisoners_dilemma
+        elseif snowdrift_matrix[idx]
+            game_type = snowdrift
+        elseif coordination_matrix[idx]
+            game_type = coordination
+        elseif mutualism_matrix[idx]
+            game_type = mutualism
+        elseif deadlock_matrix[idx]
+            game_type = deadlock
+	else
+	    throw(Exception("Unknown game types"))
+        end
+	game_types[idx] = game_type
+    end
+
+    # Count game types
+    game_counts = Dict{GameType, Integer}(prisoners_dilemma => 0,
+                   snowdrift => 0,
+                   coordination => 0,
+                   mutualism => 0,
+                   deadlock => 0)
+    for (cart_idx,value) in pairs(interaction_adj_matrix)
+        if value == 0
+            continue
+	end
+        (row, col) = Tuple(cart_idx)
+	row_phase = players_per_phase[row]
+	col_phase = players_per_phase[col]
+	game_type = game_types[row_phase,col_phase]
+        game_counts[game_type] += value
+    end
 
     # Find most common game type
-    game_counts = Dict{GameType, Integer}(prisoners_dilemma => nb_prisoners_dilemma,
-                   snowdrift => nb_snowdrift,
-                   coordination => nb_coordination,
-                   mutualism => nb_mutualism,
-                   deadlock => nb_deadlock)
     most_common_game_type = findmax(game_counts)[2]
 
     return most_common_game_type
@@ -602,11 +627,11 @@ function calc_timeseries(config::Dict)
                 time_steps, payoff_update_method)
 
         # Extract results
+        most_common_game_types = dropdims(mapslices(x -> extract_most_common_game_types(x, B,
+                0.9*B, cost, nb_phases, nb_strategies, interaction_adj_matrix), all_populations, dims=1), dims=1)
         counts = mapslices(x -> extract_counts(x, nb_strategies), all_populations, dims=1)
         nb_communicative = map(x -> extract_num_communicative(Vector(x)), eachslice(counts, dims=2))
         fraction_communicative = nb_communicative/nb_players
-        most_common_game_types = dropdims(mapslices(x -> extract_most_common_game_types(x, B,
-                0.9*B, cost, nb_phases, nb_strategies), counts, dims=1), dims=1)
         order_parameters = dropdims(mapslices(x -> extract_order_parameters(x, nb_phases), counts, dims=1), dims=1)
 
 	# Package results

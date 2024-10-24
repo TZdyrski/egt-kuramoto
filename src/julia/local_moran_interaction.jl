@@ -42,7 +42,7 @@ struct LocalMoranInteraction{N,T1<:Real,S<:Integer,S2<:Integer,T2<:Real,T3<:Real
     num_actions::S
     payoff_matrix::AT1
     payoff_matrix_transpose::AT2
-    interaction_adj_matrix::AS1
+    interaction_adj_matrix::AS1 # Convention: a_ij is number of edges going from i to j
     interaction_adj_matrix_transpose::AS2
     reproduction_adj_matrix::AS3
     reproduction_adj_matrix_transpose::AS4
@@ -125,7 +125,7 @@ function WorkParamsSingleUpdate(lmi::LocalMoranInteraction{N}, initial_actions::
     weights_int = Weights(ones(Int64, N))
     payoffs_rowplayer_per_strategy = lmi.payoff_matrix[initial_actions, :]
     payoffs_colplayer_per_strategy = lmi.payoff_matrix_transpose[initial_actions, :]
-    payoffs_player_pairwise_transpose = payoffs_colplayer_per_strategy[:, initial_actions] .* lmi.interaction_adj_matrix_transpose
+    payoffs_player_pairwise_transpose = payoffs_colplayer_per_strategy[:, initial_actions] .* lmi.interaction_adj_matrix
     return WorkParamsSingleUpdate(neighbor_idxs, payoffs, payoffs_transpose, fitnesses, weights_float, weights_int,payoffs_rowplayer_per_strategy,payoffs_colplayer_per_strategy,payoffs_player_pairwise_transpose)
 end
 
@@ -167,7 +167,7 @@ function calc_payoffs!(aux::WorkParamsLoop,
         total = 0.0
         @inbounds for neighbor_idx = 1:length(actions)
             neighbor_strategy = actions[neighbor_idx]
-            total += lmi.payoff_matrix_transpose[neighbor_strategy, focal_strategy] * lmi.interaction_adj_matrix_transpose[neighbor_idx, focal_idx]
+            total += lmi.payoff_matrix_transpose[neighbor_strategy, focal_strategy] * lmi.interaction_adj_matrix[neighbor_idx, focal_idx]
         end
         aux.payoffs[focal_idx] = total
     end
@@ -196,11 +196,11 @@ function update_aux!(aux::WorkParamsSingleUpdate,
     @. aux.payoffs_colplayer_per_strategy[death_idx, :] = @view lmi.payoff_matrix[:, new_strategy]
     @. aux.payoffs_player_pairwise_transpose[:, death_idx] = @view aux.payoffs_colplayer_per_strategy[:, new_strategy]
     for idx = 1:N
-        aux.payoffs_player_pairwise_transpose[idx, death_idx] *= lmi.interaction_adj_matrix_transpose[idx, death_idx]
+        aux.payoffs_player_pairwise_transpose[idx, death_idx] *= lmi.interaction_adj_matrix[idx, death_idx]
     end
     @. aux.payoffs_player_pairwise_transpose[death_idx, :] = @view aux.payoffs_rowplayer_per_strategy[:, new_strategy]
     for idx = 1:N
-        aux.payoffs_player_pairwise_transpose[death_idx, idx] *= lmi.interaction_adj_matrix_transpose[death_idx,idx]
+        aux.payoffs_player_pairwise_transpose[death_idx, idx] *= lmi.interaction_adj_matrix[death_idx,idx]
     end
 end
 
@@ -219,7 +219,7 @@ function calc_payoffs!(aux::WorkParamsMatrix,
     transpose!(aux.actions_matrix_T, aux.actions_matrix)
     mul!(aux.work_array_1, aux.actions_matrix, lmi.players[1].payoff_array)
     mul!(aux.work_array_2, aux.work_array_1, aux.actions_matrix_T)
-    aux.work_array_3 .= aux.work_array_2 .* lmi.interaction_adj_matrix
+    aux.work_array_3 .= aux.work_array_2 .* lmi.interaction_adj_matrix_transpose
     mul!(aux.payoffs, aux.work_array_3, aux.ones_matrix)
 end
 

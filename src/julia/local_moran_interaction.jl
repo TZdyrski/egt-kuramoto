@@ -50,12 +50,11 @@ struct LocalMoranInteraction{N,T1<:Real,S<:Integer,S2<:Integer,T2<:Real,T3<:Real
     epsilon::T3
 end
 
-function LocalMoranInteraction(g::NormalFormGame{2,T},
-			  interaction_adj_matrix::AbstractMatrix{S},
-			  reproduction_adj_matrix::AbstractMatrix{S},
+function LocalMoranInteraction(g::NormalFormGame,
+			  interaction_adj_matrix::AbstractMatrix,
+			  reproduction_adj_matrix::AbstractMatrix,
 			  selection_strength::Real,
-			  mutation_rate::Real,
-			  ) where {T<:Real,S<:Integer}
+			  mutation_rate::Real)
     if size(interaction_adj_matrix, 1) != size(interaction_adj_matrix, 2)
 	throw(ArgumentError("Interaction adjacency matrix must be square"))
     end
@@ -80,14 +79,14 @@ function LocalMoranInteraction(g::NormalFormGame{2,T},
 				 interaction_adj_matrix, transpose(interaction_adj_matrix), reproduction_adj_matrix, transpose(reproduction_adj_matrix), selection_strength, mutation_rate)
 end
 
-function update_weights!(w::Weights{S, T, V}, new_wts::V) where {S, T, V}
+function update_weights!(w::Weights{S, TA, V}, new_wts::V) where {S, TA, V}
 	w.values = new_wts
 	w.sum = sum(w.values)
 end
 
-abstract type WorkParams{T,S} end
+abstract type WorkParams end
 
-struct WorkParamsLoop{T<:Real,S<:Integer,AS1<:AbstractVector{<:S},AT1<:AbstractVector{<:T},AT2<:AbstractVector{<:T},AT3<:AbstractWeights{<:T},AS2<:AbstractWeights{<:S}} <: WorkParams{T,S}
+struct WorkParamsLoop{AS1<:AbstractVector,AT1<:AbstractVector,AT2<:AbstractVector,AT3<:AbstractWeights,AS2<:AbstractWeights} <: WorkParams
     neighbor_idxs::AS1
     payoffs::AT1
     fitnesses::AT2
@@ -104,8 +103,8 @@ function WorkParamsLoop(lmi::LocalMoranInteraction{N}) where N
     return WorkParamsLoop(neighbor_idxs, payoffs, fitnesses, weights_float, weights_int)
 end
 
-struct WorkParamsSingleUpdate{T<:Real,S<:Integer,AS1<:AbstractVector{<:S},AT1<:AbstractVector{<:T},AT2<:AbstractVector{<:T},AT3<:AbstractWeights{<:T},AS2<:AbstractWeights{<:S},
-			      AT4<:AbstractMatrix{<:T},AT5<:AbstractMatrix{<:T},AT6<:AbstractMatrix{<:T},AT7<:AbstractMatrix{<:T}} <: WorkParams{T,S}
+struct WorkParamsSingleUpdate{AS1<:AbstractVector,AT1<:AbstractVector,AT2<:AbstractVector,AT3<:AbstractWeights,AS2<:AbstractWeights,
+			      AT4<:AbstractMatrix,AT5<:AbstractMatrix,AT6<:AbstractMatrix,AT7<:AbstractMatrix} <: WorkParams
     neighbor_idxs::AS1
     payoffs::AT1
     payoffs_transpose::AT7
@@ -117,7 +116,7 @@ struct WorkParamsSingleUpdate{T<:Real,S<:Integer,AS1<:AbstractVector{<:S},AT1<:A
     payoffs_player_pairwise_transpose::AT6
 end
 
-function WorkParamsSingleUpdate(lmi::LocalMoranInteraction{N,T,S}, initial_actions::AbstractVector{<:S}) where {N,T,S}
+function WorkParamsSingleUpdate(lmi::LocalMoranInteraction{N}, initial_actions::AbstractVector) where N
     neighbor_idxs = Vector{Int64}(undef, N)
     payoffs = Vector{Float64}(undef, N)
     payoffs_transpose = Matrix{Float64}(undef, 1, N)
@@ -130,8 +129,8 @@ function WorkParamsSingleUpdate(lmi::LocalMoranInteraction{N,T,S}, initial_actio
     return WorkParamsSingleUpdate(neighbor_idxs, payoffs, payoffs_transpose, fitnesses, weights_float, weights_int,payoffs_rowplayer_per_strategy,payoffs_colplayer_per_strategy,payoffs_player_pairwise_transpose)
 end
 
-struct WorkParamsMatrix{T<:Real,S<:Integer,AS1<:AbstractVector{<:S},AT1<:AbstractVector{<:T},AT2<:AbstractVector{<:T},AT3<:AbstractWeights{<:T},AS2<:AbstractWeights{<:S},
-			AS3<:AbstractMatrix{<:S},AT4<:AbstractMatrix{<:T},AS4<:AbstractVector{<:S}} <: WorkParams{T,S}
+struct WorkParamsMatrix{AS1<:AbstractVector,AT1<:AbstractVector,AT2<:AbstractVector,AT3<:AbstractWeights,AS2<:AbstractWeights,
+			AS3<:AbstractMatrix,AT4<:AbstractMatrix,AS4<:AbstractVector} <: WorkParams
     neighbor_idxs::AS1
     payoffs::AT1
     fitnesses::AT2
@@ -160,9 +159,9 @@ function WorkParamsMatrix(lmi::LocalMoranInteraction{N}) where N
     return WorkParamsMatrix(neighbor_idxs, payoffs, fitnesses, weights_float, weights_int, actions_matrix, actions_matrix_T, work_array_1, work_array_2, work_array_3, ones_matrix)
 end
 
-function calc_payoffs!(aux::WorkParamsLoop{T,S},
-		actions::AbstractVector{<:S},
-		lmi::LocalMoranInteraction{N,T,S}) where {N,T<:Real,S<:Integer}
+function calc_payoffs!(aux::WorkParamsLoop,
+		actions::AbstractVector,
+		lmi::LocalMoranInteraction{N}) where N
     @inbounds for focal_idx = 1:length(actions)
         focal_strategy = actions[focal_idx]
         total = 0.0
@@ -174,24 +173,24 @@ function calc_payoffs!(aux::WorkParamsLoop{T,S},
     end
 end
 
-function calc_payoffs!(aux::WorkParamsSingleUpdate{T,S},
-		actions::AbstractVector{<:S},
-		lmi::LocalMoranInteraction{N,T,S}) where {N,T<:Real,S<:Integer}
+function calc_payoffs!(aux::WorkParamsSingleUpdate,
+		actions::AbstractVector,
+		lmi::LocalMoranInteraction{N}) where N
     # Calculate payoffs
     sum!(aux.payoffs_transpose, aux.payoffs_player_pairwise_transpose)
     transpose!(aux.payoffs, aux.payoffs_transpose)
 end
 
-function update_aux!(aux::WorkParams{T,S},
+function update_aux!(aux::WorkParams,
 		new_strategy::Integer,
 		death_idx::Integer,
-		lmi::LocalMoranInteraction{N,T,S}) where {N,T<:Real,S<:Integer}
+		lmi::LocalMoranInteraction{N}) where N
 end
 
-function update_aux!(aux::WorkParamsSingleUpdate{T,S},
+function update_aux!(aux::WorkParamsSingleUpdate,
 		new_strategy::Integer,
 		death_idx::Integer,
-		lmi::LocalMoranInteraction{N,T,S}) where {N,T<:Real,S<:Integer}
+		lmi::LocalMoranInteraction{N}) where N
     # Update various matrices
     @. aux.payoffs_rowplayer_per_strategy[death_idx, :] = @view lmi.payoff_matrix_transpose[:, new_strategy]
     @. aux.payoffs_colplayer_per_strategy[death_idx, :] = @view lmi.payoff_matrix[:, new_strategy]
@@ -207,9 +206,9 @@ end
 
 
  
-function calc_payoffs!(aux::WorkParamsMatrix{T,S},
-		actions::AbstractVector{<:S},
-		lmi::LocalMoranInteraction{N,T,S}) where {N,T<:Real,S<:Integer}
+function calc_payoffs!(aux::WorkParamsMatrix,
+		actions::AbstractVector,
+		lmi::LocalMoranInteraction{N}) where N
     @inbounds for col = 1:lmi.num_actions, row = 1:N
         aux.actions_matrix[row,col] = 0
     end
@@ -224,10 +223,10 @@ function calc_payoffs!(aux::WorkParamsMatrix{T,S},
     mul!(aux.payoffs, aux.work_array_3, aux.ones_matrix)
 end
 
-function play!(actions::AbstractVector{<:S},
+function play!(actions::AbstractVector,
     rng::AbstractRNG,
-    lmi::LocalMoranInteraction{N,T,S},
-    aux::WorkParams{T,S}) where {N,T<:Real, S<:Integer}
+    lmi::LocalMoranInteraction{N},
+    aux::WorkParams) where N
 
     # Calculate all payoffs
     calc_payoffs!(aux, actions, lmi)

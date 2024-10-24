@@ -15,6 +15,7 @@ using LaTeXStrings
 using DataToolkit
 using DrWatson
 using ImplicitEquations
+using Graphs
 
 function payoff_matrix_template(benefit_scaling::AbstractMatrix,
 		mutual_benefit_synchronous::Real,
@@ -63,6 +64,9 @@ function LocalMoranInteraction(g::NormalFormGame,
     end
     if size(interaction_adj_matrix, 1) != size(reproduction_adj_matrix, 1)
 	throw(ArgumentError("Interaction adjacency matrix and reproduction adjacency matrix must be same size"))
+    end
+    if minimum(outdegree(SimpleDiGraph(reproduction_adj_matrix))) == 0
+	throw(ArgumentError("Each node of the reproduction graph must have out-degree greater than zero"))
     end
     min_payoff_by_player = [minimum(g.players[i].payoff_array) for i in 1:length(g.players)]
     min_payoff = minimum(min_payoff_by_player)
@@ -227,6 +231,11 @@ function play!(actions::AbstractVector,
     rng::AbstractRNG,
     lmi::LocalMoranInteraction{N},
     aux::WorkParams) where N
+    # Payoff flows along and is weighted by interaction_adj_matrix
+    # Node is selected for reproduction using exponential fitness weighting
+    # One of its outedges is selected for replacement, weighted by edge reproduction_adj_matrix
+    # Note: each node on reproduction graph must have out-degree greater than
+    #   zero, otherwise there is no way to choose node for replacement
 
     # Calculate all payoffs
     calc_payoffs!(aux, actions, lmi)

@@ -1,7 +1,7 @@
 data_config_version = 0
 uuid = "fb6b3653-b53d-4039-9a33-e92ca9f1d87b"
 name = "juliaGameTheory"
-plugins = ["store", "defaults", "memorise"]
+plugins = ["store", "defaults", "memorise", "cache"]
 
 [config.defaults.storage._]
 checksum = "auto"

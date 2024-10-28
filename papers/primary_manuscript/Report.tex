@@ -1,6 +1,7 @@
 \documentclass{article}
 \usepackage[abbreviations]{foreign}
 \usepackage{biblatex}
+\usepackage{siunitx}
 \usepackage{amsmath}
 \addbibresource{references.bib}
 
@@ -31,6 +32,47 @@
     \end{enumerate}
   \end{itemize}
 \end{enumerate}
+\section{Results}
+\begin{itemize}
+  \item Note: for c-elegans, $B_{\text{factor}} = 1.5$, $2E6$ timesteps,
+    $\delta = 2$, $\mu = 0.2$:
+  \begin{itemize}
+    \item We can calculate the average number of communicative at each
+      time step and calculate the Pearson correlation coefficient of
+      this number against each node's communicative state
+    \item We find that the maximum correlation is \num{0.41}, mean
+      correlation is \num{0.03}, std correlation is \num{0.06}. That
+      is, there are a few outliers with high correlation
+    \item Unfortunately, these are \emph{not} the premotor neurons
+      (all had correlation $\approx \num{0.1}$)
+    \item Instead, the ones with correlation above \num{0.35} were
+      indices 101, 117, 211, and 219 (IL1L, AUAL, SMBDL, and SIADL)
+  \end{itemize}
+  \item General trends of c-elegans up to $T = 2E8$:
+  \begin{itemize}
+    \item For strong forcing $\delta = 0.2$:
+    \begin{itemize}
+      \item Undirected and unweighted looks like a spread-out, symmetric
+        version of well-mixed
+      \item Adding weights suppresses communication, lowering ceiling
+        for fraction of communication from \num{1} to \num{0.8}
+      \item Adding directedness introduces strange staircase-like shape
+        and slightly depresses ceiling from \num{1} to \num{0.9}
+      \item Full weighted, directed version shows both staircase-like
+        shape and strongly suppressed ceiling to \num{0.6}
+    \end{itemize}
+    \item For weak forcing $\delta = 0.005$:
+    \begin{itemize}
+      \item Undirected and unweighted has strange staricase-like shape
+      \item Adding weights sharpens jump around $B_\text{crit}$, nearly
+        matching well-mixed case
+      \item Adding directedness strongly supresses seleciton, with
+        ceiling and floor compressed to the range $[0.3,0.6]$
+      \item Full weighted, directed version shows strange, non-monotonic
+        behavior. More investigation is needed
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
 
 \printbibliography
 

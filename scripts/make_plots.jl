@@ -32,3 +32,14 @@ local_moran_interaction.save_heatmap()
 
 # Plot game-type regions
 local_moran_interaction.plot_payoff_regions()
+
+# Plot colored graph
+for adj_matrix_source in ["well-mixed", "c-elegans", "c-elegans-unweighted",
+			      "c-elegans-undirected", "c-elegans-undirected-unweighted"]
+    for (B_factor, selection_strength) in zip([1.5,2.5],[0.2,5])
+	for num_time_steps in Int.([8E4, 8E5, 8E6])
+            local_moran_interaction.plot_graph_evolution(B_factor, selection_strength,
+						    adj_matrix_source, update_method, num_time_steps)
+	end
+    end
+end

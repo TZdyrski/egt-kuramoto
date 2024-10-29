@@ -16,6 +16,9 @@ using DataToolkit
 using DrWatson
 using ImplicitEquations
 using Graphs
+using CairoMakie
+using GraphMakie
+using NetworkLayout
 
 function payoff_matrix_template(benefit_scaling::AbstractMatrix,
 		mutual_benefit_synchronous::Real,
@@ -668,6 +671,57 @@ function plot_timeseries(B_factor::Real, selection_strength::Real, adj_matrix_so
 	png(plt, filename)
 
 	return plt
+end
+
+function plot_graph_evolution(B_factor::Real, selection_strength::Real, adj_matrix_source::String="well-mixed", payoff_update_method::String="single-update",time_steps::Integer=80_000)
+	# Load results
+	config = @strdict(adj_matrix_source,payoff_update_method,time_steps,B_factor,selection_strength)
+	data, _ = produce_or_load(calc_timeseries, config, datadir("timeseries"))
+
+	# Generate graph
+	interaction_adj_matrix, _ = get_adj_matrices(adj_matrix_source)
+	graph = SimpleDiGraph(interaction_adj_matrix)
+
+	## Remove self edges for display
+	#self_loops = Iterators.flatten(simplecycles_limited_length(graph,1))
+	#rem_edge!.(Ref(graph), self_loops, self_loops)
+
+	# Disable printing plots to screen
+	ENV["GKSwstype"]="nul"
+
+	# Create colormap
+	cooperative_colors = range(colorant"navyblue",
+				   stop=colorant"paleturquoise1",
+				   length=data["nb_phases"])
+	noncooperative_colors = range(colorant"darkred",
+				   stop=colorant"lightsalmon1",
+				   length=data["nb_phases"])
+	colormap = [cooperative_colors; noncooperative_colors]
+
+	# Apply colormap
+	colors = colormap[data["all_populations"]]
+
+	# Set animation parameters
+	num_times = size(data["all_populations"],2)
+	total_time_s = 10
+	framerate_Hz = 30
+	time_stride = round(num_times / (framerate_Hz * total_time_s))
+
+	# Generate animation
+	time = Observable(1)
+
+	# Create plot
+	color_observable = @lift(colors[:,$time])
+	fig, ax, graph_plot = graphplot(graph, node_color = color_observable, layout = Stress(),
+					arrow_show = false, edge_color = (:black, 0.05),
+					edge_plottype = :linesegments)
+
+
+	record(fig, plotsdir("graph_animations", savename(config, "mp4")), 1:time_stride:num_times;
+	       framerate = framerate_Hz) do t
+	    time[] = t
+        end
+	return fig
 end
 
 function save_heatmap()

@@ -609,9 +609,21 @@ function calc_timeseries(config::Dict)
                 LocalMoranInteraction(NormalFormGame(payoff_matrix(B, 0.95*B, cost, nb_phases)), interaction_adj_matrix, reproduction_adj_matrix, selection_strength, mutation_rate),
                 time_steps, payoff_update_method)
 
+	# Package results
+	return @strdict(all_populations, cost, nb_phases, nb_strategies, mutation_rate, interaction_adj_matrix)
+end
+
+function calc_timeseries_statistics(config::Dict)
+	# Calculate timeseries
+	data = calc_timeseries(config)
+
+	# Unpack variables
+	@unpack all_populations, cost, nb_phases, nb_strategies, mutation_rate, interaction_adj_matrix = data
+	@unpack B_factor, selection_strength, adj_matrix_source, payoff_update_method, time_steps = config
+
         # Extract results
-        most_common_game_types = dropdims(mapslices(x -> extract_most_common_game_types(x, B,
-                0.9*B, cost, nb_phases, nb_strategies, interaction_adj_matrix), all_populations, dims=1), dims=1)
+        most_common_game_types = dropdims(mapslices(x -> extract_most_common_game_types(x, B_factor*cost,
+                0.9*B_factor*cost, cost, nb_phases, nb_strategies, interaction_adj_matrix), all_populations, dims=1), dims=1)
         counts = mapslices(x -> extract_counts(x, nb_strategies), all_populations, dims=1)
         nb_communicative = map(x -> extract_num_communicative(Vector(x)), eachslice(counts, dims=2))
         fraction_communicative = nb_communicative/nb_players
@@ -624,7 +636,7 @@ end
 function plot_timeseries(B_factor::Real, selection_strength::Real, adj_matrix_source::String="well-mixed", payoff_update_method::String="single-update",time_steps::Integer=80_000)
 	# Load results
 	config = @strdict(adj_matrix_source,payoff_update_method,time_steps,B_factor,selection_strength)
-	data, _ = produce_or_load(calc_timeseries, config, datadir("timeseries"))
+	data, _ = produce_or_load(calc_timeseries_statistics, config, datadir("timeseries_statistics"))
 
         # Create array of times
         # Note: the populations include the initial data, so we need one more than time-steps

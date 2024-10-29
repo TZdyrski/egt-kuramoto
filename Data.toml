@@ -17,5 +17,5 @@ description = "Cook 2019 C. elegans connectome"
 
     [[connectome-cook.loader]]
     driver = "xlsx"
-    range = "D4:QN303"
+    range = "C3:QN303"
     sheet = "hermaphrodite chemical"

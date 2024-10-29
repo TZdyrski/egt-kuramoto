@@ -727,12 +727,22 @@ function plot_payoff_regions()
 end
 
 function get_connectome()
-	connectome_and_muscles = read(dataset("connectome-cook"), Matrix)
+	connectome_and_muscles = get_connectome_labelled()["connectome"]
 	# Remove connections to muscles
 	connectome = connectome_and_muscles[:, [1:20..., 51:322..., 438:445...]]
 	# Replace "Missing" data with zeros
 	replace!(connectome, missing => 0)
 	return connectome
+end
+
+function get_connectome_labelled()
+	connectome_and_muscles_with_labels = read(dataset("connectome-cook"), Matrix)
+	row_labels = connectome_and_muscles_with_labels[:,1]
+	col_labels = connectome_and_muscles_with_labels[1,:]
+	connectome_and_muscles = connectome_and_muscles_with_labels[2:end,2:end]
+	results = Dict("connectome" => connectome_and_muscles, "row_labels" =>
+		       row_labels, "col_labels" => col_labels)
+	return results
 end
 
 end

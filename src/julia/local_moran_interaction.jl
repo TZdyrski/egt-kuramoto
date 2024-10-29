@@ -505,21 +505,13 @@ function extract_counts(strategies_per_player::Vector{<:Integer}, nb_strategies:
     return counts
 end
 
-function calc_cumulative(config::Dict)
-	# Unpack values
-	@unpack selection_strength, adj_matrix_source, payoff_update_method, time_steps = config
-
-	# Define system
-	cost = 0.1
-	nb_phases = 20
-	nb_strategies = nb_phases*2
-	mutation_rate = 0.0001
-
+function get_adj_matrices(adj_matrix_source::String)
 	# Define interaction graph without loops
+	# Define reproduction graph with loops
 	if adj_matrix_source == "well-mixed"
 	    interaction_adj_matrix = ones(Int64,20,20) - I
 	    reproduction_adj_matrix = interaction_adj_matrix + I
-        elseif adj_matrix_source == "c-elegans-unweighted"
+	elseif adj_matrix_source == "c-elegans-unweighted"
 	    interaction_adj_matrix = collect(round.(get_connectome()) .!= 0)
 	    reproduction_adj_matrix = collect((interaction_adj_matrix + I) .!= 0)
 	elseif adj_matrix_source == "c-elegans-undirected"
@@ -539,7 +531,21 @@ function calc_cumulative(config::Dict)
 				*"\"c-elegans\", \"c-elegans-unweighted\", "
 				*"\"c-elegans-undirected\", \"c-elegans-undirected-unweighted\"]"))
         end
-	# Define reproduction graph with loops
+	return interaction_adj_matrix, reproduction_adj_matrix
+end
+
+function calc_cumulative(config::Dict)
+	# Unpack values
+	@unpack selection_strength, adj_matrix_source, payoff_update_method, time_steps = config
+
+	# Define system
+	cost = 0.1
+	nb_phases = 20
+	nb_strategies = nb_phases*2
+	mutation_rate = 0.0001
+
+	# Define interaction graph and reproduction graphs
+	interaction_adj_matrix, reproduction_adj_matrix = get_adj_matrices(adj_matrix_source)
 	# Specify number of players
 	nb_players = size(interaction_adj_matrix)[1]
 
@@ -593,31 +599,8 @@ function calc_timeseries(config::Dict)
 	mutation_rate = 0.0001
 	B = cost*B_factor
 
-	# Define interaction graph without loops
-	if adj_matrix_source == "well-mixed"
-	    interaction_adj_matrix = ones(Int64,20,20) - I
-	    reproduction_adj_matrix = interaction_adj_matrix + I
-	elseif adj_matrix_source == "c-elegans-unweighted"
-	    interaction_adj_matrix = collect(round.(get_connectome()) .!= 0)
-	    reproduction_adj_matrix = collect((interaction_adj_matrix + I) .!= 0)
-	elseif adj_matrix_source == "c-elegans-undirected"
-	    interaction_adj_matrix = round.(get_connectome())
-	    interaction_adj_matrix = interaction_adj_matrix + transpose(interaction_adj_matrix)
-	    reproduction_adj_matrix = interaction_adj_matrix + I
-	elseif adj_matrix_source == "c-elegans-undirected-unweighted"
-	    interaction_adj_matrix = round.(get_connectome())
-	    interaction_adj_matrix = interaction_adj_matrix + transpose(interaction_adj_matrix)
-	    interaction_adj_matrix = collect(interaction_adj_matrix .!= 0)
-	    reproduction_adj_matrix = collect((interaction_adj_matrix + I) .!= 0)
-        elseif adj_matrix_source == "c-elegans"
-	    interaction_adj_matrix = round.(get_connectome())
-	    reproduction_adj_matrix = interaction_adj_matrix + I
-	else
-	    throw(ArgumentError("adj_matrix_source must be a string in set [\"well-mixed\", "
-				*"\"c-elegans\", \"c-elegans-unweighted\", "
-				*"\"c-elegans-undirected\", \"c-elegans-undirected-unweighted\"]"))
-        end
-	# Define reproduction graph with loops
+	# Define interaction graph and reproduction graphs
+	interaction_adj_matrix, reproduction_adj_matrix = get_adj_matrices(adj_matrix_source)
 	# Specify number of players
 	nb_players = size(interaction_adj_matrix)[1]
 

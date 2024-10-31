@@ -711,9 +711,19 @@ function plot_graph_evolution(B_factor::Real, selection_strength::Real, adj_matr
 	# Generate animation
 	time = Observable(1)
 
+	# Calculate correlation
+	correlation = cor(transpose(data["all_populations"]))
+
+	## Create custom layout based on correlation
+	#quantile_cutoff = 0.75
+	#correlation_cutoff = quantile!(filter(!isnan, correlation), quantile_cutoff)
+	#correlation_mask = correlation .> quantile_cutoff
+	#layout = spring(correlation_mask)
+	layout = Stress()
+
 	# Create plot
 	color_observable = @lift(colors[:,$time])
-	fig, ax, graph_plot = graphplot(graph, node_color = color_observable, layout = Stress(),
+	fig, ax, graph_plot = graphplot(graph, node_color = color_observable, layout = layout,
 					arrow_show = false, edge_color = (:black, 0.05),
 					edge_plottype = :linesegments)
 

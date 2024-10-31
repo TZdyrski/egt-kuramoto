@@ -19,6 +19,7 @@ using Graphs
 using CairoMakie
 using GraphMakie
 using NetworkLayout
+#using CombinatorialMultiGrid
 
 function payoff_matrix_template(benefit_scaling::AbstractMatrix,
 		mutual_benefit_synchronous::Real,
@@ -773,6 +774,40 @@ function plot_payoff_regions()
     png(plt, filename)
 
     return plt
+end
+
+function calc_coalescence_times(adj_matrix_source::String="well-mixed")
+	# Generate graph
+	interaction_adj_matrix, _ = get_adj_matrices(adj_matrix_source)
+	graph = SimpleDiGraph(interaction_adj_matrix)
+	return calc_coalescence_times(graph)
+end
+
+function calc_coalescence_times(graph::Graphs.SimpleGraphs.AbstractSimpleGraph)
+	# Take cartesian product
+	cart_prod = cartesian_product(graph, graph)
+
+	# Calculate Degree vector and Laplacian matrix
+	degree_cartProd = degree(cart_prod)
+	laplacian_cartProd = laplacian_matrix(cart_prod)
+
+	# Get the off-diagonal indices
+	indices_offDiag = [i for i in CartesianIndices((1:size(graph,1),1:size(graph,1))) if i[1] != i[2]]
+	indicesLinear_offDiag = LinearIndices((1:size(graph,1),1:size(graph,1)))[indices_offDiag]
+
+	# Get the off-diagonal parts of Degree vector and Laplacian matrix
+	degree_cartProd_offDiag = degree_cartProd[indicesLinear_offDiag]
+	laplacian_cartProd_offDiag = laplacian_cartProd[indicesLinear_offDiag,indicesLinear_offDiag]
+
+	# Solve for coalescence time matrix
+	#coalescence_matrix_offDiag = laplacian_cartProd_offDiag \ degree_cartProd_offDiag
+	(pfunc, h) = cmg_preconditioner_lap(Float64.(laplacian_cartProd_offDiag))
+	coalescence_matrix_offDiag = pfunc(Float64.(degree_cartProd_offDiag))
+	coalescence_matrix = sparse([v[1] for v in indices_offDiag],
+				    [v[2] for v in indices_offDiag],
+				    Vector(coalescence_matrix_offDiag))
+
+	return coalescence_matrix
 end
 
 function get_connectome()

@@ -605,7 +605,7 @@ function calc_timeseries(config::Dict)
                 time_steps, payoff_update_method)
 
 	# Package results
-	return @strdict(all_populations, cost, nb_phases, nb_strategies, mutation_rate, interaction_adj_matrix)
+	return @strdict(all_populations, cost, nb_phases, nb_players, nb_strategies, mutation_rate, interaction_adj_matrix)
 end
 
 function calc_timeseries_statistics(config::Dict)
@@ -613,7 +613,7 @@ function calc_timeseries_statistics(config::Dict)
 	data = calc_timeseries(config)
 
 	# Unpack variables
-	@unpack all_populations, cost, nb_phases, nb_strategies, mutation_rate, interaction_adj_matrix = data
+	@unpack all_populations, cost, nb_phases, nb_players, nb_strategies, mutation_rate, interaction_adj_matrix = data
 	@unpack B_factor, symmetry_breaking, selection_strength, adj_matrix_source, payoff_update_method, time_steps = config
 
         # Extract results

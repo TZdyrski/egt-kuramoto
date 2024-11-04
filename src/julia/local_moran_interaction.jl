@@ -451,7 +451,7 @@ function extract_most_common_game_types(
         elseif deadlock_matrix[idx]
             game_type = deadlock
 	else
-	    throw(Exception("Unknown game types"))
+	    throw(ErrorException("Unknown game types"))
         end
 	game_types[idx] = game_type
     end

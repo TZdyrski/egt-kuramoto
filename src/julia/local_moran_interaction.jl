@@ -21,26 +21,16 @@ using GraphMakie
 using NetworkLayout
 #using CombinatorialMultiGrid
 
-function payoff_matrix_template(benefit_scaling::AbstractMatrix,
+function payoff_matrix(nb_phases::Integer,
 		mutual_benefit_synchronous::Real,
-		unilateral_benefit_synchronous::Real, cost::Real)
+		unilateral_benefit_synchronous::Real, cost::Real; symmetry_breaking::Real = 1/2)
+  benefit_scaling = [(1 + cos(2*pi*(phi_j - phi_i)))/2 for phi_i in (0:(nb_phases-1))/nb_phases, phi_j in (0:(nb_phases-1))/nb_phases]
   payoff_matrix = Matrix(mortar([[mutual_benefit_synchronous*benefit_scaling .- cost,
 				  unilateral_benefit_synchronous*benefit_scaling];;
 				 [unilateral_benefit_synchronous*benefit_scaling .- cost,
 				 zeros(eltype(benefit_scaling), size(benefit_scaling))]]) .+ cost);
   return payoff_matrix
 end
-
-function payoff_matrix(mutual_benefit_synchronous::Real,
-		unilateral_benefit_synchronous::Real, cost::Real,
-		nb_phases::Integer)
-    phase_dependence = [(1 + cos(2*pi*(phi_j - phi_i)))/2 for phi_i in (0:(nb_phases-1))/nb_phases, phi_j in (0:(nb_phases-1))/nb_phases]
-    payoff_matrix = payoff_matrix_template(phase_dependence,
-					   mutual_benefit_synchronous,
-					   unilateral_benefit_synchronous,
-					   cost)
-    return payoff_matrix
-end;
 
 struct LocalMoranInteraction{N,T1<:Real,S<:Integer,S2<:Integer,T2<:Real,T3<:Real,AT1<:AbstractMatrix{<:T1},AT2<:AbstractMatrix{<:T1},AS1<:AbstractMatrix{S2},AS2<:AbstractMatrix{S2},AS3<:AbstractMatrix{S2},AS4<:AbstractMatrix{S2}}
     players::NTuple{N,Player{2,T1}}
@@ -423,7 +413,7 @@ function extract_most_common_game_types(
     players_per_phase = mod1.(strategies_per_player, nb_phases)
 
     # Define payoff response submatrices
-    payoff = payoff_matrix(mutual_benefit_synchronous, unilateral_benefit_synchronous, cost, nb_phases)
+    payoff = payoff_matrix(nb_phases, mutual_benefit_synchronous, unilateral_benefit_synchronous, cost)
     reward_submatrix = payoff[1:nb_phases, 1:nb_phases]
     sucker_submatrix = payoff[1:nb_phases, (nb_phases+1):(2*nb_phases)]
     temptation_submatrix = payoff[(nb_phases+1):(2*nb_phases), 1:nb_phases]
@@ -561,7 +551,7 @@ function calc_cumulative(config::Dict)
 
         # Run the model for weak selection strength
         @time cumulative_populations = [cumulative(
-                LocalMoranInteraction(NormalFormGame(payoff_matrix(B, 0.95*B, cost, nb_phases)), interaction_adj_matrix, reproduction_adj_matrix, selection_strength, mutation_rate),
+                LocalMoranInteraction(NormalFormGame(payoff_matrix(nb_phases, B, 0.95*B, cost)), interaction_adj_matrix, reproduction_adj_matrix, selection_strength, mutation_rate),
                 time_steps, payoff_update_method) for B in Bs]
 
         # Plot fraction communcative
@@ -610,7 +600,7 @@ function calc_timeseries(config::Dict)
 
         # Run the model for weak selection strength
         all_populations = time_series(
-                LocalMoranInteraction(NormalFormGame(payoff_matrix(B, 0.95*B, cost, nb_phases)), interaction_adj_matrix, reproduction_adj_matrix, selection_strength, mutation_rate),
+                LocalMoranInteraction(NormalFormGame(payoff_matrix(nb_phases, B, 0.95*B, cost)), interaction_adj_matrix, reproduction_adj_matrix, selection_strength, mutation_rate),
                 time_steps, payoff_update_method)
 
 	# Package results
@@ -736,7 +726,7 @@ function plot_graph_evolution(B_factor::Real, selection_strength::Real, adj_matr
 end
 
 function save_heatmap()
-	plt = heatmap(payoff_matrix(1, 0.5, 0.1, 20))
+	plt = heatmap(payoff_matrix(20, 1, 0.5, 0.1))
 
 	filename = plotsdir("heatmap")
 	png(plt, filename)
@@ -746,12 +736,12 @@ end
 
 function plot_payoff_regions()
     @variables B_on_c beta_on_c
-    payoff_matrix = payoff_matrix_template(ones(Int64,1,1), B_on_c, beta_on_c, 1)
+    payoff_mat = payoff_matrix(1, B_on_c, beta_on_c, 1)
 
-    R = build_function(payoff_matrix[1,1], B_on_c, beta_on_c, expression=Val{false}) # Reward
-    S = build_function(payoff_matrix[1,2], B_on_c, beta_on_c, expression=Val{false}) # Sucker's payoff
-    T = build_function(payoff_matrix[2,1], B_on_c, beta_on_c, expression=Val{false}) # Temptation
-    P = build_function(payoff_matrix[2,2], B_on_c, beta_on_c, expression=Val{false}) # Punishment
+    R = build_function(payoff_mat[1,1], B_on_c, beta_on_c, expression=Val{false}) # Reward
+    S = build_function(payoff_mat[1,2], B_on_c, beta_on_c, expression=Val{false}) # Sucker's payoff
+    T = build_function(payoff_mat[2,1], B_on_c, beta_on_c, expression=Val{false}) # Temptation
+    P = build_function(payoff_mat[2,2], B_on_c, beta_on_c, expression=Val{false}) # Punishment
 
     # Disable printing plots to screen
     ENV["GKSwstype"]="nul"

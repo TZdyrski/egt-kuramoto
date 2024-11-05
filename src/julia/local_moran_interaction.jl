@@ -4,7 +4,6 @@ using GameTheory
 using LinearAlgebra
 using BlockArrays
 using SparseArrays
-using Plots
 using Random
 using Statistics
 using StatsBase
@@ -14,11 +13,11 @@ using InteractiveUtils
 using LaTeXStrings
 using DataToolkit
 using DrWatson
-using ImplicitEquations
 using Graphs
 using CairoMakie
 using GraphMakie
 using NetworkLayout
+using Polyhedra
 #using CombinatorialMultiGrid
 
 function payoff_matrix(nb_phases::Integer,
@@ -569,18 +568,25 @@ function plot_cumulative(selection_strength::Real, symmetry_breaking::Real, adj_
 	config = @strdict(adj_matrix_source,payoff_update_method,time_steps,selection_strength,symmetry_breaking)
 	data, _ = produce_or_load(calc_cumulative, config, datadir("cumulative"))
 
-	# Disable printing plots to screen
-	ENV["GKSwstype"]="nul"
+	# Plot
+	fig = Figure()
+	ax = Axis(fig[1,1],
+		  title = L"Selection $\delta = %$(round(selection_strength,sigdigits=2))$",
+		  xlabel = L"Maximum benefit of mutual communication, $B(0)$",
+		  ylabel = "Frequency of communicative strategies",
+		  limits = (nothing, nothing, 0, 1),
+		  )
+	scatter!(ax, data["Bs"], data["fraction_communicative"], label="Simulation")
+	lines!(ax, data["Bs"][begin]..data["Bs"][end], B0 -> 1/(1+exp(selection_strength*(data["nb_players"]-1)*((data["nb_players"]-1)*data["cost"]-(data["nb_players"]-2)/2*B0))), label="Theory", color=:orange)
 
-	plt = scatter(data["Bs"], data["fraction_communicative"], title=L"Selection $\delta = $"*string(round(selection_strength,sigdigits=2)),
-		label="Simulation", xlabel=L"Maximum benefit of mutual communication, $B(0)$", ylabel="Frequency of communicative strategies", ylims=(0,1))
-	plot!(plt, B0 -> 1/(1+exp(selection_strength*(data["nb_players"]-1)*((data["nb_players"]-1)*data["cost"]-(data["nb_players"]-2)/2*B0))), label="Theory")
+	# Add legend
+	axislegend(ax, position = :lt)
 
 	# Save figure
-	filename = plotsdir("cumulative", savename(config))
-	png(plt, filename)
+	filename = plotsdir("cumulative", savename(config, "png"))
+	save(filename, fig)
 
-	return plt
+	return fig
 end
 
 function calc_timeseries(config::Dict)
@@ -637,32 +643,55 @@ function plot_timeseries(B_factor::Real, selection_strength::Real, symmetry_brea
         # Note: the populations include the initial data, so we need one more than time-steps
         times = 1:(time_steps+1)
 
-	# Disable printing plots to screen
-	ENV["GKSwstype"]="nul"
-
-	# Only plot subset of points to prevent large file sizes
-	plot_times = 1:Int(floor(length(times)/1000)):length(times)
-        # Plot fraction communcative
+	# Define colors
 	colors = Dict(all_noncommunicative => :darkgrey,
 		      all_communicative => :lightgrey,
 		      mutualism => :green,
 		      coordination => :blue,
 		      snowdrift => :yellow,
 		      prisoners_dilemma => :red)
-	color_values = get.(Ref(colors), data["most_common_game_types"][plot_times], :purple)
-        plt1 = plot(times[plot_times], data["fraction_communicative"][plot_times], color=color_values, label="frequency_communicative", title=raw"Strong selection $\delta = 0.2$", xlabel=raw"Time", ylabel="Frequency of communicative strategies", ylims=(0,1))
-        plot!(plt1, times[plot_times], data["order_parameters"][plot_times], label="Order parameter")
-        # Plot histogram of game types
-        plt2 = bar(countmap(String.(Symbol.(data["most_common_game_types"]))), title=raw"Strong selection $\delta = 0.2$", legend=false)
+	color_values = get.(Ref(colors), data["most_common_game_types"], :purple)
 
-	# Combine plots
-        plt = plot(plt1, plt2, layout=(2,1))
+	# Only plot subset of points to prevent large file sizes
+	plot_times = 1:Int(floor(length(times)/1000)):length(times)
+
+	# Plot fraction communicative
+	fig = Figure()
+	ax1 = Axis(fig[1,1],
+		  title = L"Strong selection $\delta = 0.2$",
+		  xlabel = "Time",
+		  ylabel = "Frequency of communicative strategies",
+		  limits = (nothing, nothing, -0.05, 1.05),
+		  )
+	li1 = lines!(ax1, times[plot_times], data["fraction_communicative"][plot_times], color=color_values[plot_times])
+
+	# Plot order parameter
+	ax2 = Axis(fig[1,1],
+		  ylabel = "Frequency of communicative strategies",
+		  limits = (nothing, nothing, -0.05, 1.05),
+		  yaxisposition=:right,
+		  yticklabelcolor=:orange)
+	hidespines!(ax2)
+	hidexdecorations!(ax2)
+	li2 = lines!(ax2, times[plot_times], data["order_parameters"][plot_times], color=:orange)
+
+	# Add legend
+	axislegend(ax1, [li1, li2], ["frequency_communicative", "Order parameter"], position=:rb)
+
+	# Plot histogram of game types
+	hist_data = countmap(String.(Symbol.(data["most_common_game_types"])))
+	ax3 = Axis(fig[2,1],
+		  title=L"Strong selection $\delta = 0.2$",
+		  limits = (nothing, nothing, 0, nothing),
+		  xticks = (1:length(keys(hist_data)), collect(keys(hist_data))),
+		  )
+	barplot!(ax3, collect(values(hist_data)))
 
 	# Save figure
-	filename = plotsdir("timeseries", savename(config))
-	png(plt, filename)
+	filename = plotsdir("timeseries", savename(config, "png"))
+	save(filename, fig)
 
-	return plt
+	return fig
 end
 
 function plot_graph_evolution(B_factor::Real, selection_strength::Real, symmetry_breaking::Real, adj_matrix_source::String="well-mixed", payoff_update_method::String="single-update",time_steps::Integer=80_000)
@@ -677,9 +706,6 @@ function plot_graph_evolution(B_factor::Real, selection_strength::Real, symmetry
 	## Remove self edges for display
 	#self_loops = Iterators.flatten(simplecycles_limited_length(graph,1))
 	#rem_edge!.(Ref(graph), self_loops, self_loops)
-
-	# Disable printing plots to screen
-	ENV["GKSwstype"]="nul"
 
 	# Create colormap
 	cooperative_colors = range(colorant"navyblue",
@@ -727,54 +753,83 @@ function plot_graph_evolution(B_factor::Real, selection_strength::Real, symmetry
 end
 
 function save_heatmap()
-	plt = heatmap(payoff_matrix(20, 1, 0.5, 0.1))
+	fig, ax, hm = heatmap(payoff_matrix(20, 1, 0.5, 0.1))
 
-	filename = plotsdir("heatmap")
-	png(plt, filename)
+	# Add colorbar
+	Colorbar(fig[:, end+1], hm)
 
-	return plt
+	# Save figure
+	filename = plotsdir("heatmap.png")
+	save(filename, fig)
+
+	return fig
 end
 
 function plot_payoff_regions()
     @variables B_on_c beta_on_c
     payoff_mat = payoff_matrix(1, B_on_c, beta_on_c, 1)
 
-    R = build_function(payoff_mat[1,1], B_on_c, beta_on_c, expression=Val{false}) # Reward
-    S = build_function(payoff_mat[1,2], B_on_c, beta_on_c, expression=Val{false}) # Sucker's payoff
-    T = build_function(payoff_mat[2,1], B_on_c, beta_on_c, expression=Val{false}) # Temptation
-    P = build_function(payoff_mat[2,2], B_on_c, beta_on_c, expression=Val{false}) # Punishment
+    R = payoff_mat[1,1] # Reward
+    S = payoff_mat[1,2] # Sucker's payoff
+    T = payoff_mat[2,1] # Temptation
+    P = payoff_mat[2,2] # Punishment
 
-    # Disable printing plots to screen
-    ENV["GKSwstype"]="nul"
+    function inequality_to_hrep(inequality::SymbolicUtils.BasicSymbolic{Bool})
+	    args = arguments(inequality)
+	    if operation(inequality) in [<, <=]
+		    less_than = args[1] - args[2]
+	    elseif operation(inequality) in [>, >=]
+		    less_than = args[2] - args[1]
+	    else
+		    throw(ArgumentError("Not an inequality"))
+	    end
+	    xcoeff = Symbolics.coeff(less_than, B_on_c)
+	    ycoeff = Symbolics.coeff(less_than, beta_on_c)
+	    # constant = Symbolics.coeff(less_than) # Note: this seems give the
+	    # wrong answer if the less_than expression is a negative monomial
+	    # in one of the variables (e.g. -beta_on_c); specifically, while it
+	    # should return 0 as the constant term, it returns the monomal
+	    # (e.g. -beta_on_c)
+	    # As a workaround, subtract the xcoeff and ycoeff to get the
+	    # remainder which is equal to the constant as long as the less_than
+	    # expression is of the form m*B_on_c + n*beta_on_c + p
+	    constant = (less_than - xcoeff*B_on_c - ycoeff*beta_on_c).val
+	    return HalfSpace([xcoeff, ycoeff], -constant)
+    end
+
+    # Define image borders otherwise the unbounded regions will be truncated to the smallest possible subset
+    image_borders = [beta_on_c > 0, B_on_c > 0, beta_on_c < 4, B_on_c < 4]
 
     # Plot regions
-    plt = plot(Ge(T, R) & Ge(R, P) & Ge(P, S),
-	       fillcolor = :red, label = "Prisoner's Dilemma",
-	       xlims=(0,4), ylims=(0,4),
-	       xlabel=L"Benefit of mutual communication $B(\delta \phi)/c$",
-	       ylabel=L"Benefit of unilateral communication $\beta(\delta \phi)/c$")
-    plot!(plt, Ge(T, R) & Ge(R, S) & Ge(S, P),
-          fillcolor = :yellow, label = "Snowdrift")
-    plot!(plt, Ge(R, T) & Ge(T, S) & Ge(S, P),
-          fillcolor = :green, label = "Coordination")
-    plot!(plt, Ge(R, T) & Ge(T, P) & Ge(P, S),
-          fillcolor = :blue, label = "Mutualism")
-    plot!(plt, Ge(T, P) & Ge(P, R) & Ge(R, S),
-          fillcolor = :purple, label = "Deadlock")
+    fig = Figure()
+    ax = Axis(fig[1,1],
+          xlabel = L"Benefit of mutual communication $B(\delta \phi)/c$",
+          ylabel = L"Benefit of unilateral communication $\beta(\delta \phi)/c$",
+	  limits = (0, 4, 0, 4),
+          )
+    mesh!(ax, Polyhedra.Mesh{2}(polyhedron(intersect(inequality_to_hrep.(map(x -> x.val, [T > R, R > P , P > S, image_borders...]))...))), color = :red, label = "Prisoner's Dilemma")
+    mesh!(ax, Polyhedra.Mesh{2}(polyhedron(intersect(inequality_to_hrep.(map(x -> x.val, [T > R, R > S , S > P, image_borders...]))...))), color = :yellow, label = "Snowdrift")
+    mesh!(ax, Polyhedra.Mesh{2}(polyhedron(intersect(inequality_to_hrep.(map(x -> x.val, [R > T, T > S , S > P, image_borders...]))...))), color = :green, label = "Coordination")
+    mesh!(ax, Polyhedra.Mesh{2}(polyhedron(intersect(inequality_to_hrep.(map(x -> x.val, [R > T, T > P , P > S, image_borders...]))...))), color = :blue, label = "Mutualism")
+    mesh!(ax, Polyhedra.Mesh{2}(polyhedron(intersect(inequality_to_hrep.(map(x -> x.val, [T > P, P > R , R > S, image_borders...]))...))), color = :purple, label = "Deadlock")
 
     # Plot guide lines
-    Plots.abline!(plt, 1, 0, color=:grey, label = nothing)
-    Plots.abline!(plt, 1, -1, color=:grey, label = nothing)
-    Plots.hline!(plt, [1], color=:grey, label = nothing)
-    Plots.vline!(plt, [1], color=:grey, label = nothing)
+    ablines!(ax, 0, 1, color = :grey)
+    ablines!(ax, -1, 1, color = :grey)
+    hlines!(ax, [1], color = :grey)
+    vlines!(ax, [1], color = :grey)
 
     # Add legend
-    plot!(legend = true)
+    axislegend(ax,
+	       [PolyElement(color = color, strokewidth = 1, strokecolor = :grey) for color in [:red, :yellow, :green, :blue, :purple]],
+	       ["Prisoner's Dilemma", "Snowdrift", "Coordination", "Mutualism", "Deadlock"],
+	       position = :lt)
 
-    filename = plotsdir("payoff_regions")
-    png(plt, filename)
+    # Save figure
+    filename = plotsdir("payoff_regions.png")
+    save(filename, fig)
 
-    return plt
+    return fig
 end
 
 function calc_coalescence_times(adj_matrix_source::String="well-mixed")

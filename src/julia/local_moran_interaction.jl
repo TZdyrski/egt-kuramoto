@@ -26,8 +26,8 @@ function payoff_matrix(nb_phases::Integer,
 		unilateral_benefit_synchronous::Real, cost::Real; symmetry_breaking::Real = 1/2)
   benefit_scaling = [(1 + cos(2*pi*(phi_j - phi_i)))/2 for phi_i in (0:(nb_phases-1))/nb_phases, phi_j in (0:(nb_phases-1))/nb_phases]
   payoff_matrix = Matrix(mortar([[mutual_benefit_synchronous*benefit_scaling .- cost,
-				  unilateral_benefit_synchronous*benefit_scaling];;
-				 [unilateral_benefit_synchronous*benefit_scaling .- cost,
+				  2*(1-symmetry_breaking)*unilateral_benefit_synchronous*benefit_scaling];;
+				 [2*symmetry_breaking*unilateral_benefit_synchronous*benefit_scaling .- cost,
 				 zeros(eltype(benefit_scaling), size(benefit_scaling))]]) .+ cost);
   return payoff_matrix
 end
@@ -396,6 +396,7 @@ function extract_most_common_game_types(
         mutual_benefit_synchronous::Real,
         unilateral_benefit_synchronous::Real,
         cost::Real,
+        symmetry_breaking::Real,
         nb_phases::Integer,
         nb_strategies::Integer,
         interaction_adj_matrix::AbstractMatrix{<:Integer})
@@ -413,7 +414,7 @@ function extract_most_common_game_types(
     players_per_phase = mod1.(strategies_per_player, nb_phases)
 
     # Define payoff response submatrices
-    payoff = payoff_matrix(nb_phases, mutual_benefit_synchronous, unilateral_benefit_synchronous, cost)
+    payoff = payoff_matrix(nb_phases, mutual_benefit_synchronous, unilateral_benefit_synchronous, cost; symmetry_breaking)
     reward_submatrix = payoff[1:nb_phases, 1:nb_phases]
     sucker_submatrix = payoff[1:nb_phases, (nb_phases+1):(2*nb_phases)]
     temptation_submatrix = payoff[(nb_phases+1):(2*nb_phases), 1:nb_phases]
@@ -530,7 +531,7 @@ end
 
 function calc_cumulative(config::Dict)
 	# Unpack values
-	@unpack selection_strength, adj_matrix_source, payoff_update_method, time_steps = config
+	@unpack selection_strength, symmetry_breaking, adj_matrix_source, payoff_update_method, time_steps = config
 
 	# Define system
 	cost = 0.1
@@ -551,7 +552,7 @@ function calc_cumulative(config::Dict)
 
         # Run the model for weak selection strength
         @time cumulative_populations = [cumulative(
-                LocalMoranInteraction(NormalFormGame(payoff_matrix(nb_phases, B, 0.95*B, cost)), interaction_adj_matrix, reproduction_adj_matrix, selection_strength, mutation_rate),
+                LocalMoranInteraction(NormalFormGame(payoff_matrix(nb_phases, B, 0.95*B, cost; symmetry_breaking)), interaction_adj_matrix, reproduction_adj_matrix, selection_strength, mutation_rate),
                 time_steps, payoff_update_method) for B in Bs]
 
         # Plot fraction communcative
@@ -562,10 +563,10 @@ function calc_cumulative(config::Dict)
 	return @strdict(Bs,nb_players,cost,fraction_communicative)
 end
 
-function plot_cumulative(selection_strength::Real, adj_matrix_source::String="well-mixed", payoff_update_method::String="single-update",time_steps::Integer=2_000_000)
+function plot_cumulative(selection_strength::Real, symmetry_breaking::Real, adj_matrix_source::String="well-mixed", payoff_update_method::String="single-update",time_steps::Integer=2_000_000)
 
 	# Load results
-	config = @strdict(adj_matrix_source,payoff_update_method,time_steps,selection_strength)
+	config = @strdict(adj_matrix_source,payoff_update_method,time_steps,selection_strength,symmetry_breaking)
 	data, _ = produce_or_load(calc_cumulative, config, datadir("cumulative"))
 
 	# Disable printing plots to screen
@@ -584,7 +585,7 @@ end
 
 function calc_timeseries(config::Dict)
 	# Unpack variables
-	@unpack B_factor, selection_strength, adj_matrix_source, payoff_update_method, time_steps = config
+	@unpack B_factor, selection_strength, symmetry_breaking, adj_matrix_source, payoff_update_method, time_steps = config
 
 	# Define system
 	cost = 0.1
@@ -600,7 +601,7 @@ function calc_timeseries(config::Dict)
 
         # Run the model for weak selection strength
         all_populations = time_series(
-                LocalMoranInteraction(NormalFormGame(payoff_matrix(nb_phases, B, 0.95*B, cost)), interaction_adj_matrix, reproduction_adj_matrix, selection_strength, mutation_rate),
+                LocalMoranInteraction(NormalFormGame(payoff_matrix(nb_phases, B, 0.95*B, cost; symmetry_breaking)), interaction_adj_matrix, reproduction_adj_matrix, selection_strength, mutation_rate),
                 time_steps, payoff_update_method)
 
 	# Package results
@@ -613,11 +614,11 @@ function calc_timeseries_statistics(config::Dict)
 
 	# Unpack variables
 	@unpack all_populations, cost, nb_phases, nb_strategies, mutation_rate, interaction_adj_matrix = data
-	@unpack B_factor, selection_strength, adj_matrix_source, payoff_update_method, time_steps = config
+	@unpack B_factor, symmetry_breaking, selection_strength, adj_matrix_source, payoff_update_method, time_steps = config
 
         # Extract results
         most_common_game_types = dropdims(mapslices(x -> extract_most_common_game_types(x, B_factor*cost,
-                0.9*B_factor*cost, cost, nb_phases, nb_strategies, interaction_adj_matrix), all_populations, dims=1), dims=1)
+                0.9*B_factor*cost, cost, symmetry_breaking, nb_phases, nb_strategies, interaction_adj_matrix), all_populations, dims=1), dims=1)
         counts = mapslices(x -> extract_counts(x, nb_strategies), all_populations, dims=1)
         nb_communicative = map(x -> extract_num_communicative(Vector(x)), eachslice(counts, dims=2))
         fraction_communicative = nb_communicative/nb_players
@@ -627,9 +628,9 @@ function calc_timeseries_statistics(config::Dict)
 	return @strdict(fraction_communicative,order_parameters,most_common_game_types)
 end
 
-function plot_timeseries(B_factor::Real, selection_strength::Real, adj_matrix_source::String="well-mixed", payoff_update_method::String="single-update",time_steps::Integer=80_000)
+function plot_timeseries(B_factor::Real, selection_strength::Real, symmetry_breaking::Real, adj_matrix_source::String="well-mixed", payoff_update_method::String="single-update",time_steps::Integer=80_000)
 	# Load results
-	config = @strdict(adj_matrix_source,payoff_update_method,time_steps,B_factor,selection_strength)
+	config = @strdict(adj_matrix_source,payoff_update_method,time_steps,B_factor,symmetry_breaking,selection_strength)
 	data, _ = produce_or_load(calc_timeseries_statistics, config, datadir("timeseries_statistics"))
 
         # Create array of times
@@ -664,9 +665,9 @@ function plot_timeseries(B_factor::Real, selection_strength::Real, adj_matrix_so
 	return plt
 end
 
-function plot_graph_evolution(B_factor::Real, selection_strength::Real, adj_matrix_source::String="well-mixed", payoff_update_method::String="single-update",time_steps::Integer=80_000)
+function plot_graph_evolution(B_factor::Real, selection_strength::Real, symmetry_breaking::Real, adj_matrix_source::String="well-mixed", payoff_update_method::String="single-update",time_steps::Integer=80_000)
 	# Load results
-	config = @strdict(adj_matrix_source,payoff_update_method,time_steps,B_factor,selection_strength)
+	config = @strdict(adj_matrix_source,payoff_update_method,time_steps,B_factor,selection_strength,symmetry_breaking)
 	data, _ = produce_or_load(calc_timeseries, config, datadir("timeseries"))
 
 	# Generate graph

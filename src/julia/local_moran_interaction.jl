@@ -18,6 +18,8 @@ using CairoMakie
 using GraphMakie
 using NetworkLayout
 using Polyhedra
+using Colors
+using Memoize
 #using CombinatorialMultiGrid
 
 function payoff_matrix(nb_phases::Integer,
@@ -378,7 +380,46 @@ function fraction_communicative(cumulative_populations, time_steps, nb_players)
     return fraction_communicative
 end
 
-@enum GameType all_communicative all_noncommunicative prisoners_dilemma snowdrift coordination mutualism deadlock unknown
+@enum GameType harmony chicken battle hero compromise concord staghunt dilemma deadlock assurance coordination peace
+
+const game_type_colors = Dict(instances(GameType) .=> distinguishable_colors(length(instances(GameType))))
+const game_type_full_names = Dict(
+	chicken => "Snowdrift", # Also called chicken
+	battle => "Battle of the Sexes",
+	hero => "Hero",
+	compromise => "Compromise",
+	deadlock => "Deadlock",
+	dilemma => "Prisoner's Dilemma",
+	staghunt => "Mutualism", # Also called Staghunt
+	assurance => "Assurance",
+	coordination => "Coordination",
+	peace => "Peace",
+	harmony => "Harmony",
+	concord => "Concord", # Called "coordination" in Pripp et. al. 2024
+	)
+
+function game_type_inequalities(R::Real, S::Real, T::Real, P::Real)
+	# Break ties in direction T < R < S < P
+	# Note: swap columns from Brun 2015 to convert their convention of
+	#   [ (C,N)   (C,C) ]
+	#   [ (N,N)   (N,C) ]
+	# to our convention of
+	#   [ (C,C)   (C,N) ]
+	#   [ (N,C)   (N,N) ]
+	return Dict{GameType,Vector}(
+		chicken => [R <= T, T <= P, P <= S],
+		battle => [R <= P, P < T, T <= S],
+		hero => [P < R, R <= T, T <= S],
+		compromise => [P < T, T < R, R <= S],
+		deadlock => [T <= P, P < R, R <= S],
+		dilemma => [T < R, R <= P, P <= S],
+		staghunt => [T < R, R <= S, S < P],
+		assurance => [T <= S, S < R, R <= P],
+		coordination => [S < T, T < R, R <= P],
+		peace => [S < R, R <= T, T <= P],
+		harmony => [R <= S, S < T, T <= P],
+		concord => [R <= T, T <= S, S < P])
+end
 
 function combine_communicative_noncommunicative(
         players_per_strategy::Vector{<:Integer},
@@ -388,6 +429,83 @@ function combine_communicative_noncommunicative(
     combine_com_noncom_matrix = hcat(Matrix{Int}(I,nb_phases,nb_phases),Matrix{Int}(I,nb_phases,nb_phases))
     phase_idxs =  combine_com_noncom_matrix * players_per_strategy
     return phase_idxs
+end
+
+function swap_strategies!(payoff_matrix::AbstractMatrix)
+	payoff_matrix[2,2], payoff_matrix[2,1], payoff_matrix[1,2], payoff_matrix[1,1] = payoff_matrix[1,1], payoff_matrix[1,2], payoff_matrix[2,1], payoff_matrix[2,2]
+end
+
+function canonical_payoff!(payoff_matrix::AbstractMatrix)
+	# Using our convention that symmetric games imply the col-player's
+	# payoff matrix is the transpose of the provided (row-player's) payoff
+	# matrix, apply Robinson & Goforth's convention of highest row-player payoff in
+	# right-column and highest col-player payoff in lower-row (note:
+	# col-player criteria is switched to match our transpose-convention
+	# above) by swapping rows and columns
+	# For symmetric games, this is equivalent to renaming strategies (C <->
+	# N) for both players simultaneously to ensure the max payoff is in the
+	# right column
+	# Note: assumes there is a unique maximum payoff
+	max_index_orig = argmax(payoff_matrix)
+	# Ensure highest row-player payoff is in right-column
+	if max_index_orig[2] == 1
+		swap_strategies!(payoff_matrix)
+        end
+end
+
+function game_type(payoff_matrix::AbstractMatrix)
+	# Canonicalize
+	canonical_payoff!(payoff_matrix)
+	# Check ordering of payoffs
+	R = payoff_matrix[1,1]
+	S = payoff_matrix[1,2]
+	T = payoff_matrix[2,1]
+	P = payoff_matrix[2,2]
+	for game_type in instances(GameType)
+	    if (&)(game_type_inequalities(R,S,T,P)[game_type]...)
+	      return game_type
+	    end
+	 end
+	# Non-strict inequality implying one or more ties
+	throw(ErrorException("Should never hit this since tie-breaking is handled with non-strict inequalities"))
+end
+
+@memoize function game_types_per_strategy_pair(mutual_benefit_synchronous::Real,
+	    unilateral_benefit_synchronous::Real,
+	    cost::Real,
+	    symmetry_breaking::Real,
+	    nb_phases::Integer,
+	    )
+
+    # Define payoff response submatrices
+    payoff = payoff_matrix(nb_phases, mutual_benefit_synchronous, unilateral_benefit_synchronous, cost; symmetry_breaking)
+
+    # Define game type per strategy pair
+    game_types = Matrix{GameType}(undef, nb_phases, nb_phases)
+    for idx in eachindex(IndexCartesian(), game_types)
+	strategy_offset = CartesianIndices((0:nb_phases:nb_phases, 0:nb_phases:nb_phases))
+	indices = idx .+ strategy_offset
+	game_types[idx] = game_type(@view payoff[indices])
+    end
+    return game_types
+end
+
+@enum StrategyParity all_communicative all_noncommunicative mixed
+
+function check_all_same_strategy(
+        strategies_per_player::Vector{<:Integer},
+        nb_strategies::Integer,
+	)
+    nb_players = length(strategies_per_player)
+    players_per_strategy = extract_counts(strategies_per_player, nb_strategies)
+    # Check if all players were communicative/noncommunicative
+    nb_communicative = extract_num_communicative(players_per_strategy)
+    if nb_communicative == 0
+        return all_noncommunicative
+    elseif nb_communicative == nb_players
+        return all_communicative
+    end
+    return mixed
 end
 
 function extract_most_common_game_types(
@@ -400,67 +518,13 @@ function extract_most_common_game_types(
         nb_strategies::Integer,
         interaction_adj_matrix::AbstractMatrix{<:Integer})
 
-    nb_players = length(strategies_per_player)
-    players_per_strategy = extract_counts(strategies_per_player, nb_strategies)
-    # Check if all players were communicative/noncommunicative
-    nb_communicative = extract_num_communicative(players_per_strategy)
-    if nb_communicative == 0
-        return all_noncommunicative
-    elseif nb_communicative == nb_players
-        return all_communicative
-    end
-
     players_per_phase = mod1.(strategies_per_player, nb_phases)
 
-    # Define payoff response submatrices
-    payoff = payoff_matrix(nb_phases, mutual_benefit_synchronous, unilateral_benefit_synchronous, cost; symmetry_breaking)
-    reward_submatrix = payoff[1:nb_phases, 1:nb_phases]
-    sucker_submatrix = payoff[1:nb_phases, (nb_phases+1):(2*nb_phases)]
-    temptation_submatrix = payoff[(nb_phases+1):(2*nb_phases), 1:nb_phases]
-    punishment_submatrix = payoff[(nb_phases+1):(2*nb_phases), (nb_phases+1):(2*nb_phases)]
-
-    # Define mask matrix for each game type
-    prisoners_dilemma_matrix = (temptation_submatrix .>= reward_submatrix) .&
-        (reward_submatrix .>= punishment_submatrix) .&
-        (punishment_submatrix .>= sucker_submatrix)
-    snowdrift_matrix = (temptation_submatrix .>= reward_submatrix) .&
-        (reward_submatrix .>= sucker_submatrix) .&
-        (sucker_submatrix .>= punishment_submatrix)
-    coordination_matrix = (reward_submatrix .>= temptation_submatrix) .&
-        (temptation_submatrix .>= sucker_submatrix) .&
-        (sucker_submatrix .>= punishment_submatrix)
-    mutualism_matrix = (reward_submatrix .>= temptation_submatrix) .&
-        (temptation_submatrix .>= punishment_submatrix) .&
-        (punishment_submatrix .>= sucker_submatrix)
-    deadlock_matrix = (temptation_submatrix .>= punishment_submatrix) .&
-        (punishment_submatrix .>= reward_submatrix) .&
-        (reward_submatrix .>= sucker_submatrix)
-
-    # Define game type per strategy pair
-    game_types = fill(unknown, nb_phases, nb_phases)
-    for idx in eachindex(game_types)
-        if prisoners_dilemma_matrix[idx]
-	    game_type = prisoners_dilemma
-        elseif snowdrift_matrix[idx]
-            game_type = snowdrift
-        elseif coordination_matrix[idx]
-            game_type = coordination
-        elseif mutualism_matrix[idx]
-            game_type = mutualism
-        elseif deadlock_matrix[idx]
-            game_type = deadlock
-	else
-	    throw(ErrorException("Unknown game types"))
-        end
-	game_types[idx] = game_type
-    end
+    # Get game type of each startegy interaction pair
+    game_types = game_types_per_strategy_pair(mutual_benefit_synchronous, unilateral_benefit_synchronous, cost, symmetry_breaking, nb_phases)
 
     # Count game types
-    game_counts = Dict{GameType, Integer}(prisoners_dilemma => 0,
-                   snowdrift => 0,
-                   coordination => 0,
-                   mutualism => 0,
-                   deadlock => 0)
+    game_counts = Dict{GameType, Integer}(instances(GameType) .=> 0)
     for (cart_idx,value) in pairs(interaction_adj_matrix)
         if value == 0
             continue
@@ -625,32 +689,24 @@ function calc_timeseries_statistics(config::Dict)
         # Extract results
         most_common_game_types = dropdims(mapslices(x -> extract_most_common_game_types(x, B_factor*cost,
                 0.9*B_factor*cost, cost, symmetry_breaking, nb_phases, nb_strategies, interaction_adj_matrix), all_populations, dims=1), dims=1)
+	strategy_parity = dropdims(mapslices(x -> check_all_same_strategy(x, nb_strategies), all_populations, dims=1), dims=1)
         counts = mapslices(x -> extract_counts(x, nb_strategies), all_populations, dims=1)
         nb_communicative = map(x -> extract_num_communicative(Vector(x)), eachslice(counts, dims=2))
         fraction_communicative = nb_communicative/nb_players
         order_parameters = dropdims(mapslices(x -> extract_order_parameters(x, nb_phases), counts, dims=1), dims=1)
 
 	# Package results
-	return @strdict(fraction_communicative,order_parameters,most_common_game_types)
+	return @strdict(fraction_communicative,order_parameters,most_common_game_types,strategy_parity)
 end
 
 function plot_timeseries(B_factor::Real, selection_strength::Real, symmetry_breaking::Real, adj_matrix_source::String="well-mixed", payoff_update_method::String="single-update",time_steps::Integer=80_000)
 	# Load results
 	config = @strdict(adj_matrix_source,payoff_update_method,time_steps,B_factor,symmetry_breaking,selection_strength)
-	data, _ = produce_or_load(calc_timeseries_statistics, config, datadir("timeseries_statistics"))
+	data = produce_or_load(calc_timeseries_statistics, config, datadir("timeseries_statistics"))[1]
 
         # Create array of times
         # Note: the populations include the initial data, so we need one more than time-steps
         times = 1:(time_steps+1)
-
-	# Define colors
-	colors = Dict(all_noncommunicative => :darkgrey,
-		      all_communicative => :lightgrey,
-		      mutualism => :green,
-		      coordination => :blue,
-		      snowdrift => :yellow,
-		      prisoners_dilemma => :red)
-	color_values = get.(Ref(colors), data["most_common_game_types"], :purple)
 
 	# Only plot subset of points to prevent large file sizes
 	plot_times = 1:Int(floor(length(times)/1000)):length(times)
@@ -663,7 +719,11 @@ function plot_timeseries(B_factor::Real, selection_strength::Real, symmetry_brea
 		  ylabel = "Frequency of communicative strategies",
 		  limits = (nothing, nothing, -0.05, 1.05),
 		  )
-	li1 = lines!(ax1, times[plot_times], data["fraction_communicative"][plot_times], color=color_values[plot_times])
+	strategy_parity_colors = Dict(all_communicative => :lightgrey, all_noncommunicative => :darkgrey)
+
+	colors_game_type = getindex.(Ref(game_type_colors), data["most_common_game_types"][plot_times])
+	colors = [strategy_parity != mixed ? strategy_parity_colors[strategy_parity] : color_game_type for (strategy_parity, color_game_type) in zip(data["strategy_parity"], colors_game_type)]
+	li1 = lines!(ax1, times[plot_times], data["fraction_communicative"][plot_times], color=colors)
 
 	# Plot order parameter
 	ax2 = Axis(fig[1,1],
@@ -679,7 +739,8 @@ function plot_timeseries(B_factor::Real, selection_strength::Real, symmetry_brea
 	axislegend(ax1, [li1, li2], ["frequency_communicative", "Order parameter"], position=:rb)
 
 	# Plot histogram of game types
-	hist_data = countmap(String.(Symbol.(data["most_common_game_types"])))
+	game_parity_or_type = [strategy_parity != mixed ? strategy_parity : game_type for (strategy_parity, game_type) in zip(data["strategy_parity"], data["most_common_game_types"])]
+	hist_data = countmap(String.(Symbol.(game_parity_or_type)))
 	ax3 = Axis(fig[2,1],
 		  title=L"Strong selection $\delta = 0.2$",
 		  limits = (nothing, nothing, 0, nothing),
@@ -769,11 +830,6 @@ function plot_payoff_regions()
     @variables B_on_c beta_on_c
     payoff_mat = payoff_matrix(1, B_on_c, beta_on_c, 1)
 
-    R = payoff_mat[1,1] # Reward
-    S = payoff_mat[1,2] # Sucker's payoff
-    T = payoff_mat[2,1] # Temptation
-    P = payoff_mat[2,2] # Punishment
-
     function inequality_to_hrep(inequality::SymbolicUtils.BasicSymbolic{Bool})
 	    args = arguments(inequality)
 	    if operation(inequality) in [<, <=]
@@ -807,11 +863,24 @@ function plot_payoff_regions()
           ylabel = L"Benefit of unilateral communication $\beta(\delta \phi)/c$",
 	  limits = (0, 4, 0, 4),
           )
-    mesh!(ax, Polyhedra.Mesh{2}(polyhedron(intersect(inequality_to_hrep.(map(x -> x.val, [T > R, R > P , P > S, image_borders...]))...))), color = :red, label = "Prisoner's Dilemma")
-    mesh!(ax, Polyhedra.Mesh{2}(polyhedron(intersect(inequality_to_hrep.(map(x -> x.val, [T > R, R > S , S > P, image_borders...]))...))), color = :yellow, label = "Snowdrift")
-    mesh!(ax, Polyhedra.Mesh{2}(polyhedron(intersect(inequality_to_hrep.(map(x -> x.val, [R > T, T > S , S > P, image_borders...]))...))), color = :green, label = "Coordination")
-    mesh!(ax, Polyhedra.Mesh{2}(polyhedron(intersect(inequality_to_hrep.(map(x -> x.val, [R > T, T > P , P > S, image_borders...]))...))), color = :blue, label = "Mutualism")
-    mesh!(ax, Polyhedra.Mesh{2}(polyhedron(intersect(inequality_to_hrep.(map(x -> x.val, [T > P, P > R , R > S, image_borders...]))...))), color = :purple, label = "Deadlock")
+
+    for i in 1:2
+	    R = payoff_mat[1,1] # Reward
+	    S = payoff_mat[1,2] # Sucker's payoff
+	    T = payoff_mat[2,1] # Temptation
+	    P = payoff_mat[2,2] # Punishment
+
+	    for game_type in instances(GameType)
+		    poly = polyhedron(intersect(inequality_to_hrep.(map(x -> x.val, [game_type_inequalities(R,S,T,P)[game_type]..., image_borders...]))...))
+		    if Polyhedra.volume(poly) == 0
+			    continue
+		    end
+		    mesh!(ax, Polyhedra.Mesh{2}(poly), color = game_type_colors[game_type])
+	    end
+
+	    # Swap C <-> N
+	    swap_strategies!(payoff_mat)
+    end
 
     # Plot guide lines
     ablines!(ax, 0, 1, color = :grey)
@@ -821,8 +890,8 @@ function plot_payoff_regions()
 
     # Add legend
     axislegend(ax,
-	       [PolyElement(color = color, strokewidth = 1, strokecolor = :grey) for color in [:red, :yellow, :green, :blue, :purple]],
-	       ["Prisoner's Dilemma", "Snowdrift", "Coordination", "Mutualism", "Deadlock"],
+	       [PolyElement(color = game_type_colors[game_type], strokewidth = 1, strokecolor = :grey) for game_type in instances(GameType)],
+	       [game_type_full_names[game_type] for game_type in instances(GameType)],
 	       position = :lt)
 
     # Save figure

@@ -23,17 +23,26 @@ using Memoize
 #using CombinatorialMultiGrid
 
 function payoff_matrix(nb_phases::Integer,
-		mutual_benefit_synchronous::Real,
-		unilateral_benefit_synchronous::Real, cost::Real; symmetry_breaking::Real = 1/2)
-  benefit_scaling = [(1 + cos(2*pi*(phi_j - phi_i)))/2 for phi_i in (0:(nb_phases-1))/nb_phases, phi_j in (0:(nb_phases-1))/nb_phases]
-  payoff_matrix = Matrix(mortar([[mutual_benefit_synchronous*benefit_scaling .- cost,
-				  2*(1-symmetry_breaking)*unilateral_benefit_synchronous*benefit_scaling];;
-				 [2*symmetry_breaking*unilateral_benefit_synchronous*benefit_scaling .- cost,
-				 zeros(eltype(benefit_scaling), size(benefit_scaling))]]) .+ cost);
-  return payoff_matrix
+                       mutual_benefit_synchronous::Real,
+                       unilateral_benefit_synchronous::Real, cost::Real;
+                       symmetry_breaking::Real=1 / 2)
+    benefit_scaling = [(1 + cos(2 * pi * (phi_j - phi_i))) / 2
+                       for phi_i in (0:(nb_phases - 1)) / nb_phases,
+                           phi_j in (0:(nb_phases - 1)) / nb_phases]
+    payoff_matrix = Matrix(mortar([[mutual_benefit_synchronous * benefit_scaling .- cost,
+                                    2 * (1 - symmetry_breaking) *
+                                    unilateral_benefit_synchronous * benefit_scaling];;
+                                   [2 * symmetry_breaking * unilateral_benefit_synchronous *
+                                    benefit_scaling .- cost,
+                                    zeros(eltype(benefit_scaling), size(benefit_scaling))]]) .+
+                           cost)
+    return payoff_matrix
 end
 
-struct LocalMoranInteraction{N,T1<:Real,S<:Integer,S2<:Integer,T2<:Real,T3<:Real,AT1<:AbstractMatrix{<:T1},AT2<:AbstractMatrix{<:T1},AS1<:AbstractMatrix{S2},AS2<:AbstractMatrix{S2},AS3<:AbstractMatrix{S2},AS4<:AbstractMatrix{S2}}
+struct LocalMoranInteraction{N,T1<:Real,S<:Integer,S2<:Integer,T2<:Real,T3<:Real,
+                             AT1<:AbstractMatrix{<:T1},AT2<:AbstractMatrix{<:T1},
+                             AS1<:AbstractMatrix{S2},AS2<:AbstractMatrix{S2},
+                             AS3<:AbstractMatrix{S2},AS4<:AbstractMatrix{S2}}
     players::NTuple{N,Player{2,T1}}
     num_actions::S
     payoff_matrix::AT1
@@ -47,45 +56,50 @@ struct LocalMoranInteraction{N,T1<:Real,S<:Integer,S2<:Integer,T2<:Real,T3<:Real
 end
 
 function LocalMoranInteraction(g::NormalFormGame,
-			  interaction_adj_matrix::AbstractMatrix,
-			  reproduction_adj_matrix::AbstractMatrix,
-			  selection_strength::Real,
-			  mutation_rate::Real)
+                               interaction_adj_matrix::AbstractMatrix,
+                               reproduction_adj_matrix::AbstractMatrix,
+                               selection_strength::Real,
+                               mutation_rate::Real)
     if size(interaction_adj_matrix, 1) != size(interaction_adj_matrix, 2)
-	throw(ArgumentError("Interaction adjacency matrix must be square"))
+        throw(ArgumentError("Interaction adjacency matrix must be square"))
     end
     if size(reproduction_adj_matrix, 1) != size(reproduction_adj_matrix, 2)
-	throw(ArgumentError("Reproduction adjacency matrix must be square"))
+        throw(ArgumentError("Reproduction adjacency matrix must be square"))
     end
     if size(interaction_adj_matrix, 1) != size(reproduction_adj_matrix, 1)
-	throw(ArgumentError("Interaction adjacency matrix and reproduction adjacency matrix must be same size"))
+        throw(ArgumentError("Interaction adjacency matrix and reproduction adjacency matrix must be same size"))
     end
     if minimum(outdegree(SimpleDiGraph(reproduction_adj_matrix))) == 0
-	throw(ArgumentError("Each node of the reproduction graph must have out-degree greater than zero"))
+        throw(ArgumentError("Each node of the reproduction graph must have out-degree greater than zero"))
     end
     min_payoff_by_player = [minimum(g.players[i].payoff_array) for i in 1:length(g.players)]
     min_payoff = minimum(min_payoff_by_player)
     if min_payoff < 0
-	throw(ArgumentError("Payoff matrix must be non-negative"))
+        throw(ArgumentError("Payoff matrix must be non-negative"))
     end
     N = size(interaction_adj_matrix, 1)
     players = ntuple(i -> g.players[1], N)
     num_actions = g.nums_actions[1]
     if num_actions != g.nums_actions[2]
-	throw(ArgumentError("Payoff matrix must be square"))
+        throw(ArgumentError("Payoff matrix must be square"))
     end
-    return LocalMoranInteraction(players, num_actions, g.players[1].payoff_array, transpose(g.players[1].payoff_array),
-				 interaction_adj_matrix, transpose(interaction_adj_matrix), reproduction_adj_matrix, transpose(reproduction_adj_matrix), selection_strength, mutation_rate)
+    return LocalMoranInteraction(players, num_actions, g.players[1].payoff_array,
+                                 transpose(g.players[1].payoff_array),
+                                 interaction_adj_matrix, transpose(interaction_adj_matrix),
+                                 reproduction_adj_matrix,
+                                 transpose(reproduction_adj_matrix), selection_strength,
+                                 mutation_rate)
 end
 
-function update_weights!(w::Weights{S, TA, V}, new_wts::V) where {S, TA, V}
-	w.values = new_wts
-	w.sum = sum(w.values)
+function update_weights!(w::Weights{S,TA,V}, new_wts::V) where {S,TA,V}
+    w.values = new_wts
+    return w.sum = sum(w.values)
 end
 
 abstract type WorkParams end
 
-struct WorkParamsLoop{AS1<:AbstractVector,AT1<:AbstractVector,AT2<:AbstractVector,AT3<:AbstractWeights,AS2<:AbstractWeights} <: WorkParams
+struct WorkParamsLoop{AS1<:AbstractVector,AT1<:AbstractVector,AT2<:AbstractVector,
+                      AT3<:AbstractWeights,AS2<:AbstractWeights} <: WorkParams
     neighbor_idxs::AS1
     payoffs::AT1
     fitnesses::AT2
@@ -93,7 +107,7 @@ struct WorkParamsLoop{AS1<:AbstractVector,AT1<:AbstractVector,AT2<:AbstractVecto
     weights_int::AS2
 end
 
-function WorkParamsLoop(lmi::LocalMoranInteraction{N}) where N
+function WorkParamsLoop(lmi::LocalMoranInteraction{N}) where {N}
     neighbor_idxs = Vector{Int64}(undef, N)
     payoffs = Vector{Float64}(undef, N)
     fitnesses = Vector{Float64}(undef, N)
@@ -102,8 +116,10 @@ function WorkParamsLoop(lmi::LocalMoranInteraction{N}) where N
     return WorkParamsLoop(neighbor_idxs, payoffs, fitnesses, weights_float, weights_int)
 end
 
-struct WorkParamsSingleUpdate{AS1<:AbstractVector,AT1<:AbstractVector,AT2<:AbstractVector,AT3<:AbstractWeights,AS2<:AbstractWeights,
-			      AT4<:AbstractMatrix,AT5<:AbstractMatrix,AT6<:AbstractMatrix,AT7<:AbstractMatrix} <: WorkParams
+struct WorkParamsSingleUpdate{AS1<:AbstractVector,AT1<:AbstractVector,AT2<:AbstractVector,
+                              AT3<:AbstractWeights,AS2<:AbstractWeights,
+                              AT4<:AbstractMatrix,AT5<:AbstractMatrix,AT6<:AbstractMatrix,
+                              AT7<:AbstractMatrix} <: WorkParams
     neighbor_idxs::AS1
     payoffs::AT1
     payoffs_transpose::AT7
@@ -115,7 +131,8 @@ struct WorkParamsSingleUpdate{AS1<:AbstractVector,AT1<:AbstractVector,AT2<:Abstr
     payoffs_player_pairwise_transpose::AT6
 end
 
-function WorkParamsSingleUpdate(lmi::LocalMoranInteraction{N}, initial_actions::AbstractVector) where N
+function WorkParamsSingleUpdate(lmi::LocalMoranInteraction{N},
+                                initial_actions::AbstractVector) where {N}
     neighbor_idxs = Vector{Int64}(undef, N)
     payoffs = Vector{Float64}(undef, N)
     payoffs_transpose = Matrix{Float64}(undef, 1, N)
@@ -124,12 +141,20 @@ function WorkParamsSingleUpdate(lmi::LocalMoranInteraction{N}, initial_actions::
     weights_int = Weights(ones(Int64, N))
     payoffs_rowplayer_per_strategy = lmi.payoff_matrix[initial_actions, :]
     payoffs_colplayer_per_strategy = lmi.payoff_matrix_transpose[initial_actions, :]
-    payoffs_player_pairwise_transpose = payoffs_colplayer_per_strategy[:, initial_actions] .* lmi.interaction_adj_matrix
-    return WorkParamsSingleUpdate(neighbor_idxs, payoffs, payoffs_transpose, fitnesses, weights_float, weights_int,payoffs_rowplayer_per_strategy,payoffs_colplayer_per_strategy,payoffs_player_pairwise_transpose)
+    payoffs_player_pairwise_transpose = payoffs_colplayer_per_strategy[:,
+                                                                       initial_actions] .*
+                                        lmi.interaction_adj_matrix
+    return WorkParamsSingleUpdate(neighbor_idxs, payoffs, payoffs_transpose, fitnesses,
+                                  weights_float, weights_int,
+                                  payoffs_rowplayer_per_strategy,
+                                  payoffs_colplayer_per_strategy,
+                                  payoffs_player_pairwise_transpose)
 end
 
-struct WorkParamsMatrix{AS1<:AbstractVector,AT1<:AbstractVector,AT2<:AbstractVector,AT3<:AbstractWeights,AS2<:AbstractWeights,
-			AS3<:AbstractMatrix,AT4<:AbstractMatrix,AS4<:AbstractVector} <: WorkParams
+struct WorkParamsMatrix{AS1<:AbstractVector,AT1<:AbstractVector,AT2<:AbstractVector,
+                        AT3<:AbstractWeights,AS2<:AbstractWeights,
+                        AS3<:AbstractMatrix,AT4<:AbstractMatrix,AS4<:AbstractVector} <:
+       WorkParams
     neighbor_idxs::AS1
     payoffs::AT1
     fitnesses::AT2
@@ -143,89 +168,96 @@ struct WorkParamsMatrix{AS1<:AbstractVector,AT1<:AbstractVector,AT2<:AbstractVec
     ones_matrix::AS4
 end
 
-function WorkParamsMatrix(lmi::LocalMoranInteraction{N}) where N
+function WorkParamsMatrix(lmi::LocalMoranInteraction{N}) where {N}
     neighbor_idxs = Vector{Int64}(undef, N)
     payoffs = Vector{Float64}(undef, N)
     fitnesses = Vector{Float64}(undef, N)
     weights_float = Weights(ones(Float64, N))
     weights_int = Weights(ones(Int64, N))
-    actions_matrix = Matrix{Int64}(undef,N,lmi.num_actions)
-    actions_matrix_T = Matrix{Int64}(undef,lmi.num_actions,N)
-    work_array_1 = Matrix{Float64}(undef,N,lmi.num_actions)
-    work_array_2 = Matrix{Float64}(undef,N,N)
-    work_array_3 = Matrix{Float64}(undef,N,N)
-    ones_matrix = ones(Int64,N)
-    return WorkParamsMatrix(neighbor_idxs, payoffs, fitnesses, weights_float, weights_int, actions_matrix, actions_matrix_T, work_array_1, work_array_2, work_array_3, ones_matrix)
+    actions_matrix = Matrix{Int64}(undef, N, lmi.num_actions)
+    actions_matrix_T = Matrix{Int64}(undef, lmi.num_actions, N)
+    work_array_1 = Matrix{Float64}(undef, N, lmi.num_actions)
+    work_array_2 = Matrix{Float64}(undef, N, N)
+    work_array_3 = Matrix{Float64}(undef, N, N)
+    ones_matrix = ones(Int64, N)
+    return WorkParamsMatrix(neighbor_idxs, payoffs, fitnesses, weights_float, weights_int,
+                            actions_matrix, actions_matrix_T, work_array_1, work_array_2,
+                            work_array_3, ones_matrix)
 end
 
 function calc_payoffs!(aux::WorkParamsLoop,
-		actions::AbstractVector,
-		lmi::LocalMoranInteraction{N}) where N
-    @inbounds for focal_idx = 1:length(actions)
+                       actions::AbstractVector,
+                       lmi::LocalMoranInteraction{N}) where {N}
+    @inbounds for focal_idx in 1:length(actions)
         focal_strategy = actions[focal_idx]
         total = 0.0
-        @inbounds for neighbor_idx = 1:length(actions)
+        @inbounds for neighbor_idx in 1:length(actions)
             neighbor_strategy = actions[neighbor_idx]
-            total += lmi.payoff_matrix_transpose[neighbor_strategy, focal_strategy] * lmi.interaction_adj_matrix[neighbor_idx, focal_idx]
+            total += lmi.payoff_matrix_transpose[neighbor_strategy, focal_strategy] *
+                     lmi.interaction_adj_matrix[neighbor_idx, focal_idx]
         end
         aux.payoffs[focal_idx] = total
     end
 end
 
 function calc_payoffs!(aux::WorkParamsSingleUpdate,
-		actions::AbstractVector,
-		lmi::LocalMoranInteraction{N}) where N
+                       actions::AbstractVector,
+                       lmi::LocalMoranInteraction{N}) where {N}
     # Calculate payoffs
     sum!(aux.payoffs_transpose, aux.payoffs_player_pairwise_transpose)
-    transpose!(aux.payoffs, aux.payoffs_transpose)
+    return transpose!(aux.payoffs, aux.payoffs_transpose)
 end
 
 function update_aux!(aux::WorkParams,
-		new_strategy::Integer,
-		death_idx::Integer,
-		lmi::LocalMoranInteraction{N}) where N
+                     new_strategy::Integer,
+                     death_idx::Integer,
+                     lmi::LocalMoranInteraction{N}) where {N}
 end
 
 function update_aux!(aux::WorkParamsSingleUpdate,
-		new_strategy::Integer,
-		death_idx::Integer,
-		lmi::LocalMoranInteraction{N}) where N
+                     new_strategy::Integer,
+                     death_idx::Integer,
+                     lmi::LocalMoranInteraction{N}) where {N}
     # Update various matrices
-    @. aux.payoffs_rowplayer_per_strategy[death_idx, :] = @view lmi.payoff_matrix_transpose[:, new_strategy]
-    @. aux.payoffs_colplayer_per_strategy[death_idx, :] = @view lmi.payoff_matrix[:, new_strategy]
-    @. aux.payoffs_player_pairwise_transpose[:, death_idx] = @view aux.payoffs_colplayer_per_strategy[:, new_strategy]
-    for idx = 1:N
-        aux.payoffs_player_pairwise_transpose[idx, death_idx] *= lmi.interaction_adj_matrix[idx, death_idx]
+    @. aux.payoffs_rowplayer_per_strategy[death_idx, :] = @view lmi.payoff_matrix_transpose[:,
+                                                                                            new_strategy]
+    @. aux.payoffs_colplayer_per_strategy[death_idx, :] = @view lmi.payoff_matrix[:,
+                                                                                  new_strategy]
+    @. aux.payoffs_player_pairwise_transpose[:, death_idx] = @view aux.payoffs_colplayer_per_strategy[:,
+                                                                                                      new_strategy]
+    for idx in 1:N
+        aux.payoffs_player_pairwise_transpose[idx, death_idx] *= lmi.interaction_adj_matrix[idx,
+                                                                                            death_idx]
     end
-    @. aux.payoffs_player_pairwise_transpose[death_idx, :] = @view aux.payoffs_rowplayer_per_strategy[:, new_strategy]
-    for idx = 1:N
-        aux.payoffs_player_pairwise_transpose[death_idx, idx] *= lmi.interaction_adj_matrix[death_idx,idx]
+    @. aux.payoffs_player_pairwise_transpose[death_idx, :] = @view aux.payoffs_rowplayer_per_strategy[:,
+                                                                                                      new_strategy]
+    for idx in 1:N
+        aux.payoffs_player_pairwise_transpose[death_idx, idx] *= lmi.interaction_adj_matrix[death_idx,
+                                                                                            idx]
     end
 end
 
-
- 
 function calc_payoffs!(aux::WorkParamsMatrix,
-		actions::AbstractVector,
-		lmi::LocalMoranInteraction{N}) where N
-    @inbounds for col = 1:lmi.num_actions, row = 1:N
-        aux.actions_matrix[row,col] = 0
+                       actions::AbstractVector,
+                       lmi::LocalMoranInteraction{N}) where {N}
+    @inbounds for col in 1:(lmi.num_actions), row in 1:N
+        aux.actions_matrix[row, col] = 0
     end
-    @inbounds for player_idx = 1:N
-       strategy_idx = actions[player_idx]
-        aux.actions_matrix[player_idx,strategy_idx] = 1
+    @inbounds for player_idx in 1:N
+        strategy_idx = actions[player_idx]
+        aux.actions_matrix[player_idx, strategy_idx] = 1
     end
     transpose!(aux.actions_matrix_T, aux.actions_matrix)
     mul!(aux.work_array_1, aux.actions_matrix, lmi.players[1].payoff_array)
     mul!(aux.work_array_2, aux.work_array_1, aux.actions_matrix_T)
     aux.work_array_3 .= aux.work_array_2 .* lmi.interaction_adj_matrix_transpose
-    mul!(aux.payoffs, aux.work_array_3, aux.ones_matrix)
+    return mul!(aux.payoffs, aux.work_array_3, aux.ones_matrix)
 end
 
 function play!(actions::AbstractVector,
-    rng::AbstractRNG,
-    lmi::LocalMoranInteraction{N},
-    aux::WorkParams) where N
+               rng::AbstractRNG,
+               lmi::LocalMoranInteraction{N},
+               aux::WorkParams) where {N}
     # Payoff flows along and is weighted by interaction_adj_matrix
     # Node is selected for reproduction using exponential fitness weighting
     # One of its outedges is selected for replacement, weighted by edge reproduction_adj_matrix
@@ -243,18 +275,18 @@ function play!(actions::AbstractVector,
     focal_idx = sample(rng, 1:N, aux.weights_float)
 
     # Get list of neighbors
-    @. aux.neighbor_idxs = @view lmi.reproduction_adj_matrix_transpose[:,focal_idx]
+    @. aux.neighbor_idxs = @view lmi.reproduction_adj_matrix_transpose[:, focal_idx]
     # Choose death node
     update_weights!(aux.weights_int, aux.neighbor_idxs)
     death_idx = sample(rng, 1:N, aux.weights_int)
-    
+
     # Check for mutation
     if rand(rng) <= lmi.epsilon
-	new_strategy = rand(rng, 1:lmi.num_actions)
+        new_strategy = rand(rng, 1:(lmi.num_actions))
     else
-	new_strategy = actions[focal_idx]
+        new_strategy = actions[focal_idx]
     end
-    
+
     # Apply spatial Moran process
     actions[death_idx] = new_strategy
 
@@ -264,16 +296,18 @@ function play!(actions::AbstractVector,
     return nothing
 end
 
-function count!(counts::Vector{N}, new_values::Vector{N}) where N
+function count!(counts::Vector{N}, new_values::Vector{N}) where {N}
     for (i, _) in enumerate(counts)
         counts[i] += count(==(i), new_values)
     end
     return counts
 end
 
-function time_series(lmi::LocalMoranInteraction{N}, ts_length::Integer, payoff_counting_method::String="single-update", seed::Integer=12345) where N
+function time_series(lmi::LocalMoranInteraction{N}, ts_length::Integer,
+                     payoff_counting_method::String="single-update",
+                     seed::Integer=12345) where {N}
     rng = Xoshiro(seed)
-    actions = rand(rng, 1:lmi.num_actions, N)
+    actions = rand(rng, 1:(lmi.num_actions), N)
     if payoff_counting_method == "loop"
         aux = WorkParamsLoop(lmi)
     elseif payoff_counting_method == "single-update"
@@ -283,20 +317,22 @@ function time_series(lmi::LocalMoranInteraction{N}, ts_length::Integer, payoff_c
     else
         throw(ArgumentError("payoff_counting_method must be a string in set [\"loop\", \"single-update\", \"matrix\"]"))
     end
-    out = Matrix{Int}(undef, N, ts_length+1)
+    out = Matrix{Int}(undef, N, ts_length + 1)
     for i in 1:N
-        out[i,1] = actions[i]
+        out[i, 1] = actions[i]
     end
     for t in 1:ts_length
-	play!(actions, rng, lmi, aux)
-        out[:,t+1] = actions
+        play!(actions, rng, lmi, aux)
+        out[:, t + 1] = actions
     end
     return out
 end
 
-function cumulative(lmi::LocalMoranInteraction{N}, ts_length::Integer, payoff_counting_method::String="single-update", seed::Integer=12345) where N
+function cumulative(lmi::LocalMoranInteraction{N}, ts_length::Integer,
+                    payoff_counting_method::String="single-update",
+                    seed::Integer=12345) where {N}
     rng = Xoshiro(seed)
-    actions = rand(rng, 1:lmi.num_actions, N)
+    actions = rand(rng, 1:(lmi.num_actions), N)
     cumulative = zeros(Int, lmi.num_actions)
     count!(cumulative, actions)
     if payoff_counting_method == "loop"
@@ -309,7 +345,7 @@ function cumulative(lmi::LocalMoranInteraction{N}, ts_length::Integer, payoff_co
         throw(ArgumentError("payoff_counting_method must be a string in set [\"loop\", \"single-update\", \"matrix\"]"))
     end
     for t in 2:ts_length
-	play!(actions, rng, lmi, aux)
+        play!(actions, rng, lmi, aux)
         count!(cumulative, actions)
     end
     return cumulative
@@ -324,35 +360,44 @@ function check_formulas(nb_phases::Integer, nb_players::Integer)
     n = nb_players
 
     # Define functions
-    B(phi) = B_0*(1 + cos(phi))/2
-    beta(phi) = beta_0*(1+cos(phi))/2
+    B(phi) = B_0 * (1 + cos(phi)) / 2
+    beta(phi) = beta_0 * (1 + cos(phi)) / 2
 
     # Define fixation probabilities
-    rho_CC(phi) = 1/(1+sum([exp(k*(k+1-n)*delta/(n-1)*(B(phi)-B_0)) for k in 1:(n-1)]))
-    rho_NC(phi) = 1/(1+sum([exp(delta/(n-1)*
-                    (j^2*(beta(phi)-1/2*B_0) + j*(1/2*B_0-(n-1)*beta(phi)+(n-1)*c)))
-                for j in 1:(n-1)]))
-    omega = 1/exp(delta*((n-1)*c-(n-2)/2*B_0))
-    rho_CN(phi) = rho_NC(phi)/omega
+    function rho_CC(phi)
+        return 1 / (1 + sum([exp(k * (k + 1 - n) * delta / (n - 1) * (B(phi) - B_0))
+                             for k in 1:(n - 1)]))
+    end
+    function rho_NC(phi)
+        return 1 / (1 + sum([exp(delta / (n - 1) *
+                                 (j^2 * (beta(phi) - 1 / 2 * B_0) +
+                                  j * (1 / 2 * B_0 - (n - 1) * beta(phi) + (n - 1) * c)))
+                             for j in 1:(n - 1)]))
+    end
+    omega = 1 / exp(delta * ((n - 1) * c - (n - 2) / 2 * B_0))
+    rho_CN(phi) = rho_NC(phi) / omega
 
     # Define matrices
     B_1 = [i != j ?
-        rho_CC(floor(d/2) - abs(floor(d/2)-abs(i-j))) :
-        1 - sum([rho_CC(floor(d/2) - abs(floor(d/2) - abs(delta_phi_prime))) for delta_phi_prime in 1:(d-1)])
-        for i in 1:d, j in 1:d]
-    B_2 = [rho_CN(floor(d/2) - abs(floor(d/2)-abs(i-j))) for i in 1:d, j in 1:d]
-    B_3 = [rho_NC(floor(d/2) - abs(floor(d/2)-abs(i-j))) for i in 1:d, j in 1:d]
-    B_4 = [1/n for i in 1:d, j in 1:d]
+           rho_CC(floor(d / 2) - abs(floor(d / 2) - abs(i - j))) :
+           1 - sum([rho_CC(floor(d / 2) - abs(floor(d / 2) - abs(delta_phi_prime)))
+                    for delta_phi_prime in 1:(d - 1)])
+           for i in 1:d, j in 1:d]
+    B_2 = [rho_CN(floor(d / 2) - abs(floor(d / 2) - abs(i - j))) for i in 1:d, j in 1:d]
+    B_3 = [rho_NC(floor(d / 2) - abs(floor(d / 2) - abs(i - j))) for i in 1:d, j in 1:d]
+    B_4 = [1 / n for i in 1:d, j in 1:d]
 
     # Define full Markov transition matrix
-    M = mortar([[B_1,B_3] [B_2,B_4]])
+    M = mortar([[B_1, B_3] [B_2, B_4]])
 
     # Define stationary distribution
     # Tripp (2024) shows s_1, s_2 independent of q, so f
     q = 1
-    s_1 = sum([M[r,q] for r in (d+1):(2d)])/(d*sum([M[q,r] + M[r,q] for r in (d+1):(2d)]))
-    s_2 = sum([M[q,r] for r in (d+1):(2d)])/(d*sum([M[q,r] + M[r,q] for r in (d+1):(2d)]))
-    s = hcat([s_1*ones(d), s_2*ones(d)]);
+    s_1 = sum([M[r, q] for r in (d + 1):(2d)]) /
+          (d * sum([M[q, r] + M[r, q] for r in (d + 1):(2d)]))
+    s_2 = sum([M[q, r] for r in (d + 1):(2d)]) /
+          (d * sum([M[q, r] + M[r, q] for r in (d + 1):(2d)]))
+    return s = hcat([s_1 * ones(d), s_2 * ones(d)])
 
     ## Check that the explicitly calculated stationary distribution matches the eigenvector
     #eigen = eigvals(M)[1]
@@ -376,126 +421,129 @@ end
 
 function fraction_communicative(cumulative_populations, time_steps, nb_players)
     nb_communicative = extract_num_communicative(cumulative_populations)
-    fraction_communicative = nb_communicative./(time_steps*nb_players)
+    fraction_communicative = nb_communicative ./ (time_steps * nb_players)
     return fraction_communicative
 end
 
 @enum GameType harmony chicken battle hero compromise concord staghunt dilemma deadlock assurance coordination peace
 
-const game_type_colors = Dict(instances(GameType) .=> distinguishable_colors(length(instances(GameType))))
-const game_type_full_names = Dict(
-	chicken => "Snowdrift", # Also called chicken
-	battle => "Battle of the Sexes",
-	hero => "Hero",
-	compromise => "Compromise",
-	deadlock => "Deadlock",
-	dilemma => "Prisoner's Dilemma",
-	staghunt => "Mutualism", # Also called Staghunt
-	assurance => "Assurance",
-	coordination => "Coordination",
-	peace => "Peace",
-	harmony => "Harmony",
-	concord => "Concord", # Called "coordination" in Pripp et. al. 2024
-	)
+const game_type_colors = Dict(instances(GameType) .=>
+                                  distinguishable_colors(length(instances(GameType))))
+const game_type_full_names = Dict(chicken => "Snowdrift", # Also called chicken
+                                  battle => "Battle of the Sexes",
+                                  hero => "Hero",
+                                  compromise => "Compromise",
+                                  deadlock => "Deadlock",
+                                  dilemma => "Prisoner's Dilemma",
+                                  staghunt => "Mutualism", # Also called Staghunt
+                                  assurance => "Assurance",
+                                  coordination => "Coordination",
+                                  peace => "Peace",
+                                  harmony => "Harmony",
+                                  concord => "Concord")
 
 function game_type_inequalities(R::Real, S::Real, T::Real, P::Real)
-	# Break ties in direction T < R < S < P
-	# Note: swap columns from Brun 2015 to convert their convention of
-	#   [ (C,N)   (C,C) ]
-	#   [ (N,N)   (N,C) ]
-	# to our convention of
-	#   [ (C,C)   (C,N) ]
-	#   [ (N,C)   (N,N) ]
-	return Dict{GameType,Vector}(
-		chicken => [R <= T, T <= P, P <= S],
-		battle => [R <= P, P < T, T <= S],
-		hero => [P < R, R <= T, T <= S],
-		compromise => [P < T, T < R, R <= S],
-		deadlock => [T <= P, P < R, R <= S],
-		dilemma => [T < R, R <= P, P <= S],
-		staghunt => [T < R, R <= S, S < P],
-		assurance => [T <= S, S < R, R <= P],
-		coordination => [S < T, T < R, R <= P],
-		peace => [S < R, R <= T, T <= P],
-		harmony => [R <= S, S < T, T <= P],
-		concord => [R <= T, T <= S, S < P])
+    # Break ties in direction T < R < S < P
+    # Note: swap columns from Brun 2015 to convert their convention of
+    #   [ (C,N)   (C,C) ]
+    #   [ (N,N)   (N,C) ]
+    # to our convention of
+    #   [ (C,C)   (C,N) ]
+    #   [ (N,C)   (N,N) ]
+    return Dict{GameType,Vector}(chicken => [R <= T, T <= P, P <= S],
+                                 battle => [R <= P, P < T, T <= S],
+                                 hero => [P < R, R <= T, T <= S],
+                                 compromise => [P < T, T < R, R <= S],
+                                 deadlock => [T <= P, P < R, R <= S],
+                                 dilemma => [T < R, R <= P, P <= S],
+                                 staghunt => [T < R, R <= S, S < P],
+                                 assurance => [T <= S, S < R, R <= P],
+                                 coordination => [S < T, T < R, R <= P],
+                                 peace => [S < R, R <= T, T <= P],
+                                 harmony => [R <= S, S < T, T <= P],
+                                 concord => [R <= T, T <= S, S < P])
 end
 
-function combine_communicative_noncommunicative(
-        players_per_strategy::Vector{<:Integer},
-        nb_phases::Integer)
+function combine_communicative_noncommunicative(players_per_strategy::Vector{<:Integer},
+                                                nb_phases::Integer)
     # Combine communicatative (value < nb_phases)
     # and non-communicatative (values >= nb_phases)
-    combine_com_noncom_matrix = hcat(Matrix{Int}(I,nb_phases,nb_phases),Matrix{Int}(I,nb_phases,nb_phases))
-    phase_idxs =  combine_com_noncom_matrix * players_per_strategy
+    combine_com_noncom_matrix = hcat(Matrix{Int}(I, nb_phases, nb_phases),
+                                     Matrix{Int}(I, nb_phases, nb_phases))
+    phase_idxs = combine_com_noncom_matrix * players_per_strategy
     return phase_idxs
 end
 
 function swap_strategies!(payoff_matrix::AbstractMatrix)
-	payoff_matrix[2,2], payoff_matrix[2,1], payoff_matrix[1,2], payoff_matrix[1,1] = payoff_matrix[1,1], payoff_matrix[1,2], payoff_matrix[2,1], payoff_matrix[2,2]
+    return payoff_matrix[2, 2], payoff_matrix[2, 1], payoff_matrix[1, 2], payoff_matrix[1, 1] = payoff_matrix[1,
+                                                                                                              1],
+                                                                                                payoff_matrix[1,
+                                                                                                              2],
+                                                                                                payoff_matrix[2,
+                                                                                                              1],
+                                                                                                payoff_matrix[2,
+                                                                                                              2]
 end
 
 function canonical_payoff!(payoff_matrix::AbstractMatrix)
-	# Using our convention that symmetric games imply the col-player's
-	# payoff matrix is the transpose of the provided (row-player's) payoff
-	# matrix, apply Robinson & Goforth's convention of highest row-player payoff in
-	# right-column and highest col-player payoff in lower-row (note:
-	# col-player criteria is switched to match our transpose-convention
-	# above) by swapping rows and columns
-	# For symmetric games, this is equivalent to renaming strategies (C <->
-	# N) for both players simultaneously to ensure the max payoff is in the
-	# right column
-	# Note: assumes there is a unique maximum payoff
-	max_index_orig = argmax(payoff_matrix)
-	# Ensure highest row-player payoff is in right-column
-	if max_index_orig[2] == 1
-		swap_strategies!(payoff_matrix)
-        end
+    # Using our convention that symmetric games imply the col-player's
+    # payoff matrix is the transpose of the provided (row-player's) payoff
+    # matrix, apply Robinson & Goforth's convention of highest row-player payoff in
+    # right-column and highest col-player payoff in lower-row (note:
+    # col-player criteria is switched to match our transpose-convention
+    # above) by swapping rows and columns
+    # For symmetric games, this is equivalent to renaming strategies (C <->
+    # N) for both players simultaneously to ensure the max payoff is in the
+    # right column
+    # Note: assumes there is a unique maximum payoff
+    max_index_orig = argmax(payoff_matrix)
+    # Ensure highest row-player payoff is in right-column
+    if max_index_orig[2] == 1
+        swap_strategies!(payoff_matrix)
+    end
 end
 
 function game_type(payoff_matrix::AbstractMatrix)
-	# Canonicalize
-	canonical_payoff!(payoff_matrix)
-	# Check ordering of payoffs
-	R = payoff_matrix[1,1]
-	S = payoff_matrix[1,2]
-	T = payoff_matrix[2,1]
-	P = payoff_matrix[2,2]
-	for game_type in instances(GameType)
-	    if (&)(game_type_inequalities(R,S,T,P)[game_type]...)
-	      return game_type
-	    end
-	 end
-	# Non-strict inequality implying one or more ties
-	throw(ErrorException("Should never hit this since tie-breaking is handled with non-strict inequalities"))
+    # Canonicalize
+    canonical_payoff!(payoff_matrix)
+    # Check ordering of payoffs
+    R = payoff_matrix[1, 1]
+    S = payoff_matrix[1, 2]
+    T = payoff_matrix[2, 1]
+    P = payoff_matrix[2, 2]
+    for game_type in instances(GameType)
+        if (&)(game_type_inequalities(R, S, T, P)[game_type]...)
+            return game_type
+        end
+    end
+    # Non-strict inequality implying one or more ties
+    throw(ErrorException("Should never hit this since tie-breaking is handled with non-strict inequalities"))
 end
 
 @memoize function game_types_per_strategy_pair(mutual_benefit_synchronous::Real,
-	    unilateral_benefit_synchronous::Real,
-	    cost::Real,
-	    symmetry_breaking::Real,
-	    nb_phases::Integer,
-	    )
+                                               unilateral_benefit_synchronous::Real,
+                                               cost::Real,
+                                               symmetry_breaking::Real,
+                                               nb_phases::Integer)
 
     # Define payoff response submatrices
-    payoff = payoff_matrix(nb_phases, mutual_benefit_synchronous, unilateral_benefit_synchronous, cost; symmetry_breaking)
+    payoff = payoff_matrix(nb_phases, mutual_benefit_synchronous,
+                           unilateral_benefit_synchronous, cost; symmetry_breaking)
 
     # Define game type per strategy pair
     game_types = Matrix{GameType}(undef, nb_phases, nb_phases)
     for idx in eachindex(IndexCartesian(), game_types)
-	strategy_offset = CartesianIndices((0:nb_phases:nb_phases, 0:nb_phases:nb_phases))
-	indices = idx .+ strategy_offset
-	game_types[idx] = game_type(@view payoff[indices])
+        strategy_offset = CartesianIndices((0:nb_phases:nb_phases, 0:nb_phases:nb_phases))
+        indices = idx .+ strategy_offset
+        game_types[idx] = game_type(@view payoff[indices])
     end
     return game_types
 end
 
 @enum StrategyParity all_communicative all_noncommunicative mixed
 
-function check_all_same_strategy(
-        strategies_per_player::Vector{<:Integer},
-        nb_strategies::Integer,
-	)
+function check_all_same_strategy(strategies_per_player::Vector{<:Integer},
+                                 nb_strategies::Integer)
     nb_players = length(strategies_per_player)
     players_per_strategy = extract_counts(strategies_per_player, nb_strategies)
     # Check if all players were communicative/noncommunicative
@@ -508,31 +556,31 @@ function check_all_same_strategy(
     return mixed
 end
 
-function extract_most_common_game_types(
-        strategies_per_player::Vector{<:Integer},
-        mutual_benefit_synchronous::Real,
-        unilateral_benefit_synchronous::Real,
-        cost::Real,
-        symmetry_breaking::Real,
-        nb_phases::Integer,
-        nb_strategies::Integer,
-        interaction_adj_matrix::AbstractMatrix{<:Integer})
-
+function extract_most_common_game_types(strategies_per_player::Vector{<:Integer},
+                                        mutual_benefit_synchronous::Real,
+                                        unilateral_benefit_synchronous::Real,
+                                        cost::Real,
+                                        symmetry_breaking::Real,
+                                        nb_phases::Integer,
+                                        nb_strategies::Integer,
+                                        interaction_adj_matrix::AbstractMatrix{<:Integer})
     players_per_phase = mod1.(strategies_per_player, nb_phases)
 
     # Get game type of each startegy interaction pair
-    game_types = game_types_per_strategy_pair(mutual_benefit_synchronous, unilateral_benefit_synchronous, cost, symmetry_breaking, nb_phases)
+    game_types = game_types_per_strategy_pair(mutual_benefit_synchronous,
+                                              unilateral_benefit_synchronous, cost,
+                                              symmetry_breaking, nb_phases)
 
     # Count game types
-    game_counts = Dict{GameType, Integer}(instances(GameType) .=> 0)
-    for (cart_idx,value) in pairs(interaction_adj_matrix)
+    game_counts = Dict{GameType,Integer}(instances(GameType) .=> 0)
+    for (cart_idx, value) in pairs(interaction_adj_matrix)
         if value == 0
             continue
-	end
+        end
         (row, col) = Tuple(cart_idx)
-	row_phase = players_per_phase[row]
-	col_phase = players_per_phase[col]
-	game_type = game_types[row_phase,col_phase]
+        row_phase = players_per_phase[row]
+        col_phase = players_per_phase[col]
+        game_type = game_types[row_phase, col_phase]
         game_counts[game_type] += value
     end
 
@@ -540,22 +588,23 @@ function extract_most_common_game_types(
     most_common_game_type = findmax(game_counts)[2]
 
     return most_common_game_type
-end;
+end
 
 function extract_phases(players_per_phase::Vector{<:Integer}, nb_phases::Integer)
     # Convert phase idxs to phases
-    phases = 2*pi/nb_phases.*players_per_phase
+    phases = 2 * pi / nb_phases .* players_per_phase
     return phases
 end
 
-function extract_order_parameters(players_per_strategy::Vector{<:Integer}, nb_phases::Integer)
+function extract_order_parameters(players_per_strategy::Vector{<:Integer},
+                                  nb_phases::Integer)
     # Combine communicative and noncommunicative
     phase_indxs = combine_communicative_noncommunicative(players_per_strategy, nb_phases)
     # Convert strategy idxs to phases
     phases = extract_phases(phase_indxs, nb_phases)
-    order_parameters = abs(mean(exp.(im*phases)))
+    order_parameters = abs(mean(exp.(im * phases)))
     return order_parameters
-end;
+end
 
 function extract_counts(strategies_per_player::Vector{<:Integer}, nb_strategies::Integer)
     counts = zeros(Int, nb_strategies)
@@ -564,266 +613,324 @@ function extract_counts(strategies_per_player::Vector{<:Integer}, nb_strategies:
 end
 
 function get_adj_matrices(adj_matrix_source::String)
-	# Define interaction graph without loops
-	# Define reproduction graph with loops
-	if adj_matrix_source == "well-mixed"
-	    interaction_adj_matrix = ones(Int64,20,20) - I
-	    reproduction_adj_matrix = interaction_adj_matrix + I
-	elseif adj_matrix_source == "c-elegans-unweighted"
-	    interaction_adj_matrix = collect(round.(get_connectome()) .!= 0)
-	    reproduction_adj_matrix = collect((interaction_adj_matrix + I) .!= 0)
-	elseif adj_matrix_source == "c-elegans-undirected"
-	    interaction_adj_matrix = round.(get_connectome())
-	    interaction_adj_matrix = interaction_adj_matrix + transpose(interaction_adj_matrix)
-	    reproduction_adj_matrix = interaction_adj_matrix + I
-	elseif adj_matrix_source == "c-elegans-undirected-unweighted"
-	    interaction_adj_matrix = round.(get_connectome())
-	    interaction_adj_matrix = interaction_adj_matrix + transpose(interaction_adj_matrix)
-	    interaction_adj_matrix = collect(interaction_adj_matrix .!= 0)
-	    reproduction_adj_matrix = collect((interaction_adj_matrix + I) .!= 0)
-        elseif adj_matrix_source == "c-elegans"
-	    interaction_adj_matrix = round.(get_connectome())
-	    reproduction_adj_matrix = interaction_adj_matrix + I
-	else
-	    throw(ArgumentError("adj_matrix_source must be a string in set [\"well-mixed\", "
-				*"\"c-elegans\", \"c-elegans-unweighted\", "
-				*"\"c-elegans-undirected\", \"c-elegans-undirected-unweighted\"]"))
-        end
-	return interaction_adj_matrix, reproduction_adj_matrix
+    # Define interaction graph without loops
+    # Define reproduction graph with loops
+    if adj_matrix_source == "well-mixed"
+        interaction_adj_matrix = ones(Int64, 20, 20) - I
+        reproduction_adj_matrix = interaction_adj_matrix + I
+    elseif adj_matrix_source == "c-elegans-unweighted"
+        interaction_adj_matrix = collect(round.(get_connectome()) .!= 0)
+        reproduction_adj_matrix = collect((interaction_adj_matrix + I) .!= 0)
+    elseif adj_matrix_source == "c-elegans-undirected"
+        interaction_adj_matrix = round.(get_connectome())
+        interaction_adj_matrix = interaction_adj_matrix + transpose(interaction_adj_matrix)
+        reproduction_adj_matrix = interaction_adj_matrix + I
+    elseif adj_matrix_source == "c-elegans-undirected-unweighted"
+        interaction_adj_matrix = round.(get_connectome())
+        interaction_adj_matrix = interaction_adj_matrix + transpose(interaction_adj_matrix)
+        interaction_adj_matrix = collect(interaction_adj_matrix .!= 0)
+        reproduction_adj_matrix = collect((interaction_adj_matrix + I) .!= 0)
+    elseif adj_matrix_source == "c-elegans"
+        interaction_adj_matrix = round.(get_connectome())
+        reproduction_adj_matrix = interaction_adj_matrix + I
+    else
+        throw(ArgumentError("adj_matrix_source must be a string in set [\"well-mixed\", "
+                            * "\"c-elegans\", \"c-elegans-unweighted\", "
+                            *
+                            "\"c-elegans-undirected\", \"c-elegans-undirected-unweighted\"]"))
+    end
+    return interaction_adj_matrix, reproduction_adj_matrix
 end
 
 function calc_cumulative(config::Dict)
-	# Unpack values
-	@unpack selection_strength, symmetry_breaking, adj_matrix_source, payoff_update_method, time_steps = config
+    # Unpack values
+    @unpack selection_strength, symmetry_breaking, adj_matrix_source, payoff_update_method, time_steps = config
 
-	# Define system
-	cost = 0.1
-	nb_phases = 20
-	nb_strategies = nb_phases*2
-	mutation_rate = 0.0001
+    # Define system
+    cost = 0.1
+    nb_phases = 20
+    nb_strategies = nb_phases * 2
+    mutation_rate = 0.0001
 
-	# Define interaction graph and reproduction graphs
-	interaction_adj_matrix, reproduction_adj_matrix = get_adj_matrices(adj_matrix_source)
-	# Specify number of players
-	nb_players = size(interaction_adj_matrix)[1]
+    # Define interaction graph and reproduction graphs
+    interaction_adj_matrix, reproduction_adj_matrix = get_adj_matrices(adj_matrix_source)
+    # Specify number of players
+    nb_players = size(interaction_adj_matrix)[1]
 
-        # Define Bs on which to run
-        B_crit = 2 * cost * (nb_players-1) / (nb_players-2)
-        nb_Bs = 11
-        step_size_Bs = 0.04
-        Bs = B_crit .+ ((0:(nb_Bs-1)) .- (nb_Bs-1)/2) .* step_size_Bs
+    # Define Bs on which to run
+    B_crit = 2 * cost * (nb_players - 1) / (nb_players - 2)
+    nb_Bs = 11
+    step_size_Bs = 0.04
+    Bs = B_crit .+ ((0:(nb_Bs - 1)) .- (nb_Bs - 1) / 2) .* step_size_Bs
 
-        # Run the model for weak selection strength
-        @time cumulative_populations = [cumulative(
-                LocalMoranInteraction(NormalFormGame(payoff_matrix(nb_phases, B, 0.95*B, cost; symmetry_breaking)), interaction_adj_matrix, reproduction_adj_matrix, selection_strength, mutation_rate),
-                time_steps, payoff_update_method) for B in Bs]
+    # Run the model for weak selection strength
+    @time cumulative_populations = [cumulative(LocalMoranInteraction(NormalFormGame(payoff_matrix(nb_phases,
+                                                                                                  B,
+                                                                                                  0.95 *
+                                                                                                  B,
+                                                                                                  cost;
+                                                                                                  symmetry_breaking)),
+                                                                     interaction_adj_matrix,
+                                                                     reproduction_adj_matrix,
+                                                                     selection_strength,
+                                                                     mutation_rate),
+                                               time_steps, payoff_update_method)
+                                    for B in Bs]
 
-        # Plot fraction communcative
-        nb_communicative = [extract_num_communicative(final_population) for final_population in cumulative_populations]
-        fraction_communicative = nb_communicative./(time_steps*nb_players)
+    # Plot fraction communcative
+    nb_communicative = [extract_num_communicative(final_population)
+                        for final_population in cumulative_populations]
+    fraction_communicative = nb_communicative ./ (time_steps * nb_players)
 
-	# Package results
-	return @strdict(Bs,nb_players,cost,fraction_communicative)
+    # Package results
+    return @strdict(Bs, nb_players, cost, fraction_communicative)
 end
 
-function plot_cumulative(selection_strength::Real, symmetry_breaking::Real, adj_matrix_source::String="well-mixed", payoff_update_method::String="single-update",time_steps::Integer=2_000_000)
+function plot_cumulative(selection_strength::Real, symmetry_breaking::Real,
+                         adj_matrix_source::String="well-mixed",
+                         payoff_update_method::String="single-update",
+                         time_steps::Integer=2_000_000)
 
-	# Load results
-	config = @strdict(adj_matrix_source,payoff_update_method,time_steps,selection_strength,symmetry_breaking)
-	data, _ = produce_or_load(calc_cumulative, config, datadir("cumulative"))
+    # Load results
+    config = @strdict(adj_matrix_source, payoff_update_method, time_steps,
+                      selection_strength, symmetry_breaking)
+    data, _ = produce_or_load(calc_cumulative, config, datadir("cumulative"))
 
-	# Plot
-	fig = Figure()
-	ax = Axis(fig[1,1],
-		  title = L"Selection $\delta = %$(round(selection_strength,sigdigits=2))$",
-		  xlabel = L"Maximum benefit of mutual communication, $B(0)$",
-		  ylabel = "Frequency of communicative strategies",
-		  limits = (nothing, nothing, 0, 1),
-		  )
-	scatter!(ax, data["Bs"], data["fraction_communicative"], label="Simulation")
-	lines!(ax, data["Bs"][begin]..data["Bs"][end], B0 -> 1/(1+exp(selection_strength*(data["nb_players"]-1)*((data["nb_players"]-1)*data["cost"]-(data["nb_players"]-2)/2*B0))), label="Theory", color=:orange)
+    # Plot
+    fig = Figure()
+    ax = Axis(fig[1, 1];
+              title=L"Selection $\delta = %$(round(selection_strength,sigdigits=2))$",
+              xlabel=L"Maximum benefit of mutual communication, $B(0)$",
+              ylabel="Frequency of communicative strategies",
+              limits=(nothing, nothing, 0, 1))
+    scatter!(ax, data["Bs"], data["fraction_communicative"]; label="Simulation")
+    lines!(ax, data["Bs"][begin] .. data["Bs"][end],
+           B0 -> 1 / (1 + exp(selection_strength * (data["nb_players"] - 1) *
+                              ((data["nb_players"] - 1) * data["cost"] -
+                               (data["nb_players"] - 2) / 2 * B0))); label="Theory",
+           color=:orange)
 
-	# Add legend
-	axislegend(ax, position = :lt)
+    # Add legend
+    axislegend(ax; position=:lt)
 
-	# Save figure
-	filename = plotsdir("cumulative", savename(config, "png"))
-	save(filename, fig)
+    # Save figure
+    filename = plotsdir("cumulative", savename(config, "png"))
+    save(filename, fig)
 
-	return fig
+    return fig
 end
 
 function calc_timeseries(config::Dict)
-	# Unpack variables
-	@unpack B_factor, selection_strength, symmetry_breaking, adj_matrix_source, payoff_update_method, time_steps = config
+    # Unpack variables
+    @unpack B_factor, selection_strength, symmetry_breaking, adj_matrix_source, payoff_update_method, time_steps = config
 
-	# Define system
-	cost = 0.1
-	nb_phases = 20
-	nb_strategies = nb_phases*2
-	mutation_rate = 0.0001
-	B = cost*B_factor
+    # Define system
+    cost = 0.1
+    nb_phases = 20
+    nb_strategies = nb_phases * 2
+    mutation_rate = 0.0001
+    B = cost * B_factor
 
-	# Define interaction graph and reproduction graphs
-	interaction_adj_matrix, reproduction_adj_matrix = get_adj_matrices(adj_matrix_source)
-	# Specify number of players
-	nb_players = size(interaction_adj_matrix)[1]
+    # Define interaction graph and reproduction graphs
+    interaction_adj_matrix, reproduction_adj_matrix = get_adj_matrices(adj_matrix_source)
+    # Specify number of players
+    nb_players = size(interaction_adj_matrix)[1]
 
-        # Run the model for weak selection strength
-        all_populations = time_series(
-                LocalMoranInteraction(NormalFormGame(payoff_matrix(nb_phases, B, 0.95*B, cost; symmetry_breaking)), interaction_adj_matrix, reproduction_adj_matrix, selection_strength, mutation_rate),
-                time_steps, payoff_update_method)
+    # Run the model for weak selection strength
+    all_populations = time_series(LocalMoranInteraction(NormalFormGame(payoff_matrix(nb_phases,
+                                                                                     B,
+                                                                                     0.95 *
+                                                                                     B,
+                                                                                     cost;
+                                                                                     symmetry_breaking)),
+                                                        interaction_adj_matrix,
+                                                        reproduction_adj_matrix,
+                                                        selection_strength, mutation_rate),
+                                  time_steps, payoff_update_method)
 
-	# Package results
-	return @strdict(all_populations, cost, nb_phases, nb_players, nb_strategies, mutation_rate, interaction_adj_matrix)
+    # Package results
+    return @strdict(all_populations, cost, nb_phases, nb_players, nb_strategies,
+                    mutation_rate, interaction_adj_matrix)
 end
 
 function calc_timeseries_statistics(config::Dict)
-	# Calculate timeseries
-	data = calc_timeseries(config)
+    # Calculate timeseries
+    data = calc_timeseries(config)
 
-	# Unpack variables
-	@unpack all_populations, cost, nb_phases, nb_players, nb_strategies, mutation_rate, interaction_adj_matrix = data
-	@unpack B_factor, symmetry_breaking, selection_strength, adj_matrix_source, payoff_update_method, time_steps = config
+    # Unpack variables
+    @unpack all_populations, cost, nb_phases, nb_players, nb_strategies, mutation_rate, interaction_adj_matrix = data
+    @unpack B_factor, symmetry_breaking, selection_strength, adj_matrix_source, payoff_update_method, time_steps = config
 
-        # Extract results
-        most_common_game_types = dropdims(mapslices(x -> extract_most_common_game_types(x, B_factor*cost,
-                0.9*B_factor*cost, cost, symmetry_breaking, nb_phases, nb_strategies, interaction_adj_matrix), all_populations, dims=1), dims=1)
-	strategy_parity = dropdims(mapslices(x -> check_all_same_strategy(x, nb_strategies), all_populations, dims=1), dims=1)
-        counts = mapslices(x -> extract_counts(x, nb_strategies), all_populations, dims=1)
-        nb_communicative = map(x -> extract_num_communicative(Vector(x)), eachslice(counts, dims=2))
-        fraction_communicative = nb_communicative/nb_players
-        order_parameters = dropdims(mapslices(x -> extract_order_parameters(x, nb_phases), counts, dims=1), dims=1)
+    # Extract results
+    most_common_game_types = dropdims(mapslices(x -> extract_most_common_game_types(x,
+                                                                                    B_factor *
+                                                                                    cost,
+                                                                                    0.9 *
+                                                                                    B_factor *
+                                                                                    cost,
+                                                                                    cost,
+                                                                                    symmetry_breaking,
+                                                                                    nb_phases,
+                                                                                    nb_strategies,
+                                                                                    interaction_adj_matrix),
+                                                all_populations; dims=1); dims=1)
+    strategy_parity = dropdims(mapslices(x -> check_all_same_strategy(x, nb_strategies),
+                                         all_populations; dims=1); dims=1)
+    counts = mapslices(x -> extract_counts(x, nb_strategies), all_populations; dims=1)
+    nb_communicative = map(x -> extract_num_communicative(Vector(x)),
+                           eachslice(counts; dims=2))
+    fraction_communicative = nb_communicative / nb_players
+    order_parameters = dropdims(mapslices(x -> extract_order_parameters(x, nb_phases),
+                                          counts; dims=1); dims=1)
 
-	# Package results
-	return @strdict(fraction_communicative,order_parameters,most_common_game_types,strategy_parity)
+    # Package results
+    return @strdict(fraction_communicative, order_parameters, most_common_game_types,
+                    strategy_parity)
 end
 
-function plot_timeseries(B_factor::Real, selection_strength::Real, symmetry_breaking::Real, adj_matrix_source::String="well-mixed", payoff_update_method::String="single-update",time_steps::Integer=80_000)
-	# Load results
-	config = @strdict(adj_matrix_source,payoff_update_method,time_steps,B_factor,symmetry_breaking,selection_strength)
-	data = produce_or_load(calc_timeseries_statistics, config, datadir("timeseries_statistics"))[1]
+function plot_timeseries(B_factor::Real, selection_strength::Real, symmetry_breaking::Real,
+                         adj_matrix_source::String="well-mixed",
+                         payoff_update_method::String="single-update",
+                         time_steps::Integer=80_000)
+    # Load results
+    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_factor,
+                      symmetry_breaking, selection_strength)
+    data = produce_or_load(calc_timeseries_statistics, config,
+                           datadir("timeseries_statistics"))[1]
 
-        # Create array of times
-        # Note: the populations include the initial data, so we need one more than time-steps
-        times = 1:(time_steps+1)
+    # Create array of times
+    # Note: the populations include the initial data, so we need one more than time-steps
+    times = 1:(time_steps + 1)
 
-	# Only plot subset of points to prevent large file sizes
-	plot_times = 1:Int(floor(length(times)/1000)):length(times)
+    # Only plot subset of points to prevent large file sizes
+    plot_times = 1:Int(floor(length(times) / 1000)):length(times)
 
-	# Plot fraction communicative
-	fig = Figure()
-	ax1 = Axis(fig[1,1],
-		  title = L"Strong selection $\delta = 0.2$",
-		  xlabel = "Time",
-		  ylabel = "Frequency of communicative strategies",
-		  limits = (nothing, nothing, -0.05, 1.05),
-		  )
-	strategy_parity_colors = Dict(all_communicative => :lightgrey, all_noncommunicative => :darkgrey)
+    # Plot fraction communicative
+    fig = Figure()
+    ax1 = Axis(fig[1, 1];
+               title=L"Strong selection $\delta = 0.2$",
+               xlabel="Time",
+               ylabel="Frequency of communicative strategies",
+               limits=(nothing, nothing, -0.05, 1.05))
+    strategy_parity_colors = Dict(all_communicative => :lightgrey,
+                                  all_noncommunicative => :darkgrey)
 
-	colors_game_type = getindex.(Ref(game_type_colors), data["most_common_game_types"][plot_times])
-	colors = [strategy_parity != mixed ? strategy_parity_colors[strategy_parity] : color_game_type for (strategy_parity, color_game_type) in zip(data["strategy_parity"], colors_game_type)]
-	li1 = lines!(ax1, times[plot_times], data["fraction_communicative"][plot_times], color=colors)
+    colors_game_type = getindex.(Ref(game_type_colors),
+                                 data["most_common_game_types"][plot_times])
+    colors = [strategy_parity != mixed ? strategy_parity_colors[strategy_parity] :
+              color_game_type
+              for (strategy_parity, color_game_type) in
+                  zip(data["strategy_parity"], colors_game_type)]
+    li1 = lines!(ax1, times[plot_times], data["fraction_communicative"][plot_times];
+                 color=colors)
 
-	# Plot order parameter
-	ax2 = Axis(fig[1,1],
-		  ylabel = "Frequency of communicative strategies",
-		  limits = (nothing, nothing, -0.05, 1.05),
-		  yaxisposition=:right,
-		  yticklabelcolor=:orange)
-	hidespines!(ax2)
-	hidexdecorations!(ax2)
-	li2 = lines!(ax2, times[plot_times], data["order_parameters"][plot_times], color=:orange)
+    # Plot order parameter
+    ax2 = Axis(fig[1, 1];
+               ylabel="Frequency of communicative strategies",
+               limits=(nothing, nothing, -0.05, 1.05),
+               yaxisposition=:right,
+               yticklabelcolor=:orange)
+    hidespines!(ax2)
+    hidexdecorations!(ax2)
+    li2 = lines!(ax2, times[plot_times], data["order_parameters"][plot_times];
+                 color=:orange)
 
-	# Add legend
-	axislegend(ax1, [li1, li2], ["frequency_communicative", "Order parameter"], position=:rb)
+    # Add legend
+    axislegend(ax1, [li1, li2], ["frequency_communicative", "Order parameter"];
+               position=:rb)
 
-	# Plot histogram of game types
-	game_parity_or_type = [strategy_parity != mixed ? strategy_parity : game_type for (strategy_parity, game_type) in zip(data["strategy_parity"], data["most_common_game_types"])]
-	hist_data = countmap(String.(Symbol.(game_parity_or_type)))
-	ax3 = Axis(fig[2,1],
-		  title=L"Strong selection $\delta = 0.2$",
-		  limits = (nothing, nothing, 0, nothing),
-		  xticks = (1:length(keys(hist_data)), collect(keys(hist_data))),
-		  )
-	barplot!(ax3, collect(values(hist_data)))
+    # Plot histogram of game types
+    game_parity_or_type = [strategy_parity != mixed ? strategy_parity : game_type
+                           for (strategy_parity, game_type) in
+                               zip(data["strategy_parity"], data["most_common_game_types"])]
+    hist_data = countmap(String.(Symbol.(game_parity_or_type)))
+    ax3 = Axis(fig[2, 1];
+               title=L"Strong selection $\delta = 0.2$",
+               limits=(nothing, nothing, 0, nothing),
+               xticks=(1:length(keys(hist_data)), collect(keys(hist_data))))
+    barplot!(ax3, collect(values(hist_data)))
 
-	# Save figure
-	filename = plotsdir("timeseries", savename(config, "png"))
-	save(filename, fig)
+    # Save figure
+    filename = plotsdir("timeseries", savename(config, "png"))
+    save(filename, fig)
 
-	return fig
+    return fig
 end
 
-function plot_graph_evolution(B_factor::Real, selection_strength::Real, symmetry_breaking::Real, adj_matrix_source::String="well-mixed", payoff_update_method::String="single-update",time_steps::Integer=80_000)
-	# Load results
-	config = @strdict(adj_matrix_source,payoff_update_method,time_steps,B_factor,selection_strength,symmetry_breaking)
-	data, _ = produce_or_load(calc_timeseries, config, datadir("timeseries"))
+function plot_graph_evolution(B_factor::Real, selection_strength::Real,
+                              symmetry_breaking::Real,
+                              adj_matrix_source::String="well-mixed",
+                              payoff_update_method::String="single-update",
+                              time_steps::Integer=80_000)
+    # Load results
+    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_factor,
+                      selection_strength, symmetry_breaking)
+    data, _ = produce_or_load(calc_timeseries, config, datadir("timeseries"))
 
-	# Generate graph
-	interaction_adj_matrix, _ = get_adj_matrices(adj_matrix_source)
-	graph = SimpleDiGraph(interaction_adj_matrix)
+    # Generate graph
+    interaction_adj_matrix, _ = get_adj_matrices(adj_matrix_source)
+    graph = SimpleDiGraph(interaction_adj_matrix)
 
-	## Remove self edges for display
-	#self_loops = Iterators.flatten(simplecycles_limited_length(graph,1))
-	#rem_edge!.(Ref(graph), self_loops, self_loops)
+    ## Remove self edges for display
+    #self_loops = Iterators.flatten(simplecycles_limited_length(graph,1))
+    #rem_edge!.(Ref(graph), self_loops, self_loops)
 
-	# Create colormap
-	cooperative_colors = range(colorant"navyblue",
-				   stop=colorant"paleturquoise1",
-				   length=data["nb_phases"])
-	noncooperative_colors = range(colorant"darkred",
-				   stop=colorant"lightsalmon1",
-				   length=data["nb_phases"])
-	colormap = [cooperative_colors; noncooperative_colors]
+    # Create colormap
+    cooperative_colors = range(colorant"navyblue";
+                               stop=colorant"paleturquoise1",
+                               length=data["nb_phases"])
+    noncooperative_colors = range(colorant"darkred";
+                                  stop=colorant"lightsalmon1",
+                                  length=data["nb_phases"])
+    colormap = [cooperative_colors; noncooperative_colors]
 
-	# Apply colormap
-	colors = colormap[data["all_populations"]]
+    # Apply colormap
+    colors = colormap[data["all_populations"]]
 
-	# Set animation parameters
-	num_times = size(data["all_populations"],2)
-	total_time_s = 10
-	framerate_Hz = 30
-	time_stride = round(num_times / (framerate_Hz * total_time_s))
+    # Set animation parameters
+    num_times = size(data["all_populations"], 2)
+    total_time_s = 10
+    framerate_Hz = 30
+    time_stride = round(num_times / (framerate_Hz * total_time_s))
 
-	# Generate animation
-	time = Observable(1)
+    # Generate animation
+    time = Observable(1)
 
-	# Calculate correlation
-	correlation = cor(transpose(data["all_populations"]))
+    # Calculate correlation
+    correlation = cor(transpose(data["all_populations"]))
 
-	## Create custom layout based on correlation
-	#quantile_cutoff = 0.75
-	#correlation_cutoff = quantile!(filter(!isnan, correlation), quantile_cutoff)
-	#correlation_mask = correlation .> quantile_cutoff
-	#layout = spring(correlation_mask)
-	layout = Stress()
+    ## Create custom layout based on correlation
+    #quantile_cutoff = 0.75
+    #correlation_cutoff = quantile!(filter(!isnan, correlation), quantile_cutoff)
+    #correlation_mask = correlation .> quantile_cutoff
+    #layout = spring(correlation_mask)
+    layout = Stress()
 
-	# Create plot
-	color_observable = @lift(colors[:,$time])
-	fig, ax, graph_plot = graphplot(graph, node_color = color_observable, layout = layout,
-					arrow_show = false, edge_color = (:black, 0.05),
-					edge_plottype = :linesegments)
+    # Create plot
+    color_observable = @lift(colors[:, $time])
+    fig, ax, graph_plot = graphplot(graph; node_color=color_observable, layout=layout,
+                                    arrow_show=false, edge_color=(:black, 0.05),
+                                    edge_plottype=:linesegments)
 
-
-	record(fig, plotsdir("graph_animations", savename(config, "mp4")), 1:time_stride:num_times;
-	       framerate = framerate_Hz) do t
-	    time[] = t
-        end
-	return fig
+    record(fig, plotsdir("graph_animations", savename(config, "mp4")),
+           1:time_stride:num_times;
+           framerate=framerate_Hz) do t
+        return time[] = t
+    end
+    return fig
 end
 
 function save_heatmap()
-	fig, ax, hm = heatmap(payoff_matrix(20, 1, 0.5, 0.1))
+    fig, ax, hm = heatmap(payoff_matrix(20, 1, 0.5, 0.1))
 
-	# Add colorbar
-	Colorbar(fig[:, end+1], hm)
+    # Add colorbar
+    Colorbar(fig[:, end + 1], hm)
 
-	# Save figure
-	filename = plotsdir("heatmap.png")
-	save(filename, fig)
+    # Save figure
+    filename = plotsdir("heatmap.png")
+    save(filename, fig)
 
-	return fig
+    return fig
 end
 
 function plot_payoff_regions()
@@ -831,26 +938,26 @@ function plot_payoff_regions()
     payoff_mat = payoff_matrix(1, B_on_c, beta_on_c, 1)
 
     function inequality_to_hrep(inequality::SymbolicUtils.BasicSymbolic{Bool})
-	    args = arguments(inequality)
-	    if operation(inequality) in [<, <=]
-		    less_than = args[1] - args[2]
-	    elseif operation(inequality) in [>, >=]
-		    less_than = args[2] - args[1]
-	    else
-		    throw(ArgumentError("Not an inequality"))
-	    end
-	    xcoeff = Symbolics.coeff(less_than, B_on_c)
-	    ycoeff = Symbolics.coeff(less_than, beta_on_c)
-	    # constant = Symbolics.coeff(less_than) # Note: this seems give the
-	    # wrong answer if the less_than expression is a negative monomial
-	    # in one of the variables (e.g. -beta_on_c); specifically, while it
-	    # should return 0 as the constant term, it returns the monomal
-	    # (e.g. -beta_on_c)
-	    # As a workaround, subtract the xcoeff and ycoeff to get the
-	    # remainder which is equal to the constant as long as the less_than
-	    # expression is of the form m*B_on_c + n*beta_on_c + p
-	    constant = (less_than - xcoeff*B_on_c - ycoeff*beta_on_c).val
-	    return HalfSpace([xcoeff, ycoeff], -constant)
+        args = arguments(inequality)
+        if operation(inequality) in [<, <=]
+            less_than = args[1] - args[2]
+        elseif operation(inequality) in [>, >=]
+            less_than = args[2] - args[1]
+        else
+            throw(ArgumentError("Not an inequality"))
+        end
+        xcoeff = Symbolics.coeff(less_than, B_on_c)
+        ycoeff = Symbolics.coeff(less_than, beta_on_c)
+        # constant = Symbolics.coeff(less_than) # Note: this seems give the
+        # wrong answer if the less_than expression is a negative monomial
+        # in one of the variables (e.g. -beta_on_c); specifically, while it
+        # should return 0 as the constant term, it returns the monomal
+        # (e.g. -beta_on_c)
+        # As a workaround, subtract the xcoeff and ycoeff to get the
+        # remainder which is equal to the constant as long as the less_than
+        # expression is of the form m*B_on_c + n*beta_on_c + p
+        constant = (less_than - xcoeff * B_on_c - ycoeff * beta_on_c).val
+        return HalfSpace([xcoeff, ycoeff], -constant)
     end
 
     # Define image borders otherwise the unbounded regions will be truncated to the smallest possible subset
@@ -858,41 +965,46 @@ function plot_payoff_regions()
 
     # Plot regions
     fig = Figure()
-    ax = Axis(fig[1,1],
-          xlabel = L"Benefit of mutual communication $B(\delta \phi)/c$",
-          ylabel = L"Benefit of unilateral communication $\beta(\delta \phi)/c$",
-	  limits = (0, 4, 0, 4),
-          )
+    ax = Axis(fig[1, 1];
+              xlabel=L"Benefit of mutual communication $B(\delta \phi)/c$",
+              ylabel=L"Benefit of unilateral communication $\beta(\delta \phi)/c$",
+              limits=(0, 4, 0, 4))
 
     for i in 1:2
-	    R = payoff_mat[1,1] # Reward
-	    S = payoff_mat[1,2] # Sucker's payoff
-	    T = payoff_mat[2,1] # Temptation
-	    P = payoff_mat[2,2] # Punishment
+        R = payoff_mat[1, 1] # Reward
+        S = payoff_mat[1, 2] # Sucker's payoff
+        T = payoff_mat[2, 1] # Temptation
+        P = payoff_mat[2, 2] # Punishment
 
-	    for game_type in instances(GameType)
-		    poly = polyhedron(intersect(inequality_to_hrep.(map(x -> x.val, [game_type_inequalities(R,S,T,P)[game_type]..., image_borders...]))...))
-		    if Polyhedra.volume(poly) == 0
-			    continue
-		    end
-		    mesh!(ax, Polyhedra.Mesh{2}(poly), color = game_type_colors[game_type])
-	    end
+        for game_type in instances(GameType)
+            poly = polyhedron(intersect(inequality_to_hrep.(map(x -> x.val,
+                                                                [game_type_inequalities(R,
+                                                                                        S,
+                                                                                        T,
+                                                                                        P)[game_type]...,
+                                                                 image_borders...]))...))
+            if Polyhedra.volume(poly) == 0
+                continue
+            end
+            mesh!(ax, Polyhedra.Mesh{2}(poly); color=game_type_colors[game_type])
+        end
 
-	    # Swap C <-> N
-	    swap_strategies!(payoff_mat)
+        # Swap C <-> N
+        swap_strategies!(payoff_mat)
     end
 
     # Plot guide lines
-    ablines!(ax, 0, 1, color = :grey)
-    ablines!(ax, -1, 1, color = :grey)
-    hlines!(ax, [1], color = :grey)
-    vlines!(ax, [1], color = :grey)
+    ablines!(ax, 0, 1; color=:grey)
+    ablines!(ax, -1, 1; color=:grey)
+    hlines!(ax, [1]; color=:grey)
+    vlines!(ax, [1]; color=:grey)
 
     # Add legend
     axislegend(ax,
-	       [PolyElement(color = game_type_colors[game_type], strokewidth = 1, strokecolor = :grey) for game_type in instances(GameType)],
-	       [game_type_full_names[game_type] for game_type in instances(GameType)],
-	       position = :lt)
+               [PolyElement(; color=game_type_colors[game_type], strokewidth=1,
+                            strokecolor=:grey) for game_type in instances(GameType)],
+               [game_type_full_names[game_type] for game_type in instances(GameType)];
+               position=:lt)
 
     # Save figure
     filename = plotsdir("payoff_regions.png")
@@ -902,56 +1014,59 @@ function plot_payoff_regions()
 end
 
 function calc_coalescence_times(adj_matrix_source::String="well-mixed")
-	# Generate graph
-	interaction_adj_matrix, _ = get_adj_matrices(adj_matrix_source)
-	graph = SimpleDiGraph(interaction_adj_matrix)
-	return calc_coalescence_times(graph)
+    # Generate graph
+    interaction_adj_matrix, _ = get_adj_matrices(adj_matrix_source)
+    graph = SimpleDiGraph(interaction_adj_matrix)
+    return calc_coalescence_times(graph)
 end
 
 function calc_coalescence_times(graph::Graphs.SimpleGraphs.AbstractSimpleGraph)
-	# Take cartesian product
-	cart_prod = cartesian_product(graph, graph)
+    # Take cartesian product
+    cart_prod = cartesian_product(graph, graph)
 
-	# Calculate Degree vector and Laplacian matrix
-	degree_cartProd = degree(cart_prod)
-	laplacian_cartProd = laplacian_matrix(cart_prod)
+    # Calculate Degree vector and Laplacian matrix
+    degree_cartProd = degree(cart_prod)
+    laplacian_cartProd = laplacian_matrix(cart_prod)
 
-	# Get the off-diagonal indices
-	indices_offDiag = [i for i in CartesianIndices((1:size(graph,1),1:size(graph,1))) if i[1] != i[2]]
-	indicesLinear_offDiag = LinearIndices((1:size(graph,1),1:size(graph,1)))[indices_offDiag]
+    # Get the off-diagonal indices
+    indices_offDiag = [i
+                       for i in CartesianIndices((1:size(graph, 1), 1:size(graph, 1)))
+                       if i[1] != i[2]]
+    indicesLinear_offDiag = LinearIndices((1:size(graph, 1), 1:size(graph, 1)))[indices_offDiag]
 
-	# Get the off-diagonal parts of Degree vector and Laplacian matrix
-	degree_cartProd_offDiag = degree_cartProd[indicesLinear_offDiag]
-	laplacian_cartProd_offDiag = laplacian_cartProd[indicesLinear_offDiag,indicesLinear_offDiag]
+    # Get the off-diagonal parts of Degree vector and Laplacian matrix
+    degree_cartProd_offDiag = degree_cartProd[indicesLinear_offDiag]
+    laplacian_cartProd_offDiag = laplacian_cartProd[indicesLinear_offDiag,
+                                                    indicesLinear_offDiag]
 
-	# Solve for coalescence time matrix
-	#coalescence_matrix_offDiag = laplacian_cartProd_offDiag \ degree_cartProd_offDiag
-	(pfunc, h) = cmg_preconditioner_lap(Float64.(laplacian_cartProd_offDiag))
-	coalescence_matrix_offDiag = pfunc(Float64.(degree_cartProd_offDiag))
-	coalescence_matrix = sparse([v[1] for v in indices_offDiag],
-				    [v[2] for v in indices_offDiag],
-				    Vector(coalescence_matrix_offDiag))
+    # Solve for coalescence time matrix
+    #coalescence_matrix_offDiag = laplacian_cartProd_offDiag \ degree_cartProd_offDiag
+    (pfunc, h) = cmg_preconditioner_lap(Float64.(laplacian_cartProd_offDiag))
+    coalescence_matrix_offDiag = pfunc(Float64.(degree_cartProd_offDiag))
+    coalescence_matrix = sparse([v[1] for v in indices_offDiag],
+                                [v[2] for v in indices_offDiag],
+                                Vector(coalescence_matrix_offDiag))
 
-	return coalescence_matrix
+    return coalescence_matrix
 end
 
 function get_connectome()
-	connectome_and_muscles = get_connectome_labelled()["connectome"]
-	# Remove connections to muscles
-	connectome = connectome_and_muscles[:, [1:20..., 51:322..., 438:445...]]
-	# Replace "Missing" data with zeros
-	replace!(connectome, missing => 0)
-	return connectome
+    connectome_and_muscles = get_connectome_labelled()["connectome"]
+    # Remove connections to muscles
+    connectome = connectome_and_muscles[:, [1:20..., 51:322..., 438:445...]]
+    # Replace "Missing" data with zeros
+    replace!(connectome, missing => 0)
+    return connectome
 end
 
 function get_connectome_labelled()
-	connectome_and_muscles_with_labels = read(dataset("connectome-cook"), Matrix)
-	row_labels = connectome_and_muscles_with_labels[:,1]
-	col_labels = connectome_and_muscles_with_labels[1,:]
-	connectome_and_muscles = connectome_and_muscles_with_labels[2:end,2:end]
-	results = Dict("connectome" => connectome_and_muscles, "row_labels" =>
-		       row_labels, "col_labels" => col_labels)
-	return results
+    connectome_and_muscles_with_labels = read(dataset("connectome-cook"), Matrix)
+    row_labels = connectome_and_muscles_with_labels[:, 1]
+    col_labels = connectome_and_muscles_with_labels[1, :]
+    connectome_and_muscles = connectome_and_muscles_with_labels[2:end, 2:end]
+    results = Dict("connectome" => connectome_and_muscles, "row_labels" => row_labels,
+                   "col_labels" => col_labels)
+    return results
 end
 
 end

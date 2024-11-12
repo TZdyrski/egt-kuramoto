@@ -11,11 +11,25 @@ uuid = "3390cb2b-6d63-4564-8841-af0330d26d1a"
 description = "Cook 2019 C. elegans connectome"
 
     [[connectome-cook.storage]]
+    driver = "filesystem"
+    checksum = "k12:33f530402e3f4ac495d8fafe8515269f"
+    path = "data/external/SI 5 Connectome adjacency matrices.xlsx"
+
+    [[connectome-cook.loader]]
+    driver = "xlsx"
+    range = "C3:QN303"
+    sheet = "hermaphrodite chemical"
+
+[[connectome-cook-web]]
+uuid = "3390cb2b-6d63-4564-8841-af0330d26d1a"
+description = "Cook 2019 C. elegans connectome"
+
+    [[connectome-cook-web.storage]]
     driver = "web"
     checksum = "k12:33f530402e3f4ac495d8fafe8515269f"
     url = "https://github.com/openworm/ConnectomeToolbox/raw/05c50d5d197bdb7b1607c480a4f9e4aef9287232/cect/data/SI%205%20Connectome%20adjacency%20matrices.xlsx"
 
-    [[connectome-cook.loader]]
+    [[connectome-cook-web.loader]]
     driver = "xlsx"
     range = "C3:QN303"
     sheet = "hermaphrodite chemical"

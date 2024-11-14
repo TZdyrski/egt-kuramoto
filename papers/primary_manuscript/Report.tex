@@ -37,44 +37,55 @@ TODO: Abstract
 \end{abstract}
 
 \begin{fmtext}
-\section{Outline}
+\tableofcontents
+\section{Introduction}
+\subsection{In-group and out-group games}
+\subsection{Multi-game evolution}
+\subsection{Impact of structure on game evolution}
+\subsection{\emph{C.\ Elegans} connectome}
 \end{fmtext}
 
 %\rsbreak
 
 \maketitle
+\section{Methods and models}
+\subsection{Game setup}
+\subsection{Birth-death Moran process}
+\subsection{Statistics collected}
 
-\section{Preliminary Results}
+\section{Results}
+\subsection{Complete graphs}
+\subsection{Structured graphs}
+\subsubsection{Random graphs}
+\subsubsection{\emph{C.\ Elegans}}
+
 \begin{itemize}
-  \item \emph{C.\ Elegans}
+  \item Weighted (connectome) vs.\ unweighted (connectome w/o
+    weights): weighting reduces synchronization
+  \item Connectome is connected, weighted, directed cyclic graph
   \begin{itemize}
-    \item Weighted (connectome) vs.\ unweighted (connectome w/o
-      weights): weighting reduces synchronization
-    \item Connectome is connected, weighted, directed cyclic graph
-    \begin{itemize}
-      \item Therefore, \emph{cannot} directly use
-        \cite{allen2017evolutionary}, since it only applies to undirected
-        graphs
-    \end{itemize}
-    \item Low selection strength ($0.005$) keeps mostly around synchronicity
-      $\approx 1.0$, with a small break to 0.8 \emph{before} $B_{\text{crit}}$
-    \item High selection strength ($0.2$) has low synchronicity
-      ($\approx 0.0$) before $B_{\text{crit}}$ but increases (at roughly
-      $B_{\text{crit}}$) to $\approx 0.5$
-    \item Hence, it seems that
-    \begin{enumerate}
-      \item Neither low nor high selection strength corresponds to
-        well-mixed case
-      \item Low and high selection strengths do not appear to be simple
-        stretching about $B_{\text{crit}}$ as in the well-mixed case
-    \end{enumerate}
+    \item Therefore, \emph{cannot} directly use
+      \cite{allen2017evolutionary}, since it only applies to undirected
+      graphs
   \end{itemize}
-  \item Note: for c-elegans, $B_{\text{factor}} = 1.5$, $2E6$ timesteps,
-    $\delta = 2$, $\mu = 0.2$:
-  \begin{itemize}
-    \item We can calculate the average number of communicative at each
-      time step and calculate the Pearson correlation coefficient of
-      this number against each node's communicative state
+  \item Low selection strength ($0.005$) keeps mostly around synchronicity
+    $\approx 1.0$, with a small break to 0.8 \emph{before} $B_{\text{crit}}$
+  \item High selection strength ($0.2$) has low synchronicity
+    ($\approx 0.0$) before $B_{\text{crit}}$ but increases (at roughly
+    $B_{\text{crit}}$) to $\approx 0.5$
+  \item Hence, it seems that
+  \begin{enumerate}
+    \item Neither low nor high selection strength corresponds to
+      well-mixed case
+    \item Low and high selection strengths do not appear to be simple
+      stretching about $B_{\text{crit}}$ as in the well-mixed case
+  \end{enumerate}
+  \item We can calculate the average number of communicative at each
+    time step and calculate the Pearson correlation coefficient of
+    this number against each node's communicative state:
+  \begin{enumerate}
+    \item Results for c-elegans, $B_{\text{factor}} = 1.5$, $2E6$ timesteps,
+      $\delta = 2$, $\mu = 0.2$
     \item We find that the maximum correlation is \num{0.41}, mean
       correlation is \num{0.03}, std correlation is \num{0.06}. That
       is, there are a few outliers with high correlation
@@ -82,32 +93,46 @@ TODO: Abstract
       (all had correlation $\approx \num{0.1}$)
     \item Instead, the ones with correlation above \num{0.35} were
       indices 101, 117, 211, and 219 (IL1L, AUAL, SMBDL, and SIADL)
-  \end{itemize}
-  \item General trends of c-elegans up to $T = 2E8$:
+  \end{enumerate}
+\end{itemize}
+
+\section{Discussion}
+\subsection{Game-type dynamics}
+\subsubsection{Markov chain}
+\subsubsection{Attractors}
+
+\subsection{Forcing strength dependence}
+\begin{itemize}
+  \item For strong forcing $\delta = 0.2$:
   \begin{itemize}
-    \item For strong forcing $\delta = 0.2$:
-    \begin{itemize}
-      \item Undirected and unweighted looks like a spread-out, symmetric
-        version of well-mixed
-      \item Adding weights suppresses communication, lowering ceiling
-        for fraction of communication from \num{1} to \num{0.8}
-      \item Adding directedness introduces strange staircase-like shape
-        and slightly depresses ceiling from \num{1} to \num{0.9}
-      \item Full weighted, directed version shows both staircase-like
-        shape and strongly suppressed ceiling to \num{0.6}
-    \end{itemize}
-    \item For weak forcing $\delta = 0.005$:
-    \begin{itemize}
-      \item Undirected and unweighted has strange staircase-like shape
-      \item Adding weights sharpens jump around $B_\text{crit}$, nearly
-        matching well-mixed case
-      \item Adding directedness strongly suppresses selection, with
-        ceiling and floor compressed to the range $[0.3,0.6]$
-      \item Full weighted, directed version shows strange, non-monotonic
-        behavior. More investigation is needed
-    \end{itemize}
+    \item Undirected and unweighted looks like a spread-out, symmetric
+      version of well-mixed
+    \item Adding weights suppresses communication, lowering ceiling
+      for fraction of communication from \num{1} to \num{0.8}
+    \item Adding directedness introduces strange staircase-like shape
+      and slightly depresses ceiling from \num{1} to \num{0.9}
+    \item Full weighted, directed version shows both staircase-like
+      shape and strongly suppressed ceiling to \num{0.6}
+  \end{itemize}
+  \item For weak forcing $\delta = 0.005$:
+  \begin{itemize}
+    \item Undirected and unweighted has strange staircase-like shape
+    \item Adding weights sharpens jump around $B_\text{crit}$, nearly
+      matching well-mixed case
+    \item Adding directedness strongly suppresses selection, with
+      ceiling and floor compressed to the range $[0.3,0.6]$
+    \item Full weighted, directed version shows strange, non-monotonic
+      behavior. More investigation is needed
   \end{itemize}
 \end{itemize}
+
+\subsection{Structured graph effects}
+\subsubsection{Random graphs}
+\subsubsection{\emph{C.\ Elegans}}
+
+\section{Conclusion}
+\subsection{Key results}
+\subsection{Next steps}
 
 \ack{TODO: Acknowledgements}
 
@@ -115,3 +140,5 @@ TODO: Abstract
 \bibliography{references.bib}
 
 \end{document}
+
+# vim: spelllang=en_gb

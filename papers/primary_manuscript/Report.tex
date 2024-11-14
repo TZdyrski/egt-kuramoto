@@ -1,13 +1,51 @@
-\documentclass{article}
-\usepackage[abbreviations]{foreign}
-\usepackage{biblatex}
-\usepackage{siunitx}
-\usepackage{amsmath}
-\addbibresource{references.bib}
+\documentclass[openacc]{class/rsprocb_new}
+
+% Import custom style file containing common packages and options
+\usepackage{preamble}
+\graphicspath{{class/}{Figures/}}
+
+\titlehead{Research}
 
 \begin{document}
+
+%%%% Article title to be placed here
+\title{In-Group and Out-Group Evolutionary Games}
+
+\author{
+\href{https://orcid.org/0000-0003-3039-172X}{Thomas Zdyrski}$^{1}$
+and
+\href{https://orcid.org/0000-0001-8252-1990}{Feng Fu}$^{1}$
+}
+
+%%%%%%%%% Insert author address here
+\address{$^{1}$Department of Mathematics, Dartmouth College, Hanover, NH 03755
+}
+
+%%%% Subject entries to be placed here %%%%
+\subject{xxxxx, xxxxx, xxxx}
+
+%%%% Keyword entries to be placed here %%%%
+\keywords{xxxx, xxxx, xxxx}
+
+%%%% Insert corresponding author and its email address
+\corres{Thomas Zdyrski\\
+\email{thomas.zdyrski@dartmouth.edu}}
+
+\begin{abstract}
+TODO: Abstract
+\absbreak
+\end{abstract}
+
+\begin{fmtext}
 \section{Outline}
-\begin{enumerate}
+\end{fmtext}
+
+%\rsbreak
+
+\maketitle
+
+\section{Preliminary Results}
+\begin{itemize}
   \item \emph{C.\ Elegans}
   \begin{itemize}
     \item Weighted (connectome) vs.\ unweighted (connectome w/o
@@ -15,7 +53,7 @@
     \item Connectome is connected, weighted, directed cyclic graph
     \begin{itemize}
       \item Therefore, \emph{cannot} directly use
-        \textcite{allen2017evolutionary}, since it only applies to undirected
+        \cite{allen2017evolutionary}, since it only applies to undirected
         graphs
     \end{itemize}
     \item Low selection strength ($0.005$) keeps mostly around synchronicity
@@ -31,9 +69,6 @@
         stretching about $B_{\text{crit}}$ as in the well-mixed case
     \end{enumerate}
   \end{itemize}
-\end{enumerate}
-\section{Results}
-\begin{itemize}
   \item Note: for c-elegans, $B_{\text{factor}} = 1.5$, $2E6$ timesteps,
     $\delta = 2$, $\mu = 0.2$:
   \begin{itemize}
@@ -74,6 +109,9 @@
   \end{itemize}
 \end{itemize}
 
-\printbibliography
+\ack{TODO: Acknowledgements}
+
+\bibliographystyle{class/RS}
+\bibliography{references.bib}
 
 \end{document}

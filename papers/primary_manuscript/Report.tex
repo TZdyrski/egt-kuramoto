@@ -41,6 +41,25 @@ TODO: Abstract
 \section{Results}
 \subsection{Complete graphs}
 \subsection{Structured graphs}
+\begin{itemize}
+  \item For the strong-selection case ($B_0 = 2.5c$ and $\delta = 5$
+    with $t_{\text{step}} = \num{2e4}$):
+  \begin{itemize}
+    \item The weightedness has virtually no effect
+    \item The directionality generally enhances cooperation
+      and suppresses the order parameter to approximately
+      \num{0.5} each
+    \begin{itemize}
+      \item The one exception case is $\alpha = \num{0.25}$ where a
+        chicken-type game with relatively high order parameter
+        (\num{0.7}) and low cooperation (\num{0.3}) change to a
+        deadlock-type game with medium order parameter and cooperation
+        (approximately \num{0.5} each)
+    \end{itemize}
+  \end{itemize}
+\item For the weak-selection case ($B_0 = 1.5c$ and $\delta = 0.2$) with
+  $t_{\text{step}} = \num{2e4}$), things change dramatically
+\end{itemize}
 \subsubsection{Random graphs}
 \subsubsection{\emph{C.\ Elegans}}
 
@@ -88,7 +107,7 @@ TODO: Abstract
 
 \subsection{Forcing strength dependence}
 \begin{itemize}
-  \item For strong forcing $\delta = 0.2$:
+  \item For strong selection $\delta = 0.2$:
   \begin{itemize}
     \item Undirected and unweighted looks like a spread-out, symmetric
       version of well-mixed
@@ -99,7 +118,7 @@ TODO: Abstract
     \item Full weighted, directed version shows both staircase-like
       shape and strongly suppressed ceiling to \num{0.6}
   \end{itemize}
-  \item For weak forcing $\delta = 0.005$:
+  \item For weak selection $\delta = 0.005$:
   \begin{itemize}
     \item Undirected and unweighted has strange staircase-like shape
     \item Adding weights sharpens jump around $B_\text{crit}$, nearly

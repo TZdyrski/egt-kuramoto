@@ -696,6 +696,17 @@ function plot_cumulative(selection_strength::Real, symmetry_breaking::Real,
                       selection_strength, symmetry_breaking)
     data, _ = produce_or_load(calc_cumulative, config, datadir("cumulative"))
 
+    # Produce figure
+    fig = generate_cumulative_plot(data; selection_strength)
+
+    # Save figure
+    filename = plotsdir("cumulative", savename(config, "png"))
+    save(filename, fig)
+
+    return fig
+end
+
+function generate_cumulative_plot(data::Dict; selection_strength::Real)
     # Plot
     fig = Figure()
     ax = Axis(fig[1, 1];
@@ -712,10 +723,6 @@ function plot_cumulative(selection_strength::Real, symmetry_breaking::Real,
 
     # Add legend
     axislegend(ax; position=:lt)
-
-    # Save figure
-    filename = plotsdir("cumulative", savename(config, "png"))
-    save(filename, fig)
 
     return fig
 end
@@ -798,6 +805,17 @@ function plot_timeseries(B_factor::Real, selection_strength::Real, symmetry_brea
     data = produce_or_load(calc_timeseries_statistics, config,
                            datadir("timeseries_statistics"))[1]
 
+    # Produce figure
+    fig = generate_timeseries_plot(data; time_steps)
+
+    # Save figure
+    filename = plotsdir("timeseries", savename(config, "png"))
+    save(filename, fig)
+
+    return fig
+end
+
+function generate_timeseries_plot(data; time_steps::Integer)
     # Create array of times
     # Note: the populations include the initial data, so we need one more than time-steps
     times = 1:(time_steps + 1)
@@ -849,10 +867,6 @@ function plot_timeseries(B_factor::Real, selection_strength::Real, symmetry_brea
                limits=(nothing, nothing, 0, nothing),
                xticks=(1:length(keys(hist_data)), collect(keys(hist_data))))
     barplot!(ax3, collect(values(hist_data)))
-
-    # Save figure
-    filename = plotsdir("timeseries", savename(config, "png"))
-    save(filename, fig)
 
     return fig
 end

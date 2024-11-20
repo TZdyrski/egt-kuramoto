@@ -644,11 +644,10 @@ end
 
 function calc_cumulative(config::Dict)
     # Unpack values
-    @unpack selection_strength, symmetry_breaking, adj_matrix_source, payoff_update_method, time_steps = config
+    @unpack selection_strength, symmetry_breaking, adj_matrix_source, payoff_update_method, time_steps, nb_phases = config
 
     # Define system
     cost = 0.1
-    nb_phases = 20
     mutation_rate = 0.0001
 
     # Define interaction graph and reproduction graphs
@@ -688,11 +687,12 @@ end
 function plot_cumulative(selection_strength::Real, symmetry_breaking::Real,
                          adj_matrix_source::String="well-mixed",
                          payoff_update_method::String="single-update",
-                         time_steps::Integer=2_000_000)
+                         time_steps::Integer=2_000_000,
+			 nb_phases::Integer=20)
 
     # Load results
     config = @strdict(adj_matrix_source, payoff_update_method, time_steps,
-                      selection_strength, symmetry_breaking)
+                      selection_strength, symmetry_breaking, nb_phases)
     data, _ = produce_or_load(calc_cumulative, config, datadir("cumulative"))
 
     # Produce figure
@@ -728,11 +728,10 @@ end
 
 function calc_timeseries(config::Dict)
     # Unpack variables
-    @unpack B_factor, selection_strength, symmetry_breaking, adj_matrix_source, payoff_update_method, time_steps = config
+    @unpack B_factor, selection_strength, symmetry_breaking, adj_matrix_source, payoff_update_method, time_steps, nb_phases = config
 
     # Define system
     cost = 0.1
-    nb_phases = 20
     mutation_rate = 0.0001
     B = cost * B_factor
 
@@ -763,7 +762,7 @@ function calc_timeseries_statistics(config::Dict)
 
     # Unpack variables
     @unpack all_populations, cost, nb_phases, nb_players, mutation_rate, interaction_adj_matrix = data
-    @unpack B_factor, symmetry_breaking, selection_strength, adj_matrix_source, payoff_update_method, time_steps = config
+    @unpack B_factor, symmetry_breaking, selection_strength, adj_matrix_source, payoff_update_method, time_steps, nb_phases = config
 
     # Extract results
     most_common_game_types = dropdims(mapslices(x -> extract_most_common_game_types(x,
@@ -794,10 +793,11 @@ end
 function plot_timeseries(B_factor::Real, selection_strength::Real, symmetry_breaking::Real,
                          adj_matrix_source::String="well-mixed",
                          payoff_update_method::String="single-update",
-                         time_steps::Integer=80_000)
+                         time_steps::Integer=80_000,
+			 nb_phases::Integer=20)
     # Load results
     config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_factor,
-                      symmetry_breaking, selection_strength)
+                      symmetry_breaking, selection_strength, nb_phases)
     data = produce_or_load(calc_timeseries_statistics, config,
                            datadir("timeseries_statistics"))[1]
 
@@ -871,10 +871,11 @@ function plot_graph_evolution(B_factor::Real, selection_strength::Real,
                               symmetry_breaking::Real,
                               adj_matrix_source::String="well-mixed",
                               payoff_update_method::String="single-update",
-                              time_steps::Integer=80_000)
+                              time_steps::Integer=80_000,
+                              nb_phases::Integer=20)
     # Load results
     config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_factor,
-                      selection_strength, symmetry_breaking)
+                      selection_strength, symmetry_breaking, nb_phases)
     data, _ = produce_or_load(calc_timeseries, config, datadir("timeseries"))
 
     # Generate graph

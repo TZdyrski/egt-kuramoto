@@ -543,9 +543,9 @@ end
 @enum StrategyParity all_communicative all_noncommunicative mixed
 
 function check_all_same_strategy(strategies_per_player::Vector{<:Integer},
-                                 nb_strategies::Integer)
+                                 nb_phases::Integer)
     nb_players = length(strategies_per_player)
-    players_per_strategy = extract_counts(strategies_per_player, nb_strategies)
+    players_per_strategy = extract_counts(strategies_per_player, nb_phases)
     # Check if all players were communicative/noncommunicative
     nb_communicative = extract_num_communicative(players_per_strategy)
     if nb_communicative == 0
@@ -562,7 +562,6 @@ function extract_most_common_game_types(strategies_per_player::Vector{<:Integer}
                                         cost::Real,
                                         symmetry_breaking::Real,
                                         nb_phases::Integer,
-                                        nb_strategies::Integer,
                                         interaction_adj_matrix::AbstractMatrix{<:Integer})
     players_per_phase = mod1.(strategies_per_player, nb_phases)
 
@@ -606,8 +605,9 @@ function extract_order_parameters(players_per_strategy::Vector{<:Integer},
     return order_parameters
 end
 
-function extract_counts(strategies_per_player::Vector{<:Integer}, nb_strategies::Integer)
-    counts = zeros(Int, nb_strategies)
+function extract_counts(strategies_per_player::Vector{<:Integer}, nb_phases::Integer)
+    nb_strategies = 2*nb_phases
+    counts = zeros(Int, 2*nb_strategies)
     count!(counts, strategies_per_player)
     return counts
 end
@@ -649,7 +649,6 @@ function calc_cumulative(config::Dict)
     # Define system
     cost = 0.1
     nb_phases = 20
-    nb_strategies = nb_phases * 2
     mutation_rate = 0.0001
 
     # Define interaction graph and reproduction graphs
@@ -734,7 +733,6 @@ function calc_timeseries(config::Dict)
     # Define system
     cost = 0.1
     nb_phases = 20
-    nb_strategies = nb_phases * 2
     mutation_rate = 0.0001
     B = cost * B_factor
 
@@ -756,8 +754,7 @@ function calc_timeseries(config::Dict)
                                   time_steps, payoff_update_method)
 
     # Package results
-    return @strdict(all_populations, cost, nb_phases, nb_players, nb_strategies,
-                    mutation_rate, interaction_adj_matrix)
+    return @strdict(all_populations, cost, nb_phases, nb_players, mutation_rate, interaction_adj_matrix)
 end
 
 function calc_timeseries_statistics(config::Dict)
@@ -765,7 +762,7 @@ function calc_timeseries_statistics(config::Dict)
     data = calc_timeseries(config)
 
     # Unpack variables
-    @unpack all_populations, cost, nb_phases, nb_players, nb_strategies, mutation_rate, interaction_adj_matrix = data
+    @unpack all_populations, cost, nb_phases, nb_players, mutation_rate, interaction_adj_matrix = data
     @unpack B_factor, symmetry_breaking, selection_strength, adj_matrix_source, payoff_update_method, time_steps = config
 
     # Extract results
@@ -778,12 +775,11 @@ function calc_timeseries_statistics(config::Dict)
                                                                                     cost,
                                                                                     symmetry_breaking,
                                                                                     nb_phases,
-                                                                                    nb_strategies,
                                                                                     interaction_adj_matrix),
                                                 all_populations; dims=1); dims=1)
-    strategy_parity = dropdims(mapslices(x -> check_all_same_strategy(x, nb_strategies),
+    strategy_parity = dropdims(mapslices(x -> check_all_same_strategy(x, nb_phases),
                                          all_populations; dims=1); dims=1)
-    counts = mapslices(x -> extract_counts(x, nb_strategies), all_populations; dims=1)
+    counts = mapslices(x -> extract_counts(x, nb_phases), all_populations; dims=1)
     nb_communicative = map(x -> extract_num_communicative(Vector(x)),
                            eachslice(counts; dims=2))
     fraction_communicative = nb_communicative / nb_players

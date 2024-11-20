@@ -607,16 +607,16 @@ end
 
 function extract_counts(strategies_per_player::Vector{<:Integer}, nb_phases::Integer)
     nb_strategies = 2*nb_phases
-    counts = zeros(Int, 2*nb_strategies)
+    counts = zeros(Int, nb_strategies)
     count!(counts, strategies_per_player)
     return counts
 end
 
-function get_adj_matrices(adj_matrix_source::String)
+function get_adj_matrices(adj_matrix_source::String; nb_players_well_mixed::Integer = 20)
     # Define interaction graph without loops
     # Define reproduction graph with loops
     if adj_matrix_source == "well-mixed"
-        interaction_adj_matrix = ones(Int64, 20, 20) - I
+        interaction_adj_matrix = ones(Int64, nb_players_well_mixed, nb_players_well_mixed) - I
         reproduction_adj_matrix = interaction_adj_matrix + I
     elseif adj_matrix_source == "c-elegans-unweighted"
         interaction_adj_matrix = collect(round.(get_connectome()) .!= 0)

@@ -703,7 +703,7 @@ function plot_cumulative(selection_strength::Real, symmetry_breaking::Real,
     data, _ = produce_or_load(calc_cumulative, config, datadir("cumulative"))
 
     # Produce figure
-    fig = generate_cumulative_plot(data; selection_strength)
+    fig = generate_cumulative_plot(data, config)
 
     # Save figure
     filename = plotsdir("cumulative", savename(config, "png"))
@@ -712,17 +712,17 @@ function plot_cumulative(selection_strength::Real, symmetry_breaking::Real,
     return fig
 end
 
-function generate_cumulative_plot(data::Dict; selection_strength::Real)
+function generate_cumulative_plot(data::Dict, config::Dict)
     # Plot
     fig = Figure()
     ax = Axis(fig[1, 1];
-              title=L"Selection $\delta = %$(round(selection_strength,sigdigits=2))$",
+	      title=L"Selection $\delta = %$(round(config[\"selection_strength\"],sigdigits=2))$",
               xlabel=L"Maximum benefit of mutual communication, $B(0)$",
               ylabel="Frequency of communicative strategies",
               limits=(nothing, nothing, 0, 1))
     scatter!(ax, data["Bs"], data["fraction_communicative"]; label="Simulation")
     lines!(ax, data["Bs"][begin] .. data["Bs"][end],
-           B0 -> 1 / (1 + exp(selection_strength * (data["nb_players"] - 1) *
+           B0 -> 1 / (1 + exp(config["selection_strength"] * (data["nb_players"] - 1) *
                               ((data["nb_players"] - 1) * data["cost"] -
                                (data["nb_players"] - 2) / 2 * B0))); label="Theory",
            color=:orange)

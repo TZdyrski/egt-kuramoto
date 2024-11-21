@@ -109,7 +109,7 @@ begin
 end
 
 # ╔═╡ 9e64dcc2-574e-4690-a10d-9b45e0ba5219
-!isempty(dict_cumulative_selected) ? local_moran_interaction.generate_cumulative_plot(dict_cumulative_selected; selection_strength) : nothing
+!isempty(dict_cumulative_selected) ? local_moran_interaction.generate_cumulative_plot(dict_cumulative_selected, @strdict(selection_strength)) : nothing
 
 # ╔═╡ 32510bf3-a932-4394-a4fb-8101580a6140
 md"""

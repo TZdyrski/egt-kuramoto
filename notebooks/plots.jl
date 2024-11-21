@@ -54,7 +54,7 @@ end;
 begin
 	selection_strength_bond = @bind selection_strength PlutoUI.Slider([0.005,0.2,5]);
 	symmetry_breaking_bond = @bind symmetry_breaking PlutoUI.Slider(0:0.25:1);
-	matrix_source_bond = @bind matrix_source Select(["well-mixed", "c-elegans-undirected-unweighted", "c-elegans-undirected", "c-elegans-unweighted", "c-elegans"]);
+	matrix_source_bond = @bind matrix_source Select(["well-mixed", "c-elegans-undirected-unweighted", "c-elegans-undirected", "c-elegans-unweighted", "c-elegans", "random-regular-graph", "random-regular-digraph"]);
 	B_factor_bond = @bind B_factor PlutoUI.Slider([1.5,2.5]);
 end;
 

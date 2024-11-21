@@ -612,11 +612,17 @@ function extract_counts(strategies_per_player::Vector{<:Integer}, nb_phases::Int
     return counts
 end
 
-function get_adj_matrices(adj_matrix_source::String; nb_players_well_mixed::Integer = 20)
+function get_adj_matrices(adj_matrix_source::String; nb_players::Integer = 20, regular_degree::Integer = 10, rng::AbstractRNG=Xoshiro(1))
     # Define interaction graph without loops
     # Define reproduction graph with loops
     if adj_matrix_source == "well-mixed"
-        interaction_adj_matrix = ones(Int64, nb_players_well_mixed, nb_players_well_mixed) - I
+        interaction_adj_matrix = ones(Int64, nb_players, nb_players) - I
+        reproduction_adj_matrix = interaction_adj_matrix + I
+    elseif adj_matrix_source == "random-regular-graph"
+        interaction_adj_matrix = adjacency_matrix(random_regular_graph(nb_players, regular_degree; rng))
+        reproduction_adj_matrix = interaction_adj_matrix + I
+    elseif adj_matrix_source == "random-regular-digraph"
+        interaction_adj_matrix = adjacency_matrix(random_regular_digraph(nb_players, regular_degree; rng))
         reproduction_adj_matrix = interaction_adj_matrix + I
     elseif adj_matrix_source == "c-elegans-unweighted"
         interaction_adj_matrix = collect(round.(get_connectome()) .!= 0)
@@ -637,7 +643,8 @@ function get_adj_matrices(adj_matrix_source::String; nb_players_well_mixed::Inte
         throw(ArgumentError("adj_matrix_source must be a string in set [\"well-mixed\", "
                             * "\"c-elegans\", \"c-elegans-unweighted\", "
                             *
-                            "\"c-elegans-undirected\", \"c-elegans-undirected-unweighted\"]"))
+                            "\"c-elegans-undirected\", \"c-elegans-undirected-unweighted\"
+			    * "\"random-regular-graph\", \"random-regular-digraph\"]"))
     end
     return interaction_adj_matrix, reproduction_adj_matrix
 end

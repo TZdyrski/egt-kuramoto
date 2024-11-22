@@ -723,8 +723,9 @@ function generate_cumulative_plot(data::Dict, config::Dict)
     scatter!(ax, data["Bs"], data["fraction_communicative"]; label="Simulation")
     lines!(ax, data["Bs"][begin] .. data["Bs"][end],
            B0 -> 1 / (1 + exp(config["selection_strength"] * (data["nb_players"] - 1) *
-                              ((data["nb_players"] - 1) * data["cost"] -
-                               (data["nb_players"] - 2) / 2 * B0))); label="Theory",
+                              ((data["nb_players"] - 1) * data["cost"]
+			       + data["nb_players"] * beta0(B0) * (1-2*config["symmetry_breaking"])/2
+                              - (data["nb_players"] - 2) / 2 * B0))); label="Theory",
            color=:orange)
 
     # Add legend

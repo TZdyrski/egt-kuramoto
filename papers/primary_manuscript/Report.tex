@@ -1,14 +1,10 @@
-\documentclass[openacc]{class/rsprocb_new}
+\documentclass[pdflatex,lineno,referee,sn-mathphys-ay]{class/sn-jnl}
 
 % Import custom style file containing common packages and options
 \usepackage{preamble}
-\graphicspath{{class/}{Figures/}}
-
-\titlehead{Research}
 
 \begin{document}
 
-%%%% Article title to be placed here
 \title{In-Group and Out-Group Evolutionary Games}
 
 \author{
@@ -17,37 +13,25 @@ and
 \href{https://orcid.org/0000-0001-8252-1990}{Feng Fu}$^{1}$
 }
 
-%%%%%%%%% Insert author address here
-\address{$^{1}$Department of Mathematics, Dartmouth College, Hanover, NH 03755
+\affil{$^{1}$Department of Mathematics, Dartmouth College, Hanover, NH 03755
 }
 
-%%%% Subject entries to be placed here %%%%
-\subject{xxxxx, xxxxx, xxxx}
+%\keywords{xxxx, xxxx, xxxx}
+%\pw{}
 
-%%%% Keyword entries to be placed here %%%%
-\keywords{xxxx, xxxx, xxxx}
-
-%%%% Insert corresponding author and its email address
-\corres{Thomas Zdyrski\\
-\email{thomas.zdyrski@dartmouth.edu}}
-
-\begin{abstract}
+\abstract{
 TODO: Abstract
-\absbreak
-\end{abstract}
+}
 
-\begin{fmtext}
+\maketitle
 \tableofcontents
+
 \section{Introduction}
 \subsection{In-group and out-group games}
 \subsection{Multi-game evolution}
 \subsection{Impact of structure on game evolution}
 \subsection{\emph{C.\ Elegans} connectome}
-\end{fmtext}
 
-%\rsbreak
-
-\maketitle
 \section{Methods and models}
 \subsection{Game setup}
 \subsection{Birth-death Moran process}
@@ -134,9 +118,10 @@ TODO: Abstract
 \subsection{Key results}
 \subsection{Next steps}
 
-\ack{TODO: Acknowledgements}
+\subsubsection{Acknowledgements}
 
-\bibliographystyle{class/RS}
+\backmatter
+
 \bibliography{references.bib}
 
 \end{document}

@@ -1,12 +1,88 @@
 %! TeX program = lualatex
-\documentclass[pdflatex,lineno,referee,sn-mathphys-ay]{class/sn-jnl}
+\documentclass[pdflatex,lineno,referee,sn-mathphys-ay]{sn-jnl}
+
+% Silence warning from caption about unknown document class
+\usepackage{silence}
+\WarningFilter*{caption}{Unknown document class}
 
 % Import custom style file containing common packages and options
 \usepackage{preamble}
 
+% Define binomial nomenclatures
+\setabbreviationstyle[species]{long-em-short-em}
+\glssetcategoryattribute{species}{nohyper}{true}
+\newabbreviation[category={species}]{celegans}{C. elegans}{Caenorhabditis elegans}
+\newabbreviation[category={species}]{dmelanogaster}{D. melanogaster}{Drosophila melanogaster}
+
+% Define custom macros
+\newcommand{\im}{\mathrm{i}}
+
+% Define pgfplots classes
+\pgfplotsset{simulation scatter/.style={only marks, blue}}
+\pgfplotsset{full theory line/.style={orange}}
+\pgfplotsset{approx theory line/.style={purple, dashed}}
+
+\pgfplotsset{fraction communicative chart/.style={
+        ymin={0},
+        ymax={1},
+        ytick={0.0,0.5,1.0},
+        grid,
+        table/x=B0,
+        table/y=communicative_fraction,
+        cycle list={
+          simulation scatter,
+          full theory line,
+          approx theory line,
+        },
+        enlarge y limits=0.05,
+    }
+}
+
+\pgfplotsset{
+  harmony/.style={fill=Paired-G,draw=Paired-G},
+  chicken/.style={fill=Paired-K,draw=Paired-K},
+  battle/.style={fill=Paired-I,draw=Paired-I},
+  hero/.style={fill=Paired-A,draw=Paired-A},
+  compromise/.style={fill=Paired-C,draw=Paired-C},
+  concord/.style={fill=Paired-D,draw=Paired-D},
+  staghunt/.style={fill=Paired-B,draw=Paired-B},
+  dilemma/.style={fill=Paired-F,draw=Paired-F},
+  deadlock/.style={fill=Paired-H,draw=Paired-H},
+  assurance/.style={fill=Paired-J,draw=Paired-J},
+  coordination/.style={fill=Paired-E,draw=Paired-E},
+  peace/.style={fill=Paired-L,draw=Paired-L},
+  all_communicative/.style={fill=lightgray,draw=lightgray},
+  all_noncommunicative/.style={fill=darkgray,draw=darkgray},
+}
+
+% defines \devendraretval to contain the display name for the column
+% named '#1'
+%
+% #1: a column name
+\def\getcolumndisplayname#1{%
+     % we WANT a group. Otherwise, any values set in these style would
+     % become global and they would be mixed up between different
+     % columns.
+     \begingroup
+         % Access the contents of column's display name programmatrically:
+        \pgfplotstableset{columns/#1/.try}%
+        \pgfkeysgetvalue{/pgfplots/table/column name}\temp
+        \ifx\temp\empty
+            % oh. We have no such value! Ok, use the column name as
+            % such.
+            \edef\temp{#1}%
+        \fi
+        % this here is one of the possible patterns to communicate a
+        % local variable outside of a local group:
+        \global\let\GLOBALTEMP=\temp
+     \endgroup
+     \let\devendraretval=\GLOBALTEMP
+     %
+}%
+
 \begin{document}
 
-\title{In-Group and Out-Group Evolutionary Games}
+\title{Chimera States in \Glsxtrshort{celegans} Model Brain: An EGT Approach}
 
 \author{
 \href{https://orcid.org/0000-0003-3039-172X}{Thomas Zdyrski}$^{1}$
@@ -21,99 +97,905 @@ and
 %\pw{}
 
 \abstract{
-TODO: Abstract
+  We extend the evolutionary Kuramoto model of \citet{tripp2022evolutionary}
+  by introducing an asymmetry between communicator and non-communicator payoffs
+  as well as placing the players on structured interaction and reproduction graphs.
+  We apply the model to the \glsfmtshort{celegans} brain connectome
+  to investigate how well the evolutionary oscillators can model synchronicity of the brain.
+  We then simulate the populations' evolution across a variety of parameter regimes.
+  These results show that weighted interaction graphs,
+  including the \glsfmtshort{celegans} connectome,
+  serve to decrease the overall communicativeness of the population.
+  Additionally, varying the payoff asymmetry changes the types
+  of games the individual players play.
+  Finally, we find chimeric states in the \glsfmtshort{celegans} case
+  which suggests potential connections to previous findings
+  of chimera populations in human brains.
 }
 
 \maketitle
 \tableofcontents
 
+%\section*{TODO}
+%\begin{itemize}
+%  \item Prove analytic prediction of communicative frequency vs $B(0)$
+%    (\ie{} orange line on cumulative plot)
+%  \item Re-run experiments while:
+%  \begin{itemize}
+%    \item Varying $B(0)$ and $\beta(0)$
+%  \end{itemize}
+%  \item Can we predict what game-type will be long-run result?
+%  \item Do evolutionary bottlenecks (like the chicken-game)
+%    necessarily result?
+%  \item Simplifying reduction:
+%  \begin{itemize}
+%    \item Can $n_{\text{phase}} = 20$ case be qualitatively reproduced
+%      with just $n_{\text{phase}} = 2$ case (tuned to have same game
+%      type as long-run result)?
+%    \item Can this be understood as the interaction of two heterogeneous
+%      populations with identical inter-group games and (possibly
+%      distinct) identical intra-group games?
+%  \end{itemize}
+%\end{itemize}
+
 \section{Introduction}
-\subsection{In-group and out-group games}
-\subsection{Multi-game evolution}
 \subsection{Impact of structure on game evolution}
-\subsection{\emph{C.\ Elegans} connectome}
+Evolutionary game theory is the application of evolutionary fitness dynamics
+to population of players with fixed strategies playing repeated games.
+This tool is particularly well-suited to studying how microscopic interaction rules
+give rise to macroscopic population patterns such as cooperation
+and has found use from international politics and ecology
+to protein folding~\citep[\cf{}][and references therein]{traulsen2023future}.
+Evolutionary \emph{graph} theory places evolutionary game theory
+on graphs to investigate the role of structure on population evolution.
+Numerous studies have found that introduction structure
+can qualitatively change the population's evolution.
+For instance, cooperation can be enhanced by
+decreasing the average number of edges~\citep{ohtsuki2006simple},
+or having an intermediate proportion
+of unidirectional edges~\citep{su2022evolution},
+while cooperation is suppressed
+for weighted graphs~\citep{bhaumik2024constant}.
+Thus, the complex influences of
+incompleteness, directedness, and weightedness combine
+to enrich the variety of outcomes for evolving populations.
+
+\subsection{Evolutionary Kuramoto dynamics}
+Evolutionary game theory (EGT) is a tool that extends traditional game theory
+to support populations of non-rational players to understand
+how populations approach equilibria~\citep{weibull1997evolutionary}.
+EGT has proven particularly useful in the study
+of cooperation~\citep[\eg{}][and sources therein]{sigmund1999evolutionary}.
+Previously, \citet{tripp2022evolutionary} created an EGT model
+to capture the behaviour of sinusoidally coupled (\ie{} Kuramoto) oscillators
+using game-theoretic approaches.
+This model allowed them to investigate how cooperation might arise
+amongst collections of communicative and non-communicative neurons
+in the suprachiasmatic nucleus.
+Though permanent cells such as neurons don't reproduce,
+the activation features (\ie{} strategies) can still
+be studied with \emph{evolutionary} game theory
+if learning is treated as
+an evolutionary process~\citep{cohen2009evolutionary}.
+This evolutionary Kuramoto model
+supplemented the usual communicative/non-communicative
+strategy pair with an independent dimension representing the player's ``phase''.
+\Citet{tripp2022evolutionary} assumed a well-mixed model of players
+on a complete graph, and the players' payoffs were modulated
+by a sinusoidal-dependence on their relative phases,
+representing the classic Kuramoto oscillator coupling.
+This study showed the emergence of various communicative (C)
+and non-communicative (N) regimes depending on the relative sizes
+of the joint CC benefit $B_0$, the mixed CN/NC benefit $\beta_0$,
+and the cost $c$ imposed on communicators.
+
+\subsection{Chimera states}
+One intriguing aspect of neurons oscillations
+is the observation of chimera states~\citep
+[\eg{}][and references therein]{majhi2019chimera}.
+These states exhibit the simultaneous existence
+of coherent and incoherent phases~\citep{abrams2004chimera}.
+These chimera states have been proposed
+as a key component of human cognitive organization~\citep{bansal2019cognitive},
+a facilitator of spiking and bursting phases~\citep{santos2017chimera},
+and an outcome of modular networks~\citep{hizanidis2016chimera}.
+Despite the observed importance of these chimera states,
+the facts that give rise to coherent/incoherent coexistence
+remain incompletely characterized.
+
+\subsection{\glsfmtshort{celegans} connectome}
+The nematode \gls{celegans}
+is a model organism for neuronal studies due to
+its relatively simple brain connectome~\citep{cook2019whole}.
+With a connectome containing just \num{302} neurons,
+the hermaphroditic \gls{celegans} is far more tractable to study
+than the nearly \num{100e9} neurons
+in the human brain~\citep[\eg][]{von2016search}.
+Despite their simplicity, models of the \gls{celegans} brain
+still display a wide array of complex phenomena including
+topologically-central rich clubs
+crucial to motor neurons~\citep{towlson2013rich},
+phenomenological connections to control theory~\citep{yan2017network},
+and chimeric states~\citep{hizanidis2016chimera}.
+Therefore, this work will investigate the applicability
+of evolutionary Kuramoto dynamics to the \gls{celegans}
+connectome model.
+
+\subsection{Outline}
+In this paper,we will generalize
+the Evolutionary Kuramoto (EK) model
+of \citet{tripp2022evolutionary} with an asymmetry between
+the communicator and non-communicator payoffs.
+We will also apply this model to incomplete, directed, and weighted graphs.
+These generalization will allow us to apply the EK model
+to the \gls{celegans} connectome
+and analyze its communicativeness properties.
+\Cref{sec:game_setup} will outline the setup of the game that neurons play.
+In \cref{sec:pop_setup}, we describe the different types
+of graphs we will analyze.
+Then, we lay out the evolutionary rules for updating the population
+in \cref{sec:evo_setup}.
+We define the various statistics collected in \cref{sec:stats_setup},
+and we describe the analytic results of applying our model
+to some of the simpler graphs in \cref{sec:analytic}.
+We will present the results of these simulations for
+complete graphs (\cref{sec:complete_graph}),
+structured graphs (\cref{sec:structured_graph}),
+random graphs (\cref{sec:random_graph}),
+and the \gls{celegans} connectome (\cref{sec:elegans_graph}).
+Finally, \cref{sec:discussion} will be used
+for discussing the role of the EK generalizations
+and its implications for \gls{celegans} brain structure.
 
 \section{Methods and models}
-\subsection{TODO}
-\begin{itemize}
-  \item Prove analytic prediction of communicative frequency vs $B(0)$
-    (\ie{} orange line on cumulative plot)
-  \item Re-run experiments while:
-  \begin{itemize}
-    \item Varying $B(0)$ and $\beta(0)$
-    \item Using different graph structures
-  \end{itemize}
-  \item Figure out plots/metrics for myriad of data sets
-  \begin{itemize}
-    \item Correlations?
-    \item Chimeric quality?
-  \end{itemize}
-  \item Figure out overarching story:
-  \begin{itemize}
-    \item Drop structured games and focus on symmetry breaking?
-    \item Game-type dynamics
-    \begin{itemize}
-      \item Can we predict what game-type will be long-run result?
-      \item Do evolutionary bottlenecks (like the chicken-game)
-        necessarily result?
-    \end{itemize}
-    \item Simplifying reduction:
-    \begin{itemize}
-      \item Can $n_{\text{phase}} = 20$ case be qualitatively reproduced
-        with just $n_{\text{phase}} = 2$ case (tuned to have same game
-        type as long-run result)?
-      \item Can this be understood as the interaction of two heterogeneous
-        populations with identical inter-group games and (possibly
-        distinct) identical intra-group games?
-    \end{itemize}
-  \end{itemize}
-\end{itemize}
+\label{sec:methods}
+
 \subsection{Game setup}
+\label{sec:game_setup}
+Here, we use an extension of the Kuramoto game from \citet{tripp2022evolutionary}
+as a model for evolving, coupled oscillators.
+We discretize the $2\pi$ phase angle into $m$ discrete phases $2 \pi j/m$
+for $j \in 0 \ldots m-1$.
+The game's strategy space is the outer product of the $m$ phases and $2$ communicative choices,
+communicative $C$ and non-communicative $N$.
+For a given pair of phases, $\phi_i$ and $\phi_j$, the game is specified
+by the payoff matrix
+\begin{equation}
+\begin{bNiceMatrix}[first-col,first-row,hvlines]
+  & C, \phi_j & N, \phi_j \\
+  C, \phi_i & B_0 f(\Delta \phi) - c & 2 \alpha \beta_0 f(\Delta \phi) - c \\
+  N, \phi_i & (1 - 2\alpha) \beta_0 f(\Delta \phi) & 0
+\end{bNiceMatrix}
+\end{equation}
+with $f(\Delta \phi) = [1-\cos(\phi_j - \phi_i)]/2$.
+Here, $B_0$, $\beta_0$, $\alpha$, and $c$ are fixed parameters
+defining the game.
+The cost $c$ represents the penalty paid by communicative players,
+and $B_0$ and $\beta_0$ are the in-phase benefits paid with exactly
+two or one communicative player, respectively.
+The phase-dependent function $f(\Delta \phi)$ encodes
+the influence of phase mismatches.
+Finally, the benefit asymmetry $\alpha \in [0,1]$ breaks the symmetry
+between the payoff for the communicator and the non-communicator
+when exactly one player is communicative.
+
+\subsection{Population setup}
+\label{sec:pop_setup}
+In this study, we consider a collection of different population graphs
+to highlight the role of structure on communicativeness.
+Given $N$ players, associate a pair
+of weighted, directed graphs to the population.
+First, we use an interaction graph with $N$ nodes representing players
+and edges representing games between players;
+here, the direction shows which player receives the payoff
+scaled by the edge-weight.
+Second, we implement a reproduction graph with the $N$ nodes
+still representing players
+but the edges now corresponding to ability of nodes to replace one another;
+specifically, the tail node may replace the head node,
+and its fitness is scaled by the edge weight.
+For simplicity, our reproduction graphs are identical to the interaction graph
+with a single self-loop added to each node.
+These self-loops are necessary in the reproduction graph
+to ensure that each node has positive indegree
+as required by the Moran process described in the next section.
+
 \subsection{Birth-death Moran process}
+\label{sec:evo_setup}
+The population is updated according to a birth-death Moran process
+with exponential fitness.
+On each turn, the following steps are performed.
+First a game is played for each edge $j$ in the interaction graph,
+each payoff $\pi_j$ is scaled by the edge weight $w_j$,
+and the relevant payoff $w_j \pi_j$ is awarded to the head node only.
+The total fitness for node $i$ is the exponential of the product
+between the selection strength $\delta$
+and the sum of all payoffs to node $i$,
+or $f_i = \exp(\delta \sum_j w_j \pi_j)$ with the sum
+over all edges inwardly incident to node $i$.
+Then, a single focal node is chosen for reproduction
+with probability proportional to the node's fitness $f_i$.
+Finally, a node is chosen for replacement amongst the birth node's outneighbors
+with probability proportional to the reproduction graph's edge weight.
+With mutation probability $\mu$,
+the death node is replaced by a player with a uniformly random strategy;
+otherwise, it is replaced by a player with the same strategy as the birth node.
+This birth-death process is repeated for each turn.
+
 \subsection{Statistics collected}
+\label{sec:stats_setup}
+\textbf{TODO: finish this}
+
 \subsection{Cooperative fraction: analytic}
-Here, our fitness function $f_E$ of strategy $E$ depends on the total payoff (as opposed
-to the average payoff) as
+\label{sec:analytic}
+Here, our fitness function $f_E$ of strategy $E$ depends
+on the total payoff (as opposed to the average payoff) as
 \begin{equation}
   f_E = \exp(\delta n_{\text{in}} \pi_E)
 \end{equation}
-where $\pi_E$ is the (in-degree averaged) \emph{mean} payoff (as used in
-\cite{tripp2022evolutionary}) and $n_{\text{in}}$ is the in-degree of
-the node.
+where $\pi_E$ is the (in-degree averaged) \emph{mean} payoff
+(as used in \cite{tripp2022evolutionary})
+and $n_{\text{in}}$ is the in-degree of the node.
 
-\subsubsection{Structured}
-Most of the derivation from \cite{tripp2022evolutionary} for the
-fraction of communicative strategies carries through to the structured
-graph case since it only relied on the form of the payoff matrix rather
-than the adjacency matrix.
-However, we do need to recalculate the ratio $\omega = \rho_{CN,\Delta
-\phi_{qr}}/\rho_{NC,\Delta \phi_{qr}}$.
+\textbf{TODO: finish this}
 
-Unfortunately, we can't exactly follow the \cite{tripp2022evolutionary}
-derivation of $\omega$ by constructing a Markov chain for the evolution
-of two strategies parameterized by the state $i$ representing the number
-of players with strategy $A$:
-for a structured graph, the number of strategies $E$ is not sufficient
-to determine the state.
-Nevertheless, we can approximate $\omega$ by approximating the \emph{C.\
-Elegans} connectome by a $k$-regular graph where $k$ is the average
-in-degree of the connectome.
+While the above derivation applies to the complete graph
+of the well-mixed population,
+we are also interested in studying non-complete graphs.
+Therefore, as a heuristic for translating \cref{eq:full_analytic}
+to non-complete graphs,
+we will replace the indegree $N-1$ with the average indegree of the graph
+$N-1 \to \overline{d}_{\text{in}}$.
+For reference, this is \num{19} for the well-mixed case with $N=20$ players
+and \num{13.36} for the \gls{celegans} case.
 
-\textbf{FALSE: consider cycle of even length (which, I believe, is
-  strongly regular): even if $i=n/2$, there is a large difference
-between having two clusters of A and B vs every-other being A or B}
-Then, we can construct the transition matrix $p$, where $p_{i,j}$
-represents the probability of state $i$ transitioning to state $j$, as
-\begin{gather*}
-  p_{0,0} = 1, \\
-  p_{n,n} = 1, \\
-  p_{i,i-1} = \frac{i}{n} \frac{}
-                              {i f_E(i) + (n-1) f_F(i)}
-\end{gather*}
+\section{Results}
+\label{sec:results}
+\subsection{Complete graphs}
+\label{sec:complete_graph}
 
-\textbf{TODO}
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      fraction communicative chart,
+      xlabel={Maximum benefit of mutual communication, $B(0)$},
+      ylabel style={align=center},
+      ylabel={Frequency of \\ communicative strategies $f_{\text{comm}}$},
+      legend style={at={(0.95,0.5)},anchor=east},
+      % Activate Brewer color cycle
+      cycle list/Greens-5,
+      % Combine color cycle with marker cycle
+      cycle multiindex* list={
+        mark list*\nextlist
+        Greens-5\nextlist
+      },
+      ]
+      \addlegendimage{empty legend}
+      \addplot table {cumulative/adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.0_time_steps=200000000_type=simulation.dat};
+      \addplot table {cumulative/adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.25_time_steps=200000000_type=simulation.dat};
+      \addplot table {cumulative/adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.5_time_steps=200000000_type=simulation.dat};
+      \addplot table {cumulative/adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.dat};
+      \addplot table {cumulative/adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=1.0_time_steps=200000000_type=simulation.dat};
+      \legend{\hspace{-.6cm}\textbf{Asym.\ $\alpha$}, $0$,$1/4$,$1/2$,$3/4$,$1$}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{
+    Time-averaged fraction of players that are communicative as a function
+    of the maximum benefit of mutual communication $B(0)$
+    for different values of the payoff asymmetry $\alpha$.
+    The network topology is the
+    $N=20$ well-mixed population
+    The selection strength is $\delta=0.2$,
+    the asymmetry is $\alpha=3/4$,
+    the mutation rate is $\mu=\num{1E-4}$,
+    the cost $c$ is \num{0.1},
+    the $B(0)$ step size is \num{0.04},
+    and the simulation was run for \num{2E8} time steps.
+  }
+  \label{fig:multi-comm-frac}
+\end{figure}
 
-\subsubsection{Broken symmetry}
+First, we will explore the influence of the newly introduced asymmetry
+on the population's evolution.
+In \cref{fig:multi-comm-frac}, we re-analyze the $N=20$ well-mixed population
+originally analyzed in \citet{tripp2022evolutionary}.
+There, we compare the frequency of communicative strategies, $f_{\text{comm}}$,
+to the maximum benefit of mutual communication $B(0)$.
+The $\alpha=1/2$ case corresponds to, and reproduces,
+the \citet{tripp2022evolutionary} setup.
+We can see it has low $f_{\text{comm}}$ for small $B(0)$,
+rises to $f_{\text{comm}} = 1/2$ at $B(0) \approx 0.21$
+(corresponding to the $B(0) = 2 (N-1) c/(N-2)$ condition
+found by \citet{tripp2022evolutionary}),
+and plateaus to $f_{\text{comm}} \approx 1$ for large $B(0)$.
+We also see that increasing (decreasing)
+the asymmetry $\alpha$ dilates (stretches) this sigmoid function
+in the $B(0)$ direction.
+In particular, for the smaller $\alpha$'s, the $f_{\text{comm}}$ curve
+rises more steeply and at smaller values of $B(0)$.
+
+\subsection{Structured graphs}
+\label{sec:structured_graph}
+\begin{itemize}
+  \item For the strong-selection case ($B_0 = 2.5c$ and $\delta = 5$
+    with $t_{\text{step}} = \num{2e4}$):
+  \begin{itemize}
+    \item The weightedness has virtually no effect
+    \item The directionality generally enhances cooperation
+      and suppresses the order parameter to approximately
+      \num{0.5} each
+    \begin{itemize}
+      \item The one exception case is $\alpha = \num{0.25}$ where a
+        chicken-type game with relatively high order parameter
+        (\num{0.7}) and low cooperation (\num{0.3}) change to a
+        deadlock-type game with medium order parameter and cooperation
+        (approximately \num{0.5} each)
+    \end{itemize}
+  \end{itemize}
+\item For the weak-selection case ($B_0 = 1.5c$ and $\delta = 0.2$) with
+  $t_{\text{step}} = \num{2e4}$), things change dramatically
+\end{itemize}
+\subsubsection{Random graphs}
+\label{sec:random_graph}
+\subsubsection{\glsfmtshort{celegans}}
+\label{sec:elegans_graph}
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+  \begin{groupplot}[width=0.5\textwidth, group style={group size=2 by 2}, fraction communicative chart]
+      \nextgroupplot[
+        legend entries={Simulation, Theory, Approx.\ Theory},
+        legend to name={CommonLegend},
+      ]
+        \node [text width=1em,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:comm-frac_well-mixed}}};
+        \addplot table {cumulative/adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.dat};
+        \addplot table{cumulative/adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=theory.dat};
+        \addplot table{cumulative/adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=approx.dat};
+      \nextgroupplot
+        \node [text width=1em,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:comm-frac_celegans-full}}};
+        \addplot table{cumulative/adj_matrix_source=c-elegans_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.dat};
+        \addplot table{cumulative/adj_matrix_source=c-elegans_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=theory.dat};
+        \addplot table{cumulative/adj_matrix_source=c-elegans_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=approx.dat};
+      \nextgroupplot
+        \node [text width=1em,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:comm-frac_celegans-unweighted}}};
+        \addplot table{cumulative/adj_matrix_source=c-elegans-unweighted_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.dat};
+        \addplot table{cumulative/adj_matrix_source=c-elegans-unweighted_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=theory.dat};
+        \addplot table{cumulative/adj_matrix_source=c-elegans-unweighted_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=approx.dat};
+      \nextgroupplot
+        \node [text width=1em,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:comm-frac_celegans-undirected}}};
+        \addplot table{cumulative/adj_matrix_source=c-elegans-undirected_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.dat};
+        \addplot table{cumulative/adj_matrix_source=c-elegans-undirected_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=theory.dat};
+        \addplot table{cumulative/adj_matrix_source=c-elegans-undirected_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=approx.dat};
+    \end{groupplot}
+    \node[anchor=north] (title-x) at ($(group c1r2.south east)!0.5!(group c2r2.south west)-(0,0.5cm)$) {Maximum benefit of mutual communication, $B(0)$};
+        \node[anchor=south, rotate=90] (title-y) at ($(group c1r1.south west)!0.5!(group c1r2.north west)-(0.85,0cm)$) {Frequency of communicative strategies $f_{\text{comm}}$};
+    \path (group c1r1.south west) -- node[pos=0.37,above={6pt}]{\pgfplotslegendfromname{CommonLegend}} (group c2r1.south east);
+  \end{tikzpicture}
+  \caption{
+    Time-averaged fraction of players that are communicative as a function
+    of the maximum benefit of mutual communication $B(0)$.
+    The blue dots represent the simulation results,
+    the solid orange line represents the full $k$-regular, analytic estimate,
+    and the dashed red line represents the small-$B(0)$ $k$-regular approximation.
+    The network topology is the
+    \protect{\subref{fig:comm-frac_well-mixed}}
+    $N=20$ well-mixed population
+    \protect{\subref{fig:comm-frac_celegans-full}}
+    weighted, directed \gls{celegans} connectome,
+    \protect{\subref{fig:comm-frac_celegans-unweighted}}
+    unweighted, directed \gls{celegans} connectome,
+    and
+    \protect{\subref{fig:comm-frac_celegans-undirected}}
+    weighted, undirected \gls{celegans} connectome.
+    The selection strength is $\delta=0.2$,
+    the asymmetry is $\alpha=3/4$,
+    the mutation rate is $\mu=\num{1E-4}$,
+    the cost $c$ is \num{0.1},
+    the $B(0)$ step size is \num{0.04},
+    and the simulation was run for \num{2E8} time steps.
+  }
+  \label{fig:comm-frac}
+\end{figure}
+
+\Cref{fig:comm-frac} shows the fraction of players
+using communicative strategies $f_{\text{comm}}$ averaged across
+the entire simulation of \num{2E8} time steps as a function
+of the maximum benefit of mutual communication $B(0)$.
+These plots shows the fraction for the
+\subref{fig:comm-frac_well-mixed}
+$N=20$ well-mixed and
+\subref{fig:comm-frac_celegans-full}
+\gls{celegans} connectome network topologies.
+In addition, two variants of the full weighted, directed \gls{celegans}
+connectome are shown:
+a \subref{fig:comm-frac_celegans-unweighted} \emph{directed} but unweighted case
+and
+a \subref{fig:comm-frac_celegans-undirected} \emph{weighted} but undirected case.
+The plots used a selection strength of $\delta=0.2$
+and an asymmetry of $\alpha=3/4$.
+The blue dots represent the numerical simulation results across eleven
+values of $B(0)$.
+The solid orange line represents the full analytic
+result (\pcref{eq:full_analytic}) for a well-mixed population
+with the well-mixed indegree $n-1$ replaced by the average
+indegree: \num{19} for the well-mixed case \subref{fig:comm-frac_well-mixed},
+and \num{13.36} for the \gls{celegans} cases
+\subref{fig:comm-frac_celegans-full}--\subref{fig:comm-frac_celegans-undirected}.
+Finally, the red dotted line represents the first term
+of the analytic result~(\pcref{eq:analytic_first_term}).
+
+The well-mixed case \subref{fig:comm-frac_well-mixed} shows a logistic curve
+qualitatively similar to that shown in \citet{tripp2022evolutionary}.
+While the \citet{tripp2022evolutionary} case ($\alpha = 1/2$)
+crosses $f_{\text{comm}} = 0.5$ near $B(0) = 0.21$,
+the plot here (with $\alpha = 3/4$) is compressed to the $y$-axis
+and crosses $f_{\text{comm}} = 0.5$ around $B(0) = 0.12$.
+However, the \gls{celegans} case \subref{fig:comm-frac_celegans-full}
+is qualitatively distinct.
+Here, we see that population is nearly universally non-communicative
+for $B(0) \le 0.08$,
+followed by an immediate jump to a maximum communicative fraction
+of \num{0.77} around $B(0) = 1.6$.
+This communicative fraction then slowly declines
+to a horizontal asymptote around \num{0.60}.
+While the orang line representing the analytic result
+is a nearly perfect match for the well-mixed case \subref{fig:comm-frac_well-mixed},
+the \gls{celegans} case \subref{fig:comm-frac_celegans-full} deviates significantly
+from the simulation results.
+
+In order to investigate the cause of the deviation
+between simulation and theory
+in the full \gls{celegans} case \subref{fig:comm-frac_celegans-full},
+we next look at variations to the \gls{celegans} network topology.
+First, the \emph{directed}, unweighted connectome
+\subref{fig:comm-frac_celegans-unweighted}
+is qualitatively similar to the well-mixed case
+\subref{fig:comm-frac_well-mixed}.
+While the blue simulation results exhibit a steeper rise
+than the orange theory results,
+the directed case still shows a monotonic increase
+from low communication for $B(0) < 0.1$
+to full communication for $B(0) \ge 0.2$.
+This implies that the quality of directedness
+plays a relatively small role in the qualitative shape
+of the full \gls{celegans} case \subref{fig:comm-frac_celegans-full}.
+On the other hand,
+the \emph{weighted}, undirected connectome
+\subref{fig:comm-frac_celegans-undirected}
+looks quite similar to the full \gls{celegans} case
+\subref{fig:comm-frac_celegans-full}.
+In particular, this weighted case
+\subref{fig:comm-frac_celegans-undirected}
+shows the same plateau at $f_{\text{comm}} \approx 0.7$
+seen in the full \gls{celegans} case,
+though the ``peak'' around $B(0) - 0.15$ is less pronounced.
+This similarity implies that the connectome's edge weights
+are the most relevant aspect influencing the deviation
+of the \gls{celegans} \subref{fig:comm-frac_celegans-full}
+simulation results in blue from the theory results in orange.
+
+\subsubsection{Game types}
+\begin{figure}
+  \begin{tikzpicture}
+  \begin{groupplot}[
+    width=0.5\textwidth,
+    group style={group size=2 by 1},
+    ymin=0,
+    ymax=1,
+    enlarge x limits=0.2, % Make room for subcaption labels
+    enlarge y limits=0.05,
+    xtick=data,
+    ]
+    \nextgroupplot
+        % Note: this table names must appear in the `\tablename` loop below
+        \pgfplotstableread{gametype/B_factor=1.5_adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_time_steps=8000000.dat}{\loadtable}
+        \pgfplotstableforeachcolumn\loadtable\as\col
+        {
+          \ifnum\pgfplotstablecol=0\else%
+            \expandafter\addplot\expandafter[\col,ybar stacked,draw=black] table[x=asymmetry, y=\col] {\loadtable};
+          \fi
+        }
+        \node [text width=1em,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:game-type_well-mixed}}};
+      \nextgroupplot
+        % Note: this table names must appear in the `\tablename` loop below
+        \pgfplotstableread{gametype/B_factor=1.5_adj_matrix_source=c-elegans_payoff_update_method=single-update_selection_strength=0.2_time_steps=8000000.dat}\loadtable
+        \pgfplotstableforeachcolumn\loadtable\as\col
+        {
+          \ifnum\pgfplotstablecol=0\else%
+            \expandafter\addplot\expandafter[\col,ybar stacked,draw=black] table[x=asymmetry, y=\col] {\loadtable};
+          \fi
+        }
+        \node [text width=1em,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:game-type_celegans-full}}};
+    \end{groupplot}
+    % Make an invisible axis to create a legend that is the union
+    % of all the data table's column names
+    \begin{axis}[
+      hide axis,
+      % Needs xmin/xmax/ymin/ymax to create legend entries
+      xmin=10,
+      xmax=50,
+      ymin=0,
+      ymax=0.4,
+      legend columns=-1,
+      legend to name={CommonLegend2},
+      ]
+      \def\colNames{}
+      % Note: these table names must be the same as those in the groupplots
+      \pgfplotsforeachungrouped\tablename in {gametype/B_factor=1.5_adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_time_steps=8000000.dat,gametype/B_factor=1.5_adj_matrix_source=c-elegans_payoff_update_method=single-update_selection_strength=0.2_time_steps=8000000.dat} {
+        % Read table
+        \pgfplotstableread\tablename\loadtable
+        % Loop over each column
+        \pgfplotstableforeachcolumn\loadtable\as\col
+        {
+          \ifnum\pgfplotstablecol=0\else%
+            \ifx\colNames\empty
+              % Add first column name to empty colNames
+              \edef\colNames{\col}
+            \else
+              % Add column name to colNames if not already there
+              \IfSubStr{\colNames}{\col}{}{\edef\colNames{\colNames,\col}}
+            \fi
+          \fi
+        }
+      }
+        % Add all entries to legend
+        \expandafter\pgfplotsinvokeforeach\expandafter{\colNames}{%
+          \addlegendimage{ybar, single ybar legend, #1, draw=black}%
+          \addlegendentry{#1}%
+        }%
+    \end{axis}
+    \node[anchor=north] (title-x) at ($(group c1r1.south east)!0.5!(group c2r1.south west)-(0,0.5cm)$) {Asymmetry $\alpha$};
+    \path (group c1r1.south west) -- node[below={1cm}]{\pgfplotslegendfromname{CommonLegend2}} (group c2r1.south east);
+  \end{tikzpicture}
+  \caption{
+    The most common game type amongst all player interactions
+    (given by the interaction graph edge weight),
+    expressed as a fraction of all games played,
+    for different values of the asymmetry $\alpha$.
+    The game types are color-coded according to the legend.
+    The network topology is the
+    \protect{\subref{fig:time-series_well-mixed}}
+    $N=20$ well-mixed population
+    and
+    \protect{\subref{fig:time-series_celegans-full}}
+    weighted, directed \gls{celegans} connectome.
+    The selection strength is $\delta=0.2$,
+    the mutation rate is $\mu=\num{1E-4}$,
+    the cost $c$ is \num{0.1},
+    $B(0)$ is \num{1.5},
+    and the simulation was run for \num{8E6} time steps.
+  }
+  \label{fig:game-type}
+\end{figure}
+
+Next, we would like to understand the types of games being played
+during the population's evolution.
+In \cref{fig:game-type}, we consider the most common game type
+amongst all player interactions.
+Note that a player pair's game type is determined solely
+by their relative phase $\Delta \phi$ and is independent
+of the players' communicativeness, by definition.
+At each time step, we determine the most common game types
+across all player interactions,
+where the number of interactions between two players
+is the corresponding edge weight of the interaction graph.
+Finally, \cref{fig:game-type} shows what fraction of time
+a given game type is the plurality for different values
+of the asymmetry $\alpha$.
+\Cref{fig:game-type_well-mixed}
+shows the fraction for the
+$N=20$ well-mixed,
+and
+\cref{fig:game-type_celegans-full}
+\gls{celegans} connectome network topologies.
+
+\Cref{fig:game-type} shows qualitative differences
+between the different network topologies.
+The \subref{fig:game-type_well-mixed} well-mixed case
+shows that the time evolution for each asymmetry $\alpha$
+is dominated by a single game type
+occurring for over \SI{99.9}{\percent} of the time steps.
+This is in contrast with the
+\subref{fig:game-type_celegans-full} \gls{celegans} connectome case,
+where the deadlock type game is most common
+for \SIrange{10}{15}{\percent} of the time steps
+for asymmetry $\alpha \le 0.5$.
+Nevertheless, both \subref{fig:game-type_well-mixed} well-mixed
+and \subref{fig:game-type_celegans-full} have the same dominant game types
+across asymmetries:
+dilemma for $\alpha = 0, 0.25$, chicken for $\alpha = 0.5$,
+hero for $\alpha = 0.75$, and $deadlock for \alpha = 1$.
+This shows that, as the asymmetry is varied,
+different game types dominate the population's evolution
+and network topology influences how dominant these game types are.
+
+\subsubsection{Time series}
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+  \begin{groupplot}[
+      width=0.35\textwidth,
+      group style={
+        group size=2 by 1,
+        yticklabels at=edge right,
+      },
+      ymin=0,
+      ymax=1,
+      enlarge y limits=0.05,
+      hide x axis,
+      axis  y  line*=right,
+      scale only axis, % ensure overlaid axes align
+      y tick label style=magenta,
+      every axis plot/.append style={
+        line width=1pt,
+        line join=bevel,
+      },
+    ]
+    \nextgroupplot
+    \node [text width=1em,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:time-series_well-mixed}}};
+    \addplot [magenta] table [y=order_parameter] {timeseries/B_factor=1.5_adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.dat};
+    \nextgroupplot[
+      ylabel={Order Parameter},
+      y label style={magenta},
+    ]
+    \node [text width=1em,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:time-series_celegans-full}}};
+    \addplot [magenta] table[y=order_parameter] {timeseries/B_factor=1.5_adj_matrix_source=c-elegans_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.dat};
+  \end{groupplot}
+  \begin{groupplot}[
+      width=0.35\textwidth,
+      group style={
+        group size=2 by 1,
+        yticklabels at=edge left,
+      },
+      grid,
+      ymin=0,
+      ymax=1,
+      enlarge y limits=0.05,
+      axis y line*=left,
+      ylabel style={align=center},
+      scale only axis, % ensure overlaid axes align
+      every x tick scale label/.style={at={(xticklabel cs:1)},anchor=south west}, % Move xlabel exponent
+      shader=flat corner, %disable color mixing
+      every axis plot/.append style={
+        only marks,
+        mark size=1pt,
+      },
+      scatter,
+      scatter src=explicit symbolic,
+      scatter/classes={%
+        harmony={draw=Paired-G},
+        chicken={draw=Paired-K},
+        battle={draw=Paired-I},
+        hero={draw=Paired-A},
+        compromise={draw=Paired-C},
+        concord={draw=Paired-D},
+        staghunt={draw=Paired-B},
+        dilemma={draw=Paired-F},
+        deadlock={draw=Paired-H},
+        assurance={draw=Paired-J},
+        coordination={draw=Paired-E},
+        peace={draw=Paired-L},
+        all_communicative={draw=lightgray},
+        all_noncommunicative={draw=darkgray}
+      },
+  ]
+    \nextgroupplot[
+      ylabel={Frequency of communicative \\ strategies $f_{\text{comm}}$},
+    ]
+    \addplot table [y=communicative_fraction, meta=game_type] {timeseries/B_factor=1.5_adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.dat};
+    \nextgroupplot
+    \addplot table [y=communicative_fraction, meta=game_type] {timeseries/B_factor=1.5_adj_matrix_source=c-elegans_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.dat};
+  \end{groupplot}
+  \node[anchor=north] (title-x) at ($(group c1r1.south east)!0.5!(group c2r1.south west)-(0,0.5cm)$) {Time};
+  % Make an invisible axis to create a legend that is the union
+  % of all the data table's column names
+  \begin{axis}[
+    hide axis,
+    % Needs xmin/xmax/ymin/ymax to create legend entries
+    xmin=10,
+    xmax=50,
+    ymin=0,
+    ymax=0.4,
+    legend columns=-1,
+    legend to name={CommonLegend3},
+    ]
+    \def\gameTypes{}
+    % Prevent underscore from counting as subscript
+    \catcode`\_=12
+    % Note: these table names must be the same as those in the groupplots
+    \pgfplotsforeachungrouped\tablename in {timeseries/B_factor=1.5_adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.dat,timeseries/B_factor=1.5_adj_matrix_source=c-elegans_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.dat} {
+      % Read table
+      \pgfplotstableread\tablename\loadtable
+      % Loop over each column
+      \pgfplotstableforeachcolumnelement{game_type}\of\loadtable\as\gameType
+      {
+        \ifnum\pgfplotstablerow=0\else%
+          \ifx\gameTypes\empty
+            % Add first game type to empty gameTypes
+            \edef\gameTypes{\gameType}
+          \else
+            % Add game type to gameTypes if not already there
+            \IfSubStr{\gameTypes}{\gameType}{}{\edef\gameTypes{\gameTypes,\gameType}}
+          \fi
+        \fi
+      }
+    }
+
+    % Add all entries to legend
+    \expandafter\pgfplotsinvokeforeach\expandafter{\gameTypes}{%
+      \addlegendimage{ybar, single ybar legend, #1, draw=black}%
+      \addlegendentry{#1}%
+    }%
+    % Also add order parameter
+    \addlegendimage{ybar, single ybar legend, fill=magenta, draw=black}%
+    \addlegendentry{order parameter}%
+  \end{axis}
+  \path (group c1r1.south west) -- node[below={1cm}]{\pgfplotslegendfromname{CommonLegend3}} (group c2r1.south east);
+  \end{tikzpicture}
+  \caption{
+    The left vertical axis of each subplot depicts a scatter plot of
+    the instantaneous fraction of players that are communicative
+    as a function of time.
+    These points are color-coded
+    grey if all players are communicative or
+    black if all players are non-communicative;
+    otherwise, they are colored according
+    to the plurality game type as indicated in the legend.
+    The right vertical axis depicts the order parameter $r$
+    (\pcref{eq:order_parameter}) in magenta as a function of time.
+    The network topology is the
+    \protect{\subref{fig:time-series_well-mixed}}
+    $N=20$ well-mixed population
+    and
+    \protect{\subref{fig:time-series_celegans-full}}
+    weighted, directed \gls{celegans} connectome.
+    The selection strength is $\delta=0.2$,
+    the asymmetry is $\alpha=3/4$,
+    the mutation rate is $\mu=\num{1E-4}$,
+    the cost $c$ is \num{0.1},
+    $B(0)$ is \num{0.15},
+    and the simulation was run for \num{8E6} time steps.
+  }
+  \label{fig:time-series}
+\end{figure}
+
+While \cref{fig:comm-frac,fig:game-type} displayed
+the time-averaged system state,
+it is also useful to investigate the time-dependent variations.
+As before, \cref{fig:time-series_well-mixed} shows the results
+for a well-mixed population of $N=20$ players
+while \cref{fig:time-series_celegans-full} depicts the results
+for the \gls{celegans} connectome.
+\Cref{fig:time-series} depicts the frequency
+of communicative strategies $f_{\text{comm}}$
+as a scatter plot of time on the left vertical axis.
+These time-series points are color-coded
+grey if all players are communicative or
+black if all players are non-communicative;
+otherwise, the points are colored according
+to the plurality game type as indicated in the legend.
+On the right vertical axis,
+a magenta line plot depicts the order parameter
+given by
+\begin{equation}
+  r = \frac{1}{N} \abs{\sum_{j=1}^N e^{\im \phi_j}}
+  \label{eq:order_parameter}
+\end{equation}
+taking values in the range $[0,1]$,
+where $\phi_j$ is the phase of the $j$-th player.
+These simulations were run with
+for \num{8E6} time steps with
+selection strength $\delta = 0.2$,
+asymmetry $\alpha = 3/4$,
+mutation rate $\mu=\num{1E-4}$,
+cost $c = \num{0.1}$,
+and maximum benefit of mutual communication $B(0) = 0.15$.
+
+The \subref{fig:time-series_well-mixed} well-mixed case
+shows that the system incredibly homogeneous.
+Temporary drops in communicative frequency $f_{\text{comm}}$
+and order parameter $r$ are likely the result of mutations,
+which are expected to occur, on average, every $1/\mu = \num{1E4}$ time steps.
+But the system quickly returns to uniformity;
+for the parameters and timespan depicted here,
+the system spends a majority of its time in the communicative regime.
+Indeed, as shown in \cref{fig:comm-frac_well-mixed},
+this simulation with $B(0) = 0.15$ should be be in the communicative regime
+approximately \SI{75}{\percent} of the time.
+In contrast, the \subref{fig:time-series_celegans-full} \gls{celegans} case
+depicts a far more heterogeneous population.
+Here, the population never stabilizes to fully communicative or non-communicative.
+Instead, both its communicative frequency and order parameter
+stay between \SIrange{40}{70}{\percent}.
+With a communicative frequency $f_{\text{comm}}$ averaging approximately \SI{60}{\percent},
+this is similar to the $f_{\text{comm}} \approx \SI{70}{\percent}$ seen
+in \cref{fig:comm-frac_celegans-full} with $B(0) = 0.15$.
+The difference is reflective of this particular \num{8E6} subset
+of the \num{2E8} runtime in \cref{fig:comm-frac}.
+While the \subref{fig:time-series_well-mixed} well-mixed case,
+the \gls{celegans} case shows less stability to mutations.
+Instead of the uniform player communicatively interrupted
+impulsive disturbances,
+the \gls{celegans} case depicts heterogeneous communicativeness
+with occasional, discontinuous jumps.
+Again, these are most likely the results of mutations introduced
+to the population.
+
+\subsubsection{Chimera index}
+\begin{figure}
+  % Connected components
+\end{figure}
+
+\begin{figure}
+\end{figure}
+
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Payoff asymmetry}
+
+%\subsection{Game-type dynamics}
+%\subsubsection{Markov chain}
+%\subsubsection{Attractors}
+
+%\subsection{Forcing strength dependence}
+
+\subsection{Structured graph effects}
+\subsubsection{Weighting}
+Weighted (connectome) vs.\ unweighted (connectome w/o
+  weights): weighting reduces synchronization
+\subsubsection{Random graphs}
+\subsubsection{\emph{C.\ Elegans}}
+
+\section{Conclusion}
+In this paper, we extended the evolutionary Kuramoto model
+introduced by \citet{tripp2022evolutionary}
+to include structured interaction and reproduction graphs
+as well as an asymmetry between
+the communicator and non-communicator payoffs.
+We first applied this model to a well-mixed population
+and found that increasing (decreasing) the asymmetry
+inhibits (promotes) communicativity.
+Next, we applied the model to
+a family of graphs deriving from the \gls{celegans} connectome,
+including: the full directed, weighted graph;
+an unweighted, directed graph;
+and an undirected, weighted graph.
+This revealed that the graph's directedness
+had a minor effect of steepening the transition
+from non-communicative to communicative
+as the maximum benefit of mutual communication was increased.
+However, the weightedness of the graph had a much more drastic effect
+on the population by strongly suppressing the maximum communicativity.
+For the weighted connectome graphs (both directed and undirected),
+the communicative frequency asymptote decreased from unity
+to approximately \num{0.7} for large $B(0)$.
+Finally, we found qualitative differences between the composition
+of the well-mixed populations and the \gls{celegans} populations.
+While the well-mixed players had largely homogeneous populations
+that occasionally switched between fully communicative
+and fully non communicative,
+the \gls{celegans} population remained far more heterogenous
+with a stable, chimeric mix of both communicators and non-communicators.
+This chimera state in a model of the \gls{celegans} brain connectome
+was suggestive of prior studies finding chimera states in human brains.
+Potential avenues of future research include applying the model
+to larger connectomes such as that
+of \gls{dmelanogaster}~\citep{schlegel2024whole}.
+Additionally, it could prove fruitful to analytically study
+the dynamics of game types as a function of the payoff asymmetry
+to better understand any long-run attractor game types.
+
+%\subsubsection{Acknowledgements}
+
+\backmatter
+
+\bibliography{references.bib}
+
+\appendix
+\section{Broken symmetry}
 Similarly, the derivation for the communicative fraction
 in section 4 of the appendix for \cite{tripp2022evolutionary} carries
 through until equation 16.
@@ -222,7 +1104,7 @@ Then, for the multi-population, low-mutation case, we identify
 $\rho_{NC,\Delta \phi_{qr}} = \rho_E$ and $\rho_{CN,\Delta \phi_{qr}} = \rho_F$
 Then, we can use this to calculate the ratio of the stationary state
 eigenvalues $s_1/s_2$
-\begin{align*}
+\begin{align}
   \frac{s_1}{s_2} &= \frac{\sum_{r=1}^{d} \rho_{NC,\Delta \phi_{qr}} }
   {\sum_{r=1}^{d} \rho_{CN,\Delta \phi_{qr}}} \\
                   &= \frac{\sum_{r=1}^{d} \rho_{NC,\Delta \phi_{qr}}
@@ -259,7 +1141,8 @@ eigenvalues $s_1/s_2$
          (n-1) c))]}
                                }
                                ]
-\end{align*}
+  \label{eq:full_analytic}
+\end{align}
 Again, unlike in the $\alpha = 1/2$ symmetric case, we cannot factor the
 exponential component out of the sum and cancel the $\rho_{CN,\Delta
 \phi_{qr}}$ terms.
@@ -591,6 +1474,7 @@ Thus, we have
   \delta(n-1)^2 c - \frac{n-2}{2} B(0) +
   \frac{\beta_0}{2} \delta n (n-1) (1-2\alpha)
 \end{aligned}
+\label{eq:analytic_first_term}
 \end{equation}
 \textbf{TODO: We should be able to significantly shorten this
   derivation: it turns out, to first order, the $\rho_{NC}$
@@ -601,112 +1485,17 @@ Thus, we have
   bad approximation for $\alpha \to 0$ which pushes $\nu=1$ to large
   $B(0)$}
 
-\section{Results}
-\subsection{Complete graphs}
-\subsection{Structured graphs}
-\begin{itemize}
-  \item For the strong-selection case ($B_0 = 2.5c$ and $\delta = 5$
-    with $t_{\text{step}} = \num{2e4}$):
-  \begin{itemize}
-    \item The weightedness has virtually no effect
-    \item The directionality generally enhances cooperation
-      and suppresses the order parameter to approximately
-      \num{0.5} each
-    \begin{itemize}
-      \item The one exception case is $\alpha = \num{0.25}$ where a
-        chicken-type game with relatively high order parameter
-        (\num{0.7}) and low cooperation (\num{0.3}) change to a
-        deadlock-type game with medium order parameter and cooperation
-        (approximately \num{0.5} each)
-    \end{itemize}
-  \end{itemize}
-\item For the weak-selection case ($B_0 = 1.5c$ and $\delta = 0.2$) with
-  $t_{\text{step}} = \num{2e4}$), things change dramatically
-\end{itemize}
-\subsubsection{Random graphs}
-\subsubsection{\emph{C.\ Elegans}}
-
-\begin{itemize}
-  \item Weighted (connectome) vs.\ unweighted (connectome w/o
-    weights): weighting reduces synchronization
-  \item Connectome is connected, weighted, directed cyclic graph
-  \begin{itemize}
-    \item Therefore, \emph{cannot} directly use
-      \cite{allen2017evolutionary}, since it only applies to undirected
-      graphs
-  \end{itemize}
-  \item Low selection strength ($0.005$) keeps mostly around synchronicity
-    $\approx 1.0$, with a small break to 0.8 \emph{before} $B_{\text{crit}}$
-  \item High selection strength ($0.2$) has low synchronicity
-    ($\approx 0.0$) before $B_{\text{crit}}$ but increases (at roughly
-    $B_{\text{crit}}$) to $\approx 0.5$
-  \item Hence, it seems that
-  \begin{enumerate}
-    \item Neither low nor high selection strength corresponds to
-      well-mixed case
-    \item Low and high selection strengths do not appear to be simple
-      stretching about $B_{\text{crit}}$ as in the well-mixed case
-  \end{enumerate}
-  \item We can calculate the average number of communicative at each
-    time step and calculate the Pearson correlation coefficient of
-    this number against each node's communicative state:
-  \begin{enumerate}
-    \item Results for c-elegans, $B_{\text{factor}} = 1.5$, $2E6$ timesteps,
-      $\delta = 2$, $\mu = 0.2$
-    \item We find that the maximum correlation is \num{0.41}, mean
-      correlation is \num{0.03}, std correlation is \num{0.06}. That
-      is, there are a few outliers with high correlation
-    \item Unfortunately, these are \emph{not} the premotor neurons
-      (all had correlation $\approx \num{0.1}$)
-    \item Instead, the ones with correlation above \num{0.35} were
-      indices 101, 117, 211, and 219 (IL1L, AUAL, SMBDL, and SIADL)
-  \end{enumerate}
-\end{itemize}
-
-\section{Discussion}
-\subsection{Game-type dynamics}
-\subsubsection{Markov chain}
-\subsubsection{Attractors}
-
-\subsection{Forcing strength dependence}
-\begin{itemize}
-  \item For strong selection $\delta = 0.2$:
-  \begin{itemize}
-    \item Undirected and unweighted looks like a spread-out, symmetric
-      version of well-mixed
-    \item Adding weights suppresses communication, lowering ceiling
-      for fraction of communication from \num{1} to \num{0.8}
-    \item Adding directedness introduces strange staircase-like shape
-      and slightly depresses ceiling from \num{1} to \num{0.9}
-    \item Full weighted, directed version shows both staircase-like
-      shape and strongly suppressed ceiling to \num{0.6}
-  \end{itemize}
-  \item For weak selection $\delta = 0.005$:
-  \begin{itemize}
-    \item Undirected and unweighted has strange staircase-like shape
-    \item Adding weights sharpens jump around $B_\text{crit}$, nearly
-      matching well-mixed case
-    \item Adding directedness strongly suppresses selection, with
-      ceiling and floor compressed to the range $[0.3,0.6]$
-    \item Full weighted, directed version shows strange, non-monotonic
-      behavior. More investigation is needed
-  \end{itemize}
-\end{itemize}
-
-\subsection{Structured graph effects}
-\subsubsection{Random graphs}
-\subsubsection{\emph{C.\ Elegans}}
-
-\section{Conclusion}
-\subsection{Key results}
-\subsection{Next steps}
-
-\subsubsection{Acknowledgements}
-
-\backmatter
-
-\bibliography{references.bib}
-
+\section{Structured Population}
+Using the approach of \citet{ohtsuki2006simple},
+we can also calculate the fixation probability
+on structured graphs.
+For this, we need to impose a pair of approximations:
+pair approximation
+(for large systems,
+the frequency of larger clusters are derived from the frequencies of pairs)
+and diffusion approximation
+(for weak selection, the local density of players equilibrates
+much more quickly than the global density).
 \end{document}
 
 # vim: spelllang=en_gb

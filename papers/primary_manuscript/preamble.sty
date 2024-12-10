@@ -7,7 +7,7 @@
 %\usepackage{ifdraft} % allow checking if in draft mode
 %\usepackage{xparse} % allow parsing of complex macros
 %\usepackage{etoolbox} % enable tools for writing macros
-%\usepackage{xstring} % add string manipulation
+\usepackage{xstring} % add string manipulation
 
 %%% Page Dimensions
 %\usepackage{geometry} % change page dimensions
@@ -32,28 +32,33 @@
 \usepackage{siunitx} % improve typesetting of SI units
 %\usepackage{bm} % improve bold rendering of math symbols
 %\usepackage{tensor} % improve handling of tensor indices
+\usepackage{nicematrix} % improve matrix typesetting capabilities
 
 %% Figures
 \usepackage{graphicx} % improve graphics inclusion
 %\usepackage{float} % allow for floating graphics
 %\usepackage[labelsep=period,tableposition=top]{caption} % allow changes to figure captions
-%\usepackage[subrefformat=simple,labelformat=simple]{subcaption} % allow inclusion of subfigures
-%\usepackage[caption=false]{subfig}
-%\captionsetup[subfigure]{subrefformat=parens,labelformat=parens,listofformat=subsimple}
-%\renewcommand\thesubfigure{(\alph{subfigure})}
+\usepackage{subcaption} % allow inclusion of subfigures
+\renewcommand\thesubfigure{(\alph{subfigure})} % put parentheses around references
+\captionsetup[subfigure]{labelformat=simple} % don't put extra parentheses around label
 %\usepackage{svg} % allow for inclusion of svg vector images
-%\usepackage{tikz} % allow programatically-created graphics
+\usepackage{tikz} % allow programatically-created graphics
 %\usetikzlibrary{positioning} % add positioning commands to tikz
 %\usetikzlibrary{calc} % add complex coordinate calculations to tikz
 %\usetikzlibrary{patterns} % allow patterns/shading in tikz
-%\usepackage{pgfplots} % improve Tikz plot handling
-%\pgfplotsset{compat=1.15} % use newer features
+\usepackage{pgfplots} % improve Tikz plot handling
+\pgfplotsset{compat=1.18} % use newer features
+\usepgfplotslibrary{groupplots} % add group plots
+\usepgfplotslibrary{colorbrewer} % use Brewer colormaps
 %\usepackage{xifthen} % improve Tikz conditional logic
 %\usepackage{media9} % allow for inclusion of movies
 %\usepackage{standalone} % allow creation of standalone figures
 
 %% Source Code
 %\usepackage{listings} % add display of source code
+
+%% Fonts
+\usepackage{lmodern} % add additional font size
 
 %% Lorem Ipsum
 %\usepackage[latin, english]{babel} % add latin for lorem ipsum
@@ -64,7 +69,7 @@
 
 %% Special Symbols
 \usepackage{physics2} % common symbols used in physics
-\usephysicsmodule{ab}
+\usephysicsmodule{ab,ab.legacy}
 %\usepackage{ar} % add the aspect ratio symbol
 %\usepackage{chemformula} % allow typesetting of chemical formulas
 %\usepackage{orcidlink}
@@ -90,13 +95,13 @@
 %\usepackage{csquotes} % smart quotes, recommended for use with biblatex
 %\usepackage{natbib} % allow use of bibliography
 %\usepackage[backend=biber,
-%%% PHYS
-%%            style=phys,
-%%            articletitle=false,
-%%            biblabel=brackets,
-%%            chaptertitle=false,
-%%            pageranges=false,
-%%            sorting=none,
+%% PHYS
+%            style=phys,
+%            articletitle=false,
+%            biblabel=brackets,
+%            chaptertitle=false,
+%            pageranges=false,
+%            sorting=none,
 %% SIO
 %            style=authoryear-comp,
 %            sortcites,
@@ -138,54 +143,55 @@
 % Ensure cleveref uses a serial comma
 \newcommand{\creflastconjunction}{, and\nobreakspace}
 
+% Define new commands \pcref and \pCref corresponding to \cref and \Cref
+% but without the parentheses around the subfigures
+\newcommand{\eqlabelleft}{(}
+\newcommand{\eqlabelright}{)}
+\DeclareRobustCommand{\pcref}[1]{%
+  \begingroup%
+  \renewcommand{\eqlabelleft}{}\renewcommand{\eqlabelright}{}%
+  \cref{#1}%
+  \endgroup%
+}
+\DeclareRobustCommand{\pCref}[1]{%
+  \begingroup%
+  \renewcommand{\eqlabelleft}{}\renewcommand{\eqlabelright}{}%
+  \Cref{#1}%
+  \endgroup%
+}
+\creflabelformat{equation}{\eqlabelleft#2#1#3\eqlabelright}
+
 %% For subfigures, make alphabetic part italic and change "fig 2(a) and
 %% 2(b)" to "fig 2(a,b)"
 %\crefformat{subfigure}%
-%  {figure~#2\StrGobbleRight{#1}{1}\parenL\textit{\StrRight{#1}{1}}\parenR#3}%
+%  {figure~#2\StrGobbleRight{#1}{1}\eqlabelleft\textit{\StrRight{#1}{1}}\eqlabelright#3}%
 %\Crefformat{subfigure}%
-%  {Figure~#2\StrGobbleRight{#1}{1}\parenL\textit{\StrRight{#1}{1}}\parenR#3}%
+%  {Figure~#2\StrGobbleRight{#1}{1}\eqlabelleft\textit{\StrRight{#1}{1}}\eqlabelright#3}%
 %
 %\crefrangeformat{subfigure}{figures~#3%
-%  \StrGobbleRight{#1}{1}\parenL\textit{\StrRight{#1}{1}}#4%
-%  --#5\textit{\crefstripprefix{#1}{#2}}\parenR#6}
+%  \StrGobbleRight{#1}{1}\eqlabelleft\textit{\StrRight{#1}{1}}#4%
+%  --#5\textit{\crefstripprefix{#1}{#2}}\eqlabelright#6}
 %\Crefrangeformat{subfigure}{Figures~#3%
-%  \StrGobbleRight{#1}{1}\parenL\textit{\StrRight{#1}{1}}#4%
-%  --#5\textit{\crefstripprefix{#1}{#2}}\parenR#6}
+%  \StrGobbleRight{#1}{1}\eqlabelleft\textit{\StrRight{#1}{1}}#4%
+%  --#5\textit{\crefstripprefix{#1}{#2}}\eqlabelright#6}
 %
 %\crefmultiformat{subfigure}%
 %  % For the first element, italicize the final character (assumed to be
 %  % the single-letter subfigure label)
-%  {\edef\crefstripprefixinfo{#1}figures~#2\StrGobbleRight{#1}{1}\parenL\textit{\StrRight{#1}{1}}#3}%
+%  {\edef\crefstripprefixinfo{#1}figures~#2\StrGobbleRight{#1}{1}\eqlabelleft\textit{\StrRight{#1}{1}}#3}%
 %  % For all the others, subtract off the common prefix with the first
 %  % element
-%  {,#2\textit{\crefstripprefix{\crefstripprefixinfo}{#1}}\parenR#3}%
+%  {,#2\textit{\crefstripprefix{\crefstripprefixinfo}{#1}}\eqlabelright#3}%
 %  {,#2\textit{\crefstripprefix{\crefstripprefixinfo}{#1}}#3}%
-%  {,#2\textit{\crefstripprefix{\crefstripprefixinfo}{#1}}\parenR#3}
+%  {,#2\textit{\crefstripprefix{\crefstripprefixinfo}{#1}}\eqlabelright#3}
 %\Crefmultiformat{subfigure}%
-%  {\edef\crefstripprefixinfo{#1}Figures~#2\StrGobbleRight{#1}{1}\parenL\textit{\StrRight{#1}{1}}#3}%
+%  {\edef\crefstripprefixinfo{#1}Figures~#2\StrGobbleRight{#1}{1}\eqlabelleft\textit{\StrRight{#1}{1}}#3}%
 %  % For all the others, subtract off the common prefix with the first
 %  % element
-%  {,#2\textit{\crefstripprefix{\crefstripprefixinfo}{#1}}\parenR#3}%
+%  {,#2\textit{\crefstripprefix{\crefstripprefixinfo}{#1}}\eqlabelright#3}%
 %  {,#2\textit{\crefstripprefix{\crefstripprefixinfo}{#1}}#3}%
-%  {,#2\textit{\crefstripprefix{\crefstripprefixinfo}{#1}}\parenR#3}
-%
-%% Define new commands \pcref and \pCref corresponding to \cref and \Cref
-%% but without the parentheses around the subfigures
-%\newcommand{\parenL}{(}
-%\newcommand{\parenR}{)}
-%\DeclareRobustCommand{\pcref}[1]{%
-%  \begingroup
-%  \renewcommand{\parenL}{}\renewcommand{\parenR}{}%
-%  \cref{#1}%
-%  \endgroup
-%}
-%\DeclareRobustCommand{\pCref}[1]{%
-%  \begingroup
-%  \renewcommand{\parenL}{}\renewcommand{\parenR}{}%
-%  \Cref{#1}%
-%  \endgroup
-%}
-%
+%  {,#2\textit{\crefstripprefix{\crefstripprefixinfo}{#1}}\eqlabelright#3}
+
 %% Allow \cref{sub@label} to just give the subcaption label "fig a" instead of
 %% the usual "fig 1a"
 %% Source: https://tex.stackexchange.com/questions/333223/combining-cleveref-and-subref
@@ -217,6 +223,7 @@
 %\usepackage[acronym, xindy, nonumberlist, nopostdot, nomain]{glossaries} % add glossaries and nomenclature lists (load laster than hyperref)
 %\newglossary[slg]{symbols}{symb}{sbl}{List of Symbols} % define new glossary for symbols
 %\makeglossaries % generate glossaries
+\usepackage{glossaries-extra} % use extra glossary features
 
 %% Set miscellaneous parameters
 %\setcounter{tocdepth}{3} % increase TOC depth to include subsubsections

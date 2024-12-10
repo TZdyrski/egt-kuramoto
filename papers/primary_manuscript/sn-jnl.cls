@@ -1,0 +1,1 @@
+class/sn-jnl.cls

@@ -712,6 +712,26 @@ function plot_cumulative(selection_strength::Real, symmetry_breaking::Real,
     return fig
 end
 
+function analytic_frac_communicative(B0,beta0;selection_strength,cost,nb_players,symmetry_breaking,nb_phases)
+	n = nb_players
+	alpha = symmetry_breaking
+	delta = selection_strength
+	d = nb_phases
+
+	beta(delta_phi) = beta0*(1+cos(delta_phi))/2
+	denom(delta_phi) = 1 + sum([
+			  exp(delta*(j^2*(beta(delta_phi)-B0/2)
+					   +j*(B0/2+beta(delta_phi)*(1-2*alpha*n)+cost*(n-1))))
+			 for j in 1:n-1])
+	omega(delta_phi) = exp(delta*(n-1)*((n-1)*cost+n*beta(delta_phi)*(1-2*alpha)-(n-2)/2*B0))
+
+	s1_partials = [1/denom(delta_phi) for delta_phi in pi/d*(1:d)]
+	s2_partials = [omega(delta_phi) for delta_phi in pi/d*(1:d)] .* s1_partials
+	nu = sum(s2_partials)/sum(s1_partials)
+	frac_communicative = 1/(1+nu)
+	return frac_communicative
+end
+
 function generate_cumulative_plot(data::Dict, config::Dict)
     # Plot
     fig = Figure()
@@ -721,12 +741,19 @@ function generate_cumulative_plot(data::Dict, config::Dict)
               ylabel="Frequency of communicative strategies",
               limits=(nothing, nothing, 0, 1))
     scatter!(ax, data["Bs"], data["fraction_communicative"]; label="Simulation")
+    beta0(B0) = 0.95*B0
+    lines!(ax, data["Bs"][begin] .. data["Bs"][end],
+	   B0 -> analytic_frac_communicative(B0, beta0(B0);
+			selection_strength=config["selection_strength"], cost=data["cost"], nb_players=data["nb_players"],
+			symmetry_breaking=config["symmetry_breaking"], nb_phases=config["nb_phases"]); label="Theory",
+           color=:orange)
     lines!(ax, data["Bs"][begin] .. data["Bs"][end],
            B0 -> 1 / (1 + exp(config["selection_strength"] * (data["nb_players"] - 1) *
                               ((data["nb_players"] - 1) * data["cost"]
 			       + data["nb_players"] * beta0(B0) * (1-2*config["symmetry_breaking"])/2
-                              - (data["nb_players"] - 2) / 2 * B0))); label="Theory",
-           color=:orange)
+                              - (data["nb_players"] - 2) / 2 * B0))); label="Approx. Theory",
+           color=:purple, linestyle=:dash)
+
 
     # Add legend
     axislegend(ax; position=:lt)

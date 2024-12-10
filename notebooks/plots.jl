@@ -43,7 +43,7 @@ md"""
 # ╔═╡ 93340069-644f-4da1-b0af-824bf61a77ca
 # ╠═╡ show_logs = false
 begin
-	time_steps_cumulative = Int(2E6)
+	time_steps_cumulative = Int(2E8)
 	
 	df_raw_cumulative = collect_results(datadir("cumulative"); rinclude = [Regex("time_steps=$time_steps_cumulative[._]")])
 	
@@ -88,6 +88,40 @@ md"""
 # ╔═╡ 3cc72edb-1a4b-4ac6-a18f-2ad9296b2da2
 matrix_source_bond
 
+# ╔═╡ 32510bf3-a932-4394-a4fb-8101580a6140
+md"""
+# Time Series
+"""
+
+# ╔═╡ 656dd0d7-4e47-422c-a104-9b2473a51306
+# ╠═╡ show_logs = false
+begin
+	time_steps_timeseries = Int(8E5)
+	
+	df_raw_timeseries = collect_results(datadir("timeseries_statistics"); rinclude = [Regex("time_steps=$time_steps_timeseries[._]")])
+
+	# Convert JLD2 Reconstruct variables back to GameType enums
+	transform!(df_raw_timeseries, :most_common_game_types => (x -> map(y -> map(z -> GameType(z.val), y), x)) => :most_common_game_types)
+	transform!(df_raw_timeseries, :strategy_parity => (x -> map(y -> map(z -> StrategyParity(z.val), y), x)) => :strategy_parity)
+	
+	df_timeseries = transform(df_raw_timeseries, :path => (x-> DataFrame(map(y -> parse_savename(y)[2], x))) => AsTable)
+end;
+
+# ╔═╡ 9fb6798e-2bb6-4931-91aa-6ffacc695f56
+begin
+	df_timeseries_all_asymm = f_timeseries_selected = @rsubset(df_timeseries, :selection_strength == selection_strength, :adj_matrix_source == matrix_source, :factor == B_factor)
+	using StatsBase
+	game_types = proportionmap.(df_timeseries_all_asymm.most_common_game_types)
+
+	local f = Figure()
+	Axis(f[1, 1], xlabel = L"Asymmetry $\alpha$", title = "Proportion of Game Types by Asymmetry")
+	for (indx, row) in enumerate(game_types)
+		asymm = df_timeseries_all_asymm.symmetry_breaking[indx]
+		barplot!(repeat([asymm], length(row)), collect(values(row)), stack = repeat([indx], length(row)), color = getindex.(Ref(local_moran_interaction.game_type_colors), collect(keys(row))), width=0.2)
+	end
+	f
+end
+
 # ╔═╡ 2f8d5984-acd3-4958-afe6-acc136d1c70a
 begin
 	df_cumulative_selected = @rsubset(df_cumulative, :selection_strength == selection_strength, :matrix_source == matrix_source, :symmetry_breaking == symmetry_breaking)
@@ -109,26 +143,7 @@ begin
 end
 
 # ╔═╡ 9e64dcc2-574e-4690-a10d-9b45e0ba5219
-!isempty(dict_cumulative_selected) ? local_moran_interaction.generate_cumulative_plot(dict_cumulative_selected, @strdict(selection_strength)) : nothing
-
-# ╔═╡ 32510bf3-a932-4394-a4fb-8101580a6140
-md"""
-# Time Series
-"""
-
-# ╔═╡ 656dd0d7-4e47-422c-a104-9b2473a51306
-# ╠═╡ show_logs = false
-begin
-	time_steps_timeseries = Int(8E4)
-	
-	df_raw_timeseries = collect_results(datadir("timeseries_statistics"); rinclude = [Regex("time_steps=$time_steps_timeseries")])
-
-	# Convert JLD2 Reconstruct variables back to GameType enums
-	transform!(df_raw_timeseries, :most_common_game_types => (x -> map(y -> map(z -> GameType(z.val), y), x)) => :most_common_game_types)
-	transform!(df_raw_timeseries, :strategy_parity => (x -> map(y -> map(z -> StrategyParity(z.val), y), x)) => :strategy_parity)
-	
-	df_timeseries = transform(df_raw_timeseries, :path => (x-> DataFrame(map(y -> parse_savename(y)[2], x))) => AsTable)
-end;
+!isempty(dict_cumulative_selected) ? local_moran_interaction.generate_cumulative_plot(dict_cumulative_selected, @strdict(selection_strength,symmetry_breaking,nb_phases=20)) : nothing
 
 # ╔═╡ e8890847-13d7-447c-9d65-f660e189a154
 md"""
@@ -195,6 +210,14 @@ end
 # ╔═╡ 656e9cda-4600-4396-9183-0663a56a80a1
 !isempty(dict_timeseries_selected) ? local_moran_interaction.generate_timeseries_plot(dict_timeseries_selected; time_steps = time_steps_timeseries) : nothing
 
+# ╔═╡ 4e47651d-6e33-46a9-82b3-e1e614f19d62
+md"""
+# New
+"""
+
+# ╔═╡ 47c186b3-4cf0-4759-9cb2-dbdf0de9b608
+
+
 # ╔═╡ Cell order:
 # ╠═3e050942-505f-4328-be97-d6e72b260be2
 # ╠═0ecb3c44-a2d0-11ef-1d79-d3e37535b2dc
@@ -228,3 +251,6 @@ end
 # ╟─d237ab6a-09d8-4010-aa7b-6e627354f116
 # ╟─a0c268e0-0066-4456-a0bd-687d570ee805
 # ╟─656e9cda-4600-4396-9183-0663a56a80a1
+# ╟─4e47651d-6e33-46a9-82b3-e1e614f19d62
+# ╟─9fb6798e-2bb6-4931-91aa-6ffacc695f56
+# ╠═47c186b3-4cf0-4759-9cb2-dbdf0de9b608

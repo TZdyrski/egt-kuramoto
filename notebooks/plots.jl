@@ -58,6 +58,28 @@ begin
 	B_factor_bond = @bind B_factor PlutoUI.Slider([1.5,2.5]);
 end;
 
+# ╔═╡ ca9bec98-3e58-45a5-9a9c-4e238e8a660e
+begin
+	using Graphs
+	graph = Graphs.SimpleDiGraph(local_moran_interaction.get_adj_matrices(matrix_source)[1])
+	conn_comp = strongly_connected_components(graph)
+
+	conn_comp_index = zeros(Int32, nv(graph))
+	for (conn_comp_indx, elem) in pairs(conn_comp)
+		for indx in elem
+			conn_comp_index[indx] = conn_comp_indx
+		end
+	end
+	conn_comp_index
+
+	using GraphMakie
+	using NetworkLayout
+	graphplot(graph; layout=Stress(),
+	edge_color=(:black, 0.05),
+	node_color=conn_comp_index,
+	edge_plottype=:linesegments)
+end
+
 # ╔═╡ 1740d8de-7c44-4a69-8711-5c25149c560a
 md"""
 ### Selection Strength
@@ -88,6 +110,23 @@ md"""
 # ╔═╡ 3cc72edb-1a4b-4ac6-a18f-2ad9296b2da2
 matrix_source_bond
 
+# ╔═╡ 9e64dcc2-574e-4690-a10d-9b45e0ba5219
+#=╠═╡
+!isempty(dict_cumulative_selected) ? local_moran_interaction.generate_cumulative_plot(dict_cumulative_selected, @strdict(selection_strength,symmetry_breaking,nb_phases=20,adj_matrix_source=matrix_source)) : nothing
+  ╠═╡ =#
+
+# ╔═╡ 3ac99fec-2389-4684-9547-661a7d9025a6
+begin
+	ax = hist(collect(Iterators.flatten(local_moran_interaction.get_adj_matrices("c-elegans-undirected"))), bins=1:20)
+	lines!(1:20, (x) -> 3000/x)
+	ax
+end
+
+# ╔═╡ 0ca5e4f8-faab-4057-a823-956c3711b5d8
+md"""
+### Strongly Connected Components
+"""
+
 # ╔═╡ 32510bf3-a932-4394-a4fb-8101580a6140
 md"""
 # Time Series
@@ -114,7 +153,7 @@ begin
 	game_types = proportionmap.(df_timeseries_all_asymm.most_common_game_types)
 
 	local f = Figure()
-	Axis(f[1, 1], xlabel = L"Asymmetry $\alpha$", title = "Proportion of Game Types by Asymmetry")
+	CairoMakie.Axis(f[1, 1], xlabel = L"Asymmetry $\alpha$", title = "Proportion of Game Types by Asymmetry")
 	for (indx, row) in enumerate(game_types)
 		asymm = df_timeseries_all_asymm.symmetry_breaking[indx]
 		barplot!(repeat([asymm], length(row)), collect(values(row)), stack = repeat([indx], length(row)), color = getindex.(Ref(local_moran_interaction.game_type_colors), collect(keys(row))), width=0.2)
@@ -129,7 +168,7 @@ begin
 	dict_cumulative_selected = Dict()
 	if nrow(df_cumulative_selected) == 1
 		dict_cumulative_selected = Dict(names(df_cumulative_selected[1,:]) .=> values(df_cumulative_selected[1,:]))
-		
+
 		nothing
 	elseif nrow(df_cumulative_selected) < 1
 		println("No datasets found")
@@ -141,9 +180,6 @@ begin
 		df_cumulative_selected
 	end
 end
-
-# ╔═╡ 9e64dcc2-574e-4690-a10d-9b45e0ba5219
-!isempty(dict_cumulative_selected) ? local_moran_interaction.generate_cumulative_plot(dict_cumulative_selected, @strdict(selection_strength,symmetry_breaking,nb_phases=20)) : nothing
 
 # ╔═╡ e8890847-13d7-447c-9d65-f660e189a154
 md"""
@@ -212,7 +248,7 @@ end
 
 # ╔═╡ 4e47651d-6e33-46a9-82b3-e1e614f19d62
 md"""
-# New
+# Game Types
 """
 
 # ╔═╡ Cell order:
@@ -233,6 +269,9 @@ md"""
 # ╟─3cc72edb-1a4b-4ac6-a18f-2ad9296b2da2
 # ╟─2f8d5984-acd3-4958-afe6-acc136d1c70a
 # ╟─9e64dcc2-574e-4690-a10d-9b45e0ba5219
+# ╟─3ac99fec-2389-4684-9547-661a7d9025a6
+# ╟─0ca5e4f8-faab-4057-a823-956c3711b5d8
+# ╟─ca9bec98-3e58-45a5-9a9c-4e238e8a660e
 # ╟─32510bf3-a932-4394-a4fb-8101580a6140
 # ╟─656dd0d7-4e47-422c-a104-9b2473a51306
 # ╟─e8890847-13d7-447c-9d65-f660e189a154

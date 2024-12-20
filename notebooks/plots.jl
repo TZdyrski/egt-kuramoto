@@ -30,10 +30,36 @@ begin
 	using DataFrames
 	using DataFramesMeta
 	using SimplePlutoInclude
+	using PGFPlotsX
 end
 
 # ╔═╡ fdf8f135-7dda-45ef-b8f1-08276e1e0375
 @plutoinclude srcdir("julia", "local_moran_interaction.jl")
+
+# ╔═╡ 1d7658e1-0484-448c-a03b-117ca5ac7e84
+begin
+	function show_tikz(pic::PGFPlotsX.TikzPicture)
+		game_colors_sorted = [x.second for x in sort(collect(local_moran_interaction.game_type_colors), by=x->(Int(x[1])))]
+
+		game_colors_and_parity_sorted = [game_colors_sorted...,
+			colorant"lightgrey", colorant"darkgrey"]
+
+		push!(pic.options, "scale=2")
+		push!(pic.options, "background rectangle/.style={fill=white}")
+		push!(pic.options, "show background rectangle")
+		return @pgf PGFPlotsX.TikzDocument(
+		preamble = [raw"\usetikzlibrary{backgrounds}",
+			("game_colors", game_colors_sorted),
+			("game_colors_and_parity", game_colors_and_parity_sorted),
+			],
+			pic
+		)
+	end
+
+	function show_tikz(ax::PGFPlotsX.AxisLike)
+		return @pgf show_tikz(PGFPlotsX.TikzPicture(ax))
+	end
+end;
 
 # ╔═╡ f5d72e8a-c624-411d-8b8f-a721c44d401f
 md"""
@@ -109,7 +135,7 @@ begin
 end
 
 # ╔═╡ 9e64dcc2-574e-4690-a10d-9b45e0ba5219
-!isempty(dict_cumulative_selected) ? local_moran_interaction.generate_cumulative_plot(dict_cumulative_selected, @strdict(selection_strength,symmetry_breaking,nb_phases=20,adj_matrix_source=matrix_source)) : nothing
+!isempty(dict_cumulative_selected) ? show_tikz(local_moran_interaction.generate_cumulative_plot(dict_cumulative_selected, @strdict(selection_strength,symmetry_breaking,nb_phases=20,adj_matrix_source=matrix_source))) : nothing
 
 # ╔═╡ 0ca5e4f8-faab-4057-a823-956c3711b5d8
 md"""
@@ -194,7 +220,7 @@ begin
 end
 
 # ╔═╡ 656e9cda-4600-4396-9183-0663a56a80a1
-!isempty(dict_timeseries_selected) ? local_moran_interaction.generate_timeseries_plot(dict_timeseries_selected; time_steps = time_steps_timeseries) : nothing
+!isempty(dict_timeseries_selected) ? show_tikz(local_moran_interaction.generate_timeseries_plot(dict_timeseries_selected; time_steps = time_steps_timeseries)) : nothing
 
 # ╔═╡ 4e47651d-6e33-46a9-82b3-e1e614f19d62
 md"""
@@ -210,6 +236,7 @@ plot_game_type_distribution_vs_asymmetry(B_factor,selection_strength,matrix_sour
 # ╠═0ecb3c44-a2d0-11ef-1d79-d3e37535b2dc
 # ╠═f10a29cf-c5ff-4e1d-8864-6efab1634b48
 # ╠═fdf8f135-7dda-45ef-b8f1-08276e1e0375
+# ╠═1d7658e1-0484-448c-a03b-117ca5ac7e84
 # ╟─f5d72e8a-c624-411d-8b8f-a721c44d401f
 # ╟─93340069-644f-4da1-b0af-824bf61a77ca
 # ╟─b9040b04-c6a4-428f-9ac2-518760c46ce2

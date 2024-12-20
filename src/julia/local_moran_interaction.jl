@@ -18,6 +18,8 @@ using DataFrames
 using DataFramesMeta
 using CairoMakie
 using GraphMakie
+using PGFPlotsX
+using PlotUtils
 using NetworkLayout
 using Polyhedra
 using Colors
@@ -710,6 +712,8 @@ function plot_cumulative(selection_strength::Real, symmetry_breaking::Real,
     # Save figure
     filename = plotsdir("cumulative", savename(config, "png"))
     save(filename, fig)
+    filename = plotsdir("cumulative", savename(config, "tikz"))
+    save(filename, fig)
 
     return fig
 end
@@ -735,38 +739,55 @@ function analytic_frac_communicative(B0,beta0;selection_strength,cost,nb_players
 end
 
 function generate_cumulative_plot(data::Dict, config::Dict)
-    # Plot
-    fig = Figure()
-    ax = Axis(fig[1, 1];
-	      title=L"Selection $\delta = %$(round(config[\"selection_strength\"],sigdigits=2))$",
-              xlabel=L"Maximum benefit of mutual communication, $B(0)$",
-              ylabel="Frequency of communicative strategies",
-              limits=(nothing, nothing, 0, 1))
-    scatter!(ax, data["Bs"], data["fraction_communicative"]; label="Simulation")
-    beta0(B0) = 0.95*B0
+    # Generate axis
+    ax = @pgf PGFPlotsX.Axis(
+        {
+            title=L"Selection $\delta = %$(round(config[\"selection_strength\"],sigdigits=2))$",
+            xlabel=L"Maximum benefit of mutual communication, $B(0)$",
+            ylabel="Frequency of communicative strategies",
+            ymin = 0,
+            ymax = 1,
+            ytick = collect(0:0.5:1),
+            "legend pos" = "north west",
+            grid,
+        })
+
+    # Plot data
+    @pgf push!(ax,PGFPlotsX.Plot(
+        {"only marks", "blue"},
+        Table(x = data["Bs"], y = data["fraction_communicative"])))
+    push!(ax, PGFPlotsX.LegendEntry("Simulation"))
 
     # Generate graph
     interaction_adj_matrix, _ = get_adj_matrices(config["adj_matrix_source"])
     graph = SimpleDiGraph(interaction_adj_matrix)
     nb_effective = 1.3*( mean(indegree(graph))+1) # Add one since n=degree+1 for well-mixed case
 
-    lines!(ax, data["Bs"][begin] .. data["Bs"][end],
-	   B0 -> analytic_frac_communicative(B0, beta0(B0);
-			selection_strength=config["selection_strength"], cost=data["cost"], nb_players=nb_effective,
-			symmetry_breaking=config["symmetry_breaking"], nb_phases=config["nb_phases"]); label="Theory",
-           color=:orange)
-    lines!(ax, data["Bs"][begin] .. data["Bs"][end],
-           B0 -> 1 / (1 + exp(config["selection_strength"] * (nb_effective - 1) *
+    # Add exact theory
+    beta0(B0) = 0.95*B0
+    xint = data["Bs"][begin] .. data["Bs"][end]
+    theory_exact(B0) = analytic_frac_communicative(B0, beta0(B0);
+                        selection_strength=config["selection_strength"], cost=data["cost"],
+			nb_players=nb_effective,
+                        symmetry_breaking=config["symmetry_breaking"], nb_phases=config["nb_phases"])
+    points_exact = adapted_grid(theory_exact, (xint.left, xint.right))
+
+    @pgf push!(ax,PGFPlotsX.Plot({"orange"},
+        Table(x = points_exact[1], y = points_exact[2])))
+    push!(ax, PGFPlotsX.LegendEntry("Theory"))
+
+    # Add approximate theory
+    theory_approx(B0) = 1 / (1 + exp(config["selection_strength"] * (nb_effective - 1) *
                               ((nb_effective - 1) * data["cost"]
-			       + nb_effective * beta0(B0) * (1-2*config["symmetry_breaking"])/2
-                              - (nb_effective - 2) / 2 * B0))); label="Approx. Theory",
-           color=:purple, linestyle=:dash)
+                              + nb_effective * beta0(B0) * (1-2*config["symmetry_breaking"])/2
+                              - (nb_effective - 2) / 2 * B0)))
+    points_approx = adapted_grid(theory_approx, (xint.left, xint.right))
 
+    @pgf push!(ax, PGFPlotsX.Plot({"purple", "dashed"},
+        Table(x = points_approx[1], y = points_approx[2])))
+    push!(ax, PGFPlotsX.LegendEntry("Approx. Theory"))
 
-    # Add legend
-    axislegend(ax; position=:lt)
-
-    return fig
+    return ax
 end
 
 function calc_timeseries(config::Dict)
@@ -850,6 +871,8 @@ function plot_timeseries(B_factor::Real, selection_strength::Real, symmetry_brea
     # Save figure
     filename = plotsdir("timeseries", savename(config, "png"))
     save(filename, fig)
+    filename = plotsdir("timeseries", savename(config, "tikz"))
+    save(filename, fig)
 
     return fig
 end
@@ -863,51 +886,128 @@ function generate_timeseries_plot(data; time_steps::Integer)
     plot_times = 1:Int(floor(length(times) / 1000)):length(times)
 
     # Plot fraction communicative
-    fig = Figure()
-    ax1 = Axis(fig[1, 1];
-               title=L"Strong selection $\delta = 0.2$",
-               xlabel="Time",
-               ylabel="Frequency of communicative strategies",
-               limits=(nothing, nothing, -0.05, 1.05))
-    strategy_parity_colors = Dict(all_communicative => :lightgrey,
-                                  all_noncommunicative => :darkgrey)
+    strategy_parity_colors = Dict(all_communicative => 1,
+                                  all_noncommunicative => 2)
 
-    colors_game_type = getindex.(Ref(game_type_colors),
-                                 data["most_common_game_types"][plot_times])
-    colors = [strategy_parity != mixed ? strategy_parity_colors[strategy_parity] :
-              color_game_type
-              for (strategy_parity, color_game_type) in
-                  zip(data["strategy_parity"], colors_game_type)]
-    li1 = lines!(ax1, times[plot_times], data["fraction_communicative"][plot_times];
-                 color=colors)
+    color_game_indices =  Int.(data["most_common_game_types"])
+    color_indices = [strategy_parity != mixed ?  strategy_parity_colors[strategy_parity] + maximum(Int.(keys(game_type_colors))) : color_game_index
+              for (strategy_parity, color_game_index) in
+                  zip(data["strategy_parity"], color_game_indices)]
 
-    # Plot order parameter
-    ax2 = Axis(fig[1, 1];
-               ylabel="Order parameter",
-               limits=(nothing, nothing, -0.05, 1.05),
-               yaxisposition=:right,
-               yticklabelcolor=:orange)
-    hidespines!(ax2)
-    hidexdecorations!(ax2)
-    li2 = lines!(ax2, times[plot_times], data["order_parameters"][plot_times];
-                 color=:orange)
+    ax1 = @pgf PGFPlotsX.Axis(
+        {
+            title=L"Strong selection $\delta = 0.2$",
+            xlabel="Time",
+            ylabel="Frequency of communicative strategies",
+            ymin=-0.05,
+            ymax=1.05,
+            "axis y line*" = "left",
+            "scale only axis",
+            "colormap name" = "game_colors_and_parity",
+            "colormap access" = "direct",
+            "shader" = "flat corner",
+        },
+        PGFPlotsX.Plot({
+            "no marks",
+            "mesh",
+            "point meta" = "explicit",
+            "line width" = "2pt",
+            "line legend",
+            },
+            PGFPlotsX.Table(
+                {meta="color"},
+                x = times[plot_times],
+                y = data["fraction_communicative"][plot_times],
+                color = color_indices[plot_times],
+            )
+        ),
+    )
 
-    # Add legend
-    axislegend(ax1, [li1, li2], ["frequency_communicative", "Order parameter"];
-               position=:rb)
+    ax2 = @pgf PGFPlotsX.Axis(
+        {
+            ylabel="Order Parameter",
+            ymin=-0.05,
+            ymax=1.05,
+            "hide x axis",
+            "axis  y  line*" = "right",
+            "scale only axis",
+            "y tick label style" = "orange",
+            "legend pos" = "south east",
+        },
+
+    # Add legend entry for ax1
+    PGFPlotsX.LegendImage({ color = "black", "line width" = 2, "no marks" }),
+    PGFPlotsX.LegendEntry("Communicative frequency"),
+
+    PGFPlotsX.Plot({
+            "no marks",
+            #"line width" = "2pt",
+            "orange",
+            },
+            PGFPlotsX.Table(
+                x = times[plot_times],
+                y = data["order_parameters"][plot_times]
+            )
+        ),
+        PGFPlotsX.LegendEntry("Order parameter")
+    )
 
     # Plot histogram of game types
     game_parity_or_type = [strategy_parity != mixed ? strategy_parity : game_type
                            for (strategy_parity, game_type) in
                                zip(data["strategy_parity"], data["most_common_game_types"])]
     hist_data = countmap(String.(Symbol.(game_parity_or_type)))
-    ax3 = Axis(fig[2, 1];
-               title=L"Strong selection $\delta = 0.2$",
-               limits=(nothing, nothing, 0, nothing),
-               xticks=(1:length(keys(hist_data)), collect(keys(hist_data))))
-    barplot!(ax3, collect(values(hist_data)))
 
-    return fig
+    ax3 = @pgf PGFPlotsX.Axis(
+        {
+            ylabel="Game Type Fraction",
+            ymin=0,
+            # Note: using `symbolic x coords` with `bar width` specified
+            # in data units is not supported
+            "symbolic x coords" = replace.(collect(keys(hist_data)), "_" => raw"\_"),
+            "xtick" = "data",
+            "xtick style" = "{draw=none}",
+            "grid",
+            "xticklabel style" = "{xshift=-10pt, rotate=60}",
+        },
+        PGFPlotsX.Plot(
+            {"ybar",
+            "mark=no",
+            "fill"="cyan",
+            "opacity"=0.6,
+            },
+            PGFPlotsX.Table(
+                x = replace.(collect(keys(hist_data)),"_" => raw"\_"),
+                y = collect(values(hist_data))./sum(collect(values(hist_data)))
+            )
+        )
+    )
+
+    ax3_blank = @pgf PGFPlotsX.Axis(
+        {
+            ymin=0,
+            "symbolic x coords" = collect(keys(hist_data)),
+            "xtick" = "data",
+        }
+    )
+
+    gp1 = @pgf GroupPlot(
+    { group_style = {
+        group_size="1 by 2",
+        "vertical sep"="2cm",
+        }
+    },
+    ax1, ax3)
+
+    gp2 = @pgf GroupPlot(
+    { group_style = {
+        group_size="1 by 2",
+        "vertical sep"="2cm",
+        }
+    },
+    ax2, )
+
+    return @pgf PGFPlotsX.TikzPicture(gp1, gp2)
 end
 
 function plot_connected_components(
@@ -1082,7 +1182,7 @@ function plot_payoff_regions()
 
     # Plot regions
     fig = Figure()
-    ax = Axis(fig[1, 1];
+    ax = CairoMakie.Axis(fig[1, 1];
               xlabel=L"Benefit of mutual communication $B(\delta \phi)/c$",
               ylabel=L"Benefit of unilateral communication $\beta(\delta \phi)/c$",
               limits=(0, 4, 0, 4))

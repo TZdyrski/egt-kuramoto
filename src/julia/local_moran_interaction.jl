@@ -742,16 +742,22 @@ function generate_cumulative_plot(data::Dict, config::Dict)
               limits=(nothing, nothing, 0, 1))
     scatter!(ax, data["Bs"], data["fraction_communicative"]; label="Simulation")
     beta0(B0) = 0.95*B0
+
+    # Generate graph
+    interaction_adj_matrix, _ = get_adj_matrices(config["adj_matrix_source"])
+    graph = SimpleDiGraph(interaction_adj_matrix)
+    nb_effective = 1.3*( mean(indegree(graph))+1) # Add one since n=degree+1 for well-mixed case
+
     lines!(ax, data["Bs"][begin] .. data["Bs"][end],
 	   B0 -> analytic_frac_communicative(B0, beta0(B0);
-			selection_strength=config["selection_strength"], cost=data["cost"], nb_players=data["nb_players"],
+			selection_strength=config["selection_strength"], cost=data["cost"], nb_players=nb_effective,
 			symmetry_breaking=config["symmetry_breaking"], nb_phases=config["nb_phases"]); label="Theory",
            color=:orange)
     lines!(ax, data["Bs"][begin] .. data["Bs"][end],
-           B0 -> 1 / (1 + exp(config["selection_strength"] * (data["nb_players"] - 1) *
-                              ((data["nb_players"] - 1) * data["cost"]
-			       + data["nb_players"] * beta0(B0) * (1-2*config["symmetry_breaking"])/2
-                              - (data["nb_players"] - 2) / 2 * B0))); label="Approx. Theory",
+           B0 -> 1 / (1 + exp(config["selection_strength"] * (nb_effective - 1) *
+                              ((nb_effective - 1) * data["cost"]
+			       + nb_effective * beta0(B0) * (1-2*config["symmetry_breaking"])/2
+                              - (nb_effective - 2) / 2 * B0))); label="Approx. Theory",
            color=:purple, linestyle=:dash)
 
 

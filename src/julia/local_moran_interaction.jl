@@ -881,7 +881,7 @@ function generate_timeseries_plot(data; time_steps::Integer)
 
     # Plot order parameter
     ax2 = Axis(fig[1, 1];
-               ylabel="Frequency of communicative strategies",
+               ylabel="Order parameter",
                limits=(nothing, nothing, -0.05, 1.05),
                yaxisposition=:right,
                yticklabelcolor=:orange)

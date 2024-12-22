@@ -58,28 +58,6 @@ begin
 	B_factor_bond = @bind B_factor PlutoUI.Slider([1.5,2.5]);
 end;
 
-# ╔═╡ ca9bec98-3e58-45a5-9a9c-4e238e8a660e
-begin
-	using Graphs
-	graph = Graphs.SimpleDiGraph(local_moran_interaction.get_adj_matrices(matrix_source)[1])
-	conn_comp = strongly_connected_components(graph)
-
-	conn_comp_index = zeros(Int32, nv(graph))
-	for (conn_comp_indx, elem) in pairs(conn_comp)
-		for indx in elem
-			conn_comp_index[indx] = conn_comp_indx
-		end
-	end
-	conn_comp_index
-
-	using GraphMakie
-	using NetworkLayout
-	graphplot(graph; layout=Stress(),
-	edge_color=(:black, 0.05),
-	node_color=conn_comp_index,
-	edge_plottype=:linesegments)
-end
-
 # ╔═╡ 1740d8de-7c44-4a69-8711-5c25149c560a
 md"""
 ### Selection Strength
@@ -126,6 +104,9 @@ end
 md"""
 ### Strongly Connected Components
 """
+
+# ╔═╡ 2dabcbb3-7dc6-4bc4-af4f-8e48407130f8
+local_moran_interaction.plot_connected_components(matrix_source)
 
 # ╔═╡ 32510bf3-a932-4394-a4fb-8101580a6140
 md"""
@@ -271,7 +252,7 @@ md"""
 # ╟─9e64dcc2-574e-4690-a10d-9b45e0ba5219
 # ╟─3ac99fec-2389-4684-9547-661a7d9025a6
 # ╟─0ca5e4f8-faab-4057-a823-956c3711b5d8
-# ╟─ca9bec98-3e58-45a5-9a9c-4e238e8a660e
+# ╟─2dabcbb3-7dc6-4bc4-af4f-8e48407130f8
 # ╟─32510bf3-a932-4394-a4fb-8101580a6140
 # ╟─656dd0d7-4e47-422c-a104-9b2473a51306
 # ╟─e8890847-13d7-447c-9d65-f660e189a154

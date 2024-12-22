@@ -908,6 +908,30 @@ function generate_timeseries_plot(data; time_steps::Integer)
     return fig
 end
 
+function plot_connected_components(
+                              adj_matrix_source::String="well-mixed",
+			      )
+    # Generate graph
+    graph = Graphs.SimpleDiGraph(local_moran_interaction.get_adj_matrices(adj_matrix_source)[1])
+    conn_comp = strongly_connected_components(graph)
+
+    # Calculate connected components
+    conn_comp_index = zeros(Int32, nv(graph))
+    for (conn_comp_indx, elem) in pairs(conn_comp)
+        for indx in elem
+            conn_comp_index[indx] = conn_comp_indx
+        end
+    end
+    num_conn_comp = length(conn_comp)
+
+    # Plot graph
+    fig = graphplot(graph; layout=Stress(), edge_color=(:black, 0.05),
+        node_color=distinguishable_colors(num_conn_comp)[conn_comp_index],
+        edge_plottype=:linesegments)
+
+    return fig
+end
+
 function plot_graph_evolution(B_factor::Real, selection_strength::Real,
                               symmetry_breaking::Real,
                               adj_matrix_source::String="well-mixed",

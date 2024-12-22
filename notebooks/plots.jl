@@ -111,13 +111,6 @@ end
 # ╔═╡ 9e64dcc2-574e-4690-a10d-9b45e0ba5219
 !isempty(dict_cumulative_selected) ? local_moran_interaction.generate_cumulative_plot(dict_cumulative_selected, @strdict(selection_strength,symmetry_breaking,nb_phases=20,adj_matrix_source=matrix_source)) : nothing
 
-# ╔═╡ 3ac99fec-2389-4684-9547-661a7d9025a6
-begin
-	ax = hist(collect(Iterators.flatten(local_moran_interaction.get_adj_matrices("c-elegans-undirected"))), bins=1:20)
-	lines!(1:20, (x) -> 3000/x)
-	ax
-end
-
 # ╔═╡ 0ca5e4f8-faab-4057-a823-956c3711b5d8
 md"""
 ### Strongly Connected Components
@@ -230,7 +223,6 @@ plot_game_type_distribution_vs_asymmetry(B_factor,selection_strength,matrix_sour
 # ╟─3cc72edb-1a4b-4ac6-a18f-2ad9296b2da2
 # ╟─2f8d5984-acd3-4958-afe6-acc136d1c70a
 # ╟─9e64dcc2-574e-4690-a10d-9b45e0ba5219
-# ╟─3ac99fec-2389-4684-9547-661a7d9025a6
 # ╟─0ca5e4f8-faab-4057-a823-956c3711b5d8
 # ╟─2dabcbb3-7dc6-4bc4-af4f-8e48407130f8
 # ╟─32510bf3-a932-4394-a4fb-8101580a6140

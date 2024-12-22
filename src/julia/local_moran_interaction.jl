@@ -14,6 +14,8 @@ using LaTeXStrings
 using DataToolkit
 using DrWatson
 using Graphs
+using DataFrames
+using DataFramesMeta
 using CairoMakie
 using GraphMakie
 using NetworkLayout
@@ -930,6 +932,45 @@ function plot_connected_components(
         edge_plottype=:linesegments)
 
     return fig
+end
+
+function load_all_timeseries(
+                              time_steps::Integer=80_000,
+                )
+    # Load dataframe
+    df_raw = collect_results(datadir("timeseries_statistics"); rinclude = [Regex("time_steps=$time_steps[._]")])
+
+    # Convert JLD2 Reconstruct variables back to GameType enums
+    transform!(df_raw, :most_common_game_types => (x -> map(y -> map(z -> GameType(z.val), y), x)) => :most_common_game_types)
+    transform!(df_raw, :strategy_parity => (x -> map(y -> map(z -> StrategyParity(z.val), y), x)) => :strategy_parity)
+
+    # Add path
+    df = transform(df_raw, :path => (x-> DataFrame(map(y -> parse_savename(y)[2], x))) => AsTable)
+
+    return df
+end
+
+function plot_game_type_distribution_vs_asymmetry(B_factor::Real,
+                                                  selection_strength::Real,
+                                                  adj_matrix_source::String="well-mixed",
+                                                  time_steps::Integer=80_000,
+                                                  )
+    # Load data
+    df = load_all_timeseries(time_steps)
+
+    # Select subset of dataframe
+    df_all_asymm = @rsubset(df, :selection_strength == selection_strength, :adj_matrix_source == adj_matrix_source, :factor == B_factor)
+    game_types = proportionmap.(df_all_asymm.most_common_game_types)
+
+    # Generate plot
+    f = Figure()
+    CairoMakie.Axis(f[1, 1], xlabel = L"Asymmetry $\alpha$", title = "Proportion of Game Types by Asymmetry")
+    for (indx, row) in enumerate(game_types)
+        asymm = df_all_asymm.symmetry_breaking[indx]
+        barplot!(repeat([asymm], length(row)), collect(values(row)), stack = repeat([indx], length(row)), color = getindex.(Ref(local_moran_interaction.game_type_colors), collect(keys(row))), width=0.2)
+    end
+
+    return f
 end
 
 function plot_graph_evolution(B_factor::Real, selection_strength::Real,

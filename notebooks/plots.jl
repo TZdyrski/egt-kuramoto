@@ -88,10 +88,28 @@ md"""
 # ╔═╡ 3cc72edb-1a4b-4ac6-a18f-2ad9296b2da2
 matrix_source_bond
 
+# ╔═╡ 2f8d5984-acd3-4958-afe6-acc136d1c70a
+begin
+	df_cumulative_selected = @rsubset(df_cumulative, :selection_strength == selection_strength, :matrix_source == matrix_source, :symmetry_breaking == symmetry_breaking)
+
+	dict_cumulative_selected = Dict()
+	if nrow(df_cumulative_selected) == 1
+		dict_cumulative_selected = Dict(names(df_cumulative_selected[1,:]) .=> values(df_cumulative_selected[1,:]))
+
+		nothing
+	elseif nrow(df_cumulative_selected) < 1
+		println("No datasets found")
+
+		println("Available datasets:")
+		df_cumulative
+	else
+		println("More than one dataset matching conditions found: please fully specify")
+		df_cumulative_selected
+	end
+end
+
 # ╔═╡ 9e64dcc2-574e-4690-a10d-9b45e0ba5219
-#=╠═╡
 !isempty(dict_cumulative_selected) ? local_moran_interaction.generate_cumulative_plot(dict_cumulative_selected, @strdict(selection_strength,symmetry_breaking,nb_phases=20,adj_matrix_source=matrix_source)) : nothing
-  ╠═╡ =#
 
 # ╔═╡ 3ac99fec-2389-4684-9547-661a7d9025a6
 begin
@@ -117,50 +135,8 @@ md"""
 # ╠═╡ show_logs = false
 begin
 	time_steps_timeseries = Int(8E5)
-	
-	df_raw_timeseries = collect_results(datadir("timeseries_statistics"); rinclude = [Regex("time_steps=$time_steps_timeseries[._]")])
-
-	# Convert JLD2 Reconstruct variables back to GameType enums
-	transform!(df_raw_timeseries, :most_common_game_types => (x -> map(y -> map(z -> GameType(z.val), y), x)) => :most_common_game_types)
-	transform!(df_raw_timeseries, :strategy_parity => (x -> map(y -> map(z -> StrategyParity(z.val), y), x)) => :strategy_parity)
-	
-	df_timeseries = transform(df_raw_timeseries, :path => (x-> DataFrame(map(y -> parse_savename(y)[2], x))) => AsTable)
+	df_timeseries = local_moran_interaction.load_all_timeseries(time_steps_timeseries)
 end;
-
-# ╔═╡ 9fb6798e-2bb6-4931-91aa-6ffacc695f56
-begin
-	df_timeseries_all_asymm = f_timeseries_selected = @rsubset(df_timeseries, :selection_strength == selection_strength, :adj_matrix_source == matrix_source, :factor == B_factor)
-	using StatsBase
-	game_types = proportionmap.(df_timeseries_all_asymm.most_common_game_types)
-
-	local f = Figure()
-	CairoMakie.Axis(f[1, 1], xlabel = L"Asymmetry $\alpha$", title = "Proportion of Game Types by Asymmetry")
-	for (indx, row) in enumerate(game_types)
-		asymm = df_timeseries_all_asymm.symmetry_breaking[indx]
-		barplot!(repeat([asymm], length(row)), collect(values(row)), stack = repeat([indx], length(row)), color = getindex.(Ref(local_moran_interaction.game_type_colors), collect(keys(row))), width=0.2)
-	end
-	f
-end
-
-# ╔═╡ 2f8d5984-acd3-4958-afe6-acc136d1c70a
-begin
-	df_cumulative_selected = @rsubset(df_cumulative, :selection_strength == selection_strength, :matrix_source == matrix_source, :symmetry_breaking == symmetry_breaking)
-
-	dict_cumulative_selected = Dict()
-	if nrow(df_cumulative_selected) == 1
-		dict_cumulative_selected = Dict(names(df_cumulative_selected[1,:]) .=> values(df_cumulative_selected[1,:]))
-
-		nothing
-	elseif nrow(df_cumulative_selected) < 1
-		println("No datasets found")
-
-		println("Available datasets:")
-		df_cumulative
-	else
-		println("More than one dataset matching conditions found: please fully specify")
-		df_cumulative_selected
-	end
-end
 
 # ╔═╡ e8890847-13d7-447c-9d65-f660e189a154
 md"""
@@ -231,6 +207,10 @@ end
 md"""
 # Game Types
 """
+
+# ╔═╡ 9fb6798e-2bb6-4931-91aa-6ffacc695f56
+# ╠═╡ show_logs = false
+plot_game_type_distribution_vs_asymmetry(B_factor,selection_strength,matrix_source,time_steps_timeseries)
 
 # ╔═╡ Cell order:
 # ╠═3e050942-505f-4328-be97-d6e72b260be2

@@ -1,0 +1,24 @@
+\begin{tikzpicture}
+  \begin{axis}[
+    fraction communicative chart,
+    xlabel={Maximum benefit of mutual communication, $B_0$},
+    ylabel style={align=center},
+    ylabel={Frequency of \\ communicative strategies $f_{\text{comm}}$},
+    legend style={at={(0.95,0.5)},anchor=east},
+    % Activate Brewer color cycle
+    cycle list/Greens-5,
+    % Combine color cycle with marker cycle
+    cycle multiindex* list={
+      mark list*\nextlist
+      Greens-5\nextlist
+    },
+    ]
+    \addlegendimage{empty legend}
+    \addplot table {data/cumulative/adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.0_time_steps=200000000_type=simulation.dat};
+    \addplot table {data/cumulative/adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.25_time_steps=200000000_type=simulation.dat};
+    \addplot table {data/cumulative/adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.5_time_steps=200000000_type=simulation.dat};
+    \addplot table {data/cumulative/adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.dat};
+    \addplot table {data/cumulative/adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=1.0_time_steps=200000000_type=simulation.dat};
+    \legend{\hspace{-.6cm}\textbf{Asym.\ $\alpha$}, $0$,$1/4$,$1/2$,$3/4$,$1$}
+  \end{axis}
+\end{tikzpicture}

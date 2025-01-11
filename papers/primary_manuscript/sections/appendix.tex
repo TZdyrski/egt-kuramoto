@@ -1,0 +1,501 @@
+\section{Broken symmetry}
+Similarly, the derivation for the communicative fraction
+in section 4 of the appendix for \cite{tripp2022evolutionary} carries
+through until equation 16.
+Instead, with $n_{\text{in}} = n-1$, we have
+\begin{equation}
+  \begin{aligned}[b]
+  \gamma_k &= \frac{p_{k,k-1}}{p_{k,k+1}} \\
+           &= \frac{f_N(k)}{f_C(K)} \\
+           &= \exp[\delta (n-1) (\pi_F(k) - \pi_E(k))]
+\end{aligned}
+\end{equation}
+where strategy $F=(N,\phi_k)$, strategy $E=(C,\phi_j)$, and $k$ is the
+number of communicative strategies $C$.
+The new payoff functions $\pi_C$ and $\pi_N$ are given by
+\begin{align}
+  \pi_E(k) &= \ab(\frac{k-1}{n-1}) \ab(B(0) - c)
+                + \ab(\frac{n-k}{n-1}) \ab(\beta(\Delta\phi) 2\alpha - c) \\
+           &= \frac{1}{n-1}
+               \ab(k \ab(B(\Delta\phi) - 2 \alpha \beta(\Delta\phi))
+                 + 2 \alpha n \beta(\Delta\phi) - B(\Delta\phi) - (n-1) c)
+\end{align}
+and
+\begin{align}
+  \pi_F(k) &= \ab(\frac{k}{n-1}) \ab(\beta(\Delta\phi) 2 (1-\alpha))
+                + \ab(\frac{n-k-1}{n-1}) \ab(0) \\
+           &= \ab(\frac{k}{n-1}) 2 (1-\alpha) \beta(\Delta\phi)
+\end{align}
+where $\Delta \phi$ is the phase difference between the $E$ and $F$
+strategies.
+Note that $\pi_E$ has $B(0)$ instead of $B(\Delta \phi)$; this is
+because the $B(\Delta \phi)$ payoff occurs when strategy $E$ plays
+against strategy $E$, so $\Delta \phi = 0$ (recall we are only
+considering a game with exactly two strategies, $E = (C, \phi_i)$ and
+$F = (N, \phi_j)$.
+Similar logic would apply to the $F$-$F$ strategy in $\pi_F$, but that
+payoff is identically zero.
+
+Thus, we have
+\begin{equation}
+  \begin{aligned}
+    \gamma_k &= \exp\ab[\delta \ab(
+    k 2 (1-\alpha) \beta(\Delta\phi)
+    - k \ab(B(0) - 2 \alpha \beta(\Delta\phi))
+                 - 2 \alpha n \beta(\Delta\phi) + B(0) + (n-1) c)] \\
+      &= \exp\ab[\delta \ab(
+    \ab(2 \beta(\Delta\phi) - B(0)) k
+                 + B(0) - 2 \alpha n \beta(\Delta\phi) + (n-1) c)]
+  \end{aligned}
+\end{equation}
+Next, we can calculate the ratio of fixation rates $\rho_F/\rho_E$ as
+\begin{equation}
+  \begin{aligned}
+    \frac{\rho_F}{\rho_E} &= \prod_{k=1}^{n-1} \gamma_k \\
+           &= \exp \ab\{
+                \delta
+                \sum_{k=1}^{n-1}
+                \ab[
+    \ab(2 \beta(\Delta\phi) - B(0)) k
+                 + B(0) - 2 \alpha n \beta(\Delta\phi) + (n-1) c
+                 ]
+                 \} \\
+           &= \exp \ab\{
+                \delta
+                \ab[
+                \ab(2 \beta(\Delta\phi) - B(0)) \frac{n(n-1)}{2}
+                 + \ab(B(0) - 2 \alpha n \beta(\Delta\phi) + (n-1) c) (n-1)
+                 ]
+                 \} \\
+           &= \exp \ab\{
+                \delta (n-1)
+                \ab[
+                (n-1) c + n \beta(\Delta\phi) (1 - 2 \alpha)
+                - \frac{n-2}{2} B(0)
+                 ]
+                 \}
+  \end{aligned}
+\end{equation}
+Notice, now the ratio of $\rho_F/\rho_E$ depends of $\Delta \phi$,
+unlike in the $\alpha=1/2$ case.
+
+Soon, we will require the expression for $\rho_{NC,\Delta \phi_{qr}}
+\coloneqq \rho_E$.
+Thus, we have
+\begin{equation}
+  \begin{aligned}
+    \rho_E &= \frac{1}{1+\sum_{j=1}^{n-1} \prod_{k=1}^j \gamma_k} \\
+           &= \ab(1+\sum_{j=1}^{n-1} \prod_{k=1}^j \exp\ab[\delta \ab(
+           \ab(2 \beta(\Delta\phi_{qr}) - B(0)) k
+           + B(0) - 2 \alpha n \beta(\Delta\phi_{qr}) + (n-1) c)])^{-1}
+                 \\
+           &= \ab(1+\sum_{j=1}^{n-1} \exp\ab[\delta \sum_{k=1}^j \ab(
+           \ab(2 \beta(\Delta\phi_{qr}) - B(0)) k
+           + B(0) - 2 \alpha n \beta(\Delta\phi_{qr}) + (n-1) c)])^{-1}
+                 \\
+           &= \ab(1+\sum_{j=1}^{n-1} \exp\ab[\delta \ab(
+           \ab(2 \beta(\Delta\phi_{qr}) - B(0)) j(j+1)/2
+           + j \ab(B(0) - 2 \alpha n \beta(\Delta\phi_{qr}) + (n-1) c))])^{-1}
+                 \\
+           &= \ab(1+\sum_{j=1}^{n-1} \exp\ab[\delta \ab(
+           \ab(\beta(\Delta\phi_{qr}) - B(0)/2) j^2
+           + j \ab(B(0)/2 + \beta(\Delta\phi_{qr}) (1 - 2 \alpha n)  + (n-1) c))])^{-1}
+  \end{aligned}
+\end{equation}
+
+Then, for the multi-population, low-mutation case, we identify
+$\rho_{NC,\Delta \phi_{qr}} = \rho_E$ and $\rho_{CN,\Delta \phi_{qr}} = \rho_F$
+Then, we can use this to calculate the ratio of the stationary state
+eigenvalues $s_1/s_2$
+\begin{align}
+  \frac{s_1}{s_2} &= \frac{\sum_{r=1}^{d} \rho_{NC,\Delta \phi_{qr}} }
+  {\sum_{r=1}^{d} \rho_{CN,\Delta \phi_{qr}}} \\
+                  &= \frac{\sum_{r=1}^{d} \rho_{NC,\Delta \phi_{qr}}
+                  }
+  {\sum_{r=1}^{d} \rho_{NC,\Delta \phi_{qr}}
+                \exp \ab\{
+                \delta (n-1)
+                \ab[
+                (n-1) c + n \beta(\Delta\phi) (1 - 2 \alpha)
+                - \frac{n-2}{2} B(0)
+                 ]
+                 \}
+               }
+               \\
+      &=
+      \ab[
+\frac
+{\sum_{r=1}^{d}
+  \frac{1}{1+\sum_{j=1}^{n-1} \exp\ab[\delta \ab(
+           \ab(\beta(\Delta\phi_{qr}) - B(0)/2) j^2
+           + j \ab(B(0)/2 + \beta(\Delta\phi_{qr}) (1 - 2 \alpha n)  + (n-1) c))]}
+                  }
+{\sum_{r=1}^{d}
+  \frac{\exp \ab\{
+                \delta (n-1)
+                \ab[
+                (n-1) c + n \beta(\Delta\phi) (1 - 2 \alpha)
+                - \frac{n-2}{2} B(0)
+                 ]
+                 \}
+}{1+\sum_{j=1}^{n-1} \exp\ab[\delta \ab(
+           \ab(\beta(\Delta\phi_{qr}) - B(0)/2) j^2
+           + j \ab(B(0)/2 + \beta(\Delta\phi_{qr}) (1 - 2 \alpha n)  +
+         (n-1) c))]}
+                               }
+                               ]
+  \label{eq:full_analytic}
+\end{align}
+Again, unlike in the $\alpha = 1/2$ symmetric case, we cannot factor the
+exponential component out of the sum and cancel the $\rho_{CN,\Delta
+\phi_{qr}}$ terms.
+Also, note that \cite{tripp2022evolutionary} has a typo by placing the
+exponential in the numerator.
+
+We cannot simplify the sum as $\sum_j \exp(j^2)$ doesn't have a closed form solution.
+However, we can approximate it.
+First, we define $\nu \coloneqq s_2/s_1$ so that $\nu = \omega$ for the
+symmetric $\alpha = 1/2$ case.
+Then, using the fact that $d s_1 + d s_2 = 1$, we find the probability
+of communicative fixation $d s_1$ to be
+\begin{equation}
+  \begin{aligned}
+    \frac{s_2}{s_1} &= \frac{1 - d s_1}{d s_1} = \nu \\
+                    &\iff d s_1 = \frac{1}{1+\nu} =
+                    \frac{1}{1+e^{\ln(\nu)}}
+  \end{aligned}
+\end{equation}
+Additionally, we will define $\Phi(B(0);\beta(\Delta\Phi),c,\alpha,n)
+\coloneqq \ln(\nu)$.
+For the symmetric case $\alpha=1/2$, this exactly simplifies to $\Phi =
+\delta(n-1)[(n-1)c - (n-2)B(0)/2]$, while the closed-form is intractable
+for the $\alpha \neq 1/2$ case.
+
+Numerical simulations suggest that $s_1$ approximately has the form of
+$1/(1+\exp(m_0 + m_1 B(0)))$ as a function of $B(0)$ even when $\alpha
+\neq 1/2$.
+Therefore, we will attempt to Taylor expand $\Phi(B(0))$ for small
+$B(0) \ll 1$; since all of our simulations use $\beta \propto B$, we also
+assume $\beta \ll 1$.
+To zeroth order in $B(0)$ and $\beta$, we have
+\begin{equation}
+  \begin{aligned}
+    \Phi^{(0)} &= \ln\ab(
+\frac{\sum_{r=1}^{d}
+\ab(1+\sum_{j=1}^{n-1} \exp\ab[\delta \ab( j (n-1) c)])^{-1}
+                \exp \ab\{ \delta (n-1) (n-1) c \}
+               }
+{\sum_{r=1}^{d}
+\ab(1+\sum_{j=1}^{n-1} \exp\ab[\delta \ab( j \ab((n-1) c))])^{-1} }
+  ) \\
+  &= \ln\ab( \exp\{ \delta (n-1)^2 c \}) \\
+  &= \delta (n-1)^2 c
+  \end{aligned}
+\end{equation}
+To first order in $B(0)$ and $\beta$, we have
+\begin{equation}
+  \begin{aligned}
+    \Phi^{(0)+(1)} &= \ln\ab(
+  e^{\delta(n-1)^2 c - \frac{n-2}{2} B(0)}
+\frac{\sum_{r=1}^{d}
+  \frac{1 + \delta (n-1) n \beta(\Delta\phi) (1 - 2 \alpha)
+    }{1+\sum_{j=1}^{n-1} \delta \ab(
+           \ab(\beta(\Delta\phi_{qr}) - B(0)/2) j^2
+           + j \ab(B(0)/2 + \beta(\Delta\phi_{qr}) (1 - 2 \alpha n)))
+           \exp\ab[\delta j (n-1) c]
+         }
+                               }
+{\sum_{r=1}^{d}
+  \frac{1}{1+\sum_{j=1}^{n-1} \delta \ab(
+           \ab(\beta(\Delta\phi_{qr}) - B(0)/2) j^2
+           + j \ab(B(0)/2 + \beta(\Delta\phi_{qr}) (1 - 2 \alpha n)))
+           \exp\ab[\delta (n-1) c]
+         }
+                  }
+  )
+  \\
+  &=
+\delta(n-1)^2 c - \frac{n-2}{2} B(0) \\
+  &\qquad +
+\ln\ab(
+\frac{\sum_{r=1}^{d}
+  \frac{1 + \delta (n-1) n \beta(\Delta\phi) (1 - 2 \alpha)
+    }{1+\sum_{j=1}^{n-1} \delta \ab(
+           \ab(\beta(\Delta\phi_{qr}) - B(0)/2) j^2
+           + j \ab(B(0)/2 + \beta(\Delta\phi_{qr}) (1 - 2 \alpha n)))
+           \exp\ab[\delta j (n-1) c]
+         }
+                               }
+{\sum_{r=1}^{d}
+  \frac{1}{1+\sum_{j=1}^{n-1} \delta \ab(
+           \ab(\beta(\Delta\phi_{qr}) - B(0)/2) j^2
+           + j \ab(B(0)/2 + \beta(\Delta\phi_{qr}) (1 - 2 \alpha n)))
+           \exp\ab[\delta j (n-1) c]
+         }
+                  }
+  )
+  \end{aligned}
+  \label{eq:phase_first-order_big-frac}
+\end{equation}
+As a short detour, we will evaluate the $j$ sum separately:
+\begin{equation}
+  \begin{aligned}
+    &
+\sum_{j=1}^{n-1} \delta \ab(
+           \ab(\beta(\Delta\phi_{qr}) - B(0)/2) j^2
+           + j \ab(B(0)/2 + \beta(\Delta\phi_{qr}) (1 - 2 \alpha n)))
+           \exp\ab[\delta j (n-1) c]
+    \\
+    &=
+    \delta \ab(\beta(\Delta\phi_{qr}) - B(0)/2) \sum_{j=1}^{n-1}
+           j^2 \delta \exp\ab[\delta j (n-1) c]
+    + \delta \ab(B(0)/2 + \beta(\Delta\phi_{qr}) (1 - 2 \alpha n)) \sum_{j=1}^{n-1}
+           j \delta \exp\ab[\delta j (n-1) c]
+    \\
+    &=
+    \delta \ab(\beta(\Delta\phi_{qr}) - B(0)/2)
+    e^{\delta(n-1)c} \frac{\ab(1 + e^{\delta(n-1)c} + n^2 e^{\delta(n-1)^2c} + 2n(n-1)
+    e^{\delta n(n-1)c} - (n-1)^2 e^{\delta(n^2-1)c})}{\ab(1-e^{\delta(n-1)c})^3}
+           \\
+    &\qquad
+    + \delta \ab(B(0)/2 + \beta(\Delta\phi_{qr}) (1 - 2 \alpha n))
+    e^{\delta (n-1) c} \frac{\ab(1 - n e^{\delta (n-1)^2 c}
+    + (n-1) e^{\delta n (n-1) c})}{\ab(1-e^{\delta (n-1) c})^2}
+    \\
+    &=
+    \frac{\delta e^{\delta(n-1)c}}{\ab(1-e^{\delta (n-1)c})^3}
+\biggl[
+  \\
+    &\qquad
+\ab(\beta(\Delta\phi_{qr}) - B(0)/2)
+\ab(1 + e^{\delta(n-1)c} + n^2 e^{\delta(n-1)^2c} + 2n(n-1)
+    e^{\delta n(n-1)c} - (n-1)^2 e^{\delta(n^2-1)c})
+    \\
+    &\qquad
++
+\ab(B(0)/2 + \beta(\Delta\phi_{qr}) (1 - 2 \alpha n))
+\ab(1 - n e^{\delta (n-1)^2 c}
+    + (n-1) e^{\delta n (n-1) c})
+\ab(1-e^{\delta(n-1)c})
+\biggr]
+    \\
+    &=
+    \frac{\delta e^{\delta(n-1)c}}{\ab(1-e^{\delta (n-1)c})^3}
+\biggl[
+  \\
+    &\qquad
+\ab(\beta(\Delta\phi_{qr}) - B(0)/2)
+\ab(1 + e^{\delta(n-1)c} + n^2 e^{\delta(n-1)^2c} + 2n(n-1)
+    e^{\delta n(n-1)c} - (n-1)^2 e^{\delta(n^2-1)c})
+    \\
+    &\qquad
++
+\ab(B(0)/2 + \beta(\Delta\phi_{qr}) (1 - 2 \alpha n))
+\Bigl(1 - n e^{\delta (n-1)^2 c} + (2n-1) e^{\delta n (n-1) c}
+    \\
+    &\qquad\qquad
+    - e^{\delta(n-1)c} - (n-1) e^{\delta (n^2-1) c}
+    \Bigr)
+\biggr]
+    \\
+    &=
+    \frac{\delta e^{\delta(n-1)c}}{\ab(1-e^{\delta (n-1)c})^3}
+\biggl[
+  \\
+    &\qquad
+B(0)
+\ab( - e^{\delta(n-1)c} - \frac{n (n+1)}{2} e^{\delta(n-1)^2c}
+- \frac{(2n-1)^2}{2} e^{\delta n(n-1)c} + \frac{(n-1)(n-2)}{2} e^{\delta(n^2-1)c})
+    \\
+    &\qquad
+    +
+\beta(\Delta\phi_{qr})
+\Bigl(2(1-\alpha n) + 2 \alpha n e^{\delta(n-1)c}
+    + n(n -1 +2\alpha) e^{\delta(n-1)^2c}
+    \\
+    &\qquad\qquad
+    + \ab[4n^2-1 -2\alpha n (2n-1)] e^{\delta n(n-1)c}
+    - \ab(2\alpha-1)n(n-1) e^{\delta(n^2-1)c}
+    - n (1-2\alpha n) e^{\delta (n-1)^2 c}
+\Bigr)
+\biggr]
+  \\
+    &\coloneqq
+    \frac{\delta e^{\delta(n-1)c}}{\ab(1-e^{\delta (n-1)c})^3}
+    \ab[
+  M B(0) + N \beta(\Delta \phi_{qr})]
+  \end{aligned}
+\end{equation}
+Additionally, we can approximate
+\begin{equation}
+  \begin{aligned}
+  &\frac{1}{1+\sum_j \ldots}
+  = 1 -
+    \frac{\delta e^{\delta(n-1)c}}{\ab(1-e^{\delta (n-1)c})^3}
+    \ab[
+  M B(0) + N \beta(\Delta \phi_{qr})]
+  \end{aligned}
+\end{equation}
+
+Substituting this result into \cref{eq:phase_first-order_big-frac} gives
+\begin{equation}
+  \begin{aligned}
+    \Phi^{(0)+(1)} &=
+\delta(n-1)^2 c - \frac{n-2}{2} B(0) \\
+  &\qquad +
+\ln\ab(
+\frac{\sum_{r=1}^{d}
+  \ab[
+  1 + \delta (n-1) n \beta(\Delta\phi_{qr}) (1 - 2 \alpha)]
+  \ab\{
+1 -
+    \frac{\delta e^{\delta(n-1)c}}{\ab(1-e^{\delta (n-1)c})^3}
+    \ab[
+  M B(0) + N \beta(\Delta \phi_{qr})]
+\}
+                               }
+{\sum_{r=1}^{d}
+  \ab\{
+1 -
+    \frac{\delta e^{\delta(n-1)c}}{\ab(1-e^{\delta (n-1)c})^3}
+    \ab[
+  M B(0) + N \beta(\Delta \phi_{qr})]
+\}
+                  }
+  )
+  \\
+  &=
+\delta(n-1)^2 c - \frac{n-2}{2} B(0) \\
+  &\qquad +
+\ln\ab(
+\frac{
+  \begin{aligned}
+&d\ab(1 -
+    \frac{\delta e^{\delta(n-1)c}}{\ab(1-e^{\delta (n-1)c})^3}
+  M B(0))
+  \\
+&\qquad-
+  \delta (n-1) n (1 - 2 \alpha)
+  \frac{\delta e^{\delta(n-1)c}}{\ab(1-e^{\delta (n-1)c})^3} N
+  \sum_{r=1}^{d}
+  \beta^2(\Delta\phi_{qr})
+  \\
+&\qquad+
+  \ab[
+  \delta (n-1) n (1 - 2 \alpha) \ab( 1 -
+    \frac{\delta e^{\delta(n-1)c}}{\ab(1-e^{\delta (n-1)c})^3}
+  M B(0))
+  - \frac{\delta e^{\delta(n-1)c}}{\ab(1-e^{\delta (n-1)c})^3} N
+  ]
+  \sum_{r=1}^{d}
+  \beta(\Delta \phi_{qr})
+\end{aligned}
+}
+{d\ab(1 -
+    \frac{\delta e^{\delta(n-1)c}}{\ab(1-e^{\delta (n-1)c})^3}
+  M B(0))
+  - N \frac{\delta e^{\delta(n-1)c}}{\ab(1-e^{\delta (n-1)c})^3}
+  \sum_{r=1}^{d} \beta(\Delta \phi_{qr})
+                  }
+  )
+\end{aligned}
+\end{equation}
+Dropping terms of order $\beta_0^2$ gives
+\begin{equation}
+  \begin{aligned}
+    \Phi^{(0)+(1)} &=
+\delta(n-1)^2 c - \frac{n-2}{2} B(0) \\
+  &\qquad +
+\ln\ab(
+\frac{
+  \begin{aligned}
+&d\ab(1 -
+    \frac{\delta e^{\delta(n-1)c}}{\ab(1-e^{\delta (n-1)c})^3}
+  M B(0))
+  \\
+&\qquad+
+  \ab[
+-
+    \frac{\delta e^{\delta(n-1)c}}{\ab(1-e^{\delta (n-1)c})^3} N
+    +
+\delta (n-1) n (1 - 2 \alpha)
+]
+  \sum_{r=1}^{d}
+  \beta(\Delta \phi_{qr})
+\end{aligned}
+}
+{d\ab(1 -
+    \frac{\delta e^{\delta(n-1)c}}{\ab(1-e^{\delta (n-1)c})^3}
+  M B(0))
+  - N \frac{\delta e^{\delta(n-1)c}}{\ab(1-e^{\delta (n-1)c})^3}
+  \sum_{r=1}^{d} \beta(\Delta \phi_{qr})
+                  }
+  )
+\end{aligned}
+\end{equation}
+
+Note the following values:
+\textbf{TODO: Prove $\sum_1^d \cos = 0$}
+\begin{equation}
+  \sum_{r=1}^d \beta(\Delta \phi) = \frac{d}{2} \beta_0
+\end{equation}
+
+Thus, we have
+\begin{equation}
+  \begin{aligned}
+    \Phi^{(0)+(1)} &=
+\delta(n-1)^2 c - \frac{n-2}{2} B(0) \\
+  &\qquad +
+\ln\ab(
+\frac{
+1 -
+    \frac{\delta e^{\delta(n-1)c}}{\ab(1-e^{\delta (n-1)c})^3}
+  M B(0)
++
+\frac{1}{2}\beta_0\ab[
+-
+    \frac{\delta e^{\delta(n-1)c}}{\ab(1-e^{\delta (n-1)c})^3} N
+    +
+\delta (n-1) n (1 - 2 \alpha)
+]
+}
+{1 -
+    \frac{\delta e^{\delta(n-1)c}}{\ab(1-e^{\delta (n-1)c})^3}
+  M B(0)
+  - N \beta_0 \frac{\delta e^{\delta(n-1)c}}{2\ab(1-e^{\delta (n-1)c})^3}
+                  }
+  )
+  \\
+  &\approx
+\delta(n-1)^2 c - \frac{n-2}{2} B(0) \\
+  &\qquad +
+\ln \biggl(
+  1 + \frac{\beta_0}{2} \delta n (n-1) (1-2\alpha)
+\biggr)
+  \\
+  &\approx
+  \delta(n-1)^2 c - \frac{n-2}{2} B(0) +
+  \frac{\beta_0}{2} \delta n (n-1) (1-2\alpha)
+\end{aligned}
+\label{eq:analytic_first_term}
+\end{equation}
+\textbf{TODO: We should be able to significantly shorten this
+  derivation: it turns out, to first order, the $\rho_{NC}$
+  numerator/denominator terms cancel and only the $\omega$ term remains}
+\textbf{TODO: Can we analytically calculate where $\nu = 1$ (\ie{} where
+  the inflection point is) and then expand about there to get a more
+  accurate result than expanding about $B(0) = \beta_0 = 0$ (and hence,
+  bad approximation for $\alpha \to 0$ which pushes $\nu=1$ to large
+  $B(0)$}
+
+\section{Structured Population}
+Using the approach of \citet{ohtsuki2006simple},
+we can also calculate the fixation probability
+on structured graphs.
+For this, we need to impose a pair of approximations:
+pair approximation
+(for large systems,
+the frequency of larger clusters are derived from the frequencies of pairs)
+and diffusion approximation
+(for weak selection, the local density of players equilibrates
+much more quickly than the global density).

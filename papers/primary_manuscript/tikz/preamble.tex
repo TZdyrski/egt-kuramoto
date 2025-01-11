@@ -1,0 +1,62 @@
+% Define pgfplots classes
+\pgfplotsset{simulation scatter/.style={only marks, blue}}
+\pgfplotsset{full theory line/.style={orange}}
+\pgfplotsset{approx theory line/.style={purple, dashed}}
+
+\pgfplotsset{fraction communicative chart/.style={
+        ymin={0},
+        ymax={1},
+        ytick={0.0,0.5,1.0},
+        grid,
+        table/x=B0,
+        table/y=communicative_fraction,
+        cycle list={
+          simulation scatter,
+          full theory line,
+          approx theory line,
+        },
+        enlarge y limits=0.05,
+    }
+}
+
+\pgfplotsset{
+  harmony/.style={fill=Paired-G,draw=Paired-G},
+  chicken/.style={fill=Paired-K,draw=Paired-K},
+  battle/.style={fill=Paired-I,draw=Paired-I},
+  hero/.style={fill=Paired-A,draw=Paired-A},
+  compromise/.style={fill=Paired-C,draw=Paired-C},
+  concord/.style={fill=Paired-D,draw=Paired-D},
+  staghunt/.style={fill=Paired-B,draw=Paired-B},
+  dilemma/.style={fill=Paired-F,draw=Paired-F},
+  deadlock/.style={fill=Paired-H,draw=Paired-H},
+  assurance/.style={fill=Paired-J,draw=Paired-J},
+  coordination/.style={fill=Paired-E,draw=Paired-E},
+  peace/.style={fill=Paired-L,draw=Paired-L},
+  all_communicative/.style={fill=lightgray,draw=lightgray},
+  all_noncommunicative/.style={fill=darkgray,draw=darkgray},
+}
+
+% defines \devendraretval to contain the display name for the column
+% named '#1'
+%
+% #1: a column name
+\def\getcolumndisplayname#1{%
+     % we WANT a group. Otherwise, any values set in these style would
+     % become global and they would be mixed up between different
+     % columns.
+     \begingroup
+         % Access the contents of column's display name programmatrically:
+        \pgfplotstableset{columns/#1/.try}%
+        \pgfkeysgetvalue{/pgfplots/table/column name}\temp
+        \ifx\temp\empty
+            % oh. We have no such value! Ok, use the column name as
+            % such.
+            \edef\temp{#1}%
+        \fi
+        % this here is one of the possible patterns to communicate a
+        % local variable outside of a local group:
+        \global\let\GLOBALTEMP=\temp
+     \endgroup
+     \let\devendraretval=\GLOBALTEMP
+     %
+}%

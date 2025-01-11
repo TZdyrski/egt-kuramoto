@@ -1,0 +1,71 @@
+\begin{tikzpicture}
+  \begin{groupplot}[
+    width=0.5\textwidth,
+    group style={group size=2 by 1},
+    ymin=0,
+    ymax=1,
+    enlarge x limits=0.2, % Make room for subcaption labels
+    enlarge y limits=0.05,
+    xtick=data,
+    ]
+    \nextgroupplot
+        % Note: this table names must appear in the `\tablename` loop below
+        \pgfplotstableread{data/gametype/B_factor=1.5_adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_time_steps=8000000.dat}{\loadtable}
+        \pgfplotstableforeachcolumn\loadtable\as\col
+        {
+          \ifnum\pgfplotstablecol=0\else%
+            \expandafter\addplot\expandafter[\col,ybar stacked,draw=black] table[x=asymmetry, y=\col] {\loadtable};
+          \fi
+        }
+        \node [text width=1em,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:game-type_well-mixed}}};
+      \nextgroupplot
+        % Note: this table names must appear in the `\tablename` loop below
+        \pgfplotstableread{data/gametype/B_factor=1.5_adj_matrix_source=c-elegans_payoff_update_method=single-update_selection_strength=0.2_time_steps=8000000.dat}\loadtable
+        \pgfplotstableforeachcolumn\loadtable\as\col
+        {
+          \ifnum\pgfplotstablecol=0\else%
+            \expandafter\addplot\expandafter[\col,ybar stacked,draw=black] table[x=asymmetry, y=\col] {\loadtable};
+          \fi
+        }
+        \node [text width=1em,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:game-type_celegans-full}}};
+    \end{groupplot}
+    % Make an invisible axis to create a legend that is the union
+    % of all the data table's column names
+    \begin{axis}[
+      hide axis,
+      % Needs xmin/xmax/ymin/ymax to create legend entries
+      xmin=10,
+      xmax=50,
+      ymin=0,
+      ymax=0.4,
+      legend columns=-1,
+      legend to name={CommonLegend2},
+      ]
+      \def\colNames{}
+      % Note: these table names must be the same as those in the groupplots
+      \pgfplotsforeachungrouped\tablename in {data/gametype/B_factor=1.5_adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_time_steps=8000000.dat,data/gametype/B_factor=1.5_adj_matrix_source=c-elegans_payoff_update_method=single-update_selection_strength=0.2_time_steps=8000000.dat} {
+        % Read table
+        \pgfplotstableread\tablename\loadtable
+        % Loop over each column
+        \pgfplotstableforeachcolumn\loadtable\as\col
+        {
+          \ifnum\pgfplotstablecol=0\else%
+            \ifx\colNames\empty
+              % Add first column name to empty colNames
+              \edef\colNames{\col}
+            \else
+              % Add column name to colNames if not already there
+              \IfSubStr{\colNames}{\col}{}{\edef\colNames{\colNames,\col}}
+            \fi
+          \fi
+        }
+      }
+        % Add all entries to legend
+        \expandafter\pgfplotsinvokeforeach\expandafter{\colNames}{%
+          \addlegendimage{ybar, single ybar legend, #1, draw=black}%
+          \addlegendentry{#1}%
+        }%
+    \end{axis}
+    \node[anchor=north] (title-x) at ($(group c1r1.south east)!0.5!(group c2r1.south west)-(0,0.5cm)$) {Asymmetry $\alpha$};
+    \path (group c1r1.south west) -- node[below={1cm}]{\pgfplotslegendfromname{CommonLegend2}} (group c2r1.south east);
+\end{tikzpicture}

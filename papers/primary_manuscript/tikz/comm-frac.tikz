@@ -1,0 +1,31 @@
+\begin{tikzpicture}
+  \begin{groupplot}[width=0.5\textwidth, group style={group size=2 by 2}, fraction communicative chart]
+      \nextgroupplot[
+        legend entries={Simulation, Theory, Approx.\ Theory},
+        legend to name={CommonLegend},
+        legend columns=-1,
+      ]
+        \node [text width=1em,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:comm-frac_well-mixed}}};
+        \addplot table {data/cumulative/adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.dat};
+        \addplot table{data/cumulative/adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=theory.dat};
+        \addplot table{data/cumulative/adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=approx.dat};
+      \nextgroupplot
+        \node [text width=1em,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:comm-frac_celegans-full}}};
+        \addplot table{data/cumulative/adj_matrix_source=c-elegans_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.dat};
+        \addplot table{data/cumulative/adj_matrix_source=c-elegans_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=theory.dat};
+        \addplot table{data/cumulative/adj_matrix_source=c-elegans_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=approx.dat};
+      \nextgroupplot
+        \node [text width=1em,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:comm-frac_celegans-unweighted}}};
+        \addplot table{data/cumulative/adj_matrix_source=c-elegans-unweighted_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.dat};
+        \addplot table{data/cumulative/adj_matrix_source=c-elegans-unweighted_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=theory.dat};
+        \addplot table{data/cumulative/adj_matrix_source=c-elegans-unweighted_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=approx.dat};
+      \nextgroupplot
+        \node [text width=1em,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:comm-frac_celegans-undirected}}};
+        \addplot table{data/cumulative/adj_matrix_source=c-elegans-undirected_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.dat};
+        \addplot table{data/cumulative/adj_matrix_source=c-elegans-undirected_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=theory.dat};
+        \addplot table{data/cumulative/adj_matrix_source=c-elegans-undirected_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=approx.dat};
+    \end{groupplot}
+    \node[anchor=north] (title-x) at ($(group c1r2.south east)!0.5!(group c2r2.south west)-(0,0.5cm)$) {Maximum benefit of mutual communication, $B_0$};
+        \node[anchor=south, rotate=90, align=center] (title-y) at ($(group c1r1.south west)!0.5!(group c1r2.north west)-(0.85,0cm)$) {Frequency of communicative \\ strategies $f_{\text{comm}}$};
+    \path (group c1r2.south west) -- node[below={1cm}]{\pgfplotslegendfromname{CommonLegend}} (group c2r2.south east);
+\end{tikzpicture}

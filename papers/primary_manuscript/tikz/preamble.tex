@@ -35,28 +35,3 @@
   all_communicative/.style={fill=lightgray,draw=lightgray},
   all_noncommunicative/.style={fill=darkgray,draw=darkgray},
 }
-
-% defines \devendraretval to contain the display name for the column
-% named '#1'
-%
-% #1: a column name
-\def\getcolumndisplayname#1{%
-     % we WANT a group. Otherwise, any values set in these style would
-     % become global and they would be mixed up between different
-     % columns.
-     \begingroup
-         % Access the contents of column's display name programmatrically:
-        \pgfplotstableset{columns/#1/.try}%
-        \pgfkeysgetvalue{/pgfplots/table/column name}\temp
-        \ifx\temp\empty
-            % oh. We have no such value! Ok, use the column name as
-            % such.
-            \edef\temp{#1}%
-        \fi
-        % this here is one of the possible patterns to communicate a
-        % local variable outside of a local group:
-        \global\let\GLOBALTEMP=\temp
-     \endgroup
-     \let\devendraretval=\GLOBALTEMP
-     %
-}%

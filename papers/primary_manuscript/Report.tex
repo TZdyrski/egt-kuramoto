@@ -52,11 +52,11 @@ and
 
 %\section*{TODO}
 %\begin{itemize}
-%  \item Prove analytic prediction of communicative frequency vs $B(0)$
+%  \item Prove analytic prediction of communicative frequency vs $B_0$
 %    (\ie{} orange line on cumulative plot)
 %  \item Re-run experiments while:
 %  \begin{itemize}
-%    \item Varying $B(0)$ and $\beta(0)$
+%    \item Varying $B_0$ and $\beta_0$
 %  \end{itemize}
 %  \item Can we predict what game-type will be long-run result?
 %  \item Do evolutionary bottlenecks (like the chicken-game)
@@ -169,13 +169,9 @@ In \cref{sec:pop_setup}, we describe the different types
 of graphs we will analyze.
 Then, we lay out the evolutionary rules for updating the population
 in \cref{sec:evo_setup}.
-We define the various statistics collected in \cref{sec:stats_setup},
-and we describe the analytic results of applying our model
-to some of the simpler graphs in \cref{sec:analytic}.
+We define the various statistics collected in \cref{sec:stats_setup}.
 We will present the results of these simulations for
-complete graphs (\cref{sec:complete_graph}),
-structured graphs (\cref{sec:structured_graph}),
-random graphs (\cref{sec:random_graph}),
+complete graphs (\cref{sec:complete_graph})
 and the \gls{celegans} connectome (\cref{sec:elegans_graph}).
 Finally, \cref{sec:discussion} will be used
 for discussing the role of the EK generalizations
@@ -188,7 +184,7 @@ and its implications for \gls{celegans} brain structure.
 \label{sec:game_setup}
 Here, we use an extension of the Kuramoto game from \citet{tripp2022evolutionary}
 as a model for evolving, coupled oscillators.
-We discretize the $2\pi$ phase angle into $m$ discrete phases $2 \pi j/m$
+We discretize the $2\pi$ phase angle into $m=20$ discrete phases $2 \pi j/m$
 for $j \in 0 \ldots m-1$.
 The game's strategy space is the outer product of the $m$ phases and $2$ communicative choices,
 communicative $C$ and non-communicative $N$.
@@ -198,8 +194,9 @@ by the payoff matrix
 \begin{bNiceMatrix}[first-col,first-row,hvlines]
   & C, \phi_j & N, \phi_j \\
   C, \phi_i & B_0 f(\Delta \phi) - c & 2 \alpha \beta_0 f(\Delta \phi) - c \\
-  N, \phi_i & (1 - 2\alpha) \beta_0 f(\Delta \phi) & 0
+  N, \phi_i & 2 (1 - \alpha) \beta_0 f(\Delta \phi) & 0
 \end{bNiceMatrix}
+\label{eq:payoff_matrix}
 \end{equation}
 with $f(\Delta \phi) = [1-\cos(\phi_j - \phi_i)]/2$.
 Here, $B_0$, $\beta_0$, $\alpha$, and $c$ are fixed parameters
@@ -240,11 +237,11 @@ The population is updated according to a birth-death Moran process
 with exponential fitness.
 On each turn, the following steps are performed.
 First a game is played for each edge $j$ in the interaction graph,
-each payoff $\pi_j$ is scaled by the edge weight $w_j$,
+each edge's payoff $\pi_j$ is scaled by the edge weight $w_j$,
 and the relevant payoff $w_j \pi_j$ is awarded to the head node only.
 The total fitness for node $i$ is the exponential of the product
 between the selection strength $\delta$
-and the sum of all payoffs to node $i$,
+and the sum of payoffs to node $i$,
 or $f_i = \exp(\delta \sum_j w_j \pi_j)$ with the sum
 over all edges inwardly incident to node $i$.
 Then, a single focal node is chosen for reproduction
@@ -258,30 +255,116 @@ This birth-death process is repeated for each turn.
 
 \subsection{Statistics collected}
 \label{sec:stats_setup}
-\textbf{TODO: finish this}
+A variety of statistics will be used to quantify the evolution
+of the games' populations.
+First, we determine the frequency of communicative strategies
+$f_{\text{comm}}$ as the fraction of players employing
+a communicative strategy $C$ at a given time.
+We are also interested in defining the time-averaged communicative frequency
+by averaging $f_{\text{comm}}$ over the entire simulation;
+for simulation times long compared to the mutation turnover time $T \gg N/\mu$,
+the initial, random distribution of strategies will be negligible
+and the time-average will correspond to the long-time limit.
 
-\subsection{Cooperative fraction: analytic}
-\label{sec:analytic}
-Here, our fitness function $f_E$ of strategy $E$ depends
-on the total payoff (as opposed to the average payoff) as
-\begin{equation}
-  f_E = \exp(\delta n_{\text{in}} \pi_E)
-\end{equation}
-where $\pi_E$ is the (in-degree averaged) \emph{mean} payoff
-(as used in \cite{tripp2022evolutionary})
-and $n_{\text{in}}$ is the in-degree of the node.
-
-\textbf{TODO: finish this}
-
-While the above derivation applies to the complete graph
-of the well-mixed population,
-we are also interested in studying non-complete graphs.
-Therefore, as a heuristic for translating \cref{eq:full_analytic}
-to non-complete graphs,
-we will replace the indegree $N-1$ with the average indegree of the graph
+We are interested in comparing the $f_{\text{comm}}$ simulation results
+to an analytic model.
+In the appendix, we analytically extend the work of \citet{tripp2022evolutionary}
+to account for benefit asymmetry $\alpha$.
+The resulting communicative fraction \cref{eq:full_analytic}
+is derived for the well-mixed case.
+To apply \cref{eq:full_analytic} to non-complete graphs such as
+the \gls{celegans} connectome,
+we replace the indegree $N-1$ with the average indegree of the graph
 $N-1 \to \overline{d}_{\text{in}}$.
 For reference, this is \num{19} for the well-mixed case with $N=20$ players
 and \num{13.36} for the \gls{celegans} case.
+
+During the game's evolution,
+each pair of connected players will be playing a variety of game types
+such as deadlock, dilemma, chicken, \etc{}
+\citep[\cf{}][for definitions]{bruns2015names}.
+We will analyze the types of games being played by
+identifying the most common game type across all player interactions,
+weighted by the interaction graph edge weights,
+at each time step.
+Then, we calculate the frequency of this ``most common game'' across
+all time steps of a given simulation to determine the distribution
+of games commonly played.
+Note that this metric is only sensitive to the
+plurality game and therefore provides no information
+on the presence/absence of infrequent game types.
+
+Given that this evolutionary game model was inspired
+by the Kuramoto system of coupled oscillators,
+we will also use the standard Kuramoto order parameter:
+\begin{equation}
+  \rho = \frac{1}{N} \abs{\sum_{j=1}^N e^{\im \phi_j}}
+  \label{eq:order_parameter}
+\end{equation}
+This parameter ranges from zero to one, inclusive,
+and represents how coherent the population is,
+with $r=1$ for completely coherent and $r = 0$ completely incoherent.
+
+Finally, we need a way to quantify
+the chimera-like quality of the population.
+To compare with the analysis of \citet{hizanidis2016chimera},
+we will utilize a pair of indices introduced
+by \citet{shanahan2010metastable}.
+First, we need to organize the game's nodes
+into $M$ disjoint communities.
+We split the nodes into $M=2$ communities $C_m$
+by taking a subset
+(the first \num{8E4} steps for computations ease)
+of the simulation results
+for the \gls{celegans} simulation with asymmetry $\alpha = \num{0.75}$.
+We then calculate the covariance matrix $K_{i,j}$ of the strategy indices
+(ensuring that communicative ($C$, $\phi_i$)
+and non-communicative ($N$, $\phi_i$) are treated distinctly)
+and sum the covariance between each node and all of graph's nodes
+(\ie{} the row-wise sums $\sum_i K_{i,j}$).
+After finding the node with the maximum covariance sum
+$cov_{\text{max}} \coloneqq \max_j{\sum_i K_{i,j}}$,
+we form a community by all nodes $j$ with covariance-sum
+at least \SI{81}{\percent} of the maximum,
+$\sum_i K_{i,j} \ge \num{0.81} cov_{\text{max}}$.
+Finally, we place all the remaining nodes in a second community.
+
+With these disjoint communities $C_m$, we then calculate
+the time-dependent, community-wise order parameter $\rho_m(t)$
+as
+\begin{equation}
+  \rho_m(t) \coloneqq \frac{1}{N_m} \abs{\sum_{j \in C_m} e^{\im \phi_j}}
+\end{equation}
+across members $j$ of community $C_m$ with size $N_m$.
+Then, we define a chimera-like index $\chi$
+\begin{equation}
+  \chi = \aab{
+    \sigma_{\text{chi}}}_T
+    \text{\qquad with \qquad}
+    \sigma_{\text{chi}} \coloneqq \frac{1}{M-1} \sum_{m=1}^M
+    \pab{\rho_m(t) - \aab{\rho_m(t)}_M}^2
+  \label{eq:chimera_index}
+\end{equation}
+and a metastability index $\lambda$
+\begin{equation}
+  \lambda = \aab{
+    \sigma_{\text{met}}}_M
+    \text{\qquad with \qquad}
+    \sigma_{\text{met}} \coloneqq \frac{1}{T-1} \sum_{t=1}^T
+    \pab{\rho_m(t) - \aab{\rho_m(t)}_T}^2
+  \label{eq:metastability_index}
+\end{equation}
+The chimera-like index measures the difference in coherence between communities:
+complete homogeneity between communities
+(\eg{} all fully synchronized \emph{or} fully desynchronized)
+corresponds to $\chi = 0$,
+while having two equally-sized communities
+with one fully synchronized and one fully desynchronized
+for all times yields a maximum $\chi = 2/7 \approx \num{0.29}$.
+Likewise, the metastability index $\lambda$ measures how metastable
+the system is (\ie{} transiting between synchronicity and desynchronicity).
+A system that is fully synchronized or desynchronized gives $\lambda = 0$,
+while spending equal times in each states yields $\lambda = 1/12 \approx \num{0.08}$.
 
 \section{Results}
 \label{sec:results}
@@ -293,7 +376,7 @@ and \num{13.36} for the \gls{celegans} case.
   \input{tikz/multi-comm-frac.tikz}
   \caption{
     Time-averaged fraction of players that are communicative as a function
-    of the maximum benefit of mutual communication $B(0)$
+    of the maximum benefit of mutual communication $B_0$
     for different values of the payoff asymmetry $\alpha$.
     The network topology is the
     $N=20$ well-mixed population
@@ -301,7 +384,8 @@ and \num{13.36} for the \gls{celegans} case.
     the asymmetry is $\alpha=3/4$,
     the mutation rate is $\mu=\num{1E-4}$,
     the cost $c$ is \num{0.1},
-    the $B(0)$ step size is \num{0.04},
+    the $B_0$ step size is \num{0.04},
+    the in-phase benefit $\beta_0$ is $\num{0.95} B_0$ at each step,
     and the simulation was run for \num{2E8} time steps.
   }
   \label{fig:multi-comm-frac}
@@ -312,44 +396,21 @@ on the population's evolution.
 In \cref{fig:multi-comm-frac}, we re-analyze the $N=20$ well-mixed population
 originally analyzed in \citet{tripp2022evolutionary}.
 There, we compare the frequency of communicative strategies, $f_{\text{comm}}$,
-to the maximum benefit of mutual communication $B(0)$.
+to the maximum benefit of mutual communication $B_0$.
 The $\alpha=1/2$ case corresponds to, and reproduces,
 the \citet{tripp2022evolutionary} setup.
-We can see it has low $f_{\text{comm}}$ for small $B(0)$,
-rises to $f_{\text{comm}} = 1/2$ at $B(0) \approx 0.21$
-(corresponding to the $B(0) = 2 (N-1) c/(N-2)$ condition
+We can see it has low $f_{\text{comm}}$ for small $B_0$,
+rises to $f_{\text{comm}} = 1/2$ at $B_0 \approx 0.21$
+(corresponding to the $B_0 = 2 (N-1) c/(N-2)$ condition
 found by \citet{tripp2022evolutionary}),
-and plateaus to $f_{\text{comm}} \approx 1$ for large $B(0)$.
+and plateaus to $f_{\text{comm}} \approx 1$ for large $B_0$.
 We also see that increasing (decreasing)
 the asymmetry $\alpha$ dilates (stretches) this sigmoid function
-in the $B(0)$ direction.
+in the $B_0$ direction.
 In particular, for the smaller $\alpha$'s, the $f_{\text{comm}}$ curve
-rises more steeply and at smaller values of $B(0)$.
+rises more steeply and at smaller values of $B_0$.
 
-\subsection{Structured graphs}
-\label{sec:structured_graph}
-\begin{itemize}
-  \item For the strong-selection case ($B_0 = 2.5c$ and $\delta = 5$
-    with $t_{\text{step}} = \num{2e4}$):
-  \begin{itemize}
-    \item The weightedness has virtually no effect
-    \item The directionality generally enhances cooperation
-      and suppresses the order parameter to approximately
-      \num{0.5} each
-    \begin{itemize}
-      \item The one exception case is $\alpha = \num{0.25}$ where a
-        chicken-type game with relatively high order parameter
-        (\num{0.7}) and low cooperation (\num{0.3}) change to a
-        deadlock-type game with medium order parameter and cooperation
-        (approximately \num{0.5} each)
-    \end{itemize}
-  \end{itemize}
-\item For the weak-selection case ($B_0 = 1.5c$ and $\delta = 0.2$) with
-  $t_{\text{step}} = \num{2e4}$), things change dramatically
-\end{itemize}
-\subsubsection{Random graphs}
-\label{sec:random_graph}
-\subsubsection{\glsfmtshort{celegans}}
+\subsection{\glsfmtshort{celegans} graphs}
 \label{sec:elegans_graph}
 
 \begin{figure}
@@ -357,10 +418,10 @@ rises more steeply and at smaller values of $B(0)$.
   \input{tikz/comm-frac.tikz}
   \caption{
     Time-averaged fraction of players that are communicative as a function
-    of the maximum benefit of mutual communication $B(0)$.
+    of the maximum benefit of mutual communication $B_0$.
     The blue dots represent the simulation results,
     the solid orange line represents the full $k$-regular, analytic estimate,
-    and the dashed red line represents the small-$B(0)$ $k$-regular approximation.
+    and the dashed red line represents the small-$B_0$ $k$-regular approximation.
     The network topology is the
     \protect{\subref{fig:comm-frac_well-mixed}}
     $N=20$ well-mixed population
@@ -375,7 +436,8 @@ rises more steeply and at smaller values of $B(0)$.
     the asymmetry is $\alpha=3/4$,
     the mutation rate is $\mu=\num{1E-4}$,
     the cost $c$ is \num{0.1},
-    the $B(0)$ step size is \num{0.04},
+    the $B_0$ step size is \num{0.04},
+    the in-phase benefit $\beta_0$ is $\num{0.95} B_0$ at each step,
     and the simulation was run for \num{2E8} time steps.
   }
   \label{fig:comm-frac}
@@ -384,7 +446,7 @@ rises more steeply and at smaller values of $B(0)$.
 \Cref{fig:comm-frac} shows the fraction of players
 using communicative strategies $f_{\text{comm}}$ averaged across
 the entire simulation of \num{2E8} time steps as a function
-of the maximum benefit of mutual communication $B(0)$.
+of the maximum benefit of mutual communication $B_0$.
 These plots shows the fraction for the
 \subref{fig:comm-frac_well-mixed}
 $N=20$ well-mixed and
@@ -398,7 +460,7 @@ a \subref{fig:comm-frac_celegans-undirected} \emph{weighted} but undirected case
 The plots used a selection strength of $\delta=0.2$
 and an asymmetry of $\alpha=3/4$.
 The blue dots represent the numerical simulation results across eleven
-values of $B(0)$.
+values of $B_0$.
 The solid orange line represents the full analytic
 result (\pcref{eq:full_analytic}) for a well-mixed population
 with the well-mixed indegree $n-1$ replaced by the average
@@ -411,15 +473,15 @@ of the analytic result~(\pcref{eq:analytic_first_term}).
 The well-mixed case \subref{fig:comm-frac_well-mixed} shows a logistic curve
 qualitatively similar to that shown in \citet{tripp2022evolutionary}.
 While the \citet{tripp2022evolutionary} case ($\alpha = 1/2$)
-crosses $f_{\text{comm}} = 0.5$ near $B(0) = 0.21$,
+crosses $f_{\text{comm}} = 0.5$ near $B_0 = 0.21$,
 the plot here (with $\alpha = 3/4$) is compressed to the $y$-axis
-and crosses $f_{\text{comm}} = 0.5$ around $B(0) = 0.12$.
+and crosses $f_{\text{comm}} = 0.5$ around $B_0 = 0.12$.
 However, the \gls{celegans} case \subref{fig:comm-frac_celegans-full}
 is qualitatively distinct.
 Here, we see that population is nearly universally non-communicative
-for $B(0) \le 0.08$,
+for $B_0 \le 0.08$,
 followed by an immediate jump to a maximum communicative fraction
-of \num{0.77} around $B(0) = 1.6$.
+of \num{0.77} around $B_0 = 1.6$.
 This communicative fraction then slowly declines
 to a horizontal asymptote around \num{0.60}.
 While the orang line representing the analytic result
@@ -438,8 +500,8 @@ is qualitatively similar to the well-mixed case
 While the blue simulation results exhibit a steeper rise
 than the orange theory results,
 the directed case still shows a monotonic increase
-from low communication for $B(0) < 0.1$
-to full communication for $B(0) \ge 0.2$.
+from low communication for $B_0 < 0.1$
+to full communication for $B_0 \ge 0.2$.
 This implies that the quality of directedness
 plays a relatively small role in the qualitative shape
 of the full \gls{celegans} case \subref{fig:comm-frac_celegans-full}.
@@ -452,7 +514,7 @@ In particular, this weighted case
 \subref{fig:comm-frac_celegans-undirected}
 shows the same plateau at $f_{\text{comm}} \approx 0.7$
 seen in the full \gls{celegans} case,
-though the ``peak'' around $B(0) - 0.15$ is less pronounced.
+though the ``peak'' around $B_0 - 0.15$ is less pronounced.
 This similarity implies that the connectome's edge weights
 are the most relevant aspect influencing the deviation
 of the \gls{celegans} \subref{fig:comm-frac_celegans-full}
@@ -477,7 +539,8 @@ simulation results in blue from the theory results in orange.
     The selection strength is $\delta=0.2$,
     the mutation rate is $\mu=\num{1E-4}$,
     the cost $c$ is \num{0.1},
-    $B(0)$ is \num{1.5},
+    $B_0$ is \num{0.15},
+    $\beta_0$ is $\num{0.95} B_0$,
     and the simulation was run for \num{8E6} time steps.
   }
   \label{fig:game-type}
@@ -537,7 +600,7 @@ and network topology influences how dominant these game types are.
     black if all players are non-communicative;
     otherwise, they are colored according
     to the plurality game type as indicated in the legend.
-    The right vertical axis depicts the order parameter $r$
+    The right vertical axis depicts the order parameter $\rho$
     (\pcref{eq:order_parameter}) in magenta as a function of time.
     The network topology is the
     \protect{\subref{fig:time-series_well-mixed}}
@@ -549,7 +612,8 @@ and network topology influences how dominant these game types are.
     the asymmetry is $\alpha=3/4$,
     the mutation rate is $\mu=\num{1E-4}$,
     the cost $c$ is \num{0.1},
-    $B(0)$ is \num{0.15},
+    $B_0$ is \num{0.15},
+    $\beta_0$ is $\num{0.95} B_0$,
     and the simulation was run for \num{8E6} time steps.
   }
   \label{fig:time-series}
@@ -572,11 +636,7 @@ otherwise, the points are colored according
 to the plurality game type as indicated in the legend.
 On the right vertical axis,
 a magenta line plot depicts the order parameter
-given by
-\begin{equation}
-  r = \frac{1}{N} \abs{\sum_{j=1}^N e^{\im \phi_j}}
-  \label{eq:order_parameter}
-\end{equation}
+given by \cref{eq:order_parameter} and
 taking values in the range $[0,1]$,
 where $\phi_j$ is the phase of the $j$-th player.
 These simulations were run with
@@ -585,18 +645,19 @@ selection strength $\delta = 0.2$,
 asymmetry $\alpha = 3/4$,
 mutation rate $\mu=\num{1E-4}$,
 cost $c = \num{0.1}$,
-and maximum benefit of mutual communication $B(0) = 0.15$.
+maximum benefit of mutual communication $B_0 = 0.15$,
+and maximum benefit of unilateral communication $\beta_0$ is $\num{0.95} B_0$.
 
 The \subref{fig:time-series_well-mixed} well-mixed case
 shows that the system incredibly homogeneous.
 Temporary drops in communicative frequency $f_{\text{comm}}$
-and order parameter $r$ are likely the result of mutations,
+and order parameter $\rho$ are likely the result of mutations,
 which are expected to occur, on average, every $1/\mu = \num{1E4}$ time steps.
 But the system quickly returns to uniformity;
 for the parameters and timespan depicted here,
 the system spends a majority of its time in the communicative regime.
 Indeed, as shown in \cref{fig:comm-frac_well-mixed},
-this simulation with $B(0) = 0.15$ should be be in the communicative regime
+this simulation with $B_0 = 0.15$ should be be in the communicative regime
 approximately \SI{75}{\percent} of the time.
 In contrast, the \subref{fig:time-series_celegans-full} \gls{celegans} case
 depicts a far more heterogeneous population.
@@ -605,7 +666,7 @@ Instead, both its communicative frequency and order parameter
 stay between \SIrange{40}{70}{\percent}.
 With a communicative frequency $f_{\text{comm}}$ averaging approximately \SI{60}{\percent},
 this is similar to the $f_{\text{comm}} \approx \SI{70}{\percent}$ seen
-in \cref{fig:comm-frac_celegans-full} with $B(0) = 0.15$.
+in \cref{fig:comm-frac_celegans-full} with $B_0 = 0.15$.
 The difference is reflective of this particular \num{8E6} subset
 of the \num{2E8} runtime in \cref{fig:comm-frac}.
 While the \subref{fig:time-series_well-mixed} well-mixed case,
@@ -617,18 +678,135 @@ with occasional, discontinuous jumps.
 Again, these are most likely the results of mutations introduced
 to the population.
 
-\subsubsection{Chimera index}
+\subsubsection{Chimera-like index}
 \begin{figure}
-  % Connected components
+  \centering
+  \pgfplotsset{width=0.4\textwidth}
+  \input{tikz/chimera-index.tikz}
+  \caption{
+    The chimera-like index (\pcref{eq:chimera_index}, left axis, solid line)
+    and metastability index (\pcref{eq:metastability_index},
+    right axis, dashed line)
+    as functions of the asymmetry $\alpha$
+    for the
+    weighted, directed \gls{celegans} connectome.
+    The indices were calculated after splitting the graph
+    into two communities according to the nodes' relative covariance
+    for the $\alpha = \num{0.75}$ simulation
+    and grouped according to whether the sum
+    of a nodes relative covariances above
+    \SI{81}{\percent} of the maximum covariance sum.
+    The selection strength is $\delta=0.2$,
+    the mutation rate is $\mu=\num{1E-4}$,
+    the cost $c$ is \num{0.1},
+    $B_0$ is \num{0.15},
+    $\beta_0$ is $\num{0.95} B_0$,
+    and the simulation was run for \num{8E6} time steps.
+    Note the differing vertical axis scales
+    for the left and right axes.
+  }
+  \label{fig:chimera-index}
 \end{figure}
 
-\begin{figure}
-\end{figure}
+Observing animations of the system's time evolution,
+the authors noted a subset of the nodes exhibiting high synchronicity
+while others remained incoherent: a chimera state.
+In order to quantify this effect, we will investigate
+the chimera-like index $\chi$ \cref{eq:chimera_index}
+and metastability index $\lambda$ \cref{eq:metastability_index}.
+As discussed in \cref{sec:stats_setup},
+we first split the players into $M=2$ distinct communities
+according to the row-wise sum of the covariance matrix
+between the players' strategies for the $\alpha = \num{0.75}$ case.
+Next, we calculate the average time-dependent community-wise
+order parameter $\rho_m(t)$
+for each community $m$ and find the $\lambda$ and $\chi$
+as the temporal- or community-wise- covariance of
+$\rho_m(t)$, respectively.
+\Cref{fig:chimera-index} shows these results
+as functions of the asymmetry $\alpha$.
+The left vertical axis depicts the chimera-like index $\chi$
+in a solid line,
+while the right vertical axis shows the metastability index
+in a dashed line.
+These simulations were run with
+for \num{8E6} time steps with
+selection strength $\delta = 0.2$,
+mutation rate $\mu=\num{1E-4}$,
+cost $c = \num{0.1}$,
+maximum benefit of mutual communication $B_0 = 0.15$,
+and maximum benefit of unilateral communication $\beta_0$ is $\num{0.95} B_0$.
+
+The metastability displayed in \cref{fig:chimera-index}
+is quite low at $\le \num{0.01}$ compared
+to a theoretical maximum of \num{0.08}.
+This implies that the system is rather stable
+and spends most of its time at a fairly constant
+synchronicity $\rho_m(t)$.
+Furthermore, while the metastability is higher (more unstable)
+at $\approx \num{0.01}$ for the $\alpha = 0$ case,
+the metastability drops precipitously for larger $\alpha$,
+always staying below \num{0.004} implying that
+asymmetry makes the system more stable.
+On the other hand, the chimera-like index $\chi$
+attains fairly large values indicating a high chimeric quality.
+The chimera-like index $\chi$ varies between \num{0.06} and \num{0.13}.
+Considering a theoretical maximum of \num{0.28},
+the system is quite chimeric at nearly half the maximum.
+Given that the chimera-like index is averaged over time,
+this deviation from complete a chimera state
+arise from both imperfect separation of the coherent/incoherent populations
+as well as time fluctuations in the chimera quality.
+While we observe that $\chi$ is a maximum at $\alpha = \num{0.75}$,
+we caution that this is likely the result of calculating the communities
+based off the $\alpha = \num{0.75}$ covariances.
+The fact that $\chi$ remains elevated for the other asymmetries $\alpha$
+implies that this particular community decomposition
+corresponds to an intrinsic separation rather than an artifact
+of the particular $\alpha = \num{0.75}$ simulation.
 
 \section{Discussion}
 \label{sec:discussion}
 
 \subsection{Payoff asymmetry}
+Payoff asymmetry was one of the new extensions
+we added to the evolutionary Kuramoto dynamics
+of \citet{tripp2022evolutionary}.
+It is therefore instructive to discuss the overall impacts
+of this asymmetry $\alpha$.
+\Cref{fig:multi-comm-frac} shows that increasing asymmetry
+makes communication more favorable, as would be expected.
+The mechanism for this population-wide shift
+is hinted at by \cref{fig:game-type}:
+changing $\alpha$ directly impacts the payoff matrix
+\cref{eq:payoff-matrix}.
+If we start from the traditional $\alpha = 1/2$ case,
+we see that the particular values of $B_0 = 0.15$
+and $c = 0.1$ gives a payoff matrix of
+\begin{equation}
+\begin{bNiceMatrix}[first-col,first-row,hvlines]
+  & C, \phi_j & N, \phi_j \\
+  C, \phi_i & 0.15 f(\Delta \phi) - 0.1 &  0.95 (0.15) f(\Delta \phi) - 0.1 \\
+  N, \phi_i & 0.95 (0.15) f(\Delta \phi) & 0
+\end{bNiceMatrix}
+\end{equation}
+This has a game type of chicken for $f(\Delta \phi) > 40/57 \approx \num{0.70}$,
+dilemma for $2/3 < f(\Delta \phi) < 40/57$,
+and deadlock for $0 < f(\Delta \phi) < 2/3$.
+For $f(\Delta \phi) = [1-\cos(\Delta \phi)]/2$,
+and $m=20$ phases, we have chicken games for seven $\Delta \phi$
+and deadlock for 13 $\Delta \phi$.
+While more $\Delta \phi$ differences correspond to deadlock,
+the exponential fixation time
+of chicken-type games~\citep{antal2006fixation}
+ensures that the vast majority of the simulation is spent on chicken games.
+Decreasing $\alpha$ to $0.25$ or $0$
+only permits dilemma type games for $2/3 < f(\Delta \phi)$ (7 deltas)
+and deadlock games for $f(\Delta \phi) < 2/3$ (13 deltas).
+Increasing $\alpha$ to \num{0.75}
+hero from $80/171 < f(\Delta \phi) < 2/3$: this one is exponential
+Finally, increasing $\alpha$ to $1$
+
 
 %\subsection{Game-type dynamics}
 %\subsubsection{Markov chain}
@@ -665,7 +843,7 @@ However, the weightedness of the graph had a much more drastic effect
 on the population by strongly suppressing the maximum communicativity.
 For the weighted connectome graphs (both directed and undirected),
 the communicative frequency asymptote decreased from unity
-to approximately \num{0.7} for large $B(0)$.
+to approximately \num{0.7} for large $B_0$.
 Finally, we found qualitative differences between the composition
 of the well-mixed populations and the \gls{celegans} populations.
 While the well-mixed players had largely homogeneous populations

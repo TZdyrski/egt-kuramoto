@@ -1,5 +1,6 @@
 \begin{tikzpicture}
   \begin{axis}[
+    width=0.5\textwidth,
     fraction communicative chart,
     xlabel={Maximum benefit of mutual communication, $B_0$},
     ylabel style={align=center},
@@ -21,4 +22,5 @@
     \addplot table {data/cumulative/adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=1.0_time_steps=200000000_type=simulation.dat};
     \legend{\hspace{-.6cm}\textbf{Asym.\ $\alpha$}, $0$,$1/4$,$1/2$,$3/4$,$1$}
   \end{axis}
+  \node [text width=1em,anchor=north west,fill=white,fill opacity=0.7,text opacity=1] at (rel axis cs: 0,1) {\subcaption{\label{fig:multi-comm-frac}}};
 \end{tikzpicture}

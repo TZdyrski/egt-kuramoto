@@ -1,6 +1,0 @@
-\begin{tikzpicture}[scale=0.75,rotate=90]
-  \SetVertexStyle[InnerSep=0]
-  \Vertices[size=0.15,style={draw=none}]{data/vertices_B_factor=1.5_adj_matrix_source=c-elegans_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000_timestep_560000.csv}
-  \Edges[lw=0.1,opacity=0.15,Direct]{data/edges.csv}
-  \node [text width=1em,anchor=north west,fill=white,fill opacity=0.7,text opacity=1] at (-2,2.5) {\subcaption{\label{fig:graph}}};
-\end{tikzpicture}

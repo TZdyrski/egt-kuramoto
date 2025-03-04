@@ -1,4 +1,11 @@
 \begin{tikzpicture}
+  \begin{scope}[shift={(-4,0)},rotate=90]
+    \SetVertexStyle[InnerSep=0]
+    \Vertices[size=0.15,style={draw=none}]{data/vertices_B_factor=1.5_adj_matrix_source=c-elegans_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000_timestep_560000.csv}
+    \Edges[lw=0.1,opacity=0.15,Direct]{data/edges.csv}
+  \end{scope}
+  \node [text width=1em,anchor=north west,fill=white,fill opacity=0.7,text opacity=1] at (-7,3.75) {\subcaption{\label{fig:graph}}};
+
   \begin{axis}[
     width=0.5\textwidth,
     fraction communicative chart,
@@ -6,7 +13,7 @@
     xlabel={Maximum benefit of \\ mutual communication, $B_0$},
     ylabel style={align=center},
     ylabel={Frequency of \\ communicative strategies $f_{\text{comm}}$},
-    legend style={at={(0.95,0.5)},anchor=east},
+    legend style={at={(0.99,0.5)},anchor=east},
     % Activate Brewer color cycle
     cycle list/Greens-5,
     % Combine color cycle with marker cycle
@@ -23,5 +30,5 @@
     \addplot table {data/cumulative/adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=1.0_time_steps=200000000_type=simulation.dat};
     \legend{\hspace{-.6cm}\textbf{Asym.\ $\alpha$}, $0$,$1/4$,$1/2$,$3/4$,$1$}
   \end{axis}
-  \node [text width=1em,anchor=north west,fill=white,fill opacity=0.7,text opacity=1] at (rel axis cs: 0,1) {\subcaption{\label{fig:multi-comm-frac}}};
+  \node [text width=1em,anchor=north west,fill=white,fill opacity=0.7,text opacity=1] at (0,3.75) {\subcaption{\label{fig:multi-comm-frac}}};
 \end{tikzpicture}

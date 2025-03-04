@@ -118,7 +118,7 @@
 %            urlcolor=blue,
 %            pdfencoding=auto, %enable unicode characters in bookmarks
 %            }
-%\usepackage[capitalize,sort]{cleveref} % improve references (load laster than hyperref)
+\usepackage[capitalize,sort]{cleveref} % improve references (load laster than hyperref)
 %\crefname{subsubsection}{subsection}{subsections} % redefine subsubsection to print as just subsection, which is less ugly
 %\Crefname{subsubsection}{Subsection}{Subsections}
 
@@ -144,24 +144,24 @@
 %
 %% Ensure cleveref uses a serial comma
 %\newcommand{\creflastconjunction}{, and\nobreakspace}
-%
-%% Define new commands \pcref and \pCref corresponding to \cref and \Cref
-%% but without the parentheses around the subfigures
-%\newcommand{\eqlabelleft}{(}
-%\newcommand{\eqlabelright}{)}
-%\DeclareRobustCommand{\pcref}[1]{%
-%  \begingroup%
-%  \renewcommand{\eqlabelleft}{}\renewcommand{\eqlabelright}{}%
-%  \cref{#1}%
-%  \endgroup%
-%}
-%\DeclareRobustCommand{\pCref}[1]{%
-%  \begingroup%
-%  \renewcommand{\eqlabelleft}{}\renewcommand{\eqlabelright}{}%
-%  \Cref{#1}%
-%  \endgroup%
-%}
-%\creflabelformat{equation}{\eqlabelleft#2#1#3\eqlabelright}
+
+% Define new commands \pcref and \pCref corresponding to \cref and \Cref
+% but without the parentheses around the subfigures
+\newcommand{\eqlabelleft}{(}
+\newcommand{\eqlabelright}{)}
+\DeclareRobustCommand{\pcref}[1]{%
+  \begingroup%
+  \renewcommand{\eqlabelleft}{}\renewcommand{\eqlabelright}{}%
+  \cref{#1}%
+  \endgroup%
+}
+\DeclareRobustCommand{\pCref}[1]{%
+  \begingroup%
+  \renewcommand{\eqlabelleft}{}\renewcommand{\eqlabelright}{}%
+  \Cref{#1}%
+  \endgroup%
+}
+\creflabelformat{equation}{\eqlabelleft#2#1#3\eqlabelright}
 
 %% For subfigures, make alphabetic part italic and change "fig 2(a) and
 %% 2(b)" to "fig 2(a,b)"

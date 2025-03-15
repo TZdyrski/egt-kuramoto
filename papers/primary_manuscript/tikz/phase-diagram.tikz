@@ -81,24 +81,24 @@
 
         \nextgroupplot[
           ylabel={$\alpha$},
-          ymax=1.0,
+          ymax=1.25,
           ]
 
         % label the x axis
         \path[name path=xlower] (axis cs:0,0) -- (axis cs:0.25,0);
-        \path[name path=xupper] (axis cs:0,1) -- (axis cs:0.25,1);
+        \path[name path=xupper] (axis cs:0,1.25) -- (axis cs:0.25,1.25);
 
         % label the y axis
-        \path[name path=yleft] (axis cs:0,0) -- (axis cs:0,1);
-        \path[name path=yright] (axis cs:1,0) -- (axis cs:1,1);
+        \path[name path=yleft] (axis cs:0,0) -- (axis cs:0,1.25);
+        \path[name path=yright] (axis cs:1,0) -- (axis cs:1,1.25);
 
         % Add lines
         \addplot[name path=R_S] {1/2/\betaOnB};
         \addplot[name path=R_T] {1 + \cost/(2*x*\betaOnB) - 1/(2*\betaOnB)};
-        \addplot[name path=R_P] coordinates {(\cost,0) (\cost,1)};
+        \addplot[name path=R_P] coordinates {(\cost,0) (\cost,1.25)};
         \addplot[name path=S_T] {\cost/(4*x*\betaOnB) + 1/2};
         \addplot[name path=S_P] {\cost/(2*x*\betaOnB)};
-        \addplot[name path=T_Pa] coordinates {(0,0) (0,1)};
+        \addplot[name path=T_Pa] coordinates {(0,0) (0,1.25)};
         \addplot[name path=T_Pb] {1};
 
         % Fill in regions
@@ -109,6 +109,7 @@
         \addplot[compromise] fill between[of=yleft and S_P,
           soft clip={domain y=1/2/\betaOnB:1}];
         \addplot[harmony] fill between[of=yleft and S_T,
+          reverse=false,
           soft clip={domain y=1:1.5}];
         \addplot[concord] fill between[of=S_P and S_T,
           soft clip={domain=-0.1:\cost/2/\betaOnB}];
@@ -117,15 +118,14 @@
         \addplot[dilemma] fill between[of=R_T and R_P,
           reverse=false,
           soft clip={domain y=1:2}];
-        \addplot[deadlock] fill between[of=R_P and yright,
-          reverse=false,
-          soft clip={domain y=1:2}];
+        \addplot[deadlock] fill between[of=T_Pb and xupper,
+          soft clip={domain=\cost:1}];
         \addplot[hero] fill between[of=S_P and S_T,
           soft clip={domain=\cost/2/\betaOnB:\cost}];
-        \addplot[battle] fill between[of=S_T and xupper,
+        \addplot[battle] fill between[of=S_T and T_Pb,
           soft clip={domain=\cost/2/\betaOnB:\cost}];
         \pgfmathsetmacro\RTST{\cost/2/(1-\betaOnB)}
-        \addplot[compromise] fill between[of=R_T and xupper,
+        \addplot[compromise] fill between[of=R_T and T_Pb,
           soft clip={domain=\cost:\RTST}];
 %        \addplot[compromise] fill between[of=R_S and xupper,
 %          soft clip={domain=\RTST:1}];

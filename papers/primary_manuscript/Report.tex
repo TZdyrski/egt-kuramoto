@@ -424,6 +424,13 @@ rises more steeply and at smaller values of $B_0$.
 \subsection{\glsfmtshort{celegans} graphs}
 \label{sec:elegans_graph}
 
+Here, we consider the weighted, directed \gls{celegans} connectome.
+\Cref{fig:graph} shows the $N = 300$ nodes and the directed edges.
+The nodes are colored according to their strategy at a particular time-step,
+with blues representing communicative strategies
+and reds representing non-communicative ones,
+with different shades corresponding to different phases $\phi$.
+
 \begin{figure}
   \centering
   \input{tikz/comm-frac.tikz}
@@ -454,7 +461,6 @@ rises more steeply and at smaller values of $B_0$.
   \label{fig:comm-frac}
 \end{figure}
 
-Here, we consider the $N=300$ weighted, directed \gls{celegans} connectome.
 \Cref{fig:comm-frac} shows the fraction of players
 using communicative strategies $f_{\text{comm}}$ averaged across
 the entire simulation of \num{2E8} time steps as a function
@@ -543,10 +549,10 @@ simulation results in blue from the theory results in orange.
     for different values of the asymmetry $\alpha$.
     The game types are color-coded according to the legend.
     The network topology is the
-    \protect{\subref{fig:time-series_well-mixed}}
+    \protect{\subref{fig:game-type_well-mixed}}
     $N=20$ well-mixed population
     and
-    \protect{\subref{fig:time-series_celegans-full}}
+    \protect{\subref{fig:game-type_celegans-full}}
     weighted, directed \gls{celegans} connectome.
     The selection strength is $\delta=0.2$,
     the mutation rate is $\mu=\num{1E-4}$,
@@ -780,70 +786,148 @@ of the particular $\alpha = \num{0.75}$ simulation.
 \section{Discussion}
 \label{sec:discussion}
 
+\subsection{Game-type dynamics}
+%\subsubsection{Markov chain}
+%\subsubsection{Attractors}
 \begin{figure}
   \centering
   \input{tikz/phase-diagram.tikz}
   \caption{
-%    Time-averaged fraction of players that are communicative as a function
-%    of the maximum benefit of mutual communication $B_0$
-%    for different values of the payoff asymmetry $\alpha$.
-%    The network topology is the
-%    $N=20$ well-mixed population
-%    The selection strength is $\delta=0.2$,
-%    the asymmetry is $\alpha=3/4$,
-%    the mutation rate is $\mu=\num{1E-4}$,
-%    the cost $c$ is \num{0.1},
-%    the $B_0$ step size is \num{0.04},
-%    the in-phase benefit $\beta_0$ is $\num{0.95} B_0$ at each step,
-%    and the simulation was run for \num{2E8} time steps.
+    Slices of three-parameter game type phase diagram
+    in the
+    \protect{\subref{fig:phase-diagram-B_beta}}
+    $B$-$\beta$ plane
+    and
+    \protect{\subref{fig:phase-diagram-B_alpha}}
+    $B$-$\alpha$ plane.
+    For two players with phase difference $\Delta \phi$,
+    $B = B_0 [1 + \cos(\Delta \phi)]/2$
+    and
+    $\beta = \beta_0 [1 + \cos(\Delta \phi)]/2$.
+    The game type corresponding to each color is displayed in the legend.
+    The white dots represent the $m=20$ potential phase differences.
+    The cost $c$ is \num{0.1};
+    for
+    \protect{\subref{fig:phase-diagram-B_beta}},
+    $\alpha = 1/2$,
+    and for
+    \protect{\subref{fig:phase-diagram-B_alpha}},
+    $\beta_0 = \num{0.95} B_0$.
+    \protect{\subref{fig:phase-diagram-B_beta}}
+    is an extension of figure 1 from \citet{tripp2022evolutionary}.
   }
   \label{fig:phase-diagram}
 \end{figure}
 
+One of the key aspects of the Evolutionary Kuramoto Theory
+is the variety of $2 \times 2$ game types available to the players.
+\Cref{fig:game-type} showed that changing the asymmetry $\alpha$
+affects the distribution of game types:
+low asymmetry enhanced dilemma games,
+symmetric $\alpha = 1/2$ games were primarily chicken games,
+and higher asymmetries enhanced hero or deadlock games.
+This can be understood by looking at the phase space of games
+as a function of the three parameters $\beta$, $B$, and $\alpha$.
+\Cref{fig:phase-diagram} shows two particular slices
+of this three-dimensional phase space:
+\cref{fig:phase-diagram-B_beta} shows a $B$-$\beta$ slice of phase space
+and is an extension of figure 1 in \citet{tripp2022evolutionary},
+while \cref{fig:phase-diagram-B_alpha} shows a $B$-$\alpha$ slice.
 
-\subsection{Payoff asymmetry}
-Payoff asymmetry was one of the new extensions
-we added to the evolutionary Kuramoto dynamics
-of \citet{tripp2022evolutionary}.
-It is therefore instructive to discuss the overall impacts
-of this asymmetry $\alpha$.
-\Cref{fig:multi-comm-frac} shows that increasing asymmetry
-makes communication more favorable, as would be expected.
-The mechanism for this population-wide shift
-is hinted at by \cref{fig:game-type}:
-changing $\alpha$ directly impacts the payoff matrix
-\cref{eq:payoff-matrix}.
-If we start from the traditional $\alpha = 1/2$ case,
-we see that the particular values of $B_0 = 0.15$
-and $c = 0.1$ gives a payoff matrix of
-\begin{equation}
-\begin{bNiceMatrix}[first-col,first-row,hvlines]
-  & C, \phi_j & N, \phi_j \\
-  C, \phi_i & 0.15 f(\Delta \phi) - 0.1 &  0.95 (0.15) f(\Delta \phi) - 0.1 \\
-  N, \phi_i & 0.95 (0.15) f(\Delta \phi) & 0
-\end{bNiceMatrix}
-\end{equation}
-This has a game type of chicken for $f(\Delta \phi) > 40/57 \approx \num{0.70}$,
-dilemma for $2/3 < f(\Delta \phi) < 40/57$,
-and deadlock for $0 < f(\Delta \phi) < 2/3$.
-For $f(\Delta \phi) = [1+\cos(\Delta \phi)]/2$,
-and $m=20$ phases, we have chicken games for seven $\Delta \phi$
-and deadlock for 13 $\Delta \phi$.
-While more $\Delta \phi$ differences correspond to deadlock,
-the exponential fixation time
-of chicken-type games~\citep{antal2006fixation}
-ensures that the vast majority of the simulation is spent on chicken games.
-Decreasing $\alpha$ to $0.25$ or $0$
-only permits dilemma type games for $2/3 < f(\Delta \phi)$ (7 deltas)
-and deadlock games for $f(\Delta \phi) < 2/3$ (13 deltas).
-Increasing $\alpha$ to \num{0.75}
-hero from $80/171 < f(\Delta \phi) < 2/3$: this one is exponential
-Finally, increasing $\alpha$ to $1$
+The homogeneity of game-types displayed for each $\alpha$ in \cref{fig:game-type}
+is quite interesting and deserves additional discussion.
+It appears the homogeneity arises  synchronicity,
+as can be seen by comparing these results
+to those well-mixed, $\alpha = 1/2$ case treated in \citet{tripp2022evolutionary};
+note the name ``snowdrift'' was used in \citet{tripp2022evolutionary}
+to refer to the same game we (and \citet{bruns2015names}) call ``chicken''.
+The $B_0/c = 1.5$ case depicted in figure 4 of \citet{tripp2022evolutionary}
+shows the system spending the vast majority of its time in a synchronized state
+with all players having the same $\phi$.
+Since a completely synchronized system has $\Delta \phi = 0$ for all players,
+$f(\Delta \phi) = 1$ and every interaction is characterized
+by the rightmost white dot in \cref{fig:phase-diagram-B_beta}),
+which is located in the chicken region.
+This is consistent with the $\alpha = 1/2$ column
+of \cref{fig:game-type_well-mixed} which shows nearly uniform chicken type games.
 
+Likewise, we note that the most frequent game types
+in \cref{fig:game-type} across each $\alpha$ all correspond
+to the completely synchronized $\Delta \phi = 0$ game type
+(\ie the game type of the rightmost white dots \cref{fig:game-type}).
+This indicates that the majority game type almost always
+corresponds to games between nearly-synchronous individuals.
+This is somewhat surprising for the $\alpha = 1$ case:
+there, four of the $m = 20$ phase differences
+(
+$f(4\pi/20) B_0/c = f(16\pi/20) B_0/c = \num{0.98}$
+and
+$f(5\pi/20) B_0/c = f(15\pi/20) B_0/c = \num{0.75}$
+)
+fall in the pink ``battle'' region.
+The warm colors (red, orange, and pink)
+represent the game types (chicken, hero, and battle, respectively)
+that have exponential fixation times~\citep{antal2006fixation},
+so one might expect that these games would be over-represented
+due to their long fixation times.
+Nevertheless, the strong $\alpha = 1$ communicativeness bias
+enhances synchronization and ensures that
+chimeric qualities are suppressed
+(\cf the low $\chi$ for $\alpha = 1$ in \cref{fig:chimera-index}).
 
-%\subsection{Game-type dynamics}
-%\subsubsection{Markov chain}
-%\subsubsection{Attractors}
+Finally, while synchronicity can explain the game types
+for the
+\subref{fig:game-type_well-mixed} well-mixed case,
+the
+\subref{fig:game-type_celegans-full} \gls{celegans} game types
+show a small ($\approx \SI{10}{\percent}$)
+variance for the $\alpha = 0,1/4/,1/2$ games.
+This is a feature of the average degree of the different graphs.
+Since \cref{fig:game-type} depicts the most common game at each time step,
+we need to consider the conditions under which a game type can be most common.
+For the well-mixed case, the game type corresponding
+to the synchronized $\Delta \phi = 0$ state
+is easily obtained---for instance, if the entire graph is synchronized,
+or largely synchronized.
+There are only two conditions when the $\Delta \phi = 0$ game type
+is \emph{not} the most common game:
+when there are many small groups with distinct phase $\phi$;
+or when the game is almost evenly split between two groups
+with fraction within $\pm 1/(2 \sqrt{N})$ of $1/2$.
+For the $N = 20$ well-mixed case, this corresponds
+each group containing between \numrange{8}{12} players,
+but the magenta order parameter in \cref{fig:time-series_well-mixed}
+shows the well-mixed system spends must of its time with very few invaders---fewer
+than the \numrange{8}{12} required to flip the most-common game type.
+
+However, the \gls{celegans} case displays some heterogeneity
+in most-common game type~\cref{fig:game-type_celegans-full}.
+While the number of players $N = 300$ is much larger than the well-mixed case,
+the average indegree $d_{in}$ is smaller (\num{13.36} \vs \num{19}).
+Therefore, if we consider the \gls{celegans} connectome game
+with two major populations
+and assume they are randomly distributed (for ease of computation),
+then the same calculations as above show that
+the synchronized game type will \emph{not} be the most-common game
+if the fraction of invaders is within $\pm 1/(2 \sqrt{d_{in}} + 1)$
+of $1/2$, or \numrange{0.37}{0.63}.
+We notice that the order parameter in \cref{fig:time-series_celegans-full}
+actually spends a good deal of time in this range,
+allowing for game types that don't correspond to the synchronized state.
+While the $\alpha = 3/4$ case depicted \cref{fig:time-series_celegans-full}
+still mostly displays ``hero'' game types
+(likely owing the particular geometry of $\alpha = 3/4$
+with ``hero'' containing most of the white $\Delta \phi$ dots
+in \cref{fig:phase-diagram-B_alpha}),
+the $\alpha = 0, 1/4, 1/2$ cases all have wider $\Delta \phi$ regimes where
+``deadlock'' games can appear, as illustrated in \cref{fig:game-type_celegans-full}.
+Furthermore, the decreased in-degree of the \gls{celegans} could allow
+for additional enhancement of the non-synchronized game types.
+For instance, if regions of the connectome have a structure with more edges
+\emph{between} player populations than \emph{amongst} them
+(similar to a bipartite graph),
+this would preferentially enhance non-synchronized game type edges.
+More research needs to be done to investigate the role of this particular effect.
 
 %\subsection{Forcing strength dependence}
 
@@ -853,6 +937,35 @@ Weighted (connectome) vs.\ unweighted (connectome w/o
   weights): weighting reduces synchronization
 \subsubsection{Random graphs}
 \subsubsection{\emph{C.\ Elegans}}
+
+\subsection{Chimera states}
+The timestep in \cref{fig:graph} was chosen
+to demonstrate a chimera state:
+there is a large, synchronized cluster
+of non-communicative nodes with the same phase in red;
+however, there is also a mixture of desynchronized nodes
+with a collection of phases and communicativeness strategies
+surrounding the synchronized cluster.
+This splitting into synchronized and desynchronized groups
+is characteristic of chimera states,
+and corresponds to the high-chimera parameter ($\alpha = 0.75$)
+in \cref{fig:chimera-index}.
+Furthermore, while the homogeneity of the synchronized state is apparent
+in \cref{fig:graph},
+the coordinated time-variations of the synchronized group
+provide additional evidence for the chimeric-nature
+of this parameter regime (see supplementary materials).
+
+Previous studies \citep[\eg][]{bansal2019cognitive,santos2017chimera}
+have noted the significance of chimera states in cognitive systems.
+Therefore, the strength of the chimera state
+(with a notably high chimera-like index of \num{0.15}) is particularly striking.
+Given that this model only includes connectivity structure
+as opposed to any biochemical aspects of neurons,
+this suggests that chimeric cognitive states are strongly influenced
+by connectivity patterns.
+Further research is needed to see if this connection between chimeric quality
+and connectivity structure extends to other model organisms.
 
 \section{Conclusion}
 In this paper, we extended the evolutionary Kuramoto model

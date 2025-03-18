@@ -30,7 +30,7 @@
       },
       ]
         \nextgroupplot[
-          ylabel={In-phase benefit $\beta/c$},
+          ylabel={Mixed benefit $\beta/c$},
           ymax=2.5,
           ]
 
@@ -181,6 +181,6 @@
         }%
       }
     \end{axis}
-    \node[anchor=north] (title-x) at ($(group c1r1.south east)!0.5!(group c2r1.south west)-(0,0.5cm)$) {Mutual benefit $B/c$};
+    \node[anchor=north] (title-x) at ($(group c1r1.south east)!0.5!(group c2r1.south west)-(0,0.5cm)$) {Joint benefit $B/c$};
     \path (group c1r1.south west) -- node[below={1cm}]{\pgfplotslegendfromname{CommonLegend4}} (group c2r1.south east);
 \end{tikzpicture}

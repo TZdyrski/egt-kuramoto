@@ -200,8 +200,8 @@ with $f(\Delta \phi) = [1+\cos(\phi_j - \phi_i)]/2$.
 Here, $B_0$, $\beta_0$, $\alpha$, and $c$ are fixed parameters
 defining the game.
 The cost $c$ represents the penalty paid by communicative players,
-and $B_0$ and $\beta_0$ are the in-phase benefits paid with exactly
-two or one communicative player, respectively.
+and $B_0$ and $\beta_0$ are the maximum benefits paid with
+joint CC communicators and mixed CN players, respectively.
 The phase-dependent function $f(\Delta \phi)$ encodes
 the influence of phase mismatches.
 Finally, the benefit asymmetry $\alpha \in [0,1]$ breaks the symmetry
@@ -375,7 +375,7 @@ while spending equal times in each states yields $\lambda = 1/12 \approx \num{0.
   \caption{
     \protect{\subref{fig:multi-comm-frac}}
     Time-averaged fraction of players that are communicative as a function
-    of the maximum benefit of mutual communication $B_0$
+    of the maximum joint benefit $B_0$
     for different values of the payoff asymmetry $\alpha$.
     The network topology is the
     $N=20$ well-mixed population
@@ -393,7 +393,7 @@ while spending equal times in each states yields $\lambda = 1/12 \approx \num{0.
     the mutation rate is $\mu=\num{1E-4}$,
     the cost $c$ is \num{0.1},
     the $B_0$ step size is \num{0.04},
-    the in-phase benefit $\beta_0$ is $\num{0.95} B_0$ at each step,
+    the maximum mixed benefit $\beta_0$ is $\num{0.95} B_0$ at each step,
     and the simulation was run for \num{2E8} time steps.
   }
   \label{fig:graph_multi-comm-frac}
@@ -404,7 +404,7 @@ on the population's evolution.
 In \cref{fig:multi-comm-frac}, we re-analyze the $N=20$ well-mixed population
 originally analyzed in \citet{tripp2022evolutionary}.
 There, we compare the frequency of communicative strategies, $f_{\text{comm}}$,
-to the maximum benefit of mutual communication $B_0$.
+to the maximum joint benefit $B_0$.
 The $\alpha=1/2$ case corresponds to, and reproduces,
 the \citet{tripp2022evolutionary} setup.
 We can see it has low $f_{\text{comm}}$ for small $B_0$,
@@ -434,7 +434,7 @@ with different shades corresponding to different phases $\phi$.
   \input{tikz/comm-frac.tikz}
   \caption{
     Time-averaged fraction of players that are communicative as a function
-    of the maximum benefit of mutual communication $B_0$.
+    of the maximum joint benefit $B_0$.
     The blue dots represent the simulation results,
     the solid orange line represents the full $k$-regular, analytic estimate,
     and the dashed red line represents the small-$B_0$ $k$-regular approximation.
@@ -453,7 +453,7 @@ with different shades corresponding to different phases $\phi$.
     the mutation rate is $\mu=\num{1E-4}$,
     the cost $c$ is \num{0.1},
     the $B_0$ step size is \num{0.04},
-    the in-phase benefit $\beta_0$ is $\num{0.95} B_0$ at each step,
+    the maximum mixed benefit $\beta_0$ is $\num{0.95} B_0$ at each step,
     and the simulation was run for \num{2E8} time steps.
   }
   \label{fig:comm-frac}
@@ -462,7 +462,7 @@ with different shades corresponding to different phases $\phi$.
 \Cref{fig:comm-frac} shows the fraction of players
 using communicative strategies $f_{\text{comm}}$ averaged across
 the entire simulation of \num{2E8} time steps as a function
-of the maximum benefit of mutual communication $B_0$.
+of the maximum joint benefit $B_0$.
 These plots shows the fraction for the
 \subref{fig:comm-frac_well-mixed}
 $N=20$ well-mixed and
@@ -661,8 +661,8 @@ selection strength $\delta = 0.2$,
 asymmetry $\alpha = 3/4$,
 mutation rate $\mu=\num{1E-4}$,
 cost $c = \num{0.1}$,
-maximum benefit of mutual communication $B_0 = 0.15$,
-and maximum benefit of unilateral communication $\beta_0$ is $\num{0.95} B_0$.
+maximum joint benefit $B_0 = 0.15$,
+and maximum mixed benefit $\beta_0$ is $\num{0.95} B_0$.
 
 The \subref{fig:time-series_well-mixed} well-mixed case
 shows that the system incredibly homogeneous.
@@ -750,8 +750,8 @@ for \num{8E6} time steps with
 selection strength $\delta = 0.2$,
 mutation rate $\mu=\num{1E-4}$,
 cost $c = \num{0.1}$,
-maximum benefit of mutual communication $B_0 = 0.15$,
-and maximum benefit of unilateral communication $\beta_0$ is $\num{0.95} B_0$.
+maximum joint benefit $B_0 = 0.15$,
+and maximum mixed benefit $\beta_0$ is $\num{0.95} B_0$.
 
 The metastability displayed in \cref{fig:chimera-index}
 is quite low at $\le \num{0.01}$ compared
@@ -973,7 +973,7 @@ and an undirected, weighted graph.
 This revealed that the graph's directedness
 had a minor effect of steepening the transition
 from non-communicative to communicative
-as the maximum benefit of mutual communication was increased.
+as the maximum joint benefit was increased.
 However, the weightedness of the graph had a much more drastic effect
 on the population by strongly suppressing the maximum communicativity.
 For the weighted connectome graphs (both directed and undirected),

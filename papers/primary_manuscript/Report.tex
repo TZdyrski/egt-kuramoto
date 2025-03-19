@@ -253,7 +253,7 @@ A variety of statistics will be used to quantify the evolution
 of the games' populations.
 First, we determine the frequency of communicative strategies
 $f_{\text{comm}}$ as the fraction of players employing
-a communicative strategy $C$ at a given time.
+a communicative strategy $C$ at a given time step.
 We are also interested in defining the time-averaged communicative frequency
 by averaging $f_{\text{comm}}$ over the entire simulation;
 for simulation times long compared to the mutation turnover time $T \gg N/\mu$,
@@ -379,7 +379,7 @@ while spending equal times in each states yields $\lambda = 1/12 \approx \num{0.
     The network topology for the \gls{celegans}
     $N=300$ weighted, directed connectome.
     The colors represent the $2m = 40$ strategies
-    at a particular timestep;
+    at a particular time step;
     blue colors are communicative,
     red colors are non-communicative,
     and shades represent different phases $\phi$.
@@ -420,7 +420,7 @@ rises more steeply and at smaller values of $B_0$.
 Here, we consider the weighted, directed \gls{celegans} connectome.
 \Cref{fig:graph} shows the $N = 300$ nodes and the directed edges
 (we exclude the two unconnected neurons CANL/CANR).
-The nodes are colored according to their strategy at a particular time-step,
+The nodes are colored according to their strategy at a particular time step,
 with blues representing communicative strategies
 and reds representing non-communicative ones,
 with different shades corresponding to different phases $\phi$.
@@ -924,7 +924,7 @@ this would preferentially enhance non-synchronized game type edges.
 More research needs to be done to investigate the role of this particular effect.
 
 %\subsection{Chimera states}
-The timestep in \cref{fig:graph} was chosen
+The time step in \cref{fig:graph} was chosen
 to demonstrate a chimera state:
 there is a large, synchronized cluster
 of non-communicative nodes with the same phase in red;

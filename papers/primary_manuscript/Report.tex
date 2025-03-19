@@ -318,10 +318,10 @@ We then calculate the covariance matrix $K_{i,j}$ of the strategy indices
 and non-communicative ($N$, $\phi_i$) are treated distinctly)
 and calculate the row-wise sums  $\sum_i K_{i,j}$.
 After finding the node with the maximum covariance sum
-$cov_{\text{max}} \coloneqq \max_j{\sum_i K_{i,j}}$,
+$\text{cov}_{\text{max}} \coloneqq \max_j{\sum_i K_{i,j}}$,
 we form a community by all nodes $j$ with covariance-sum
 at least \SI{81}{\percent} of the maximum,
-$\sum_i K_{i,j} \ge \num{0.81} cov_{\text{max}}$.
+$\sum_i K_{i,j} \ge \num{0.81} \text{cov}_{\text{max}}$.
 Finally, we place all the remaining nodes in a second community.
 
 With these disjoint communities $C_m$, we then calculate

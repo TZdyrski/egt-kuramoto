@@ -319,7 +319,7 @@ and non-communicative ($N$, $\phi_i$) are treated distinctly)
 and calculate the row-wise sums  $\sum_i K_{i,j}$.
 After finding the node with the maximum covariance sum
 $\text{cov}_{\text{max}} \coloneqq \max_j{\sum_i K_{i,j}}$,
-we form a community by all nodes $j$ with covariance-sum
+we form a community by collecting all nodes $j$ with covariance-sum
 at least \SI{81}{\percent} of the maximum,
 $\sum_i K_{i,j} \ge \num{0.81} \text{cov}_{\text{max}}$.
 Finally, we place all the remaining nodes in a second community.

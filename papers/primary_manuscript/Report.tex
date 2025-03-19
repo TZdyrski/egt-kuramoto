@@ -482,20 +482,21 @@ The solid orange line represents the full analytic
 result (\pcref{eq:full_analytic}) for a well-mixed population
 with the well-mixed indegree $n-1$ replaced by the average
 indegree: $\overline{d}_{\text{in}} = \num{19}$
-for the well-mixed case \subref{fig:comm-frac_well-mixed},
-and $\overline{d}_{\text{in}} = \num{12.36}$ for the \gls{celegans} cases
-\subref{fig:comm-frac_celegans-full}--\subref{fig:comm-frac_celegans-undirected}.
+for the \subref{fig:comm-frac_well-mixed} well-mixed case,
+and $\overline{d}_{\text{in}} = \num{12.36}$ for the
+\subref{fig:comm-frac_celegans-full}--\subref{fig:comm-frac_celegans-undirected}
+\gls{celegans} cases.
 Finally, the red dotted line represents the first term
 in the asymptotic expansion
 of the analytic result for small $B_0$~(\pcref{eq:analytic_first_term}).
 
-The well-mixed case \subref{fig:comm-frac_well-mixed} shows a logistic curve
+The \subref{fig:comm-frac_well-mixed} well-mixed case shows a logistic curve
 qualitatively similar to that shown in \citet{tripp2022evolutionary}.
 While the \citet{tripp2022evolutionary} case ($\alpha = 1/2$)
 crosses $f_{\text{comm}} = 0.5$ near $B_0 = 0.21$,
 the plot here (with $\alpha = 3/4$) is compressed to the $y$-axis
 and crosses $f_{\text{comm}} = 0.5$ around $B_0 = 0.12$.
-However, the \gls{celegans} case \subref{fig:comm-frac_celegans-full}
+However, the \subref{fig:comm-frac_celegans-full} \gls{celegans} case
 is qualitatively distinct.
 Here, we see that the population is almost universally non-communicative
 for $B_0 \le 0.08$,
@@ -504,20 +505,21 @@ of \num{0.77} around $B_0 = 1.6$.
 This communicative fraction then slowly declines
 to a horizontal asymptote around \num{0.60}.
 While the orange line representing the analytic result
-is a nearly perfect match for the well-mixed case \subref{fig:comm-frac_well-mixed},
-the \gls{celegans} case \subref{fig:comm-frac_celegans-full} deviates significantly
+is a nearly perfect match for the \subref{fig:comm-frac_well-mixed} well-mixed case,
+the \subref{fig:comm-frac_celegans-full} \gls{celegans} case deviates significantly
 from the simulation results.
 This deviation implies the \gls{celegans} case
 has qualitatively different influences compared to the baseline, well-mixed case.
 
 In order to investigate the cause of the deviation
 between simulation and theory
-in the full \gls{celegans} case \subref{fig:comm-frac_celegans-full},
+in the \subref{fig:comm-frac_celegans-full} full \gls{celegans} case,
 we next look at variations to the \gls{celegans} network topology.
-First, the \emph{directed}, unweighted connectome
-\subref{fig:comm-frac_celegans-unweighted}
-is qualitatively similar to the well-mixed case
-\subref{fig:comm-frac_well-mixed}:
+First, the \subref{fig:comm-frac_celegans-unweighted}
+\emph{directed}, unweighted connectome
+is qualitatively similar to the
+\subref{fig:comm-frac_well-mixed}
+well-mixed case :
 while the simulation results (blue) exhibit a steeper rise
 than the theory results (orange),
 the directed case still shows a monotonic increase
@@ -525,20 +527,20 @@ from low communicativeness for $B_0 < 0.1$
 to full communicativeness for $B_0 \ge 0.2$.
 This implies that the quality of directedness
 plays a relatively small role in the qualitative shape
-of the full \gls{celegans} case \subref{fig:comm-frac_celegans-full}.
+of the \subref{fig:comm-frac_celegans-full} full \gls{celegans} case.
 On the other hand,
-the \emph{weighted}, undirected connectome
-\subref{fig:comm-frac_celegans-undirected}
-looks quite similar to the full \gls{celegans} case
-\subref{fig:comm-frac_celegans-full}.
-In particular, this weighted case
-\subref{fig:comm-frac_celegans-undirected}
+the \subref{fig:comm-frac_celegans-undirected}
+\emph{weighted}, undirected connectome
+looks quite similar to the \subref{fig:comm-frac_celegans-full}
+full \gls{celegans} case .
+In particular, this \subref{fig:comm-frac_celegans-undirected}
+weighted case
 shows the same plateau at $f_{\text{comm}} \approx 0.7$
-seen in the full \gls{celegans} case,
+seen in the \subref{fig:comm-frac_celegans-full} full \gls{celegans} case,
 though the ``peak'' around $B_0 = 0.15$ is less pronounced.
 This similarity implies that the connectome's edge weights
 are the most relevant aspect influencing the deviation
-of the \gls{celegans} \subref{fig:comm-frac_celegans-full}
+of the \subref{fig:comm-frac_celegans-full} \gls{celegans}
 simulation results in blue from the theory results in orange.
 
 \subsubsection{Game types}

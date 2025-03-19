@@ -218,9 +218,7 @@ First, we use an interaction graph with $N$ nodes representing players
 and weighted, directed edges representing games between players.
 Second, we implement a reproduction graph with the $N$ nodes
 still representing players
-but the edges now corresponding to the ability of nodes to replace one another;
-specifically, the tail node may replace the head node,
-and its fitness is scaled by the edge weight.
+but the edges now corresponding to the ability of nodes to replace one another.
 For simplicity, our reproduction graphs are identical to the interaction graph
 with a single self-loop added to each node.
 These self-loops are necessary in the reproduction graph

@@ -285,7 +285,10 @@ at each time step.
 Then, we calculate the frequency of this ``most common game'' across
 all time steps of a given simulation to determine the distribution
 of games commonly played.
-Note that this metric is only sensitive to the
+Note that a player pair's game type is determined solely
+by their relative phase $\Delta \phi$ and is independent
+of the players' communicativeness.
+Furthermore, this metric is only sensitive to the
 plurality game and therefore provides no information
 on the presence/absence of minority game types.
 
@@ -572,10 +575,7 @@ simulation results (blue) from the theory results (orange).
 Next, we would like to understand the types of games being played
 during the population's evolution.
 In \cref{fig:game-type}, we consider the most common game type
-amongst all player interactions.
-Note that a player pair's game type is determined solely
-by their relative phase $\Delta \phi$ and is independent
-of the players' communicativeness.
+amongst all player interactions~(\cf \cref{sec:stats_setup})
 At each time step, we determine the most common game types
 across all player interactions,
 where the number of interactions between two players

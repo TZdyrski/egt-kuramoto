@@ -64,6 +64,7 @@ Evolutionary \emph{graph} theory places evolutionary game theory
 on graphs to investigate the role of structure on population evolution.
 Numerous studies have found that introduction structure
 can qualitatively change the population's evolution.
+% TODO: Tie discussion section back to these two references?
 For instance, cooperation can be enhanced by
 decreasing the average number of edges~\citep{ohtsuki2006simple},
 or having an intermediate proportion
@@ -125,6 +126,7 @@ still display a wide array of complex phenomena including
 topologically-central rich clubs
 crucial to motor neurons~\citep{towlson2013rich},
 phenomenological connections to control theory~\citep{yan2017network},
+% TODO: tie discussion back to this reference?
 and chimera states~\citep{hizanidis2016chimera}.
 Therefore, this work will investigate the applicability
 of evolutionary Kuramoto dynamics to the \gls{celegans}
@@ -300,7 +302,9 @@ and calculate the row-wise covariance-sums  $\sum_i K_{i,j}$.
 After finding the node with the maximum covariance-sum
 $\cov_{\text{max}} \coloneqq \max_j{\sum_i K_{i,j}}$,
 we form a community by collecting all nodes $j$ with covariance-sum
+% TODO: 81% is arbitrary; can we change it or justify it?
 at least \SI{81}{\percent} of the maximum,
+% TODO: Explain why we use this particular setup
 $\sum_i K_{i,j} \ge \num{0.81} \cov_{\text{max}}$.
 Finally, we place all the remaining nodes in a second community.
 
@@ -398,6 +402,7 @@ the asymmetry $\alpha$ dilates (stretches) this sigmoid function
 in the $B_0$ direction.
 In particular, for the smaller $\alpha$'s, the $f_{\text{comm}}$ curve
 rises more steeply and at smaller values of $B_0$.
+% TODO: Add more here
 
 \subsection{\glsfmtshort{celegans} graphs}
 \label{sec:elegans_graph}
@@ -409,6 +414,7 @@ The nodes are colored according to their strategy at a particular time step,
 with blues representing communicative strategies
 and reds representing non-communicative ones,
 with different shades corresponding to different phases $\phi$.
+% TODO: Describe a bit more
 
 \begin{figure}
   \centering
@@ -651,6 +657,7 @@ The \subref{fig:time-series_well-mixed} well-mixed case
 shows that the system is incredibly homogeneous.
 Temporary drops in communicative frequency $f_{\text{comm}}$
 and order parameter $\rho$ are likely the result of mutations,
+% TODO: Can we tag data when mutations occur?
 which are expected to occur, on average, every $1/\mu = \num{1E4}$ time steps.
 But the system quickly returns to uniformity;
 for the parameters and time span depicted here,
@@ -873,8 +880,12 @@ is easily obtained---for instance, if the entire graph is synchronized,
 or largely synchronized.
 There are only two conditions when the $\Delta \phi = 0$ game type
 is \emph{not} the most common game:
+% TODO: check this; I think it only works if you have p groups
+% evenly distributed on phase circle;
+% if so, add derivation to appendix and reference here
 when there are many small groups with distinct phase $\phi$;
 or when the game is almost evenly split between two groups
+% TODO: add derivation to appendix and reference here
 with fraction within $\pm 1/(2 \sqrt{N})$ of $1/2$.
 For the $N = 20$ well-mixed case, this corresponds
 each group containing between \numrange{8}{12} players,
@@ -893,6 +904,7 @@ with two major populations
 and assume they are randomly distributed (for ease of computation),
 then the same calculations as above show that
 the synchronized game type will \emph{not} be the most-common game
+% TODO: Do derivation in appendix and reference here
 if the fraction of invaders is within
 $\pm 1/(2 \sqrt{\overline{d}_{in}} + 1)$
 of $1/2$, or \numrange{0.37}{0.63}.
@@ -944,6 +956,7 @@ this suggests that chimeric cognitive states are strongly influenced
 by connectivity patterns.
 Further research is needed to see if this connection between chimeric quality
 and connectivity structure extends to other model organisms.
+% TODO: add more?
 
 \section{Conclusion}
 In this paper, we extended the evolutionary Kuramoto model

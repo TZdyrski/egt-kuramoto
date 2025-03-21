@@ -1,31 +1,16 @@
 \section{Communicative fraction with broken symmetry}
 Here, we will extend the derivation of the communicative fraction
-in section 4 of the appendix for \citet{tripp2022evolutionary}
-with an arbitrary asymmetry $\alpha$.
-That derivation carries through until equation 16,
-where we make the small correction of replacing
-the average fitness $f = \exp(\delta \pi)$ (used in the appendix)
-with the total fitness $f = \exp(\delta (n-1) \pi)$
-for a node with $(n-1)$ neighbors
-(used in the main text and plots).
-Thus, equation 16 becomes
-\begin{equation}
-  \begin{aligned}[b]
-  \gamma_k &= \frac{p_{k,k-1}}{p_{k,k+1}} \\
-           &= \frac{f_N(k)}{f_C(K)} \\
-           &= \exp[\delta (n-1) (\pi_F(k) - \pi_E(k))]
-\end{aligned}
-\end{equation}
-where strategy $F=(N,\phi_k)$, strategy $E=(C,\phi_j)$,
-and $k \in [0,m-1]$ is the number of communicative strategies $C$.
-
-Now, using the new $\alpha$-dependent payoff functions gives
+in \citet{tripp2022evolutionary} to include an asymmetry $\alpha$.
+First, we use our $\alpha$-dependent payoff matrix, \cref{eq:payoff-matrix},
+to calculate the $\alpha$-dependent average payoff functions.
+For simplicity, we will define $\beta(\Delta \phi) = \beta_0 f(\Delta \phi)$.
+Then, we have
 \begin{align}
-  \pi_E(k) &= \ab(\frac{k-1}{n-1}) \ab(B(0) - c)
+  \pi_E(k) &= \ab(\frac{k-1}{n-1}) \pab{B_0 - c}
                 + \ab(\frac{n-k}{n-1}) \ab(\beta(\Delta\phi) 2\alpha - c) \\
            &= \frac{1}{n-1}
-               \ab(k \ab(B(\Delta\phi) - 2 \alpha \beta(\Delta\phi))
-                 + 2 \alpha n \beta(\Delta\phi) - B(\Delta\phi) - (n-1) c)
+               \ab(k \ab(B_0 - 2 \alpha \beta(\Delta\phi))
+                 + 2 \alpha n \beta(\Delta\phi) - B_0 - (n-1) c)
 \end{align}
 and
 \begin{align}
@@ -33,29 +18,42 @@ and
                 + \ab(\frac{n-k-1}{n-1}) \ab(0) \\
            &= \ab(\frac{k}{n-1}) 2 (1-\alpha) \beta(\Delta\phi)
 \end{align}
-where $\Delta \phi$ is the phase difference between the $E$ and $F$
+where $k \in [0,N]$ is the number of $E$-players
+and $\Delta \phi$ is the phase difference between the $E$ and $F$
 strategies.
-Note that $\pi_E$ has $B(0)$ instead of $B(\Delta \phi)$; this is
-because the $B(\Delta \phi)$ payoff occurs when strategy $E$ plays
-against strategy $E$, so $\Delta \phi = 0$ (recall we are only
-considering a game with exactly two strategies, $E = (C, \phi_i)$ and
-$F = (N, \phi_j)$.
-Similar logic would apply to the $F$-$F$ strategy in $\pi_F$, but that
-payoff is identically zero.
+Note that the first term of $\pi_E$ corresponds
+to the $E$-$E$ payoff, which has $\Delta \phi = 0$,
+hence $B_0 f(\Delta \phi) = B_0$.
 
-Thus, we have
-\begin{equation}
-  \begin{aligned}
-    \gamma_k &= \exp\ab[\delta \ab(
+Now, we follow the derivation of \citet{tripp2022evolutionary}
+and consider two populations with strategies
+$E=(C,\phi_j)$ and $F=(N,\phi_k)$.
+The derivation in section 4 of the appendix
+from \citet{tripp2022evolutionary}
+carries through directly until equation 16
+where a key parameter $\gamma_k$ is defined
+as the ratio of the average $F$ payoff to average $E$ payoff.
+Here, we make the small correction of replacing
+the average fitness $f = \exp(\delta \pi)$ (used in the appendix)
+with the total fitness $f = \exp(\delta (n-1) \pi)$
+for a node with $(n-1)$ neighbors
+(used in the main text and plots).
+Thus, equation 16 becomes
+\begin{align*}
+  \gamma_k &= \frac{f_F(k)}{f_E(k)} \\
+           &= \exp[\delta (n-1) (\pi_F(k) - \pi_E(k))]
+           \\
+           &= \exp\ab[\delta \ab(
     k 2 (1-\alpha) \beta(\Delta\phi)
-    - k \ab(B(0) - 2 \alpha \beta(\Delta\phi))
-                 - 2 \alpha n \beta(\Delta\phi) + B(0) + (n-1) c)] \\
+    - k \ab(B_0 - 2 \alpha \beta(\Delta\phi))
+                 - 2 \alpha n \beta(\Delta\phi) + B_0 + (n-1) c)] \\
       &= \exp\ab[\delta \ab(
-    \ab(2 \beta(\Delta\phi) - B(0)) k
-                 + B(0) - 2 \alpha n \beta(\Delta\phi) + (n-1) c)]
-  \end{aligned}
-\end{equation}
-Next, we can calculate the ratio of fixation rates $\rho_F/\rho_E$ as
+    \ab(2 \beta(\Delta\phi) - B_0) k
+                 + B_0 - 2 \alpha n \beta(\Delta\phi) + (n-1) c)]
+\end{align*}
+
+Continuing to follow the derivation of \citet{tripp2022evolutionary},
+we can calculate the ratio of fixation probabilities $\rho_F/\rho_E$ as
 \begin{equation}
   \begin{aligned}
     \frac{\rho_F}{\rho_E} &= \prod_{k=1}^{n-1} \gamma_k \\
@@ -63,60 +61,67 @@ Next, we can calculate the ratio of fixation rates $\rho_F/\rho_E$ as
                 \delta
                 \sum_{k=1}^{n-1}
                 \ab[
-    \ab(2 \beta(\Delta\phi) - B(0)) k
-                 + B(0) - 2 \alpha n \beta(\Delta\phi) + (n-1) c
+    \ab(2 \beta(\Delta\phi) - B_0) k
+                 + B_0 - 2 \alpha n \beta(\Delta\phi) + (n-1) c
                  ]
                  \} \\
            &= \exp \ab\{
                 \delta
                 \ab[
-                \ab(2 \beta(\Delta\phi) - B(0)) \frac{n(n-1)}{2}
-                 + \ab(B(0) - 2 \alpha n \beta(\Delta\phi) + (n-1) c) (n-1)
+                \ab(2 \beta(\Delta\phi) - B_0) \frac{n(n-1)}{2}
+                 + \ab(B_0 - 2 \alpha n \beta(\Delta\phi) + (n-1) c) (n-1)
                  ]
                  \} \\
            &= \exp \ab\{
                 \delta (n-1)
                 \ab[
                 (n-1) c + n \beta(\Delta\phi) (1 - 2 \alpha)
-                - \frac{n-2}{2} B(0)
+                - \frac{n-2}{2} B_0
                  ]
                  \}
   \end{aligned}
+  \label{eq:fixation_prob_ratio}
 \end{equation}
 Notice, now the ratio of $\rho_F/\rho_E$ depends of $\Delta \phi$,
 unlike in the $\alpha=1/2$ case considered by \citet{tripp2022evolutionary}.
 
-Soon, we will require the expression for $\rho_{NC,\Delta \phi_{qr}}
-\coloneqq \rho_E$.
-Thus, we have
+Similarly, since $\rho_E + \rho_F = 1$, we have
 \begin{equation}
   \begin{aligned}
-    \rho_E &= \frac{1}{1+\sum_{j=1}^{n-1} \prod_{k=1}^j \gamma_k} \\
+    \rho_E &= \frac{1}{1+\rho_F/\rho_E}
+           = \frac{1}{1+\sum_{j=1}^{n-1} \prod_{k=1}^j \gamma_k} \\
            &= \ab(1+\sum_{j=1}^{n-1} \prod_{k=1}^j \exp\ab[\delta \ab(
-           \ab(2 \beta(\Delta\phi_{qr}) - B(0)) k
-           + B(0) - 2 \alpha n \beta(\Delta\phi_{qr}) + (n-1) c)])^{-1}
+           \ab(2 \beta(\Delta\phi_{qr}) - B_0) k
+           + B_0 - 2 \alpha n \beta(\Delta\phi_{qr}) + (n-1) c)])^{-1}
                  \\
            &= \ab(1+\sum_{j=1}^{n-1} \exp\ab[\delta \sum_{k=1}^j \ab(
-           \ab(2 \beta(\Delta\phi_{qr}) - B(0)) k
-           + B(0) - 2 \alpha n \beta(\Delta\phi_{qr}) + (n-1) c)])^{-1}
+           \ab(2 \beta(\Delta\phi_{qr}) - B_0) k
+           + B_0 - 2 \alpha n \beta(\Delta\phi_{qr}) + (n-1) c)])^{-1}
                  \\
            &= \ab(1+\sum_{j=1}^{n-1} \exp\ab[\delta \ab(
-           \ab(2 \beta(\Delta\phi_{qr}) - B(0)) j(j+1)/2
-           + j \ab(B(0) - 2 \alpha n \beta(\Delta\phi_{qr}) + (n-1) c))])^{-1}
+           \ab(2 \beta(\Delta\phi_{qr}) - B_0) j(j+1)/2
+           + j \ab(B_0 - 2 \alpha n \beta(\Delta\phi_{qr}) + (n-1) c))])^{-1}
                  \\
            &= \ab(1+\sum_{j=1}^{n-1} \exp\ab[\delta \ab(
-           \ab(\beta(\Delta\phi_{qr}) - B(0)/2) j^2
-           + j \ab(B(0)/2 + \beta(\Delta\phi_{qr}) (1 - 2 \alpha n)  + (n-1) c))])^{-1}
+           \ab(\beta(\Delta\phi_{qr}) - B_0/2) j^2
+           + j \ab(B_0/2 + \beta(\Delta\phi_{qr}) (1 - 2 \alpha n)  + (n-1) c))])^{-1}
   \end{aligned}
+  \label{eq:comm_fixation_prob}
 \end{equation}
 
-Then, for the multi-population, low-mutation case, we identify
-$\rho_{NC,\Delta \phi_{qr}} = \rho_E$ and $\rho_{CN,\Delta \phi_{qr}} = \rho_F$
-Then, we can use this to calculate the ratio of the stationary state
-eigenvalues $s_1/s_2$
+Following section 5 in the appendix of \citet{tripp2022evolutionary},
+we apply these results from the two-population case
+to the ($m=20$ phases) multi-population case with low-mutation rate
+by identifying the fixation probability $\rho_{CN,\Delta \phi_{qr}}$
+of an $(N,\phi_r)$ strategy invading an $(C,\phi_q)$ strategy
+with $\rho_{CN,\Delta \phi_{qr}} = \rho_F$,
+and likewise
+$\rho_{NC,\Delta \phi_{rq}} = \rho_E$.
+Equation 47 of \citet{tripp2022evolutionary}
+gives the ratio of the stationary state eigenvalues $s_1/s_2$ as
 \begin{align}
   \frac{s_2}{s_1} &= \frac
-    {\sum_{r=1}^{m} \rho_{CN,\Delta \phi_{qr}}}
+    {\sum_{r=1}^{m} \rho_{CN,\Delta \phi_{rq}}}
     {\sum_{r=1}^{m} \rho_{NC,\Delta \phi_{qr}} }
   \\
   &=
@@ -126,7 +131,7 @@ eigenvalues $s_1/s_2$
       \delta (n-1)
       \bab{
         (n-1) c + n \beta(\Delta \phi_{qr}) (1 - 2 \alpha)
-        - \frac{n-2}{2} B(0)
+        - \frac{n-2}{2} B_0
       }
     }
   }
@@ -138,36 +143,35 @@ eigenvalues $s_1/s_2$
     {\sum_{r=1}^{m} \frac
       {\exp \Bab{ \delta (n-1)
         \bab{
-          (n-1) c + n \beta(\Delta \phi_{qr}) (1 - 2 \alpha) - \frac{n-2}{2} B(0)
+          (n-1) c + n \beta(\Delta \phi_{qr}) (1 - 2 \alpha) - \frac{n-2}{2} B_0
         }}
       }
       {1 + \sum_{j=1}^{n-1} \exp\Bab{
         \delta \bab{
-         \pab{\beta(\Delta \phi_{qr}) - B(0)/2} j^2
-         + j \pab{B(0)/2 + \beta(\Delta \phi_{qr}) (1 - 2 \alpha n) + (n-1) c}
+         \pab{\beta(\Delta \phi_{qr}) - B_0/2} j^2
+         + j \pab{B_0/2 + \beta(\Delta \phi_{qr}) (1 - 2 \alpha n) + (n-1) c}
         }}
       }
     }
     {\sum_{r=1}^{m} \frac{1}
       {1 + \sum_{j=1}^{n-1} \exp\Bab{
         \delta \bab{
-         \pab{\beta(\Delta \phi_{qr}) - B(0)/2} j^2
-         + j \pab{B(0)/2 + \beta(\Delta \phi_{qr}) (1 - 2 \alpha n) + (n-1) c}
+         \pab{\beta(\Delta \phi_{qr}) - B_0/2} j^2
+         + j \pab{B_0/2 + \beta(\Delta \phi_{qr}) (1 - 2 \alpha n) + (n-1) c}
         }}
       }
     }
   }
   \label{eq:full_analytic_frac}
 \end{align}
-where $m = 20$ is the number of phases that $\phi_i$ can take.
+The first equality used \cref{eq:fixation_prob_ratio}
+and the second equality used \cref{eq:comm_fixation_prob}.
 Unlike in the $\alpha = 1/2$ symmetric case, we cannot factor the
 exponential component out of the sum and cancel the $\rho_{CN,\Delta
 \phi_{qr}}$ terms.
-However, we can asymptotically expand $\Phi(B(0))$ for small $B(0) \ll 1$;
+However, we can asymptotically expand $s_2/s_1$ for small $B_0/c \ll 1$;
 additionally, since all of our simulations use $\beta \propto B$,
-we also assume $\beta \ll 1$.
-Furthermore, we note that the only $\Delta \phi$ dependence
-appears in the $\beta$ terms.
+we also assume $\beta/c \ll 1$.
 Finally, to simplify the calculation,
 we define the asymptotic expansion of
 $\rho_{NC,\Delta \phi_{qr}} \coloneqq
@@ -175,14 +179,13 @@ $\rho_{NC,\Delta \phi_{qr}} \coloneqq
 +
 \rho_{NC,\Delta \phi_{qr}}^{(1)}
 +
-\order{B_0^2, \beta^2, B_0 \beta}
+\order{B_0^2}
 $
 where
 $
 \rho_{NC,\Delta \phi_{qr}}^{(i)}
 $
-depends only on terms of the form $B_0^j \beta^k$
-with $j+k=i$.
+depends only on terms of total order $i$ in $B_0$ and $\beta$.
 
 Then, to first order in $B_0$ and $\beta$,
 we have
@@ -195,7 +198,7 @@ we have
       \delta (n-1)
       \bab{
         (n-1) c + n \beta(\Delta \phi_{qr}) (1 - 2 \alpha)
-        - \frac{n-2}{2} B(0)
+        - \frac{n-2}{2} B_0
       }
     }
   }
@@ -214,7 +217,7 @@ we have
       \delta (n-1)
       \bab{
         n \beta(\Delta \phi_{qr}) (1 - 2 \alpha)
-        - \frac{n-2}{2} B(0)
+        - \frac{n-2}{2} B_0
       }
     }
   }
@@ -249,7 +252,7 @@ we have
     \delta (n-1)
     \bab{
       n \beta(\Delta \phi_{qr}) (1 - 2 \alpha)
-      - \frac{n-2}{2} B(0)
+      - \frac{n-2}{2} B_0
     }
   }
   {\sum_{r=1}^{m} \rho_{NC,\Delta \phi_{qr}}^{(0)}
@@ -261,7 +264,7 @@ we have
   e^{\delta (n-1)^2 c}
   \Bab{
     1
-    - \delta (n-1) \frac{n-2}{2} B(0)
+    - \delta (n-1) \frac{n-2}{2} B_0
     +
     \frac{\delta n (n-1)}{m} (1 - 2 \alpha)
     \sum_{r=1}^{m} \beta(\Delta \phi_{qr})
@@ -271,7 +274,7 @@ we have
   &=
   \exp \Bab{\delta (n-1) \bab{
     (n-1) c
-    - \frac{n-2}{2} B(0)
+    - \frac{n-2}{2} B_0
     +
     \frac{n (1 - 2 \alpha)}{m}
     \sum_{r=1}^{m} \beta(\Delta \phi_{qr})
@@ -281,7 +284,7 @@ we have
   &=
   \exp \Bab{ \delta (n-1) \bab{
     (n-1) c
-    - \frac{n-2}{2} B(0)
+    - \frac{n-2}{2} B_0
     +
     \frac{n (1 - 2 \alpha)}{2} \beta_0
   }}
@@ -296,21 +299,22 @@ $\sum_{r=1}^m \beta(\Delta \phi_{qr})
 = m \beta_0/2$
 since the cosine sum gives zero.
 
-Finally, using the fact that $d s_1 + d s_2 = 1$, we find the probability
-of communicative fixation $d s_1$ to be
+Finally, using the fact that $m s_1$ and $m s_2$
+are the probabilities of $C$ and $N$ fixation, respectively,
+we find the probability of communicative fixation as
 \begin{equation}
-  d s_1 = \frac{1}{1 + s_2/s_1}
+  m s_1 = \frac{1}{1 + s_2/s_1}
   \label{eq:full_analytic}
 \end{equation}
 with $s_2/s_1$ given by \cref{eq:full_analytic_frac},
 and the asymptotic, small $B_0/c$ approximation given by
 \begin{equation}
-  d s_1 = \frac{1}{1 + s_2/s_1}
+  m s_1 = \frac{1}{1 + s_2/s_1}
   \approx
   \frac{1}
   {1 + \exp \Bab{\delta (n-1) \bab{
     (n-1) c
-    - \frac{n-2}{2} B(0)
+    - \frac{n-2}{2} B_0
     +
     \frac{n (1 - 2 \alpha)}{2} \beta_0
     }}

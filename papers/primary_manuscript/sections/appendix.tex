@@ -1,8 +1,14 @@
-\section{Broken symmetry}
-Similarly, the derivation for the communicative fraction
-in section 4 of the appendix for \cite{tripp2022evolutionary} carries
-through until equation 16.
-Instead, with $n_{\text{in}} = n-1$, we have
+\section{Communicative fraction with broken symmetry}
+Here, we will extend the derivation of the communicative fraction
+in section 4 of the appendix for \citet{tripp2022evolutionary}
+with an arbitrary asymmetry $\alpha$.
+That derivation carries through until equation 16,
+where we make the small correction of replacing
+the average fitness $f = \exp(\delta \pi)$ (used in the appendix)
+with the total fitness $f = \exp(\delta (n-1) \pi)$
+for a node with $(n-1)$ neighbors
+(used in the main text and plots).
+Thus, equation 16 becomes
 \begin{equation}
   \begin{aligned}[b]
   \gamma_k &= \frac{p_{k,k-1}}{p_{k,k+1}} \\
@@ -10,9 +16,10 @@ Instead, with $n_{\text{in}} = n-1$, we have
            &= \exp[\delta (n-1) (\pi_F(k) - \pi_E(k))]
 \end{aligned}
 \end{equation}
-where strategy $F=(N,\phi_k)$, strategy $E=(C,\phi_j)$, and $k$ is the
-number of communicative strategies $C$.
-The new (edge-averaged) payoff functions $\pi_C$ and $\pi_N$ are given by
+where strategy $F=(N,\phi_k)$, strategy $E=(C,\phi_j)$,
+and $k \in [0,m-1]$ is the number of communicative strategies $C$.
+
+Now, using the new $\alpha$-dependent payoff functions gives
 \begin{align}
   \pi_E(k) &= \ab(\frac{k-1}{n-1}) \ab(B(0) - c)
                 + \ab(\frac{n-k}{n-1}) \ab(\beta(\Delta\phi) 2\alpha - c) \\
@@ -77,7 +84,7 @@ Next, we can calculate the ratio of fixation rates $\rho_F/\rho_E$ as
   \end{aligned}
 \end{equation}
 Notice, now the ratio of $\rho_F/\rho_E$ depends of $\Delta \phi$,
-unlike in the $\alpha=1/2$ case.
+unlike in the $\alpha=1/2$ case considered by \citet{tripp2022evolutionary}.
 
 Soon, we will require the expression for $\rho_{NC,\Delta \phi_{qr}}
 \coloneqq \rho_E$.

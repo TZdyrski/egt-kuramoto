@@ -246,11 +246,11 @@ The resulting communicative fraction \cref{eq:full_analytic}
 is derived for the well-mixed case.
 To apply \cref{eq:full_analytic} to non-complete graphs such as
 the \gls{celegans} connectome,
-we replace the indegree $N-1$ with the average indegree of the graph
-$N-1 \to \overline{d}_{\text{in}}$.
-Note that $\overline{d}_{\text{in}} = \num{19}$
+we replace the degree $N-1$ with the average degree of the graph
+$N-1 \to \overline{d}$.
+Note that $\overline{d} = \num{19}$
 for the well-mixed case with $N=20$ players
-and $\overline{d}_{\text{in}} = \num{12.36}$ for the \gls{celegans} case.
+and $\overline{d} = \num{12.36}$ for the \gls{celegans} case.
 
 During the game's evolution,
 each pair of connected players will be playing a variety of game types
@@ -477,10 +477,10 @@ The blue dots represent the numerical simulation results across eleven
 values of $B_0$.
 The solid orange line represents the full analytic
 result (\pcref{eq:full_analytic}) for a well-mixed population
-with the well-mixed indegree $n-1$ replaced by the average
-indegree: $\overline{d}_{\text{in}} = \num{19}$
+with the well-mixed degree $n-1$ replaced by the average
+degree: $\overline{d} = \num{19}$
 for the \subref{fig:comm-frac_well-mixed} well-mixed case,
-and $\overline{d}_{\text{in}} = \num{12.36}$ for the
+and $\overline{d} = \num{12.36}$ for the
 \subref{fig:comm-frac_celegans-full}--\subref{fig:comm-frac_celegans-undirected}
 \gls{celegans} cases.
 Finally, the red dotted line represents the first term
@@ -907,7 +907,7 @@ However, the \gls{celegans} case does display some heterogeneity
 in most-common game type~\cref{fig:game-type_celegans-full}.
 While the number of players $N = 300$ is much larger
 than the complete, well-mixed case,
-the average indegree $\overline{d}_{\text{in}}$
+the average degree $\overline{d}$
 is smaller (\num{12.36} \vs \num{19}).
 Therefore, if we consider the non-complete, \gls{celegans} connectome graph
 with two major populations
@@ -916,7 +916,7 @@ then the same calculations as above show that
 the synchronized game type will \emph{not} be the most-common game
 % TODO: Do derivation in appendix and reference here
 if the fraction of invaders is within
-$\pm 1/(2 \sqrt{\overline{d}_{in}} + 1)$
+$\pm 1/(2 \sqrt{\overline{d}} + 1)$
 of $1/2$, or \numrange{0.37}{0.63}.
 We notice that the order parameter in \cref{fig:time-series_celegans-full}
 actually spends a good deal of time in this range,

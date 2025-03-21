@@ -321,3 +321,95 @@ and the asymptotic, small $B_0/c$ approximation given by
   }
   \label{eq:analytic_first_term}
 \end{equation}
+
+\section{Majority game type criteria}
+For \cref{fig:game-type}, we plotted the plurality game type.
+While having all or most of the players with the same phase
+easily makes the $\Delta \phi = 0$ game-type the plurality,
+it is more challenging to find conditions
+when the $\Delta \phi = 0$ game-type is \emph{not} the plurality.
+This occurs when the number of edges \emph{between} groups
+is greater than the number of edges \emph{amongst} groups.
+In \cref{sec:discussion}, we described conditions under which
+the $\Delta \phi = 0$ game type would \emph{not} be the most common game type
+for a complete graph.
+Here, we will show the derivations leading to those conditions.
+
+\subsection{Multiple equal sized groups}
+\label{sec:multiple_equal_groups}
+Let us assume the $N$ total players are evenly divided
+into $p$ groups.
+Then, the $\Delta \phi \neq 0$ game types
+arise from the edges between the $p$ groups.
+Thus, we maximize the proportion of these $\Delta \phi \neq 0$ games
+by having the same $\Delta \phi$ between as many groups as possible.
+In other words, we want the phases of the $p$ groups
+to be evenly distributed on the unit circle with phases $2 \pi j/p$
+for $j \in [0,p-1]$.
+
+Since there are $N/p$ players in each group,
+the number of edges within a group is $(N/p)(N/p - 1)/2$.
+Since there are $p$ groups, the number of $\Delta \phi = 0$ edges are
+$N (N/p - 1)/2$.
+
+The next most-frequent game type will be that corresponding to
+$\Delta \phi = 2 \pi/p$:
+that is, games between adjacent groups on the unit circle.
+Since there are $p$ groups,
+$N/p$ nodes in each group,
+and each node connects to all $N/p$ nodes in the group
+$2 \pi/p$ phase ahead of it,
+the total number of $\Delta \pi = 2 \pi/p$ connections
+are $(N/p)^2 p = N^2/p$.
+
+It is easy to see that the number of $\Delta \phi = 2\pi/p$ edges,
+$N^2/p$,
+is always greater than the number of $\Delta \phi = 0$ edges,
+$N(N/p - 1)/2$.
+Therefore, when there are $p$ equal sized groups
+with phases differing by $2\pi/p$,
+the $\Delta \phi = 0$ game will \emph{not} be the plurality.
+
+\subsection{Two unequal groups}
+\label{sec:two_unequal_groups}
+Next, we consider the case where we have two groups, $A$ and $B$,
+with different phases and unequal sizes.
+We denote the number of players in group $A$ by $N_A$.
+
+The number of edges amongst group $A$ is $N_A (N_A - 1)/2$.
+Likewise, the number of edges amongst group $B$ is
+$(N-N_A) (N - N_A - 1)/2$.
+To find the number of edges between groups $A$ and $B$,
+we observe that each of the $N_A$ nodes in group $A$
+connects to each of the $N - N_A$ nodes in group $B$,
+giving $N_A (N - N_A)$ total edges.
+
+Thus, the number of $\Delta \phi = 0$ edges
+equal the number of $\Delta \phi \neq 0$ edges when
+\begin{equation*}
+  N_A (N_A - 1)/2 + (N - N_A) (N - N_A - 1)/2 = N_A (N - N_A)
+  \implies \frac{N_A}{N} = \frac{1}{2} \pm \frac{1}{2 \sqrt{N}}
+\end{equation*}
+Therefore, when the fraction of players in one group is greater than
+$\frac{1}{2} + \frac{1}{2\sqrt{N}}$,
+then $\Delta \phi = 0$ will be the majority game.
+But when the fraction of players in each group is within
+$\pab{1/2 - 1/2\sqrt{N}, 1/2 + 1/2\sqrt{N}}$,
+then the $\Delta \phi \neq 0$ game is the majority.
+
+\subsubsection{Incomplete graphs}
+\label{sec:two_unequal_groups_incomplete}
+If the graph is not complete,
+but every node has approximately the same degree $k$
+and the two populations are randomly distributed,
+then we can modify the above derivation.
+In particular, since the populations are randomly distributed,
+going from the complete graph with degree $N-1$
+to the incomplete graph with degree $k$
+is equivalent to keeping only a $k/(N-1)$ subset
+of the original edges.
+However, this means both the number of $\Delta \phi = 0$ edges
+and the number of $\Delta \phi \neq 0$ edges
+are scaled down by a factor of $k/(N-1)$.
+This scaling does not change the values of $N_A/N$
+where the two are equal, \ie $1/2 \pm 1/2\sqrt{N}$.

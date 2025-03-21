@@ -888,15 +888,16 @@ For the complete, well-mixed case, the game type corresponding
 to the synchronized $\Delta \phi = 0$ state
 is easily obtained---for instance, if the entire graph is synchronized,
 or largely synchronized.
-There are only two conditions when the $\Delta \phi = 0$ game type
-is \emph{not} the most common game:
-% TODO: check this; I think it only works if you have p groups
-% evenly distributed on phase circle;
-% if so, add derivation to appendix and reference here
-when there are many small groups with distinct phase $\phi$;
+We can easily show two conditions when the $\Delta \phi = 0$ game type
+is \emph{not} the most common game type:
+when there are $p$ equal-sized groups
+with phases that differ by $2 \pi/p$ (\cf \cref{sec:multiple_equal_groups});
 or when the game is almost evenly split between two groups
-% TODO: add derivation to appendix and reference here
-with fraction within $\pm 1/(2 \sqrt{N})$ of $1/2$.
+with fraction within $\pm 1/(2 \sqrt{N})$ of $1/2$
+(\cf \cref{sec:two_unequal_groups}).
+Given the low mutation rate, it is unlikely to have
+multiple populations with roughly equal sizes,
+so the evenly-split case is more likely.
 For the $N = 20$ well-mixed case, this corresponds
 each group containing between \numrange{8}{12} players,
 but the magenta order parameter in \cref{fig:time-series_well-mixed}
@@ -912,9 +913,9 @@ is smaller (\num{12.36} \vs \num{19}).
 Therefore, if we consider the non-complete, \gls{celegans} connectome graph
 with two major populations
 and assume they are randomly distributed (for ease of computation),
-then the same calculations as above show that
+then the same calculations as above
+(\cf \cref{sec:two_unequal_groups_incomplete}) show that
 the synchronized game type will \emph{not} be the most-common game
-% TODO: Do derivation in appendix and reference here
 if the fraction of invaders is within
 $\pm 1/(2 \sqrt{\overline{d}} + 1)$
 of $1/2$, or \numrange{0.37}{0.63}.

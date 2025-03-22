@@ -26,9 +26,25 @@
   \node [text width=1em,anchor=north west,fill=white,fill opacity=0.7,text opacity=1] at (0,3.75) {\subcaption{\label{fig:multi-comm-frac}}};
 
   \begin{scope}[shift={(8,0)},rotate=90]
-    \SetVertexStyle[InnerSep=0]
-    \Vertices[size=0.15,style={draw=none}]{data/vertices_B_factor=1.5_adj_matrix_source=c-elegans_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000_timestep_560000.csv}
-    \Edges[lw=0.1,opacity=0.15,Direct]{data/edges.csv}
+    % Read node coordinates and create nodes
+    \csvreader[head to column names]{data/vertices_B_factor=1.5_adj_matrix_source=c-elegans_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000_timestep_560000.csv}{}%
+    {%
+      \node[draw, circle, draw=none, fill=\nodecolor, inner sep=1.5] (\id) at (\x, \y) {};
+    }
+
+    \begin{scope}[on background layer]
+      % Decrease total opacity to prevent high opacity of overlapping edges
+      \begin{scope}[transparency group,opacity=.75]
+      % Read edges and draw connections between nodes
+      \csvreader[head to column names]{data/edges.csv}{}%
+      {%
+        % Make individual opacity low; multiple overlapping edges can still have high opacity
+        \ifthenelse{\equal{\u}{\v}}
+        { \path[in=-45,out=45,loop,->,>=latex,line width=0.1,opacity=0.2] (\u) edge (\u);}
+        { \path[->,>=latex,line width=0.1,opacity=0.2] (\u) edge (\v);}
+      }
+      \end{scope}
+    \end{scope}
   \end{scope}
   \node [text width=1em,anchor=north west,fill=white,fill opacity=0.7,text opacity=1] at (6,3.75) {\subcaption{\label{fig:graph}}};
 

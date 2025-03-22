@@ -5,22 +5,22 @@
         legend to name={CommonLegend},
         legend columns=-1,
       ]
-        \node [text width=1em,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:comm-frac_well-mixed}}};
+        \node [text width=1cm,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:comm-frac_well-mixed}}};
         \addplot table {data/cumulative/adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.dat};
         \addplot table{data/cumulative/adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=theory.dat};
         \addplot table{data/cumulative/adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=approx.dat};
       \nextgroupplot
-        \node [text width=1em,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:comm-frac_celegans-full}}};
+        \node [text width=1cm,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:comm-frac_celegans-full}}};
         \addplot table{data/cumulative/adj_matrix_source=c-elegans_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.dat};
         \addplot table{data/cumulative/adj_matrix_source=c-elegans_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=theory.dat};
         \addplot table{data/cumulative/adj_matrix_source=c-elegans_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=approx.dat};
       \nextgroupplot
-        \node [text width=1em,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:comm-frac_celegans-unweighted}}};
+        \node [text width=1cm,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:comm-frac_celegans-unweighted}}};
         \addplot table{data/cumulative/adj_matrix_source=c-elegans-unweighted_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.dat};
         \addplot table{data/cumulative/adj_matrix_source=c-elegans-unweighted_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=theory.dat};
         \addplot table{data/cumulative/adj_matrix_source=c-elegans-unweighted_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=approx.dat};
       \nextgroupplot
-        \node [text width=1em,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:comm-frac_celegans-undirected}}};
+        \node [text width=1cm,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:comm-frac_celegans-undirected}}};
         \addplot table{data/cumulative/adj_matrix_source=c-elegans-undirected_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.dat};
         \addplot table{data/cumulative/adj_matrix_source=c-elegans-undirected_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=theory.dat};
         \addplot table{data/cumulative/adj_matrix_source=c-elegans-undirected_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=approx.dat};

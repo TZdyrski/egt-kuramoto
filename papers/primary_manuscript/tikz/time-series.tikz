@@ -18,13 +18,13 @@
       },
     ]
     \nextgroupplot
-    \node [text width=1em,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:time-series_well-mixed}}};
+    \node [text width=1cm,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:time-series_well-mixed}}};
     \addplot [magenta] table [y=order_parameter] {data/timeseries/B_factor=1.5_adj_matrix_source=well-mixed_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.dat};
     \nextgroupplot[
       ylabel={Order Parameter},
       y label style={magenta},
     ]
-    \node [text width=1em,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:time-series_celegans-full}}};
+    \node [text width=1cm,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:time-series_celegans-full}}};
     \addplot [magenta] table[y=order_parameter] {data/timeseries/B_factor=1.5_adj_matrix_source=c-elegans_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.dat};
   \end{groupplot}
   \begin{groupplot}[

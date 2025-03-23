@@ -645,7 +645,7 @@ function generate_communities(graph::AbstractGraph)
     # Covariance
     config = Dict("B_factor"=>1.5,"adj_matrix_source"=>"c-elegans","nb_phases"=>20,"payoff_update_metho
 		  d"=>"single-update","selection_strength"=>0.2,"symmetry_breaking"=>1.0,"time_steps"=>8000000)
-    results = wload(datadir("timeseries",savename(config,"jld2")))
+    results = wload(datadir("raw","timeseries",savename(config,"jld2")))
     data = DimArray(results["all_populations"], (:player_index, :time_step))
     covariances = cov(data, dims=:time_step)
 
@@ -754,7 +754,7 @@ function plot_cumulative(selection_strength::Real, symmetry_breaking::Real,
     # Load results
     config = @strdict(adj_matrix_source, payoff_update_method, time_steps,
                       selection_strength, symmetry_breaking, nb_phases)
-    data, _ = produce_or_load(calc_cumulative, config, datadir("cumulative"))
+    data, _ = produce_or_load(calc_cumulative, config, datadir("raw","cumulative"))
 
     # Produce figure
     fig = generate_cumulative_plot(data, config)
@@ -918,7 +918,7 @@ function plot_timeseries(B_factor::Real, selection_strength::Real, symmetry_brea
     config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_factor,
                       symmetry_breaking, selection_strength, nb_phases)
     data = produce_or_load(calc_timeseries_statistics, config,
-                           datadir("timeseries_statistics"))[1]
+                           datadir("raw","timeseries_statistics"))[1]
 
     # Produce figure
     fig = generate_timeseries_plot(data; time_steps)
@@ -1025,7 +1025,7 @@ end
 
 function load_all_timeseries_statistics(time_steps::Integer=80_000)
     # Load dataframe
-    df_raw = collect_results(datadir("timeseries_statistics"); rinclude = [Regex("time_steps=$time_steps[._]")])
+    df_raw = collect_results(datadir("raw","timeseries_statistics"); rinclude = [Regex("time_steps=$time_steps[._]")])
 
     # Convert JLD2 Reconstruct variables back to GameType enums
     transform!(df_raw, :most_common_game_types => (x -> map(y -> map(z -> GameType(z.val), y), x)) => :most_common_game_types)
@@ -1066,7 +1066,7 @@ function plot_graph_evolution(B_factor::Real, selection_strength::Real,
     # Load results
     config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_factor,
                       selection_strength, symmetry_breaking, nb_phases)
-    data, _ = produce_or_load(calc_timeseries, config, datadir("timeseries"))
+    data, _ = produce_or_load(calc_timeseries, config, datadir("raw","timeseries"))
 
     # Generate graph
     interaction_adj_matrix, _ = get_adj_matrices(adj_matrix_source)

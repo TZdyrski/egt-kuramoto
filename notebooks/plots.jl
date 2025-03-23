@@ -45,7 +45,7 @@ md"""
 begin
 	time_steps_cumulative = Int(2E8)
 	
-	df_raw_cumulative = collect_results(datadir("cumulative"); rinclude = [Regex("time_steps=$time_steps_cumulative[._]")])
+	df_raw_cumulative = collect_results(datadir("raw","cumulative"); rinclude = [Regex("time_steps=$time_steps_cumulative[._]")])
 	
 	df_cumulative = transform(df_raw_cumulative, :path => (x-> DataFrame(map(y -> parse_savename(y)[2], x))) => AsTable)
 end;
@@ -144,7 +144,7 @@ end;
 # ╔═╡ 4fefdb80-5168-44e3-ae7e-e92ef29a30e5
 # ╠═╡ show_logs = false
 begin
-	df_raw_timeseries = collect_results(datadir("timeseries"); rinclude = [Regex("time_steps=$time_steps_timeseries[._]")])
+	df_raw_timeseries = collect_results(datadir("raw","timeseries"); rinclude = [Regex("time_steps=$time_steps_timeseries[._]")])
 
 	df_timeseries = transform(df_raw_timeseries, :path => (x-> DataFrame(map(y -> parse_savename(y)[2], x))) => AsTable)
 end;

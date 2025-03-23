@@ -27,9 +27,9 @@
 
   \begin{scope}[shift={(8,0)},rotate=90]
     % Read node coordinates and create nodes
-    \csvreader[head to column names]{data/vertices_B_factor=1.5_adj_matrix_source=c-elegans_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000_timestep_560000.csv}{}%
+    \csvreader[head to column names]{data/vertices_B_factor=1.5_adj_matrix_source=c-elegans_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_step=560000_time_steps=8000000.csv}{}%
     {%
-      \node[draw, circle, draw=none, fill=\nodecolor, inner sep=1.5] (\id) at (\x, \y) {};
+      \node[draw, circle, draw=none, index of colormap=\strategyIndex of strategycolors, fill=., inner sep=1.5] (\index) at (\x, \y) {};
     }
 
     \begin{scope}[on background layer]
@@ -39,9 +39,9 @@
       \csvreader[head to column names]{data/edges.csv}{}%
       {%
         % Make individual opacity low; multiple overlapping edges can still have high opacity
-        \ifthenelse{\equal{\u}{\v}}
-        { \path[in=-45,out=45,loop,->,>=latex,line width=0.1,opacity=0.2] (\u) edge (\u);}
-        { \path[->,>=latex,line width=0.1,opacity=0.2] (\u) edge (\v);}
+        \ifthenelse{\equal{\src}{\dst}}
+        { \path[in=-45,out=45,loop,->,>=latex,line width=0.1,opacity=0.2] (\src) edge (\dst);}
+        { \path[->,>=latex,line width=0.1,opacity=0.2] (\src) edge (\dst);}
       }
       \end{scope}
     \end{scope}

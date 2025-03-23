@@ -141,6 +141,34 @@ begin
 	df_timeseries_statistics = local_moran_interaction.load_all_timeseries_statistics(time_steps_timeseries)
 end;
 
+# ╔═╡ 4fefdb80-5168-44e3-ae7e-e92ef29a30e5
+# ╠═╡ show_logs = false
+begin
+	df_raw_timeseries = collect_results(datadir("timeseries"); rinclude = [Regex("time_steps=$time_steps_timeseries[._]")])
+
+	df_timeseries = transform(df_raw_timeseries, :path => (x-> DataFrame(map(y -> parse_savename(y)[2], x))) => AsTable)
+end;
+
+# ╔═╡ abd83b14-d699-42cc-b0f0-6c1703c94ed3
+begin
+	df_timeseries_selected = @rsubset(df_timeseries, :selection_strength == selection_strength, :adj_matrix_source == matrix_source, :symmetry_breaking == symmetry_breaking)
+
+	dict_timeseries_selected = Dict()
+	if nrow(df_timeseries_selected) == 1
+		dict_timeseries_selected = Dict(names(df_timeseries_selected[1,:]) .=> values(df_timeseries_selected[1,:]))
+
+		nothing
+	elseif nrow(df_timeseries_selected) < 1
+		println("No datasets found")
+
+		println("Available datasets:")
+		df_timeseries
+	else
+		println("More than one dataset matching conditions found: please fully specify")
+		df_timeseries_selected
+	end
+end
+
 # ╔═╡ e8890847-13d7-447c-9d65-f660e189a154
 md"""
 ### Selection Strength
@@ -203,6 +231,9 @@ begin
 	end
 end
 
+# ╔═╡ 6f015d85-ee58-4a7f-b0a5-ddd846f9a6cd
+!isempty(dict_timeseries_statistics_selected) ? local_moran_interaction.get_frame(dict_timeseries_selected, 560000; adj_matrix_source = matrix_source)[1] : nothing
+
 # ╔═╡ 656e9cda-4600-4396-9183-0663a56a80a1
 !isempty(dict_timeseries_statistics_selected) ? local_moran_interaction.generate_timeseries_plot(dict_timeseries_statistics_selected; time_steps = time_steps_timeseries) : nothing
 
@@ -251,8 +282,11 @@ If you would like to enable the animation click the three dots (...) to the bott
 # ╟─2f8d5984-acd3-4958-afe6-acc136d1c70a
 # ╟─9e64dcc2-574e-4690-a10d-9b45e0ba5219
 # ╟─49e07eb6-c2fc-4223-85a9-aa9c986e34da
+# ╠═6f015d85-ee58-4a7f-b0a5-ddd846f9a6cd
 # ╟─0ca5e4f8-faab-4057-a823-956c3711b5d8
 # ╟─2dabcbb3-7dc6-4bc4-af4f-8e48407130f8
+# ╟─4fefdb80-5168-44e3-ae7e-e92ef29a30e5
+# ╟─abd83b14-d699-42cc-b0f0-6c1703c94ed3
 # ╟─32510bf3-a932-4394-a4fb-8101580a6140
 # ╟─656dd0d7-4e47-422c-a104-9b2473a51306
 # ╟─e8890847-13d7-447c-9d65-f660e189a154

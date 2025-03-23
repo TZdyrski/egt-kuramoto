@@ -833,6 +833,30 @@ function calc_timeseries_statistics(config::Dict)
                     strategy_parity)
 end
 
+function get_frame(data, time_step::Integer; adj_matrix_source::String="well-mixed")
+    # Generate graph
+    graph = Graphs.SimpleDiGraph(local_moran_interaction.get_adj_matrices(adj_matrix_source)[1])
+
+    # Create colormap
+    cooperative_colors = range(colorant"navyblue";
+                               stop=colorant"paleturquoise1",
+                               length=data["nb_phases"])
+    noncooperative_colors = range(colorant"darkred";
+                                  stop=colorant"lightsalmon1",
+                                  length=data["nb_phases"])
+    colormap = [cooperative_colors; noncooperative_colors]
+
+    # Apply colormap
+    colors = colormap[data["all_populations"][:,time_step]]
+
+    # Create plot
+    fig = graphplot(graph; node_color=colors, layout=Stress(),
+                                    arrow_show=false, edge_color=(:black, 0.05),
+                                    edge_plottype=:linesegments)
+
+    return (fig,colors)
+end
+
 function plot_timeseries(B_factor::Real, selection_strength::Real, symmetry_breaking::Real,
                          adj_matrix_source::String="well-mixed",
                          payoff_update_method::String="single-update",

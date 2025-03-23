@@ -934,9 +934,17 @@ function plot_connected_components(
     return fig
 end
 
-function load_all_timeseries(
-                              time_steps::Integer=80_000,
-                )
+function load_all_timeseries(time_steps::Integer=80_000)
+    # Load dataframe
+    df_raw = collect_results(datadir("raw","timeseries"); rinclude = [Regex("time_steps=$time_steps[._]")])
+
+    # Add path
+    df = transform(df_raw, :path => (x-> DataFrame(map(y -> parse_savename(y)[2], x))) => AsTable)
+
+    return df
+end
+
+function load_all_timeseries_statistics(time_steps::Integer=80_000)
     # Load dataframe
     df_raw = collect_results(datadir("timeseries_statistics"); rinclude = [Regex("time_steps=$time_steps[._]")])
 
@@ -956,7 +964,7 @@ function plot_game_type_distribution_vs_asymmetry(B_factor::Real,
                                                   time_steps::Integer=80_000,
                                                   )
     # Load data
-    df = load_all_timeseries(time_steps)
+    df = load_all_timeseries_statistics(time_steps)
 
     # Select subset of dataframe
     df_all_asymm = @rsubset(df, :selection_strength == selection_strength, :adj_matrix_source == adj_matrix_source, :factor == B_factor)

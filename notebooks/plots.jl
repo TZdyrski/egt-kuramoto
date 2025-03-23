@@ -128,7 +128,7 @@ md"""
 # ╠═╡ show_logs = false
 begin
 	time_steps_timeseries = Int(8E5)
-	df_timeseries = local_moran_interaction.load_all_timeseries(time_steps_timeseries)
+	df_timeseries_statistics = local_moran_interaction.load_all_timeseries_statistics(time_steps_timeseries)
 end;
 
 # ╔═╡ e8890847-13d7-447c-9d65-f660e189a154
@@ -174,14 +174,14 @@ B_factor
 
 # ╔═╡ a0c268e0-0066-4456-a0bd-687d570ee805
 begin
-	df_timeseries_selected = @rsubset(df_timeseries, :selection_strength == selection_strength, :adj_matrix_source == matrix_source, :symmetry_breaking == symmetry_breaking, :factor == B_factor)
+	df_timeseries_statistics_selected = @rsubset(df_timeseries_statistics, :selection_strength == selection_strength, :adj_matrix_source == matrix_source, :symmetry_breaking == symmetry_breaking, :factor == B_factor)
 
-	dict_timeseries_selected = Dict()
-	if nrow(df_timeseries_selected) == 1
-		dict_timeseries_selected = Dict(names(df_timeseries_selected[1,:]) .=> values(df_timeseries_selected[1,:]))
+	dict_timeseries_statistics_selected = Dict()
+	if nrow(df_timeseries_statistics_selected) == 1
+		dict_timeseries_statistics_selected = Dict(names(df_timeseries_statistics_selected[1,:]) .=> values(df_timeseries_statistics_selected[1,:]))
 
 		nothing
-	elseif nrow(df_timeseries_selected) < 1
+	elseif nrow(df_timeseries_statistics_selected) < 1
 		println("No datasets found")
 
 		println("Available datasets:")
@@ -189,12 +189,12 @@ begin
 	else
 		println("More than one dataset matching conditions found: please fully specify")
 		
-		df_timeseries_selected
+		df_timeseries_statistics_selected
 	end
 end
 
 # ╔═╡ 656e9cda-4600-4396-9183-0663a56a80a1
-!isempty(dict_timeseries_selected) ? local_moran_interaction.generate_timeseries_plot(dict_timeseries_selected; time_steps = time_steps_timeseries) : nothing
+!isempty(dict_timeseries_statistics_selected) ? local_moran_interaction.generate_timeseries_plot(dict_timeseries_statistics_selected; time_steps = time_steps_timeseries) : nothing
 
 # ╔═╡ 4e47651d-6e33-46a9-82b3-e1e614f19d62
 md"""

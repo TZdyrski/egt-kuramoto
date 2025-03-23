@@ -855,12 +855,14 @@ function plot_timeseries(B_factor::Real, selection_strength::Real, symmetry_brea
 end
 
 function generate_timeseries_plot(data; time_steps::Integer)
-    # Create array of times
-    # Note: the populations include the initial data, so we need one more than time-steps
-    times = 1:(time_steps + 1)
 
     # Only plot subset of points to prevent large file sizes
-    plot_times = 1:Int(floor(length(times) / 1000)):length(times)
+    num_samples = 1000
+    downsample_ratio = Int(floor((time_steps + 1) / num_samples))
+
+    # Create array of times
+    # Note: the populations include the initial data, so we need one more than time-steps
+    plot_times = 1:downsample_ratio:(time_steps + 1)
 
     # Plot fraction communicative
     fig = Figure()
@@ -878,7 +880,8 @@ function generate_timeseries_plot(data; time_steps::Integer)
               color_game_type
               for (strategy_parity, color_game_type) in
                   zip(data["strategy_parity"], colors_game_type)]
-    li1 = lines!(ax1, times[plot_times], data["fraction_communicative"][plot_times];
+    li1 = lines!(ax1, plot_times, data["fraction_communicative"][plot_times];
+                 # Simply decimate color_indices instead of resampling because they're discrete quantities
                  color=colors)
 
     # Plot order parameter
@@ -889,7 +892,7 @@ function generate_timeseries_plot(data; time_steps::Integer)
                yticklabelcolor=:orange)
     hidespines!(ax2)
     hidexdecorations!(ax2)
-    li2 = lines!(ax2, times[plot_times], data["order_parameters"][plot_times];
+    li2 = lines!(ax2, plot_times, data["order_parameters"][plot_times];
                  color=:orange)
 
     # Add legend

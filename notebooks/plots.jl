@@ -244,7 +244,7 @@ md"""
 
 # ╔═╡ 9fb6798e-2bb6-4931-91aa-6ffacc695f56
 # ╠═╡ show_logs = false
-plot_game_type_distribution_vs_asymmetry(B_factor,selection_strength,matrix_source,time_steps_timeseries)
+!isempty(dict_timeseries_statistics_selected) ? local_moran_interaction.generate_game_type_distribution_vs_asymmetry_plot(df_timeseries_statistics; B_factor = B_factor, selection_strength = selection_strength, adj_matrix_source = matrix_source ) : nothing
 
 # ╔═╡ 9670bb93-9d11-488a-98c3-6e7fca2dd621
 md"""

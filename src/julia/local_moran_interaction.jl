@@ -985,27 +985,24 @@ function load_all_timeseries_statistics(time_steps::Integer=80_000)
     return df
 end
 
-function plot_game_type_distribution_vs_asymmetry(B_factor::Real,
+function generate_game_type_distribution_vs_asymmetry_plot(df;
+                                                  B_factor::Real,
                                                   selection_strength::Real,
                                                   adj_matrix_source::String="well-mixed",
-                                                  time_steps::Integer=80_000,
                                                   )
-    # Load data
-    df = load_all_timeseries_statistics(time_steps)
-
     # Select subset of dataframe
     df_all_asymm = @rsubset(df, :selection_strength == selection_strength, :adj_matrix_source == adj_matrix_source, :factor == B_factor)
     game_types = proportionmap.(df_all_asymm.most_common_game_types)
 
     # Generate plot
-    f = Figure()
-    CairoMakie.Axis(f[1, 1], xlabel = L"Asymmetry $\alpha$", title = "Proportion of Game Types by Asymmetry")
+    fig = Figure()
+    CairoMakie.Axis(fig[1, 1], xlabel = L"Asymmetry $\alpha$", title = "Proportion of Game Types by Asymmetry")
     for (indx, row) in enumerate(game_types)
         asymm = df_all_asymm.symmetry_breaking[indx]
         barplot!(repeat([asymm], length(row)), collect(values(row)), stack = repeat([indx], length(row)), color = getindex.(Ref(local_moran_interaction.game_type_colors), collect(keys(row))), width=0.2)
     end
 
-    return f
+    return fig
 end
 
 function plot_graph_evolution(B_factor::Real, selection_strength::Real,

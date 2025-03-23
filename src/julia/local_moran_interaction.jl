@@ -298,7 +298,7 @@ function play!(actions::AbstractVector,
     return nothing
 end
 
-function count!(counts::Vector{N}, new_values::Vector{N}) where {N}
+function count!(counts::AbstractVector{N}, new_values::AbstractVector{N}) where {N}
     for (i, _) in enumerate(counts)
         counts[i] += count(==(i), new_values)
     end
@@ -411,7 +411,7 @@ function check_formulas(nb_phases::Integer, nb_players::Integer)
     #    throw(ErrorException(\"Cooperative fraction does not simplify to known correct answer 1/(1+1/omega)))
 end
 
-function extract_num_communicative(players_per_strategy::Vector{<:Integer})
+function extract_num_communicative(players_per_strategy::AbstractVector{<:Integer})
     @assert iseven(length(players_per_strategy))
     # Define matrix that extracts number of communicative players
     N = div(length(players_per_strategy), 2)
@@ -466,7 +466,7 @@ function game_type_inequalities(R::Real, S::Real, T::Real, P::Real)
                                  concord => [R <= T, T <= S, S < P])
 end
 
-function combine_communicative_noncommunicative(players_per_strategy::Vector{<:Integer},
+function combine_communicative_noncommunicative(players_per_strategy::AbstractVector{<:Integer},
                                                 nb_phases::Integer)
     # Combine communicatative (value < nb_phases)
     # and non-communicatative (values >= nb_phases)
@@ -544,7 +544,7 @@ end
 
 @enum StrategyParity all_communicative all_noncommunicative mixed
 
-function check_all_same_strategy(strategies_per_player::Vector{<:Integer},
+function check_all_same_strategy(strategies_per_player::AbstractVector{<:Integer},
                                  nb_phases::Integer)
     nb_players = length(strategies_per_player)
     players_per_strategy = extract_counts(strategies_per_player, nb_phases)
@@ -558,7 +558,7 @@ function check_all_same_strategy(strategies_per_player::Vector{<:Integer},
     return mixed
 end
 
-function extract_most_common_game_types(strategies_per_player::Vector{<:Integer},
+function extract_most_common_game_types(strategies_per_player::AbstractVector{<:Integer},
                                         mutual_benefit_synchronous::Real,
                                         unilateral_benefit_synchronous::Real,
                                         cost::Real,
@@ -591,13 +591,13 @@ function extract_most_common_game_types(strategies_per_player::Vector{<:Integer}
     return most_common_game_type
 end
 
-function extract_phases(players_per_phase::Vector{<:Integer}, nb_phases::Integer)
+function extract_phases(players_per_phase::AbstractVector{<:Integer}, nb_phases::Integer)
     # Convert phase idxs to phases
     phases = 2 * pi / nb_phases .* players_per_phase
     return phases
 end
 
-function extract_order_parameters(players_per_strategy::Vector{<:Integer},
+function extract_order_parameters(players_per_strategy::AbstractVector{<:Integer},
                                   nb_phases::Integer)
     # Combine communicative and noncommunicative
     phase_indxs = combine_communicative_noncommunicative(players_per_strategy, nb_phases)

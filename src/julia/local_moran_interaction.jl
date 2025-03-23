@@ -22,6 +22,11 @@ using NetworkLayout
 using Polyhedra
 using Colors
 using Memoize
+using DimensionalData
+using SplitApplyCombine
+using CondaPkg
+using PythonCall
+using CSV
 #using CombinatorialMultiGrid
 
 function payoff_matrix(nb_phases::Integer,
@@ -607,11 +612,58 @@ function extract_order_parameters(players_per_strategy::AbstractVector{<:Integer
     return order_parameters
 end
 
-function extract_counts(strategies_per_player::Vector{<:Integer}, nb_phases::Integer)
+function extract_counts(strategies_per_player::AbstractVector{<:Integer}, nb_phases::Integer)
     nb_strategies = 2*nb_phases
     counts = zeros(Int, nb_strategies)
     count!(counts, strategies_per_player)
     return counts
+end
+
+function generate_communities(graph::AbstractGraph)
+    ## Label propagation
+    #communities = label_propagation(graph; rng=Xoshiro(12345))[1]
+
+    ## Strongly connected components
+    #connected_components = strongly_connected_components(graph)
+    #communities = Vector{Int64}(undef, nv(graph))
+    #for (community, idxs) in pairs(connected_components)
+    #    for idx in idxs
+    #        communities[idx] = community
+    #    end
+    #end
+
+    # InfoMap
+    CondaPkg.add("infomap")
+    infomap = pyimport("infomap")
+    infomap.Infomap(infomap.Config("-d -2 --preferred-number-of-modules 2 ./c-elegans-network.txt InfoMapOutput",true)).run()
+    df = DataFrame(CSV.File("InfoMapOutput/c-elegans-network.tree";comment="#",delim=" ",header=["path","flow","name","node_id"]))
+    df[!,"community"] = parse.(Int64,(map(x -> x[1], split.(df[!,"path"],":"))))
+    df_new = df[!,["node_id","community"]]
+    sort!(df_new, "node_id")
+    communities = df_new[!, "community"]
+
+    # Covariance
+    config = Dict("B_factor"=>1.5,"adj_matrix_source"=>"c-elegans","nb_phases"=>20,"payoff_update_metho
+		  d"=>"single-update","selection_strength"=>0.2,"symmetry_breaking"=>1.0,"time_steps"=>8000000)
+    results = wload(datadir("timeseries",savename(config,"jld2")))
+    data = DimArray(results["all_populations"], (:player_index, :time_step))
+    covariances = cov(data, dims=:time_step)
+
+    covariance_cutoff = 1500
+    communities = 2*ones(Int64,nv(graph))
+    communities[map(x -> x[2], findall(sum(covariances,dims=1) .>= covariance_cutoff))] .= 1
+
+    return communities
+end
+
+function get_chimera_indices(data::DimArray,communities::AbstractVector{<:Integer},nb_phases::Integer)
+   strategies_grouped = groupby(data, Dim{:player_index}=>(x -> communities[x]))
+   phase_parameters = map(x -> extract_order_parameters.(extract_counts.(eachslice(x,dims=:time_step),nb_phases),nb_phases), strategies_grouped)
+   metastability = mean(cov.(phase_parameters))
+   chimera_index = mean(cov.(invert(phase_parameters)))
+
+   results = Dict("metastability_index"=>metastability, "chimera_index"=>chimera_index)
+   return results
 end
 
 function get_adj_matrices(adj_matrix_source::String; nb_players::Integer = 20, regular_degree::Integer = 10, rng::AbstractRNG=Xoshiro(1))

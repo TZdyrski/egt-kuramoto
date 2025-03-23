@@ -996,6 +996,15 @@ function plot_graph_evolution(B_factor::Real, selection_strength::Real,
     interaction_adj_matrix, _ = get_adj_matrices(adj_matrix_source)
     graph = SimpleDiGraph(interaction_adj_matrix)
 
+    # Create animation
+    animation = generate_graph_evolution(data, graph)
+
+    # Save animation
+    filename = plotsdir("animations", savename(config, "gif"))
+    save(filename, fig)
+
+end
+function generate_graph_evolution(data, graph::Graphs.SimpleGraphs.AbstractSimpleGraph)
     ## Remove self edges for display
     #self_loops = Iterators.flatten(simplecycles_limited_length(graph,1))
     #rem_edge!.(Ref(graph), self_loops, self_loops)
@@ -1037,12 +1046,10 @@ function plot_graph_evolution(B_factor::Real, selection_strength::Real,
                                     arrow_show=false, edge_color=(:black, 0.05),
                                     edge_plottype=:linesegments)
 
-    record(fig, plotsdir("graph_animations", savename(config, "mp4")),
-           1:time_stride:num_times;
-           framerate=framerate_Hz) do t
+    recording = CairoMakie.Makie.Record(fig, 1:time_stride:num_times; framerate=framerate_Hz) do t
         return time[] = t
     end
-    return fig
+    return recording
 end
 
 function save_heatmap()

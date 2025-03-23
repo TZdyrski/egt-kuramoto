@@ -58,6 +58,16 @@ begin
 	B_factor_bond = @bind B_factor PlutoUI.Slider([1.5,2.5]);
 end;
 
+# ╔═╡ 49e07eb6-c2fc-4223-85a9-aa9c986e34da
+begin
+	using Graphs
+	using StatsBase
+	# Generate graph
+    interaction_adj_matrix, _ = get_adj_matrices(matrix_source)
+    graph = SimpleDiGraph(interaction_adj_matrix)
+    nb_effective =  mean(indegree(graph))+1 # Add one since n=degree+1 for well-mixed case
+end;
+
 # ╔═╡ 1740d8de-7c44-4a69-8711-5c25149c560a
 md"""
 ### Selection Strength
@@ -205,6 +215,23 @@ md"""
 # ╠═╡ show_logs = false
 plot_game_type_distribution_vs_asymmetry(B_factor,selection_strength,matrix_source,time_steps_timeseries)
 
+# ╔═╡ 9670bb93-9d11-488a-98c3-6e7fca2dd621
+md"""
+# Time evolution animation
+"""
+
+# ╔═╡ 921fcfc1-bf04-4901-bce9-0cacfaff0a1c
+md"""
+Note: the following cell is disabled because generating an animation is the slowest part when updating parameters (up to 10 seconds each time).
+
+If you would like to enable the animation click the three dots (...) to the bottom-right of the image and select `Enable cell`"""
+
+# ╔═╡ 0b2f5bdc-3799-4152-a59f-7bafb29bb1fd
+# ╠═╡ disabled = true
+#=╠═╡
+!isempty(dict_timeseries_selected) ? generate_graph_evolution(dict_timeseries_selected, graph) : nothing
+  ╠═╡ =#
+
 # ╔═╡ Cell order:
 # ╠═3e050942-505f-4328-be97-d6e72b260be2
 # ╠═0ecb3c44-a2d0-11ef-1d79-d3e37535b2dc
@@ -223,6 +250,7 @@ plot_game_type_distribution_vs_asymmetry(B_factor,selection_strength,matrix_sour
 # ╟─3cc72edb-1a4b-4ac6-a18f-2ad9296b2da2
 # ╟─2f8d5984-acd3-4958-afe6-acc136d1c70a
 # ╟─9e64dcc2-574e-4690-a10d-9b45e0ba5219
+# ╟─49e07eb6-c2fc-4223-85a9-aa9c986e34da
 # ╟─0ca5e4f8-faab-4057-a823-956c3711b5d8
 # ╟─2dabcbb3-7dc6-4bc4-af4f-8e48407130f8
 # ╟─32510bf3-a932-4394-a4fb-8101580a6140
@@ -242,3 +270,6 @@ plot_game_type_distribution_vs_asymmetry(B_factor,selection_strength,matrix_sour
 # ╟─656e9cda-4600-4396-9183-0663a56a80a1
 # ╟─4e47651d-6e33-46a9-82b3-e1e614f19d62
 # ╟─9fb6798e-2bb6-4931-91aa-6ffacc695f56
+# ╟─9670bb93-9d11-488a-98c3-6e7fca2dd621
+# ╟─921fcfc1-bf04-4901-bce9-0cacfaff0a1c
+# ╠═0b2f5bdc-3799-4152-a59f-7bafb29bb1fd

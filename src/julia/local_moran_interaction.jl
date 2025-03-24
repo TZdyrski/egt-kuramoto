@@ -621,40 +621,50 @@ function extract_counts(strategies_per_player::AbstractVector{<:Integer}, nb_pha
     return counts
 end
 
-function generate_communities(graph::AbstractSimpleWeightedGraph)
-    ## Label propagation
-    #communities = label_propagation(graph; rng=Xoshiro(12345))[1]
+function generate_communities(graph::AbstractSimpleWeightedGraph, community_algorithm::String;
+        covariance_cutoff::Union{Real,Nothing}=nothing,
+        covariance_data::Union{DimArray,Nothing}=nothing)
+    if community_algorithm == "label-propagation"
+        # Label propagation
+        communities = label_propagation(graph; rng=Xoshiro(12345))[1]
+    elseif community_algorithm == "strongly-connected"
+        # Strongly connected components
+        connected_components = strongly_connected_components(graph)
+        communities = Vector{Int64}(undef, nv(graph))
+        for (community, idxs) in pairs(connected_components)
+            for idx in idxs
+                communities[idx] = community
+            end
+        end
+    elseif community_algorithm == "infomap"
+        # InfoMap
+        CSV.write(datadir("processed","InfoMapOutput","c-elegans-network.txt"), edges(graph); writeheader=false, delim=" ")
+        CondaPkg.add("infomap")
+        infomap = pyimport("infomap")
+        infomap.Infomap(infomap.Config("-d -2 --preferred-number-of-modules 2 --variable-markov-time $(datadir("processed","InfoMapOutput","c-elegans-network.txt")) $(datadir("processed","InfoMapOutput"))",true)).run()
+        df = DataFrame(CSV.File(datadir("processed","InfoMapOutput","c-elegans-network.tree");comment="#",delim=" ",header=["path","flow","name","node_id"]))
+        df[!,"community"] = parse.(Int64,(map(x -> x[1], split.(df[!,"path"],":"))))
+        df_new = df[!,["node_id","community"]]
+        sort!(df_new, "node_id")
+        communities = df_new[!, "community"]
+    elseif community_algorithm == "covariance"
+        # Covariance
+        if covariance_cutoff == nothing
+            throw(ArgumentError("covariance_cutoff must be set if 'community_algorithm' == 'covariance'"))
+        end
+        if covariance_data == nothing
+            throw(ArgumentError("covariance_data must be set if 'community_algorithm' == 'covariance'"))
+        end
 
-    ## Strongly connected components
-    #connected_components = strongly_connected_components(graph)
-    #communities = Vector{Int64}(undef, nv(graph))
-    #for (community, idxs) in pairs(connected_components)
-    #    for idx in idxs
-    #        communities[idx] = community
-    #    end
-    #end
+        covariances = cov(covariance_data, dims=:time_step)
 
-    # InfoMap
-    CSV.write(datadir("processed","InfoMapOutput","c-elegans-network.txt"), edges(graph); writeheader=false, delim=" ")
-    CondaPkg.add("infomap")
-    infomap = pyimport("infomap")
-    infomap.Infomap(infomap.Config("-d -2 --preferred-number-of-modules 2 --variable-markov-time $(datadir("processed","InfoMapOutput","c-elegans-network.txt")) $(datadir("processed","InfoMapOutput"))",true)).run()
-    df = DataFrame(CSV.File(datadir("processed","InfoMapOutput","c-elegans-network.tree");comment="#",delim=" ",header=["path","flow","name","node_id"]))
-    df[!,"community"] = parse.(Int64,(map(x -> x[1], split.(df[!,"path"],":"))))
-    df_new = df[!,["node_id","community"]]
-    sort!(df_new, "node_id")
-    communities = df_new[!, "community"]
-
-    # Covariance
-    config = Dict("B_factor"=>1.5,"adj_matrix_source"=>"c-elegans","nb_phases"=>20,"payoff_update_metho
-		  d"=>"single-update","selection_strength"=>0.2,"symmetry_breaking"=>1.0,"time_steps"=>8000000)
-    results = wload(datadir("raw","timeseries",savename(config,"jld2")))
-    data = DimArray(results["all_populations"], (:player_index, :time_step))
-    covariances = cov(data, dims=:time_step)
-
-    covariance_cutoff = 1500
-    communities = 2*ones(Int64,nv(graph))
-    communities[map(x -> x[2], findall(sum(covariances,dims=1) .>= covariance_cutoff))] .= 1
+        communities = 2*ones(Int64,nv(graph))
+        communities[map(x -> x[2], findall(sum(covariances,dims=1) .>= covariance_cutoff))] .= 1
+    else
+        throw(ArgumentError("community_algorithm must be a string in set [\"label-propagation\", "
+                            * "\"strongly-connected\", \"infomap\", "
+                            * "\"covariance\"]"))
+    end
 
     return communities
 end

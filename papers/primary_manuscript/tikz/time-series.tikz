@@ -19,13 +19,13 @@
     ]
     \nextgroupplot
     \node [text width=1cm,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:time-series_well-mixed}}};
-    \addplot [magenta] table [y=order_parameter] {data/timeseries_statistics/B_factor=1.5_adj_matrix_source=well-mixed_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv};
+    \addplot [magenta] table [y=order_parameter] {data/timeseries_statistics/B_factor=1.5_adj_matrix_source=well-mixed_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=800000.csv};
     \nextgroupplot[
       ylabel={Order Parameter},
       y label style={magenta},
     ]
     \node [text width=1cm,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:time-series_celegans-full}}};
-    \addplot [magenta] table[y=order_parameter] {data/timeseries_statistics/B_factor=1.5_adj_matrix_source=c-elegans_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv};
+    \addplot [magenta] table[y=order_parameter] {data/timeseries_statistics/B_factor=1.5_adj_matrix_source=c-elegans_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=800000.csv};
   \end{groupplot}
   \begin{groupplot}[
       width=0.35\textwidth,
@@ -68,9 +68,9 @@
     \nextgroupplot[
       ylabel={Frequency of communicative \\ strategies $f_{\text{comm}}$},
     ]
-    \addplot table [y=communicative_fraction, meta=game_type] {data/timeseries_statistics/B_factor=1.5_adj_matrix_source=well-mixed_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv};
+    \addplot table [y=communicative_fraction, meta=game_type] {data/timeseries_statistics/B_factor=1.5_adj_matrix_source=well-mixed_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=800000.csv};
     \nextgroupplot
-    \addplot table [y=communicative_fraction, meta=game_type] {data/timeseries_statistics/B_factor=1.5_adj_matrix_source=c-elegans_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv};
+    \addplot table [y=communicative_fraction, meta=game_type] {data/timeseries_statistics/B_factor=1.5_adj_matrix_source=c-elegans_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=800000.csv};
   \end{groupplot}
   \node[anchor=north] (title-x) at ($(group c1r1.south east)!0.5!(group c2r1.south west)-(0,0.5cm)$) {Time};
   % Make an invisible axis to create a legend that is the union
@@ -89,7 +89,7 @@
     % Prevent underscore from counting as subscript
     \catcode`\_=12
     % Note: these table names must be the same as those in the groupplots
-    \pgfplotsforeachungrouped\tablename in {data/timeseries_statistics/B_factor=1.5_adj_matrix_source=well-mixed_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=800000.csv,data/timeseries_statistics/B_factor=1.5_adj_matrix_source=c-elegans_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv} {
+    \pgfplotsforeachungrouped\tablename in {data/timeseries_statistics/B_factor=1.5_adj_matrix_source=well-mixed_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=800000.csv,data/timeseries_statistics/B_factor=1.5_adj_matrix_source=c-elegans_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=800000.csv} {
       % Read table
       \pgfplotstableread\tablename\loadtable
       % Loop over each column

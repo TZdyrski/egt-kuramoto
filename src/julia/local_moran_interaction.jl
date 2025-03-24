@@ -802,7 +802,7 @@ function generate_cumulative_plot(data::Dict, config::Dict)
     # Generate graph
     interaction_adj_matrix, _ = get_adj_matrices(config["adj_matrix_source"])
     graph = SimpleDiGraph(interaction_adj_matrix)
-    nb_effective = 1.3*( mean(indegree(graph))+1) # Add one since n=degree+1 for well-mixed case
+    nb_effective = ( mean(indegree(graph))+1) # Add one since n=degree+1 for well-mixed case
 
     lines!(ax, data["Bs"][begin] .. data["Bs"][end],
 	   B0 -> analytic_frac_communicative(B0, beta0(B0);

@@ -28,6 +28,7 @@ using SplitApplyCombine
 using CondaPkg
 using PythonCall
 using CSV
+using PlotUtils
 using JLD2
 #using CombinatorialMultiGrid
 
@@ -1346,6 +1347,200 @@ function generate_nodes_edges(graph::AbstractGraph, data::Dict, time_step::Integ
     graph_edges = collect(edges(graph))
 
     return df, graph_edges
+end
+
+function extract_cumulative(type::String; selection_strength::Real,
+                              symmetry_breaking::Real,
+                              adj_matrix_source::String="well-mixed",
+                              payoff_update_method::String="single-update",
+                              time_steps::Integer=80_000,
+                              nb_phases::Integer=20)
+
+    # Generate configuration
+    config = @strdict(adj_matrix_source, payoff_update_method, time_steps,
+                      selection_strength, symmetry_breaking, nb_phases)
+
+    # Get data
+    data = wload(datadir("raw","cumulative",savename(config,"jld2")))
+
+    if type == "simulation"
+        df = DataFrame(B0=data["Bs"],
+                       communicative_fraction=data["fraction_communicative"])
+    elseif type == "theory" || type == "approx"
+        # Generate graph
+        interaction_adj_matrix, _ = get_adj_matrices(adj_matrix_source)
+        graph = SimpleDiGraph(interaction_adj_matrix)
+        nb_effective = ( mean(indegree(graph))+1) # Add one since n=degree+1 for well-mixed case
+
+        beta0(B0) = 0.95*B0
+        if type == "theory"
+            func = B0 -> analytic_frac_communicative(B0, beta0(B0);
+                selection_strength=config["selection_strength"], cost=data["cost"],
+                nb_players=nb_effective, symmetry_breaking=config["symmetry_breaking"],
+                nb_phases=config["nb_phases"])
+        else
+            func = B0 -> 1 / (1 + exp(config["selection_strength"] * (nb_effective - 1) *
+                              ((nb_effective - 1) * data["cost"]
+                   + nb_effective * beta0(B0) * (1-2*config["symmetry_breaking"])/2
+                              - (nb_effective - 2) / 2 * B0)))
+        end
+
+        Bs, frac = PlotUtils.adapted_grid(func, (minimum(data["Bs"]), maximum(data["Bs"])))
+        df = DataFrame(B0 = Bs, communicative_fraction=frac)
+    else
+        throw(ArgumentError("type must be a string in set [\"simulation\", "
+                            * "\"theory\", \"approx\"]"))
+    end
+
+    # Add type to config dictionary
+    config["type"] = type
+
+    # Write out data
+    CSV.write(datadir("processed","cumulative",savename(config,"csv")), df)
+end
+
+function extract_timeseries_statistics(; B_factor::Real, selection_strength::Real,
+                              symmetry_breaking::Real,
+                              adj_matrix_source::String="well-mixed",
+                              payoff_update_method::String="single-update",
+                              time_steps::Integer=80_000,
+                              nb_phases::Integer=20,
+                              num_samples::Integer=1000)
+
+    # Generate configuration
+    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_factor,
+                      selection_strength, symmetry_breaking, nb_phases)
+
+    # Get data
+    data = wload(datadir("raw","timeseries_statistics",savename(config,"jld2")))
+
+    # Replace game type if all communicative/noncommunicative
+    game_type_or_parity = [strategy_parity != mixed ? strategy_parity :
+              game_type
+              for (strategy_parity, game_type) in
+                  zip(data["strategy_parity"], data["most_common_game_types"])]
+
+    # Create data frame
+    df = DataFrame(communicative_fraction=data["fraction_communicative"],
+                   order_parameter=data["order_parameters"],
+                   game_type=game_type_or_parity)
+
+    # Add time
+    insertcols!(df, 1, :time => 1:nrow(df))
+
+    # Only plot subset of points to prevent large file sizes
+    downsample_ratio = Int(floor((time_steps + 1) / num_samples))
+
+    # Downsample
+    # Note: the populations include the initial data, so we need one more than time-steps
+    df = df[1:downsample_ratio:end,:]
+
+    # Write out data
+    CSV.write(datadir("processed","timeseries_statistics",savename(config,"csv")), df)
+end
+
+function extract_chimera_indices(community_algorithm::String;
+                              B_factor::Real, selection_strength::Real,
+                              adj_matrix_source::String="well-mixed",
+                              payoff_update_method::String="single-update",
+                              time_steps::Integer=80_000,
+                              nb_phases::Integer=20,
+                              covariance_cutoff::Real)
+
+    # Generate graph
+    interaction_adj_matrix, _ = get_adj_matrices(adj_matrix_source)
+    graph = SimpleWeightedDiGraph(interaction_adj_matrix)
+
+    # Generate configuration
+    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_factor,
+                      selection_strength, nb_phases)
+
+    # Get data
+    df_all = load_all_timeseries(time_steps)
+
+    # Select subset of dataframe
+    df_all_asymm = @rsubset(df_all, :selection_strength == selection_strength,
+                            :adj_matrix_source == adj_matrix_source, :factor == B_factor,
+                            :payoff_update_method == payoff_update_method, :time_steps == times_steps,
+                            :nb_phases == nb_phases)
+
+    # Get communities
+    if community_algorithm == "covariance"
+        # Choose asymmetry=0.75 for reference covariance
+        symmetry_breaking_ref = 0.75
+        df_ref = @rsubset(df_all_asymm, :symmetry_breaking == symmetry_breaking_ref)
+
+        if nrow(df_ref) < 1
+            throw(ErrorException("Did not find any timeseries data with `symmetry_breaking`=$(symmetry_breaking_ref)"))
+        elseif nrow(df_ref) > 1
+            throw(ErrorException("Found multiple timeseries data with `symmetry_breaking`=$(symmetry_breaking_ref)"))
+        end
+
+        # Convert to DimArray
+        data_ref = DimArray(df_ref.all_populations[1], (:player_index, :time_step))
+
+        # Only use subset 1% of data to calculate communities
+        data_ref = data_ref[time_step = At(1:ceil(time_steps*0.01))]
+
+        communities = generate_communities(graph, community_algorithm;
+                                           covariance_cutoff=covariance_cutoff, covariance_data = data_ref)
+
+        # Add covariance_cutoff to config dictionary
+        config["covariance_cutoff"] = covariance_cutoff
+    else
+        communities = generate_communities(graph, community_algorithm)
+    end
+
+    # Convert to DimArray
+    transform!(df_all_asymm,
+               :all_populations => ByRow(array  -> DimArray(array, (:player_index, :time_step))) => :all_populations)
+
+    # Get chimera indices
+    transform!(df_all_asymm, :all_populations => ByRow(pop -> get_chimera_indices(pop, communities, nb_phases)) => AsTable)
+
+    # Only keep columns we're interested in
+    df = select(df_all_asymm, :symmetry_breaking => :asymmetry,
+                :chimera_index, :metastability_index)
+
+    # Add community_algorithm to config dictionary
+    config["community_algorithm"] = community_algorithm
+
+    # Write out data
+    CSV.write(datadir("processed","chimeraindex",savename(config,"csv")), df)
+end
+
+function extract_game_types(; B_factor::Real, selection_strength::Real,
+                              adj_matrix_source::String="well-mixed",
+                              payoff_update_method::String="single-update",
+                              time_steps::Integer=80_000,
+                              nb_phases::Integer=20)
+
+    # Generate configuration
+    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_factor,
+                      selection_strength, nb_phases)
+
+    # Get data
+    df_all = load_all_timeseries_statistics(time_steps)
+
+    # Select subset of dataframe
+    df_all_asymm = @rsubset(df_all, :selection_strength == selection_strength,
+                            :adj_matrix_source == adj_matrix_source, :factor == B_factor)
+    game_types = proportionmap.(df_all_asymm.most_common_game_types)
+
+    # Convert Dict keys from GameType to Symbol
+    game_type_symbols = (dict -> Dict(Symbol(k) => v for (k,v) in pairs(dict))).(game_types)
+
+    # Combine asymmetries into a single data frame
+    df_missing = vcat(DataFrame.(game_type_symbols)...; cols=:union)
+
+    # Add asymmetry
+    insertcols!(df_missing, 1, :asymmetry => df_all_asymm.symmetry_breaking)
+
+    # Replace missing data (i.e. game types that do not appear for a particular asymmetry) with zero
+    df = coalesce.(df_missing, 0.0)
+
+    # Write out data
+    CSV.write(datadir("processed","gametype",savename(config,"csv")), df)
 end
 
 end

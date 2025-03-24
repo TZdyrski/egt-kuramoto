@@ -28,6 +28,7 @@ using SplitApplyCombine
 using CondaPkg
 using PythonCall
 using CSV
+using JLD2
 #using CombinatorialMultiGrid
 
 function payoff_matrix(nb_phases::Integer,
@@ -1029,9 +1030,12 @@ function load_all_timeseries_statistics(time_steps::Integer=80_000)
     # Load dataframe
     df_raw = collect_results(datadir("raw","timeseries_statistics"); rinclude = [Regex("time_steps=$time_steps[._]")])
 
-    # Convert JLD2 Reconstruct variables back to GameType enums
-    transform!(df_raw, :most_common_game_types => (x -> map(y -> map(z -> GameType(z.val), y), x)) => :most_common_game_types)
-    transform!(df_raw, :strategy_parity => (x -> map(y -> map(z -> StrategyParity(z.val), y), x)) => :strategy_parity)
+    # Check if GameTypes were reconstructed from JLD2
+    if typeof(df_raw.most_common_game_types) == Vector{Union{Missing, Vector{JLD2.ReconstructedPrimitive{:GameType, UInt32}}}}
+        # Convert JLD2 Reconstruct variables back to GameType enums
+        transform!(df_raw, :most_common_game_types => (x -> map(y -> map(z -> GameType(z.val), y), x)) => :most_common_game_types)
+        transform!(df_raw, :strategy_parity => (x -> map(y -> map(z -> StrategyParity(z.val), y), x)) => :strategy_parity)
+    end
 
     # Add path
     df = transform(df_raw, :path => (x-> DataFrame(map(y -> parse_savename(y)[2], x))) => AsTable)

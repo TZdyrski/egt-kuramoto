@@ -2,7 +2,7 @@
 
 julia_version = "1.11.0"
 manifest_format = "2.0"
-project_hash = "d927d688fa18b881947ddcf9b908294214d1f8f8"
+project_hash = "c9ecfbf5bc7514d29d27508f28f78bd26c7d03cb"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "72af59f5b8f09faee36b4ec48e014a79210f2f4f"
@@ -1311,9 +1311,9 @@ version = "1.0.0"
 
 [[deps.JLD2]]
 deps = ["FileIO", "MacroTools", "Mmap", "OrderedCollections", "PrecompileTools", "Requires", "TranscodingStreams"]
-git-tree-sha1 = "91d501cb908df6f134352ad73cde5efc50138279"
+git-tree-sha1 = "1059c071429b4753c0c869b75c859c44ba09a526"
 uuid = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
-version = "0.5.11"
+version = "0.5.12"
 
 [[deps.JLFzf]]
 deps = ["Pipe", "REPL", "Random", "fzf_jll"]

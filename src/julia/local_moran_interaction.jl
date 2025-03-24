@@ -14,6 +14,7 @@ using LaTeXStrings
 using DataToolkit
 using DrWatson
 using Graphs
+using SimpleWeightedGraphs
 using DataFrames
 using DataFramesMeta
 using CairoMakie
@@ -619,7 +620,7 @@ function extract_counts(strategies_per_player::AbstractVector{<:Integer}, nb_pha
     return counts
 end
 
-function generate_communities(graph::AbstractGraph)
+function generate_communities(graph::AbstractSimpleWeightedGraph)
     ## Label propagation
     #communities = label_propagation(graph; rng=Xoshiro(12345))[1]
 
@@ -633,10 +634,11 @@ function generate_communities(graph::AbstractGraph)
     #end
 
     # InfoMap
+    CSV.write(datadir("processed","InfoMapOutput","c-elegans-network.txt"), edges(graph); writeheader=false, delim=" ")
     CondaPkg.add("infomap")
     infomap = pyimport("infomap")
-    infomap.Infomap(infomap.Config("-d -2 --preferred-number-of-modules 2 ./c-elegans-network.txt InfoMapOutput",true)).run()
-    df = DataFrame(CSV.File("InfoMapOutput/c-elegans-network.tree";comment="#",delim=" ",header=["path","flow","name","node_id"]))
+    infomap.Infomap(infomap.Config("-d -2 --preferred-number-of-modules 2 --variable-markov-time $(datadir("processed","InfoMapOutput","c-elegans-network.txt")) $(datadir("processed","InfoMapOutput"))",true)).run()
+    df = DataFrame(CSV.File(datadir("processed","InfoMapOutput","c-elegans-network.tree");comment="#",delim=" ",header=["path","flow","name","node_id"]))
     df[!,"community"] = parse.(Int64,(map(x -> x[1], split.(df[!,"path"],":"))))
     df_new = df[!,["node_id","community"]]
     sort!(df_new, "node_id")

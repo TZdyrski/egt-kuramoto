@@ -49,5 +49,5 @@ for adj_matrix_source in ["well-mixed", "c-elegans"]
     local_moran_interaction.extract_game_types(
         B_factor=1.5, selection_strength=0.2,
         adj_matrix_source=adj_matrix_source,
-        time_steps=800000)
+        time_steps=8000000)
 end

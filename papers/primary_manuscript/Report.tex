@@ -205,6 +205,8 @@ First, we use an interaction graph with $N$ nodes representing players
 and weighted, directed edges representing games between players.
 % TODO: When playing games, how is directionality of edges handled?
 % (C) -> (N) do you decompose the game into donation game?
+% TODO: When describing how digraphs give payoffs (text or caption),
+% specify what percent of links are unidirectional and what percent are bidirectional
 Second, we implement a reproduction graph with the $N$ nodes
 still representing players
 but the edges now corresponding to the ability of nodes to replace one another.
@@ -218,6 +220,7 @@ as required by the Moran process described in the next section.
 \label{sec:evo_setup}
 % TODO: Bd is hugely different from death-Birth dynamics (dB);
 % this dB is more favorable for cooperation
+% Try this instead?
 The population is updated according to a birth-death Moran process
 with exponential fitness~\citep[\eg \cf][]{lieberman2005evolutionary}.
 On each turn, the following steps are performed.
@@ -368,6 +371,7 @@ while spending equal times in each states yields $\lambda = 1/12
 \begin{figure}
   \centering
   \input{tikz/graph_multi-comm-frac.tikz}
+  % TODO: Add bold summary to caption beginnings
   \caption{
     \protect{\subref{fig:multi-comm-frac}}
     Time-averaged fraction of players that are communicative as a function
@@ -442,6 +446,7 @@ in \cref{sec:discussion}.
 
 \begin{figure}
   \centering
+  % TODO: Remove theory line for celegans
   \input{tikz/comm-frac.tikz}
   \caption{
     Time-averaged fraction of players that are communicative as a function
@@ -1044,3 +1049,13 @@ game types attract population states.
 \end{document}
 
 # vim: spelllang=en_gb
+
+% TODO: new figure:
+% - 1a: network of well-mixed, with blow-up to fig 1b
+% - 3a: change to waterfall plot?
+% - 3a: remove meaningless green lines connecting points
+% - 3: blow-up some points from 3a to multiple timeseries plots
+% - 3: increase aspect ratio of timeseries plots (wide and short)
+% - 4: show additional alphas as well as unweighted+directed and undirected+weighted
+% - 5 snapshots: highlight communities?
+% - 5: split metastability and chimera

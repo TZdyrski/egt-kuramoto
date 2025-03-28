@@ -1,10 +1,44 @@
 \begin{tikzpicture}
-  \begin{groupplot}[
+  \begin{scope}[rotate=90]
+    % Read node coordinates and create nodes
+    \csvreader[head to column names]{data/processed/vertices_B_factor=1.5_adj_matrix_source=c-elegans_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_step=560000_time_steps=8000000.csv}{}%
+    {%
+      \node[draw, circle, draw=none, index of colormap=\strategyIndex of strategycolors, fill=., inner sep=1.5] (\index) at (\x, \y) {};
+    }
+
+    \begin{scope}[on background layer]
+      % Decrease total opacity to prevent high opacity of overlapping edges
+      \begin{scope}[transparency group,opacity=.75]
+      % Read edges and draw connections between nodes
+      \csvreader[head to column names]{data/processed/edges_adj_matrix_source=c-elegans.csv}{}%
+      {%
+        % Make individual opacity low; multiple overlapping edges can still have high opacity
+        \ifthenelse{\equal{\src}{\dst}}
+        { \path[in=-45,out=45,loop,->,>=latex,line width=0.1,opacity=0.2] (\src) edge (\dst);}
+        { \path[->,>=latex,line width=0.1,opacity=0.2] (\src) edge (\dst);}
+      }
+      \end{scope}
+    \end{scope}
+  \end{scope}
+  \node [text width=1cm,anchor=north west,fill=white,fill opacity=0.7,text opacity=1] at (-2,4) {\subcaption{\label{fig:graph}}};
+
+  \begin{scope}[shift={(4,0)}]
+  \begin{groupplot}[width=0.5\textwidth, group style={group size=1 by 3}, fraction communicative chart]
+      \nextgroupplot
+        \node [text width=1cm,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:comm-frac_celegans-full}}};
+        \addplot table{data/processed/cumulative/adj_matrix_source=c-elegans_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.csv};
+      \nextgroupplot
+        \node [text width=1cm,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:comm-frac_celegans-unweighted}}};
+        \addplot table{data/processed/cumulative/adj_matrix_source=c-elegans-unweighted_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.csv};
+      \nextgroupplot
+        \node [text width=1cm,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:comm-frac_celegans-undirected}}};
+        \addplot table{data/processed/cumulative/adj_matrix_source=c-elegans-undirected_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.csv};
+  \end{groupplot}
+  \end{scope}
+
+  \begin{scope}[shift={(-2,-8)}]
+    \begin{axis}[
       width=0.35\textwidth,
-      group style={
-        group size=2 by 1,
-        yticklabels at=edge right,
-      },
       ymin=0,
       ymax=1,
       enlarge y limits=0.05,
@@ -17,22 +51,12 @@
         line join=bevel,
       },
     ]
-    \nextgroupplot
-    \node [text width=1cm,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:time-series_well-mixed}}};
-    \addplot [magenta] table [y=order_parameter] {data/processed/timeseries_statistics/B_factor=1.5_adj_matrix_source=well-mixed_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=800000.csv};
-    \nextgroupplot[
-      ylabel={Order Parameter},
-      y label style={magenta},
-    ]
     \node [text width=1cm,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:time-series_celegans-full}}};
     \addplot [magenta] table[y=order_parameter] {data/processed/timeseries_statistics/B_factor=1.5_adj_matrix_source=c-elegans_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=800000.csv};
-  \end{groupplot}
-  \begin{groupplot}[
+    \end{axis}
+    \begin{axis}[
+      name=timeseries,
       width=0.35\textwidth,
-      group style={
-        group size=2 by 1,
-        yticklabels at=edge left,
-      },
       grid,
       ymin=0,
       ymax=1,
@@ -65,14 +89,8 @@
         all_noncommunicative={draw=darkgray,fill=darkgray}
       },
   ]
-    \nextgroupplot[
-      ylabel={Frequency of communicative \\ strategies $f_{\text{comm}}$},
-    ]
-    \addplot table [y=communicative_fraction, meta=game_type] {data/processed/timeseries_statistics/B_factor=1.5_adj_matrix_source=well-mixed_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=800000.csv};
-    \nextgroupplot
     \addplot table [y=communicative_fraction, meta=game_type] {data/processed/timeseries_statistics/B_factor=1.5_adj_matrix_source=c-elegans_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=800000.csv};
-  \end{groupplot}
-  \node[anchor=north] (title-x) at ($(group c1r1.south east)!0.5!(group c2r1.south west)-(0,0.5cm)$) {Time};
+    \end{axis}
   % Make an invisible axis to create a legend that is the union
   % of all the data table's column names
   \begin{axis}[
@@ -82,8 +100,8 @@
     xmax=50,
     ymin=0,
     ymax=0.4,
-    legend columns=-1,
-    legend to name={CommonLegend3},
+    legend columns=1,
+    legend to name={CElegansLegend},
     ]
     \def\gameTypes{}
     % Prevent underscore from counting as subscript
@@ -116,5 +134,6 @@
     \addlegendimage{ybar, single ybar legend, fill=magenta, draw=black}%
     \addlegendentry{order parameter}%
   \end{axis}
-  \path (group c1r1.south west) -- node[below={1cm}]{\pgfplotslegendfromname{CommonLegend3}} (group c2r1.south east);
+  \path (timeseries.south west) -- node[below={1cm}]{\pgfplotslegendfromname{CElegansLegend}} (timeseries.south east);
+  \end{scope}
 \end{tikzpicture}

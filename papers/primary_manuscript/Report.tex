@@ -33,6 +33,7 @@ and
 %\pw{}
 
 \abstract{
+  % TODO: put abstract in Nature style: Background; gaps to fill; results; implications
   We extend the evolutionary Kuramoto model of \citet{tripp2022evolutionary}
   by introducing an asymmetry between communicator and non-communicator payoffs
   as well as placing the players on structured graphs.
@@ -71,6 +72,7 @@ decreasing the average number of edges~\citep{ohtsuki2006simple},
 or having an intermediate proportion
 of unidirectional edges~\citep{su2022evolution},
 while cooperation is suppressed
+% TODO: what kind of weighted graphs?
 for weighted graphs~\citep{bhaumik2024constant}.
 Thus, the complex influences of
 incompleteness, directedness, and weightedness combine
@@ -145,6 +147,7 @@ We will also apply this model to incomplete, directed, and weighted graphs.
 These generalization will allow us to apply the EK model
 to the \gls{celegans} connectome
 and analyze its communicativeness properties.
+% TODO: Add a bit about ``major finding'' here
 \Cref{sec:game_setup} will outline the setup of the game that neurons play.
 In \cref{sec:pop_setup}, we describe the different types
 of graphs we will analyze.
@@ -200,6 +203,8 @@ Given $N$ players, associate a pair
 of weighted, directed graphs to the population.
 First, we use an interaction graph with $N$ nodes representing players
 and weighted, directed edges representing games between players.
+% TODO: When playing games, how is directionality of edges handled?
+% (C) -> (N) do you decompose the game into donation game?
 Second, we implement a reproduction graph with the $N$ nodes
 still representing players
 but the edges now corresponding to the ability of nodes to replace one another.
@@ -211,6 +216,8 @@ as required by the Moran process described in the next section.
 
 \subsection{Birth-death Moran process}
 \label{sec:evo_setup}
+% TODO: Bd is hugely different from death-Birth dynamics (dB);
+% this dB is more favorable for cooperation
 The population is updated according to a birth-death Moran process
 with exponential fitness~\citep[\eg \cf][]{lieberman2005evolutionary}.
 On each turn, the following steps are performed.
@@ -548,6 +555,8 @@ of the \subref{fig:comm-frac_celegans-full} \gls{celegans}
 simulation results (blue) from the theory results (orange).
 
 \subsubsection{Game types}
+% TODO: update figure to only show non-uniform games
+% TODO: add sentence in paper or caption giving percent of time non-uniform
 \begin{figure}
   \centering
   \input{tikz/game-types.tikz}
@@ -982,6 +991,8 @@ Further research is needed to see if this connection between chimeric quality
 and connectivity structure extends to other model organisms.
 
 %\section{Conclusion}
+% TODO: we will add a comprehensive discussion
+% regarding our contribution and limitations, and future work
 In this paper, we extended the evolutionary Kuramoto model
 introduced by \citet{tripp2022evolutionary}
 to include structured interaction and reproduction graphs

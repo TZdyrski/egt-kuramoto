@@ -598,70 +598,6 @@ are the most relevant aspect influencing the deviation
 of the \subref{fig:comm-frac_celegans-full} \gls{celegans}
 simulation results (blue) from the theory results (orange).
 
-\subsubsection{Game types}
-% TODO: update figure to only show non-uniform games
-% TODO: add sentence in paper or caption giving percent of time non-uniform
-\begin{figure}
-  \centering
-  \input{tikz/game-types.tikz}
-  \caption{
-    The most common game type amongst all player interactions
-    (weighted by the interaction graph edge weight),
-    expressed as a fraction of all games played,
-    for different values of the asymmetry $\alpha$.
-    The game types are color-coded according to the legend.
-    The network topologies are the
-    \protect{\subref{fig:game-type_well-mixed}}
-    $N=20$ well-mixed population
-    and
-    \protect{\subref{fig:game-type_celegans-full}}
-    weighted, directed \gls{celegans} connectome.
-    The selection strength is $\delta=0.2$,
-    the mutation rate is $\mu=\num{1E-4}$,
-    the cost $c$ is \num{0.1},
-    $B_0$ is \num{0.15},
-    $\beta_0$ is $\num{0.95} B_0$,
-    and the simulation were run for \num{8E6} time steps.
-  }
-  \label{fig:game-type}
-\end{figure}
-
-Next, we would like to understand the types of games being played
-during the population's evolution.
-In \cref{fig:game-type}, we consider the most common game type
-amongst all player interactions~(\cf \cref{sec:stats_setup})
-At each time step, we determine the most common game types
-across all player interactions,
-where the number of interactions between two players
-is the corresponding edge weight of the interaction graph.
-\Cref{fig:game-type} shows what fraction of time
-a given game type is the plurality for different values
-of the asymmetry $\alpha$ for
-\subref{fig:game-type_well-mixed}
-$N=20$ well-mixed,
-and
-\subref{fig:game-type_celegans-full}
-\gls{celegans} connectome
-network topologies.
-The \subref{fig:game-type_well-mixed} well-mixed case
-shows that the time evolution for each asymmetry $\alpha$
-is dominated by a single game type
-occurring for over \SI{99.9}{\percent} of the time steps.
-This is in contrast with the
-\subref{fig:game-type_celegans-full} \gls{celegans} connectome case,
-where the deadlock-type game is most common
-for \SIrange{1}{14}{\percent} of the time steps
-for asymmetry $\alpha \le 0.5$.
-Nevertheless, both \subref{fig:game-type_well-mixed} well-mixed
-and \subref{fig:game-type_celegans-full} \gls{celegans}
-have the same dominant game types
-across asymmetries:
-dilemma for $\alpha = 0, 0.25$, chicken for $\alpha = 0.5$,
-hero for $\alpha = 0.75$, and deadlock for $\alpha = 1$.
-This shows that, as the asymmetry is varied,
-different game types dominate the population's evolution,
-and network topology influences how dominant these game types are.
-
 \subsubsection{Time series}
 \begin{figure}
   \centering
@@ -842,6 +778,70 @@ for the other asymmetries $\alpha$
 implies that this particular community decomposition
 corresponds to an intrinsic separation rather than an artifact
 of the particular $\alpha = \num{0.75}$ simulation.
+
+\subsubsection{Game types}
+% TODO: update figure to only show non-uniform games
+% TODO: add sentence in paper or caption giving percent of time non-uniform
+\begin{figure}
+  \centering
+  \input{tikz/game-types.tikz}
+  \caption{
+    The most common game type amongst all player interactions
+    (weighted by the interaction graph edge weight),
+    expressed as a fraction of all games played,
+    for different values of the asymmetry $\alpha$.
+    The game types are color-coded according to the legend.
+    The network topologies are the
+    \protect{\subref{fig:game-type_well-mixed}}
+    $N=20$ well-mixed population
+    and
+    \protect{\subref{fig:game-type_celegans-full}}
+    weighted, directed \gls{celegans} connectome.
+    The selection strength is $\delta=0.2$,
+    the mutation rate is $\mu=\num{1E-4}$,
+    the cost $c$ is \num{0.1},
+    $B_0$ is \num{0.15},
+    $\beta_0$ is $\num{0.95} B_0$,
+    and the simulation were run for \num{8E6} time steps.
+  }
+  \label{fig:game-type}
+\end{figure}
+
+Next, we would like to understand the types of games being played
+during the population's evolution.
+In \cref{fig:game-type}, we consider the most common game type
+amongst all player interactions~(\cf \cref{sec:stats_setup})
+At each time step, we determine the most common game types
+across all player interactions,
+where the number of interactions between two players
+is the corresponding edge weight of the interaction graph.
+\Cref{fig:game-type} shows what fraction of time
+a given game type is the plurality for different values
+of the asymmetry $\alpha$ for
+\subref{fig:game-type_well-mixed}
+$N=20$ well-mixed,
+and
+\subref{fig:game-type_celegans-full}
+\gls{celegans} connectome
+network topologies.
+The \subref{fig:game-type_well-mixed} well-mixed case
+shows that the time evolution for each asymmetry $\alpha$
+is dominated by a single game type
+occurring for over \SI{99.9}{\percent} of the time steps.
+This is in contrast with the
+\subref{fig:game-type_celegans-full} \gls{celegans} connectome case,
+where the deadlock-type game is most common
+for \SIrange{1}{14}{\percent} of the time steps
+for asymmetry $\alpha \le 0.5$.
+Nevertheless, both \subref{fig:game-type_well-mixed} well-mixed
+and \subref{fig:game-type_celegans-full} \gls{celegans}
+have the same dominant game types
+across asymmetries:
+dilemma for $\alpha = 0, 0.25$, chicken for $\alpha = 0.5$,
+hero for $\alpha = 0.75$, and deadlock for $\alpha = 1$.
+This shows that, as the asymmetry is varied,
+different game types dominate the population's evolution,
+and network topology influences how dominant these game types are.
 
 \section{Discussion}
 \label{sec:discussion}

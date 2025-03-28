@@ -4,7 +4,10 @@ using DrWatson
 # Here you may include files from the source directory
 include(srcdir("julia", "local_moran_interaction.jl"))
 
-# Save specific graph timestep
+# Save well-mixed graph
+local_moran_interaction.export_graph_nodes_edges(adj_matrix_source="well-mixed")
+
+# Save specific c-elegans graph timestep
 time_step = 560000
 local_moran_interaction.export_graph_nodes_edges(
     time_step;B_factor=1.5, selection_strength=0.2,

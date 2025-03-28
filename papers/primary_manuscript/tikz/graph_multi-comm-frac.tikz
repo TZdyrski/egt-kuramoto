@@ -36,7 +36,7 @@
       % Decrease total opacity to prevent high opacity of overlapping edges
       \begin{scope}[transparency group,opacity=.75]
       % Read edges and draw connections between nodes
-      \csvreader[head to column names]{../../data/processed/edges.csv}{}%
+      \csvreader[head to column names]{../../data/processed/edges_c-elegans.csv}{}%
       {%
         % Make individual opacity low; multiple overlapping edges can still have high opacity
         \ifthenelse{\equal{\src}{\dst}}

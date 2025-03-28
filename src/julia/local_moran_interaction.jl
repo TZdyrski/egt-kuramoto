@@ -1324,7 +1324,7 @@ function export_graph_nodes_edges(time_step::Integer;
 
     # Write out vertices and edges
     CSV.write(datadir("processed",savename("vertices",config,"csv")), nodes_df)
-    CSV.write(datadir("processed","edges.csv"), edges)
+    CSV.write(datadir("processed","edges_$(adj_matrix_source).csv"), edges)
 
     return edges
 end

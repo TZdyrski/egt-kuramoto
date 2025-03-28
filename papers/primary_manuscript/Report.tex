@@ -269,10 +269,49 @@ Note that $\overline{d} = \num{19}$
 for the well-mixed case with $N=20$ players
 and $\overline{d} = \num{12.36}$ for the \gls{celegans} case.
 
-During the game's evolution,
-each pair of connected players will be playing a variety of game types
+\begin{figure}
+  \centering
+  \input{tikz/phase-diagram.tikz}
+  \caption{
+    Slices of the three-parameter game type phase diagram
+    in the
+    \protect{\subref{fig:phase-diagram-B_beta}}
+    $B$-$\beta$ plane
+    and
+    \protect{\subref{fig:phase-diagram-B_alpha}}
+    $B$-$\alpha$ plane.
+    For two players with phase difference $\Delta \phi$,
+    $B = B_0 [1 + \cos(\Delta \phi)]/2$
+    and
+    $\beta = \beta_0 [1 + \cos(\Delta \phi)]/2$.
+    The game type corresponding to each color is displayed in the legend.
+    The white dots represent the $m=20$ potential phase differences.
+    The cost $c$ is \num{0.1};
+    for
+    \protect{\subref{fig:phase-diagram-B_beta}},
+    $\alpha = 1/2$,
+    and for
+    \protect{\subref{fig:phase-diagram-B_alpha}},
+    $\beta_0 = \num{0.95} B_0$.
+    \protect{\subref{fig:phase-diagram-B_beta}}
+    is an extension of figure 1 from \citet{tripp2022evolutionary}.
+  }
+  \label{fig:phase-diagram}
+\end{figure}
+
+One of the key aspects of the EK model
+is that many different $2 \times 2$ game types
+are available to the players during the population's evolution,
 such as deadlock, dilemma, chicken, \etc{}
 \citep[\cf{}][for definitions]{bruns2015names}.
+We can visualize this by looking at the phase space of games
+as a function of the three parameters $\beta$, $B$, and $\alpha$.
+\Cref{fig:phase-diagram} shows two particular slices
+of this three-dimensional phase space:
+\cref{fig:phase-diagram-B_beta} shows a $B$-$\beta$ slice of phase space
+and is an extension of figure 1 in \citet{tripp2022evolutionary},
+while \cref{fig:phase-diagram-B_alpha} shows a $B$-$\alpha$ slice.
+
 We will analyze the types of games being played by
 identifying the most common game type across all player interactions,
 weighted by the interaction graph edge weights,
@@ -808,51 +847,6 @@ of the particular $\alpha = \num{0.75}$ simulation.
 \label{sec:discussion}
 
 %\subsection{Game-type dynamics}
-\begin{figure}
-  \centering
-  \input{tikz/phase-diagram.tikz}
-  \caption{
-    Slices of the three-parameter game type phase diagram
-    in the
-    \protect{\subref{fig:phase-diagram-B_beta}}
-    $B$-$\beta$ plane
-    and
-    \protect{\subref{fig:phase-diagram-B_alpha}}
-    $B$-$\alpha$ plane.
-    For two players with phase difference $\Delta \phi$,
-    $B = B_0 [1 + \cos(\Delta \phi)]/2$
-    and
-    $\beta = \beta_0 [1 + \cos(\Delta \phi)]/2$.
-    The game type corresponding to each color is displayed in the legend.
-    The white dots represent the $m=20$ potential phase differences.
-    The cost $c$ is \num{0.1};
-    for
-    \protect{\subref{fig:phase-diagram-B_beta}},
-    $\alpha = 1/2$,
-    and for
-    \protect{\subref{fig:phase-diagram-B_alpha}},
-    $\beta_0 = \num{0.95} B_0$.
-    \protect{\subref{fig:phase-diagram-B_beta}}
-    is an extension of figure 1 from \citet{tripp2022evolutionary}.
-  }
-  \label{fig:phase-diagram}
-\end{figure}
-
-One of the key aspects of the EK model
-is the variety of $2 \times 2$ game types available to the players.
-\Cref{fig:game-type} showed that changing the asymmetry $\alpha$
-affects the distribution of game types:
-low asymmetry enhanced dilemma games,
-symmetric $\alpha = 1/2$ games were primarily chicken games,
-and higher asymmetries enhanced hero or deadlock games.
-This can be understood by looking at the phase space of games
-as a function of the three parameters $\beta$, $B$, and $\alpha$.
-\Cref{fig:phase-diagram} shows two particular slices
-of this three-dimensional phase space:
-\cref{fig:phase-diagram-B_beta} shows a $B$-$\beta$ slice of phase space
-and is an extension of figure 1 in \citet{tripp2022evolutionary},
-while \cref{fig:phase-diagram-B_alpha} shows a $B$-$\alpha$ slice.
-
 The homogeneity of game-types displayed for each $\alpha$ in \cref{fig:game-type}
 deserves additional discussion.
 It appears the homogeneity arises from synchronicity,

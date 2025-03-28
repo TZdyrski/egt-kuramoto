@@ -1294,45 +1294,51 @@ function get_connectome_labelled()
     return results
 end
 
-function export_graph_nodes_edges(time_step::Integer;
-                              B_factor::Real, selection_strength::Real,
-                              symmetry_breaking::Real,
+function export_graph_nodes_edges(time_step::Union{Real,Nothing}=nothing;
+                              B_factor::Union{Real,Nothing}=nothing, selection_strength::Union{Real,Nothing}=nothing,
+                              symmetry_breaking::Union{Real,Nothing}=nothing,
                               adj_matrix_source::String="well-mixed",
                               payoff_update_method::String="single-update",
                               time_steps::Integer=80_000,
                               nb_phases::Integer=20)
-
-    # Generate configuration
-    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_factor,
-                      selection_strength, symmetry_breaking, nb_phases)
-
-    # Get data
-    data = wload(datadir("raw","timeseries",savename(config,"jld2")))
-
     # Generate graph
     interaction_adj_matrix, _ = get_adj_matrices(adj_matrix_source)
     graph = SimpleDiGraph(interaction_adj_matrix)
 
-    # Calculate nodes and edges
-    nodes_df, graph_edges = generate_nodes_edges(graph, data, time_step)
+    if time_step == nothing
+            # Generate configuration
+            config = @strdict(adj_matrix_source)
+
+            # Calculate nodes and edges
+            nodes_df, graph_edges = generate_nodes_edges(graph)
+    else
+            # Generate configuration
+            config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_factor,
+                              selection_strength, symmetry_breaking, nb_phases)
+
+            # Get data
+            data = wload(datadir("raw","timeseries",savename(config,"jld2")))
+
+            # Calculate nodes and edges
+            nodes_df, graph_edges = generate_nodes_edges(graph; data, time_step)
+
+            # Add time_step to config dictionary
+            config["time_step"] = time_step
+    end
 
     # Add index number
     insertcols!(nodes_df, 1, :index => 1:nrow(nodes_df))
 
-    # Add time_step to config dictionary
-    config["time_step"] = time_step
-
     # Write out vertices and edges
     CSV.write(datadir("processed",savename("vertices",config,"csv")), nodes_df)
-    CSV.write(datadir("processed","edges_$(adj_matrix_source).csv"), graph_edges)
+    CSV.write(datadir("processed","edges_adj_matrix_source=$(adj_matrix_source).csv"), graph_edges)
 
     return graph_edges
 end
 
-function generate_nodes_edges(graph::AbstractGraph, data::Dict, time_step::Integer)
-    # Get vertex labels
-    vertex_labels = data["all_populations"][:,time_step]
-
+function generate_nodes_edges(graph::AbstractGraph;
+                data::Union{Dict,Nothing}=nothing,
+                time_step::Union{Integer,Nothing}=nothing)
     # Get vertex coordinates
     vertex_coordinates = stress(graph)
 
@@ -1340,11 +1346,19 @@ function generate_nodes_edges(graph::AbstractGraph, data::Dict, time_step::Integ
     xs = (p -> p[1]).(vertex_coordinates)
     ys = (p -> p[2]).(vertex_coordinates)
 
-    # Put into DataFrame
-    df = DataFrame(x=xs, y=ys, strategyIndex=vertex_labels)
-
     # Get edges
     graph_edges = collect(edges(graph))
+
+    if data == nothing
+            # Put into DataFrame
+            df = DataFrame(x=xs, y=ys)
+    else
+            # Get vertex labels
+            vertex_labels = data["all_populations"][:,time_step]
+
+            # Put into DataFrame
+            df = DataFrame(x=xs, y=ys, strategyIndex=vertex_labels)
+    end
 
     return df, graph_edges
 end

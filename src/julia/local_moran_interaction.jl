@@ -1314,7 +1314,7 @@ function export_graph_nodes_edges(time_step::Integer;
     graph = SimpleDiGraph(interaction_adj_matrix)
 
     # Calculate nodes and edges
-    nodes_df, edges = generate_nodes_edges(graph, data, time_step)
+    nodes_df, graph_edges = generate_nodes_edges(graph, data, time_step)
 
     # Add index number
     insertcols!(nodes_df, 1, :index => 1:nrow(nodes_df))
@@ -1324,9 +1324,9 @@ function export_graph_nodes_edges(time_step::Integer;
 
     # Write out vertices and edges
     CSV.write(datadir("processed",savename("vertices",config,"csv")), nodes_df)
-    CSV.write(datadir("processed","edges_$(adj_matrix_source).csv"), edges)
+    CSV.write(datadir("processed","edges_$(adj_matrix_source).csv"), graph_edges)
 
-    return edges
+    return graph_edges
 end
 
 function generate_nodes_edges(graph::AbstractGraph, data::Dict, time_step::Integer)

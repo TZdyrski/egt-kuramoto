@@ -9,10 +9,12 @@ local_moran_interaction.export_graph_nodes_edges(adj_matrix_source="well-mixed")
 
 # Save specific c-elegans graph timestep
 time_step = 560000
-local_moran_interaction.export_graph_nodes_edges(
-    time_step;B_factor=1.5, selection_strength=0.2,
-    symmetry_breaking=0.75, adj_matrix_source="c-elegans",
-    time_steps=8000000)
+for symmetry_breaking in [0.0,0.75,1.0]
+        local_moran_interaction.export_graph_nodes_edges(
+            time_step;B_factor=1.5, selection_strength=0.2,
+            symmetry_breaking=symmetry_breaking, adj_matrix_source="c-elegans",
+            time_steps=8000000)
+end
 
 # Save cumulative
 for type in ["theory","approx","simulation"]
@@ -30,10 +32,12 @@ end
 
 # Save timeseries_statistics
 for adj_matrix_source in ["well-mixed", "c-elegans"]
-    local_moran_interaction.extract_timeseries_statistics(
-        B_factor=1.5, selection_strength=0.2,
-        symmetry_breaking=0.75, adj_matrix_source=adj_matrix_source,
-        time_steps=800000)
+        for symmetry_breaking in [0.0, 0.25, 0.5, 0.75, 1.0]
+            local_moran_interaction.extract_timeseries_statistics(
+                B_factor=1.5, selection_strength=0.2,
+                symmetry_breaking=symmetry_breaking, adj_matrix_source=adj_matrix_source,
+                time_steps=800000)
+        end
 end
 
 # Save chimera indices

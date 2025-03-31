@@ -10,7 +10,7 @@
     ]
     \nextgroupplot
         % Note: this table names must appear in the `\tablename` loop below
-        \pgfplotstableread{../../data/processed/gametype/B_factor=1.5_adj_matrix_source=well-mixed_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_time_steps=8000000.csv}{\loadtable}
+        \pgfplotstableread{data/processed/gametype/B_factor=1.5_adj_matrix_source=well-mixed_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_time_steps=8000000.csv}{\loadtable}
         \pgfplotstableforeachcolumn\loadtable\as\col
         {
           \ifnum\pgfplotstablecol=0\else%
@@ -20,7 +20,7 @@
         \node [text width=1cm,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:game-type_well-mixed}}};
       \nextgroupplot
         % Note: this table names must appear in the `\tablename` loop below
-        \pgfplotstableread{../../data/processed/gametype/B_factor=1.5_adj_matrix_source=c-elegans_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_time_steps=8000000.csv}\loadtable
+        \pgfplotstableread{data/processed/gametype/B_factor=1.5_adj_matrix_source=c-elegans_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_time_steps=8000000.csv}\loadtable
         \pgfplotstableforeachcolumn\loadtable\as\col
         {
           \ifnum\pgfplotstablecol=0\else%
@@ -43,7 +43,7 @@
       ]
       \def\colNames{}
       % Note: these table names must be the same as those in the groupplots
-      \pgfplotsforeachungrouped\tablename in {../../data/processed/gametype/B_factor=1.5_adj_matrix_source=well-mixed_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_time_steps=8000000.csv,../../data/processed/gametype/B_factor=1.5_adj_matrix_source=c-elegans_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_time_steps=8000000.csv} {
+      \pgfplotsforeachungrouped\tablename in {data/processed/gametype/B_factor=1.5_adj_matrix_source=well-mixed_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_time_steps=8000000.csv,data/processed/gametype/B_factor=1.5_adj_matrix_source=c-elegans_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_time_steps=8000000.csv} {
         % Read table
         \pgfplotstableread\tablename\loadtable
         % Loop over each column

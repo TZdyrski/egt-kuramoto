@@ -22,6 +22,7 @@ using GraphMakie
 using NetworkLayout
 using Polyhedra
 using Colors
+using ColorBrewer
 using Memoize
 using DimensionalData
 using SplitApplyCombine
@@ -437,8 +438,21 @@ end
 
 @enum GameType harmony chicken battle hero compromise concord staghunt dilemma deadlock assurance coordination peace
 
-const game_type_colors = Dict(instances(GameType) .=>
-                                  distinguishable_colors(length(instances(GameType))))
+const paired_colors("Paired", 12)
+const game_type_colors = Dict(harmony => paired_colors[7],
+                              chicken => paired_colors[6], # exponential fixation time
+                              battle => paired_colors[5],  # exponential fixation time
+                              hero => paired_colors[8], # exponential fixation time
+                              compromise => paired_colors[3],
+                              concord => paired_colors[4],
+                              staghunt => paired_colors[2],
+                              dilemma => paired_colors[11],
+                              deadlock => paired_colors[1],
+                              assurance => paired_colors[10],
+                              coordination => paired_colors[9],
+                              peace => paired_colors[12]
+                             )
+
 const game_type_full_names = Dict(chicken => "Snowdrift", # Also called chicken
                                   battle => "Battle of the Sexes",
                                   hero => "Hero",

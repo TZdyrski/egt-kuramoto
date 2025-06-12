@@ -4,6 +4,7 @@
 
 (specifications->manifest
   (list "texlive-latex-bin"
+        "texlive-scripts"
         "texlive-setspace"
         "texlive-geometry"
         "texlive-sttools"

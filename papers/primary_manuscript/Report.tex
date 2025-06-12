@@ -330,7 +330,7 @@ and $\overline{d} = \num{12.36}$ for the \gls{celegans} case.
     The cost $c$ is \num{0.1};
     for
     \protect{\subref{fig:phase-diagram-B_beta}},
-    $\alpha = 1/2$,
+    $\alpha = 0.5$,
     and for
     \protect{\subref{fig:phase-diagram-B_alpha}},
     $\beta_0 = \num{0.95} B_0$.
@@ -491,7 +491,7 @@ while spending equal times in each states yields $\lambda = 1/12
     $N=20$ well-mixed population,
     the maximum mixed benefit $\beta_0$ is $\num{0.95} B_0$ at each step,
     the selection strength is $\delta=0.2$,
-    the asymmetry is $\alpha=3/4$,
+    the asymmetry is $\alpha=0.75$,
     the mutation rate is $\mu=\num{1E-4}$,
     and
     the cost $c$ is \num{0.1}.
@@ -505,13 +505,13 @@ re-analyzing the $N=20$ well-mixed population
 originally analyzed in \citet{tripp2022evolutionary}.
 \Cref{fig:multi-comm-frac} compares the frequency of communicative strategies,
 $f_{\text{comm}}$, to the maximum joint benefit $B_0$,
-and the $\alpha=1/2$ case corresponds to---and reproduces---the
+and the $\alpha=0.5$ case corresponds to---and reproduces---the
 \citet{tripp2022evolutionary} setup.
 The marks represent the simulation results
 and the lines represent the full analytic
 result (\pcref{eq:full_analytic}) for a well-mixed population.
 We can see $f_{\text{comm}}$ is low for small $B_0$,
-rises to $f_{\text{comm}} = 1/2$ at $B_0 \approx 0.21$
+rises to $f_{\text{comm}} = 0.4$ at $B_0 \approx 0.21$
 (corresponding to the $B_0 = 2 (N-1) c/(N-2)$ condition
 found by \citet{tripp2022evolutionary}),
 and plateaus to $f_{\text{comm}} \approx 1$ for large $B_0$.
@@ -525,7 +525,7 @@ as increasing $\alpha$ corresponds to biasing the payoff
 in a mixed $C$-$N$ interaction towards the communicative partner.
 Therefore, it is unsurprising that the proportion of communicative players
 increases with increasing $\alpha$.
-Finally, we note that the $\alpha = 1/2$ case corresponds
+Finally, we note that the $\alpha = 0.5$ case corresponds
 to the setup in \citet{tripp2022evolutionary}
 and produces qualitatively similar results.
 
@@ -551,7 +551,7 @@ for a well-mixed population of $N=20$ players,
 and the simulations were run
 for \num{8E5} time steps with
 selection strength $\delta = 0.2$,
-asymmetry $\alpha = 3/4$,
+asymmetry $\alpha = 0.75$,
 mutation rate $\mu=\num{1E-4}$,
 cost $c = \num{0.1}$,
 maximum joint benefit $B_0 = 0.15$,
@@ -652,7 +652,7 @@ in \cref{sec:discussion}.
     The simulation was run for \num{8E5} time steps.
     For all cases,
     the selection strength is $\delta=0.2$,
-    the asymmetry is $\alpha=3/4$,
+    the asymmetry is $\alpha=0.75$,
     the mutation rate is $\mu=\num{1E-4}$,
     the maximum mixed benefit $\beta_0$ is $\num{0.95} B_0$ at each step,
     and
@@ -673,12 +673,12 @@ a \subref{fig:comm-frac_celegans-unweighted} \emph{directed} but unweighted case
 and
 a \subref{fig:comm-frac_celegans-undirected} \emph{weighted} but undirected case.
 The plots used a selection strength of $\delta=0.2$
-and an asymmetry of $\alpha=3/4$.
+and an asymmetry of $\alpha=0.75$.
 
 We note that the behaviour
 of the \subref{fig:comm-frac_celegans-full} \gls{celegans} case
 is qualitatively distinct
-from the $\alpha = 3/4$ well-mixed case in \cref{fig:multi-comm-frac}.
+from the $\alpha = 0.75$ well-mixed case in \cref{fig:multi-comm-frac}.
 We see that the \gls{celegans} population is almost universally non-communicative
 for $B_0 \le 0.08$,
 followed by an immediate jump to a maximum communicative fraction
@@ -951,7 +951,7 @@ The homogeneity of game-types displayed for each $\alpha$ in \cref{fig:game-type
 deserves additional discussion.
 It appears the homogeneity arises from synchronicity,
 as can be seen by comparing these results
-to those well-mixed, $\alpha = 1/2$ case treated in \citet{tripp2022evolutionary};
+to those well-mixed, $\alpha = 0.5$ case treated in \citet{tripp2022evolutionary};
 note the name ``snowdrift'' was used in \citet{tripp2022evolutionary}
 to refer to the same game we \citep[and][]{bruns2015names} call ``chicken''.
 The $B_0/c = 1.5$ case depicted in figure 4 of \citet{tripp2022evolutionary}
@@ -961,7 +961,7 @@ Since a completely synchronized system has $\Delta \phi = 0$ for all players,
 $f(\Delta \phi) = 1$ and every interaction is characterized
 by the rightmost white dot in \cref{fig:phase-diagram-B_beta},
 which is located in the chicken region.
-This is consistent with the $\alpha = 1/2$ column
+This is consistent with the $\alpha = 0.5$ column
 of \cref{fig:game-type_well-mixed} which shows nearly uniform chicken-type games.
 
 Likewise, we note that the most frequent game types
@@ -993,7 +993,7 @@ for the
 \subref{fig:game-type_well-mixed} well-mixed case,
 the
 \subref{fig:game-type_celegans-full} \gls{celegans} game types
-for the $\alpha = 0,1/4,1/2$ games
+for the $\alpha = 0,0.25,0.5$ games
 show a small
 (\SI{13}{\percent}, \SI{3}{\percent}, and \SI{1}{\percent}, respectively)
 heterogeneity.
@@ -1010,7 +1010,7 @@ is \emph{not} the most common game type:
 when there are $p$ equal-sized groups
 with phases that differ by $2 \pi/p$ (\cf \cref{sec:multiple_equal_groups});
 or when the game is almost evenly split between two groups
-with fraction within $\pm 1/(2 \sqrt{N})$ of $1/2$
+with fraction within $\pm 1/(2 \sqrt{N})$ of $0.5$
 (\cf \cref{sec:two_unequal_groups}).
 Given the low mutation rate, it is unlikely to have
 multiple populations with roughly equal sizes,
@@ -1035,16 +1035,16 @@ then the same calculations as above
 the synchronized game type will \emph{not} be the most-common game
 if the fraction of invaders is within
 $\pm 1/(2 \sqrt{\overline{d}} + 1)$
-of $1/2$, or \numrange{0.37}{0.63}.
+of $0.5$, or \numrange{0.37}{0.63}.
 We notice that the order parameter in \cref{fig:time-series_celegans-full}
 actually spends a good deal of time in this range,
 allowing for game types that don't correspond to the synchronized state.
-While the $\alpha = 3/4$ case depicted \cref{fig:time-series_celegans-full}
+ case depicted \cref{fig:time-series_celegans-full}
 still mostly displays hero-type games
-(likely owing the particular geometry of $\alpha = 3/4$
+(likely owing the particular geometry of $\alpha = 0.75$
 with the hero region containing most of the white $\Delta \phi$ dots
 in \cref{fig:phase-diagram-B_alpha}),
-the $\alpha = 0, 1/4, 1/2$ cases all have wider $\Delta \phi$ regimes where
+the $\alpha = 0, 0.25, 0.5$ cases all have wider $\Delta \phi$ regimes where
 deadlock-type games can appear, as illustrated in \cref{fig:game-type_celegans-full}.
 Furthermore, the decreased in-degree of the \gls{celegans} could allow
 for additional enhancement of the non-synchronized game types.

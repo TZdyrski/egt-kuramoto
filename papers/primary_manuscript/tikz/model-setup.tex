@@ -1,3 +1,13 @@
+%! TeX program = lualatex
+\documentclass[tikz]{standalone}
+
+% Import custom style file containing common packages and options
+\usepackage{../preamble}
+
+% Import tikz options and preamble
+\input{preamble}
+
+\begin{document}
 \begin{tikzpicture}[x=0.3cm,y=0.3cm]
   \matrix{
     \begin{scope}[scale=10]
@@ -45,3 +55,4 @@
       \end{scope}
     \end{scope}
 \end{tikzpicture}
+\end{document}

@@ -1,3 +1,13 @@
+%! TeX program = lualatex
+\documentclass[tikz]{standalone}
+
+% Import custom style file containing common packages and options
+\usepackage{../preamble}
+
+% Import tikz options and preamble
+\input{preamble}
+
+\begin{document}
 \begin{tikzpicture}
   \begin{scope}[rotate=90]
     % Read node coordinates and create nodes
@@ -132,3 +142,4 @@
   \path (timeseries.south west) -- node[below={1cm}]{\pgfplotslegendfromname{CElegansLegend}} (timeseries.south east);
   \end{scope}
 \end{tikzpicture}
+\end{document}

@@ -1,3 +1,13 @@
+%! TeX program = lualatex
+\documentclass[tikz]{standalone}
+
+% Import custom style file containing common packages and options
+\usepackage{../preamble}
+
+% Import tikz options and preamble
+\input{preamble}
+
+\begin{document}
 \begin{tikzpicture}
   \begin{groupplot}[
     width=0.5\textwidth,
@@ -67,3 +77,4 @@
     \node[anchor=north] (title-x) at ($(group c1r1.south east)!0.5!(group c2r1.south west)-(0,0.5cm)$) {Asymmetry $\alpha$};
     \path (group c1r1.south west) -- node[below={1cm}]{\pgfplotslegendfromname{CommonLegend2}} (group c2r1.south east);
 \end{tikzpicture}
+\end{document}

@@ -1,3 +1,13 @@
+%! TeX program = lualatex
+\documentclass[tikz]{standalone}
+
+% Import custom style file containing common packages and options
+\usepackage{../preamble}
+
+% Import tikz options and preamble
+\input{preamble}
+
+\begin{document}
 \begin{tikzpicture}
     \newcommand{\betaOnB}{0.95}
     \newcommand{\numPhases}{20}
@@ -180,3 +190,4 @@
     \node[anchor=north] (title-x) at ($(group c1r1.south east)!0.5!(group c2r1.south west)-(0,0.5cm)$) {Joint benefit $B/c$};
     \path (group c1r1.south west) -- node[below={1cm}]{\pgfplotslegendfromname{CommonLegend4}} (group c2r1.south east);
 \end{tikzpicture}
+\end{document}

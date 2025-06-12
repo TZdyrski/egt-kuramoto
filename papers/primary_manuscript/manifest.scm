@@ -47,4 +47,7 @@
         "texlive-epstopdf-pkg"
         "texlive-csvsimple"
         "texlive-stackengine"
+        "texlive-standalone"
+        "texlive-filehook"
+        "texlive-svn-prov"
         ))

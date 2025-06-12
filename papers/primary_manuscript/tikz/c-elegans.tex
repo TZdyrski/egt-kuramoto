@@ -20,18 +20,14 @@
       \end{scope}
     \end{scope}
   \end{scope}
-  \node [text width=1cm,anchor=north west,fill=white,fill opacity=0.7,text opacity=1] at (-2,4) {\subcaption{\label{fig:graph}}};
 
   \begin{scope}[shift={(4,0)}]
   \begin{groupplot}[width=0.5\textwidth, group style={group size=1 by 3}, fraction communicative chart]
       \nextgroupplot
-        \node [text width=1cm,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:comm-frac_celegans-full}}};
         \addplot table{data/processed/cumulative/adj_matrix_source=c-elegans_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.csv};
       \nextgroupplot
-        \node [text width=1cm,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:comm-frac_celegans-unweighted}}};
         \addplot table{data/processed/cumulative/adj_matrix_source=c-elegans-unweighted_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.csv};
       \nextgroupplot
-        \node [text width=1cm,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:comm-frac_celegans-undirected}}};
         \addplot table{data/processed/cumulative/adj_matrix_source=c-elegans-undirected_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.csv};
   \end{groupplot}
   \end{scope}
@@ -51,7 +47,6 @@
         line join=bevel,
       },
     ]
-    \node [text width=1cm,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:time-series_celegans-full}}};
     \addplot [magenta] table[y=order_parameter] {data/processed/timeseries_statistics/B_factor=1.5_adj_matrix_source=c-elegans_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=800000.csv};
     \end{axis}
     \begin{axis}[

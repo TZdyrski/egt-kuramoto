@@ -27,8 +27,6 @@
     },
     ]
 
-    \node [text width=1cm,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:multi-comm-frac}}};
-
     \addlegendimage{empty legend}
     \addplot+[no marks] table {data/processed/cumulative/adj_matrix_source=well-mixed_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.0_time_steps=200000000_type=theory.csv};
     \addplot+[no marks] table {data/processed/cumulative/adj_matrix_source=well-mixed_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.25_time_steps=200000000_type=theory.csv};
@@ -54,7 +52,6 @@
         line join=bevel,
       },
     ]
-    \node [text width=1cm,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:time-series_well-mixed_alpha-0}}};
     \addplot [magenta] table [y=order_parameter] {data/processed/timeseries_statistics/B_factor=1.5_adj_matrix_source=well-mixed_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.0_time_steps=800000.csv};
 
     \nextgroupplot[
@@ -69,7 +66,6 @@
         line join=bevel,
       },
     ]
-    \node [text width=1cm,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:time-series_well-mixed_alpha-075}}};
     \addplot [magenta] table [y=order_parameter] {data/processed/timeseries_statistics/B_factor=1.5_adj_matrix_source=well-mixed_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_steps=800000.csv};
 
     \nextgroupplot[
@@ -84,7 +80,6 @@
         line join=bevel,
       },
     ]
-    \node [text width=1cm,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:time-series_well-mixed_alpha-1}}};
     \addplot [magenta] table [y=order_parameter] {data/processed/timeseries_statistics/B_factor=1.5_adj_matrix_source=well-mixed_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=1.0_time_steps=800000.csv};
   \end{groupplot}
 

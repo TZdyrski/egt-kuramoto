@@ -7,7 +7,6 @@
         \node[draw, fill=white, circle, inner sep=1.5] (\index) at (\x, \y) {};
       }
       \end{scope}
-      \node [text width=1cm,anchor=north west] at (-12,7) {\subcaption{\label{fig:graph_well-mixed}}};
       &
       \node (center) {};
       \node [thick,fill=gray,circle,minimum size=2cm,draw,label=Neuron $i$,label={below:$(s_i,\phi_i)$}] (neuron_i) [left=of center] {};
@@ -22,7 +21,6 @@
       \node [align=left,below=of arrow_bot] {Strategy $s_i$: \begin{tabular}{l} \textbf{C}: communicative \\ \textbf{N}: noncommunicative\end{tabular}
           \\[10]
       Phase difference: $\Delta \phi = \phi_j - \phi_i$};
-    \node [text width=1cm,anchor=north west] at (-12,7) {\subcaption{\label{fig:player_interactions}}};
     \\
     \node {
         $\begin{bNiceMatrix}[first-col,first-row]
@@ -30,7 +28,6 @@
         C, \phi_i & B_0 f(\Delta \phi) - c & 2 \alpha \beta_0 f(\Delta \phi) - c \\
         N, \phi_i & 2 (1 - \alpha) \beta_0 f(\Delta \phi) & 0
     \end{bNiceMatrix}$};
-    \node [text width=1cm,anchor=north west] at (-12,7) {\subcaption{\label{fig:payoff_matrix}}};
     &
     \\
     };

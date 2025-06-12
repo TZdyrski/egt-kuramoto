@@ -76,8 +76,6 @@
           domain=0:2*pi, samples=\numPhases+1] ({\BnaughtOnC*(1+cos(x))/2},
           {\betaOnB*\BnaughtOnC*(1+cos(x))/2});
 
-        \node [text width=1cm,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:phase-diagram-B_beta}}};
-
         \nextgroupplot[
           ylabel={$\alpha$},
           ymax=1.25,
@@ -154,8 +152,6 @@
           \addplot [only marks,mark=*,mark options={fill=white},
             domain=0:2*pi, samples=\numPhases+1] ({\BnaughtOnC*(1+cos(x))/2}, \alpha);
         }
-
-        \node [text width=1cm,anchor=north west] at (rel axis cs: 0,1) {\subcaption{\label{fig:phase-diagram-B_alpha}}};
     \end{groupplot}
     % Make an invisible axis to create a legend that is the union
     % of all the data table's column names

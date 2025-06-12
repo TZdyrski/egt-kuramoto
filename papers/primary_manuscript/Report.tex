@@ -202,7 +202,16 @@ when exactly one player is communicative.
 % TODO: - 1a: network of well-mixed, with blow-up to fig 1b
 \begin{figure}
   \centering
-  \input{tikz/model-setup.tex}
+  \begin{subcaptiongroup}
+    \stackinset{l}{10pt}{t}{2.5in}%
+      {\phantomcaption\label{fig:payoff_matrix}\captiontext*{}}{%
+    \stackinset{l}{2.5in}{t}{10pt}%
+      {\phantomcaption\label{fig:player_interactions}\captiontext*{}}{%
+    \stackinset{l}{10pt}{t}{10pt}%
+      {\phantomcaption\label{fig:graph_well-mixed}\captiontext*{}}{%
+    {\input{tikz/model-setup.tex}}%
+  }}}
+  \end{subcaptiongroup}
   \caption{
     \textbf{
       Evolutionary Kuramoto dynamics with weighted neural connectivity.
@@ -305,7 +314,14 @@ and $\overline{d} = \num{12.36}$ for the \gls{celegans} case.
 
 \begin{figure}
   \centering
-  \input{tikz/phase-diagram.tex}
+  \begin{subcaptiongroup}
+    \stackinset{l}{2.7in}{t}{0pt}%
+      {\phantomcaption\label{fig:phase-diagram-B_alpha}\captiontext*{}}{%
+    \stackinset{l}{10pt}{t}{0pt}%
+      {\phantomcaption\label{fig:phase-diagram-B_beta}\captiontext*{}}{%
+    {\input{tikz/phase-diagram.tex}}%
+  }}
+  \end{subcaptiongroup}
   \caption{
     \textbf{
       Payoff asymmetry enriches neural interactions
@@ -450,7 +466,18 @@ while spending equal times in each states yields $\lambda = 1/12
 
 \begin{figure}
   \centering
-  \input{tikz/well-mixed.tex}
+  \begin{subcaptiongroup}
+    \stackinset{l}{3.4in}{t}{2.5in}%
+      {\phantomcaption\label{fig:time-series_well-mixed_alpha-1}\captiontext*{}}{%
+    \stackinset{l}{1in}{t}{2.5in}%
+      {\phantomcaption\label{fig:time-series_well-mixed_alpha-075}\captiontext*{}}{%
+    \stackinset{l}{3.4in}{t}{10pt}%
+      {\phantomcaption\label{fig:time-series_well-mixed_alpha-0}\captiontext*{}}{%
+    \stackinset{l}{1in}{t}{10pt}%
+      {\phantomcaption\label{fig:multi-comm-frac}\captiontext*{}}{%
+    {\input{tikz/well-mixed.tex}}%
+  }}}}
+  \end{subcaptiongroup}
   % TODO: Add bold summary to caption beginnings
   \caption{
     \textbf{
@@ -620,7 +647,20 @@ in \cref{sec:discussion}.
 \begin{figure}
   \centering
   % TODO: Remove theory line for celegans
-  \input{tikz/c-elegans.tex}
+  \begin{subcaptiongroup}
+    \stackinset{l}{0.35in}{t}{3.7in}%
+      {\phantomcaption\label{fig:time-series_celegans-full}\captiontext*{}}{%
+    \stackinset{l}{2.7in}{t}{4.5in}%
+      {\phantomcaption\label{fig:comm-frac_celegans-undirected}\captiontext*{}}{%
+    \stackinset{l}{2.7in}{t}{2.5in}%
+      {\phantomcaption\label{fig:comm-frac_celegans-unweighted}\captiontext*{}}{%
+    \stackinset{l}{2.7in}{t}{0.5in}%
+      {\phantomcaption\label{fig:comm-frac_celegans-full}\captiontext*{}}{%
+    \stackinset{l}{10pt}{t}{0.5in}%
+      {\phantomcaption\label{fig:graph}\captiontext*{}}{%
+    {\input{tikz/c-elegans.tex}}%
+  }}}}}
+  \end{subcaptiongroup}
   \caption{
     \textbf{
       Rise of chimera states in \gls{celegans} neural network.
@@ -749,7 +789,18 @@ to the population.
 \begin{figure}
   \centering
   \pgfplotsset{width=0.4\textwidth}
-  \input{tikz/chimera-states.tex}
+  \begin{subcaptiongroup}
+    \stackinset{l}{3in}{t}{2.5in}%
+      {\phantomcaption\label{fig:graph_celegans_asymmetry1}\captiontext*{}}{%
+    \stackinset{l}{0.71in}{t}{2.5in}%
+      {\phantomcaption\label{fig:graph_celegans_asymmetry0}\captiontext*{}}{%
+    \stackinset{l}{3in}{t}{15pt}%
+      {\phantomcaption\label{fig:metastability_index}\captiontext*{}}{%
+    \stackinset{l}{0.7in}{t}{15pt}%
+      {\phantomcaption\label{fig:chimera_index}\captiontext*{}}{%
+    {\input{tikz/chimera-states.tex}}%
+  }}}}
+  \end{subcaptiongroup}
   \caption{
     \textbf{
       Characterizing chimera states.
@@ -880,7 +931,14 @@ of the particular $\alpha = \num{0.75}$ simulation.
 % TODO: add sentence in paper or caption giving percent of time non-uniform
 \begin{figure}
   \centering
-  \input{tikz/game-types.tex}
+  \begin{subcaptiongroup}
+    \stackinset{l}{2.3in}{t}{0pt}%
+      {\phantomcaption\label{fig:game-type_well-mixed}\captiontext*{}}{%
+    \stackinset{l}{0in}{t}{0pt}%
+      {\phantomcaption\label{fig:game-type_celegans-full}\captiontext*{}}{%
+    {\input{tikz/game-types.tex}}%
+  }}
+  \end{subcaptiongroup}
   \caption{
     \textbf{
       The underlying game types explain the persistence

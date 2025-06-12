@@ -45,4 +45,6 @@
         "texlive-glossaries"
         "texlive-glossaries-extra"
         "texlive-epstopdf-pkg"
-        "texlive-csvsimple"))
+        "texlive-csvsimple"
+        "texlive-stackengine"
+        ))

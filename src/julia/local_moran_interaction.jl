@@ -707,19 +707,19 @@ function get_adj_matrices(adj_matrix_source::String; nb_players::Integer = 20, r
         interaction_adj_matrix = adjacency_matrix(random_regular_digraph(nb_players, regular_degree; rng))
         reproduction_adj_matrix = interaction_adj_matrix + I
     elseif adj_matrix_source == "c-elegans-unweighted"
-        interaction_adj_matrix = collect(round.(get_connectome()) .!= 0)
+        interaction_adj_matrix = collect(round.(get_celegans_connectome()) .!= 0)
         reproduction_adj_matrix = collect((interaction_adj_matrix + I) .!= 0)
     elseif adj_matrix_source == "c-elegans-undirected"
-        interaction_adj_matrix = round.(get_connectome())
+        interaction_adj_matrix = round.(get_celegans_connectome())
         interaction_adj_matrix = interaction_adj_matrix + transpose(interaction_adj_matrix)
         reproduction_adj_matrix = interaction_adj_matrix + I
     elseif adj_matrix_source == "c-elegans-undirected-unweighted"
-        interaction_adj_matrix = round.(get_connectome())
+        interaction_adj_matrix = round.(get_celegans_connectome())
         interaction_adj_matrix = interaction_adj_matrix + transpose(interaction_adj_matrix)
         interaction_adj_matrix = collect(interaction_adj_matrix .!= 0)
         reproduction_adj_matrix = collect((interaction_adj_matrix + I) .!= 0)
     elseif adj_matrix_source == "c-elegans"
-        interaction_adj_matrix = round.(get_connectome())
+        interaction_adj_matrix = round.(get_celegans_connectome())
         reproduction_adj_matrix = interaction_adj_matrix + I
     else
         throw(ArgumentError("adj_matrix_source must be a string in set [\"well-mixed\", "
@@ -1289,8 +1289,8 @@ function calc_coalescence_times(graph::Graphs.SimpleGraphs.AbstractSimpleGraph)
     return coalescence_matrix
 end
 
-function get_connectome()
-    connectome_and_muscles = get_connectome_labelled()["connectome"]
+function get_celegans_connectome()
+    connectome_and_muscles = get_celegans_connectome_labelled()["connectome"]
     # Remove connections to muscles
     connectome = connectome_and_muscles[:, [1:20..., 51:322..., 438:445...]]
     # Replace "Missing" data with zeros
@@ -1298,7 +1298,7 @@ function get_connectome()
     return connectome
 end
 
-function get_connectome_labelled()
+function get_celegans_connectome_labelled()
     connectome_and_muscles_with_labels = read(dataset("celegans-connectome-cook"), Matrix)
     row_labels = connectome_and_muscles_with_labels[:, 1]
     col_labels = connectome_and_muscles_with_labels[1, :]

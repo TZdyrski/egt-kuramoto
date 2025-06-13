@@ -725,7 +725,7 @@ function get_adj_matrices(adj_matrix_source::String; nb_players::Integer = 20, r
         throw(ArgumentError("adj_matrix_source must be a string in set [\"well-mixed\", "
                             * "\"c-elegans\", \"c-elegans-unweighted\", "
                             *
-                            "\"c-elegans-undirected\", \"c-elegans-undirected-unweighted\"
+                            "\"c-elegans-undirected\", \"c-elegans-undirected-unweighted\", "
 			    * "\"random-regular-graph\", \"random-regular-digraph\"]"))
     end
     return interaction_adj_matrix, reproduction_adj_matrix

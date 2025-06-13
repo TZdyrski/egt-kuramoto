@@ -1299,7 +1299,7 @@ function get_connectome()
 end
 
 function get_connectome_labelled()
-    connectome_and_muscles_with_labels = read(dataset("connectome-cook"), Matrix)
+    connectome_and_muscles_with_labels = read(dataset("celegans-connectome-cook"), Matrix)
     row_labels = connectome_and_muscles_with_labels[:, 1]
     col_labels = connectome_and_muscles_with_labels[1, :]
     connectome_and_muscles = connectome_and_muscles_with_labels[2:end, 2:end]

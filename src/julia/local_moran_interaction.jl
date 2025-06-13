@@ -438,7 +438,7 @@ end
 
 @enum GameType harmony chicken battle hero compromise concord staghunt dilemma deadlock assurance coordination peace
 
-const paired_colors("Paired", 12)
+const paired_colors = ColorBrewer.palette("Paired", 12)
 const game_type_colors = Dict(harmony => paired_colors[7],
                               chicken => paired_colors[6], # exponential fixation time
                               battle => paired_colors[5],  # exponential fixation time

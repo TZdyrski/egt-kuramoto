@@ -53,4 +53,9 @@
         "texlive-standalone"
         "texlive-filehook"
         "texlive-svn-prov"
+        "texlive-memoize"
+        "texlive-advice"
+        "texlive-collargs"
+        "perl"
+        "perl-pdf-api2"
         ))

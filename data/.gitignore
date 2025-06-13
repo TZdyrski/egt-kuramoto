@@ -1,5 +1,5 @@
 #Ignore everything except external
 /*
 !external
-#dont ignore this file
+#don't ignore this file
 !.gitignore

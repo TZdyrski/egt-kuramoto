@@ -42,21 +42,64 @@ and
 %\pw{}
 
 \abstract{
-  % TODO: put abstract in Nature style: Background; gaps to fill; results; implications
-  We extend the evolutionary Kuramoto model of \citet{tripp2022evolutionary}
-  by introducing an asymmetry between communicator and non-communicator payoffs
-  as well as placing the players on structured graphs.
-  We apply the model to the \glsfmtshort{celegans} brain connectome
-  to investigate how well the evolutionary oscillators can model synchronicity in the brain.
-  We then simulate the populations' evolution across a variety of parameter regimes.
-  These results show that weighted interaction graphs,
-  including the \glsfmtshort{celegans} connectome,
-  serve to decrease the overall communicativeness of the population.
-  Additionally, varying the payoff asymmetry changes the types
-  of games the individual players play.
-  Finally, we find chimera states in the \glsfmtshort{celegans} case
-  which suggests potential connections to previous findings
-  of chimera populations in human brains.
+  % Basic introduction
+  Chimera states are configurations of networked oscillators
+  characterized by the simultaneous coexistence
+  of both synchronized and incoherent populations.
+  These chimera states have been observed
+  in numerous brain systems~\citep{santos2017chimera,bansal2019cognitive},
+  and are hypothesized to be a key component
+  in human cognition~\citep{bansal2019cognitive}.
+  % Detailed background
+  While physical models of neuron behaviors and connections
+  are very complex,
+  aspects of neural dynamics have been modelled
+  using Kuramoto networks
+  of sinusoidally-coupled oscillators~\citep{cabral2011role}.
+  Recent work has even suggested that Kuramoto models
+  distributed according to the \gls{dmelanogaster} connectome
+  gives rise to chimera-like states~\citep{deng2024chimera}.
+  % General problem
+  However, the small-scale evolutionary factors
+  that could give rise to such chimera-like states
+  remains poorly understood.
+  % Key takeaway
+  In this work,
+  we use evolutionary graph theory
+  to connect small-scale, single-neuron payoffs
+  with large-scale chimera-like states
+  on a graph of the \gls{celegans} connectome.
+  % Main results
+  We generalize a prior application
+  of evolutionary Kuramoto theory on complete graphs
+  to networks with weighted, directed graphs
+  and add a payoff asymmetry between communicators
+  and non-communicators.
+  The \gls{celegans} network exhibits far more disorder
+  (order parameter $\rho \in \SIrange{40}{70}{\percent}$) than
+  the well-mixed population which is virtually always synchronized
+  ($\rho \sim 1$),
+  and we are able to explain the types of games played by each system
+  through an analysis of the payoff parameter space.
+  Additionally, we find that the network is
+  quite unstable with metastability index $\lambda < \num{0.01}$
+  but has a relatively large chimera-like index $\xi$ of up to $\num{0.13}$.
+  % General context
+  Our results illustrate one potential way
+  that evolutionary pressures on individual neurons
+  in highly-nontrivial network topologies
+  could give rise synchronization via Kuramoto-like mechanisms.
+  % Broader perspective
+  The observation of chimera-like states
+  in these \gls{celegans} networks of simple neurons
+  suggest that the brain connectivity,
+  as opposed than the neurons' physical properties,
+  might play key roles in the enhancement of observed chimera-like brain states.
+  Understanding the role of neuronal structure in brain dynamics
+  is a very active area of research,
+  and we believe that this evolutionary graph theory Kuramoto model
+  will be a valuable tool for isolating and identifying
+  the key contributions of graph structure on dynamics.
 }
 
 \maketitle

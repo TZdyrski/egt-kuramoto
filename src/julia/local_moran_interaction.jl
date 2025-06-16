@@ -1602,6 +1602,41 @@ function extract_game_types(; B_factor::Real, selection_strength::Real,
     CSV.write(datadir("processed","gametype",savename(config,"csv")), df)
 end
 
+function calc_number_unidirection_bidirectional_edges(adj_matrix_source::String)
+    # Note: removes edge weights and self-loops
+    interaction_adj_matrix, _ = get_adj_matrices(adj_matrix_source)
+    # Form graph
+    graph = SimpleWeightedDiGraph(interaction_adj_matrix)
+    # Count total number of connections
+    total_edges = sum(indegree(graph))
+    # Calculate self-loops
+    loops = num_self_loops(graph)
+    # Remove self-loops
+    non_loop_edges = total_edges - loops
+
+    # Remove edge weighting
+    unweighted_adj_matrix = collect(round.(interaction_adj_matrix) .!= 0)
+    # Xor with transpose to only keep unidirectional edges
+    unidirectional_edge_adj_matrix = xor.(unweighted_adj_matrix,
+					  transpose(unweighted_adj_matrix))
+    # Convert to graph
+    unidirectional_edge_graph = SimpleGraph(unidirectional_edge_adj_matrix)
+    # Degree counts both in- and out-neighbors,
+    # so number of unidirectional edges is half the degree
+    unidirectional_edges = sum(degree(unidirectional_edge_graph))/2
+
+    # Bidirectional edges is total number of edges minus unidirectional edges
+    # Bidirectional edge *pairs* is half this number
+    bidirectional_edge_pairs = (non_loop_edges - unidirectional_edges)/2
+
+    # Calculate bidirectional edges
+    results = Dict("self-loops" => loops,
+		  "unidirectional_edges" => unidirectional_edges,
+		  "bidirectional_edge_pairs" => bidirectional_edge_pairs)
+
+    return results
+end
+
 end
 
 using .local_moran_interaction

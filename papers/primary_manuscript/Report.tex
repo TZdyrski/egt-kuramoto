@@ -295,11 +295,14 @@ Given $N$ players, associate a pair
 of weighted, directed graphs to the population.
 First, we use an interaction graph with $N$ nodes representing players
 and weighted, directed edges representing games between players.
+Each directed edge represents one game
+(with game type determined by their relative phase $\Delta \phi$)
+and payoffs only flow to the tail node;
+a bi-directional game is represented by a pair of directed edges
+in both directions.
 For instance, \cref{fig:graph_well-mixed} shows the interaction graph
 for a well-mixed population represented by a complete graph
 with each line representing a pair of directed edges in opposite directions.
-% TODO: When playing games, how is directionality of edges handled?
-% (C) -> (N) do you decompose the game into donation game?
 % TODO: When describing how digraphs give payoffs (text or caption),
 % specify what percent of links are unidirectional and what percent are bidirectional
 Second, we implement a reproduction graph with the $N$ nodes

@@ -127,7 +127,8 @@ incompleteness, directedness, and weightedness combine
 to determine the variety of outcomes for evolving populations.
 
 %\subsection{Evolutionary Kuramoto dynamics}
-Previously, \citet{tripp2022evolutionary} created an EGT model
+Previously, Tripp, Fu, and Pauls \citep{tripp2022evolutionary} (abbrevitated \tripp{} hereafter)
+created an EGT model
 to capture the behaviour of Kuramoto oscillators
 using game-theoretic approaches.
 This model differs from \citet{antonioni2017coevolution}
@@ -143,7 +144,7 @@ an evolutionary process~\citep{cohen2009evolutionary}.
 This evolutionary Kuramoto model
 supplemented the usual communicative/non-communicative
 strategy pair with an independent dimension representing the player's ``phase''.
-\Citet{tripp2022evolutionary} assumed a well-mixed model of players
+\tripp{} assumed a well-mixed model of players
 on a complete graph, and the players' payoffs were modulated
 by a sinusoidal-dependence on their relative phases,
 representing the classic Kuramoto oscillator coupling.
@@ -189,7 +190,7 @@ connectome model.
 %\subsection{Outline}
 In this paper,we will generalize
 the Evolutionary Kuramoto (EK) model
-of \citet{tripp2022evolutionary} with an asymmetry between
+of \tripp{} with an asymmetry between
 the communicator and non-communicator payoffs.
 We will also apply this model to incomplete, directed, and weighted graphs.
 These generalization will allow us to apply the EK model
@@ -214,7 +215,7 @@ and its implications for \gls{celegans} brain structure.
 
 \subsection{Game setup}
 \label{sec:game_setup}
-Here, we use an extension of the EK game from \citet{tripp2022evolutionary}
+Here, we use an extension of the EK game from \tripp{}
 as a model for evolving, coupled oscillators.
 We discretize the $2\pi$ phase angle into $m$ discrete phases $2 \pi j/m$
 for $j \in 0, \ldots, m-1$.
@@ -351,7 +352,7 @@ and the time-average will correspond to the long-time limit.
 
 We are interested in comparing the $f_{\text{comm}}$ simulation results
 to an analytic model.
-In the appendix, we analytically extend the work of \citet{tripp2022evolutionary}
+In the appendix, we analytically extend the work of \tripp{}
 to account for benefit asymmetry $\alpha$.
 The resulting communicative fraction \cref{eq:full_analytic}
 is derived for the well-mixed case.
@@ -402,7 +403,7 @@ and $\overline{d} = \num{12.36}$ for the \gls{celegans} case.
     \protect{\subref{fig:phase-diagram-B_alpha}},
     $\beta_0 = \num{0.95} B_0$.
     \protect{\subref{fig:phase-diagram-B_beta}}
-    is an extension of figure 1 from \citet{tripp2022evolutionary}.
+    is an extension of figure 1 from \tripp{}.
   }
   \label{fig:phase-diagram}
 \end{figure}
@@ -417,7 +418,7 @@ as a function of the three parameters $\beta$, $B$, and $\alpha$.
 \Cref{fig:phase-diagram} shows two particular slices
 of this three-dimensional phase space:
 \cref{fig:phase-diagram-B_beta} shows a $B$-$\beta$ slice of phase space
-and is an extension of figure 1 in \citet{tripp2022evolutionary},
+and is an extension of figure 1 in \tripp{},
 while \cref{fig:phase-diagram-B_alpha} shows a $B$-$\alpha$ slice.
 
 We will analyze the types of games being played by
@@ -580,18 +581,18 @@ while spending equal times in each states yields $\lambda = 1/12
 First, we will explore the influence of the newly introduced asymmetry
 on the population's evolution by
 re-analyzing the $N=20$ well-mixed population
-originally analyzed in \citet{tripp2022evolutionary}.
+originally analyzed in \tripp{}.
 \Cref{fig:multi-comm-frac} compares the frequency of communicative strategies,
 $f_{\text{comm}}$, to the maximum joint benefit $B_0$,
 and the $\alpha=0.5$ case corresponds to---and reproduces---the
-\citet{tripp2022evolutionary} setup.
+\tripp{} setup.
 The marks represent the simulation results
 and the lines represent the full analytic
 result (\pcref{eq:full_analytic}) for a well-mixed population.
 We can see $f_{\text{comm}}$ is low for small $B_0$,
 rises to $f_{\text{comm}} = 0.4$ at $B_0 \approx 0.21$
 (corresponding to the $B_0 = 2 (N-1) c/(N-2)$ condition
-found by \citet{tripp2022evolutionary}),
+found by \tripp{}),
 and plateaus to $f_{\text{comm}} \approx 1$ for large $B_0$.
 We also see that increasing (decreasing)
 the asymmetry $\alpha$ dilates (stretches) this sigmoid function
@@ -604,7 +605,7 @@ in a mixed $C$-$N$ interaction towards the communicative partner.
 Therefore, it is unsurprising that the proportion of communicative players
 increases with increasing $\alpha$.
 Finally, we note that the $\alpha = 0.5$ case corresponds
-to the setup in \citet{tripp2022evolutionary}
+to the setup in \tripp{}
 and produces qualitatively similar results.
 
 While \cref{fig:multi-comm-frac} displayed
@@ -1060,10 +1061,10 @@ The homogeneity of game-types displayed for each $\alpha$ in \cref{fig:game-type
 deserves additional discussion.
 It appears the homogeneity arises from synchronicity,
 as can be seen by comparing these results
-to those well-mixed, $\alpha = 0.5$ case treated in \citet{tripp2022evolutionary};
-note the name ``snowdrift'' was used in \citet{tripp2022evolutionary}
+to those well-mixed, $\alpha = 0.5$ case treated in \tripp{};
+note the name ``snowdrift'' was used in \tripp{}
 to refer to the same game we \citep[and][]{bruns2015names} call ``chicken''.
-The $B_0/c = 1.5$ case depicted in figure 4 of \citet{tripp2022evolutionary}
+The $B_0/c = 1.5$ case depicted in figure 4 of \tripp{}
 shows the system spending the vast majority of its time in a synchronized state
 with all players having the same $\phi$.
 Since a completely synchronized system has $\Delta \phi = 0$ for all players,
@@ -1202,7 +1203,7 @@ and connectivity structure extends to other model organisms.
 % TODO: we will add a comprehensive discussion
 % regarding our contribution and limitations, and future work
 In this paper, we extended the evolutionary Kuramoto model
-introduced by \citet{tripp2022evolutionary}
+introduced by \tripp{}
 to include structured interaction and reproduction graphs
 as well as an asymmetry between
 the communicator and non-communicator payoffs.

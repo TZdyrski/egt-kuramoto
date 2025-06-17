@@ -1584,7 +1584,13 @@ function extract_game_types(; B_factor::Real, selection_strength::Real,
     # Select subset of dataframe
     df_all_asymm = @rsubset(df_all, :selection_strength == selection_strength,
                             :adj_matrix_source == adj_matrix_source, :factor == B_factor)
-    game_types = proportionmap.(df_all_asymm.most_common_game_types)
+    # Combine parity and game type
+    transform!(df_all_asymm,
+	       [:strategy_parity, :most_common_game_types] => ByRow((parity_col,game_col) ->
+								    [parity != mixed ? parity : game for
+								     (parity, game) in zip(parity_col, game_col)])
+	       => :parity_or_game_type)
+    game_types = proportionmap.(df_all_asymm.parity_or_game_type)
 
     # Convert Dict keys from GameType to Symbol
     game_type_symbols = (dict -> Dict(Symbol(k) => v for (k,v) in pairs(dict))).(game_types)

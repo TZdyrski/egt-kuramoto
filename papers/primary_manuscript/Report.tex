@@ -985,8 +985,6 @@ corresponds to an intrinsic separation rather than an artifact
 of the particular $\alpha = \num{0.75}$ simulation.
 
 \subsubsection{Game types}
-% TODO: update figure to only show non-uniform games
-% TODO: add sentence in paper or caption giving percent of time non-uniform
 \begin{figure}
   \centering
   \begin{subcaptiongroup}
@@ -1044,17 +1042,17 @@ and
 network topologies.
 The \subref{fig:game-type_well-mixed} well-mixed case
 shows that the time evolution for each asymmetry $\alpha$
-is dominated by a single game type
-occurring for over \SI{99.9}{\percent} of the time steps.
-This is in contrast with the
-\subref{fig:game-type_celegans-full} \gls{celegans} connectome case,
-where the deadlock-type game is most common
+is dominated by synchronized play
+for over \SI{99.3}{\percent} of the time steps.
+In contrast, the
+\subref{fig:game-type_celegans-full} \gls{celegans} connectome system
+is never synchronized.
+Instead,
+the deadlock-type game is most common
 for \SIrange{1}{14}{\percent} of the time steps
 for asymmetry $\alpha \le 0.5$.
-Nevertheless, both \subref{fig:game-type_well-mixed} well-mixed
-and \subref{fig:game-type_celegans-full} \gls{celegans}
-have the same dominant game types
-across asymmetries:
+Here, dominant game types
+vary across asymmetries:
 dilemma for $\alpha = 0, 0.25$, chicken for $\alpha = 0.5$,
 hero for $\alpha = 0.75$, and deadlock for $\alpha = 1$.
 This shows that, as the asymmetry is varied,
@@ -1065,36 +1063,60 @@ and network topology influences how dominant these game types are.
 \label{sec:discussion}
 
 %\subsection{Game-type dynamics}
-The homogeneity of game-types displayed for each $\alpha$ in \cref{fig:game-type}
+The makeup of game types displayed in \cref{fig:game-type}
 deserves additional discussion.
-It appears the homogeneity arises from synchronicity,
-as can be seen by comparing these results
-to those well-mixed, $\alpha = 0.5$ case treated in \tripp{};
-note the name ``snowdrift'' was used in \tripp{}
-to refer to the same game we \citep[and][]{bruns2015names} call ``chicken''.
-The $B_0/c = 1.5$ case depicted in figure 4 of \tripp{}
-shows the system spending the vast majority of its time in a synchronized state
-with all players having the same $\phi$.
-Since a completely synchronized system has $\Delta \phi = 0$ for all players,
-$f(\Delta \phi) = 1$ and every interaction is characterized
-by the rightmost white dot in \cref{fig:phase-diagram-B_beta},
-which is located in the chicken region.
-This is consistent with the $\alpha = 0.5$ column
-of \cref{fig:game-type_well-mixed} which shows nearly uniform chicken-type games.
+For the \cref{fig:game-type_well-mixed} well-mixed case,
+the system is virtually always synchronized,
+as corroborated by the order parameter $\rho \approx 1$ in
+\crefrange{fig:time-series_well-mixed_alpha-0}{fig:time-series_well-mixed_alpha-1}.
+Additionally, the specific frequency of communicative synchronization (``all-C'')
+and non-communicative synchronization (``all-N'')
+approximately matches the predicted $f_{\text{comm}}$
+frequency displayed in \cref{fig:multi-comm-frac} for $B_0=0.15$.
+For the $< \SI{1}{\percent}$ of the time when the well-mixed system is
+\emph{not} synchronized, the other game types are
+dilemma (\SI{0.2}{\percent} for $\alpha = 0, 0.25$)
+chicken (\SI{0.3}{\percent} for $\alpha = 0.5$),
+hero (\SI{0.3}{\percent} for $\alpha = 0.75$),
+and
+deadlock (\SI{0.3}{\percent} for $\alpha = 1$).
+We note that these non-synchronized game types
+are the same as the most-frequency game types,
+for each $\alpha$, as those played in
+the \cref{fig:game-type_celegans-full} \gls{celegans} setup.
 
-Likewise, we note that the most frequent game types
-in \cref{fig:game-type} across each $\alpha$ all correspond
-to the completely synchronized $\Delta \phi = 0$ game type
+We can compare the $\alpha = 0.5$ case
+to the results in figure 4 of \tripp{}.
+Those results also show the system spending the vast majority
+of its time in a synchronized state.
+When the \tripp{} system was not synchronized,
+it displayed chicken (denoted ``snowdrift'')
+and staghunt (denoted ``coordination'',
+not to be confused with the coordination-type game
+in our \cref{fig:phase-diagram}) games.
+The presence of staghunt-type games is surprising,
+as \cref{fig:phase-diagram-B_beta}
+shows that the staghunt region should be inaccessible
+for the given parameter values (white dots).
+However, the chicken-type game is consistent with our
+\SI{0.3}{\percent} chicken games for $\alpha = 0.5$.
+
+Next, we consider the distribution of non-synchronized games
+in \cref{fig:game-type} as functions of $\alpha$.
+Recall that the non-synchronized game types
+in \cref{fig:game-type_well-mixed}
+and the most-frequent game types in \cref{fig:game-type_celegans-full}
+are identical,
+so this discussion applies to both.
+We note that the most frequent game types
+across each $\alpha$ all correspond
+to the nearly synchronized $\Delta \phi \approx 0$ game type
 (\ie the game type of the rightmost white dots \cref{fig:game-type}).
 This indicates that the majority game type almost always
 corresponds to games between nearly-synchronous individuals.
 This is somewhat surprising for the $\alpha = 1$ case:
 there, four of the $m = 20$ phase differences
-(
-$f(4\pi/20) B_0/c = f(16\pi/20) B_0/c = \num{0.98}$
-and
-$f(5\pi/20) B_0/c = f(15\pi/20) B_0/c = \num{0.75}$
-)
+($\Delta \phi = 4 \pi/20, 5 \pi/20, 15\pi/20, 16\pi/20$)
 fall in the pink, battle-type region.
 The warm colors (red, orange, and pink)
 represent the game types (chicken, hero, and battle, respectively)
@@ -1106,15 +1128,14 @@ enhances synchronization and ensures that
 chimeric qualities are suppressed
 (\cf the low $\chi$ for $\alpha = 1$ in \cref{fig:chimera-index}).
 
-Finally, while synchronicity can explain the game types
-for the
-\subref{fig:game-type_well-mixed} well-mixed case,
+Finally, while the \subref{fig:game-type_well-mixed} well-mixed case
+was very homogeneous (synchronization above \SI{99}{\percent})
 the
 \subref{fig:game-type_celegans-full} \gls{celegans} game types
 for the $\alpha = 0,0.25,0.5$ games
-show a small
-(\SI{13}{\percent}, \SI{3}{\percent}, and \SI{1}{\percent}, respectively)
-heterogeneity.
+show a small level of game-type heterogeneity
+(\SI{13}{\percent}, \SI{3}{\percent}, and \SI{1}{\percent} deadlock games,
+respectively).
 This is likely a result of the average degree
 of the different complete and non-complete graphs.
 Since \cref{fig:game-type} depicts the most common game at each time step,

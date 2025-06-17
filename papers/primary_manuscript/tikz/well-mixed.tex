@@ -234,8 +234,11 @@
       }
     }
 
+    % Sort legend entries alphanumerically
+    \expandafter\alphabubblesort\expandafter{\gameTypes}
+
     % Add all entries to legend
-    \expandafter\pgfplotsinvokeforeach\expandafter{\gameTypes}{%
+    \expandafter\pgfplotsinvokeforeach\expandafter{\sortedlist}{%
       \ifthenelse{\equal{#1}{all_communicative}}
         {
           \addlegendimage{ybar, single ybar legend, all_communicative, draw=black}%

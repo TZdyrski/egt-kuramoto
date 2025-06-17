@@ -68,8 +68,12 @@
           \fi
         }
       }
+
+      % Sort legend entries alphanumerically
+      \expandafter\alphabubblesort\expandafter{\colNames}
+
       % Add all entries to legend
-      \expandafter\pgfplotsinvokeforeach\expandafter{\colNames}{%
+      \expandafter\pgfplotsinvokeforeach\expandafter{\sortedlist}{%
         \ifthenelse{\equal{#1}{all_communicative}}
           {
             \addlegendimage{ybar, single ybar legend, all_communicative, draw=black}%

@@ -201,57 +201,11 @@ the individual neurons' payoffs
 to the large-scale communicativeness properties
 while also investigating the influence
 the \gls{celegans} connectome shape on chimera-like states.
-\Cref{sec:game_setup} will outline the setup of the game that neurons play.
-In \cref{sec:pop_setup}, we describe the different types
-of graphs we will analyze.
-Then, we lay out the evolutionary rules for updating the population
-in \cref{sec:evo_setup}.
-We define the various statistics collected in \cref{sec:stats_setup}.
-We will present the results of these simulations for
-complete graphs (\cref{sec:complete_graph})
-and the \gls{celegans} connectome (\cref{sec:elegans_graph}).
-Finally, \cref{sec:discussion} will be used
-for discussing the role of the EK generalizations
-and its implications for \gls{celegans} brain structure.
 
-\section{Methods and models}
-\label{sec:methods}
+\section{Results}
+\label{sec:results}
 
-\subsection{Game setup}
-\label{sec:game_setup}
-Here, we use an extension of the EK game from \tripp{}
-as a model for evolving, coupled oscillators.
-We discretize the $2\pi$ phase angle into $m$ discrete phases $2 \pi j/m$
-for $j \in 0, \ldots, m-1$.
-The game's strategy space is the outer product of the $m$ phases
-($m = 20$ for our simulations) and $2$ communicative choices,
-communicative $C$ and non-communicative $N$.
-For a given pair of phases, $\phi_i$ and $\phi_j$, the game is specified
-by the payoff matrix
-\begin{equation}
-\begin{bNiceMatrix}[first-col,first-row,hvlines]
-  & C, \phi_j & N, \phi_j \\
-  C, \phi_i & B_0 f(\Delta \phi) - c & 2 \alpha \beta_0 f(\Delta \phi) - c \\
-  N, \phi_i & 2 (1 - \alpha) \beta_0 f(\Delta \phi) & 0
-\end{bNiceMatrix}
-\label{eq:payoff-matrix}
-\end{equation}
-with $f(\Delta \phi) = [1+\cos(\phi_j - \phi_i)]/2$
-(\pcref{fig:payoff_matrix}).
-Here, $B_0$, $\beta_0$, $\alpha$, and $c$ are fixed parameters
-defining the game.
-The cost $c$ represents the penalty paid by communicative players,
-and $B_0$ and $\beta_0$ are the maximum benefits paid with
-joint CC communicators and mixed CN players, respectively.
-The phase-dependent function $f(\Delta \phi)$ encodes
-the influence of phase mismatches.
-Finally, the benefit asymmetry $\alpha \in [0,1]$ breaks the symmetry
-between the payoff for the communicator and the non-communicator
-when exactly one player is communicative.
-
-\subsection{Population setup}
-\label{sec:pop_setup}
-
+\subsection{Model Enhancements}
 \begin{figure}
   \centering
   \begin{nomemoize} % NiceMatrix uses the tikz option `remember picture`;
@@ -289,88 +243,55 @@ when exactly one player is communicative.
   \label{fig:connectivity}
 \end{figure}
 
-In this study, we consider a collection of different population graphs
-to highlight the role of structure on communicativeness.
-Given $N$ players, we associate a pair
-of weighted, directed graphs to the population.
-First, we use an interaction graph with $N$ nodes representing players
-and weighted, directed edges representing games between players.
-Each directed edge represents one game
-(with game type determined by their relative phase $\Delta \phi$)
-and payoffs only flow to the tail node;
-a bi-directional game is represented by a pair of directed edges
-in both directions.
+We extend the EK game from \tripp{} in two ways:
+placing the player network on a directed, weighted graph;
+and introducing a payoff asymmetry.
+Introducing a graph structure, with players represented by nodes
+and interactions by edges, allows us to tailor the interactions.
 For instance, \cref{fig:graph_well-mixed} shows the interaction graph
-for a well-mixed population represented by a complete graph
-with each line representing a pair of directed edges in opposite directions.
+for the well-mixed population in \tripp{} represented as a complete graph.
+Each directed edge on the player interaction graph
+represents a single game between the two connected nodes (players).
+The game's payoffs only flow to the tail node,
+but the usual, bidirectional game can be represented by
+a pair of edges in both directions,
+as shown in \cref{fig:player_interactions}.
 We note that the \gls{celegans} connectome
 has \num{38} self-loops, \num{669} bidirectional edge pairs,
 and \num{2331} unpaired edges.
-Second, we implement a reproduction graph with the $N$ nodes
-still representing players
-but the edges now corresponding to the ability of nodes to replace one another.
-For simplicity, our reproduction graphs are identical to the interaction graph
-with a single self-loop added to each node.
-These self-loops are necessary in the reproduction graph
-to ensure that each node has positive indegree
-as required by the Moran process described in the next section.
+Finally, each payoff is scaled by the edge's weight;
+since the \gls{celegans} weights are all integers,
+the edge weight can be interpreted as the number of games played
+between the two nodes.
 
-\subsection{Birth-death Moran process}
-\label{sec:evo_setup}
-% TODO: Bd is hugely different from death-Birth dynamics (dB);
-% this dB is more favorable for cooperation
-% Try this instead?
-The population is updated according to a birth-death Moran process
-with exponential fitness~\citep[\eg \cf][]{lieberman2005evolutionary}.
-On each turn, the following steps are performed.
-First, a game is played on each edge $j$ in the interaction graph,
-each edge's payoff $\pi_j$ is scaled by the edge weight $w_j$,
-and the relevant payoff $w_j \pi_j$ is awarded to the tail node only.
-\Cref{fig:player_interactions} shows an illustration of this process
-for a single pair of interacting players connected by a pair of
-weighted, directed edges.
-The total fitness for node $i$ is the exponential of the product
-between the selection strength $\delta$
-and the sum of payoffs to node $i$,
-or $f_i = \exp(\delta \sum_j w_j \pi_j)$ with the sum
-over all edges inwardly incident to node $i$.
-Then, a single focal node is chosen for reproduction
-with probability proportional to the node's fitness $f_i$.
-Finally, a node is chosen for replacement amongst the birth node's outneighbors
-with probability proportional to the reproduction graph's edge weight.
-With mutation probability $\mu$,
-the death node is replaced by a player with a uniformly random strategy;
-otherwise, it is replaced by a player with the same strategy as the birth node.
-This birth-death process is repeated for each turn.
+We also generalized the payoff structure to incorporate
+an asymmetry between communicators and non-communicators.
+Each player (node) is represented by a 2-tuple of parameters,
+its strategy $s_i$---either communicative $C$ or non-communicative $N$---
+and its phase $\phi_i$---taking one \num{20} evenly-spaced values
+between $0$ and $2 \pi$.
+The payoffs between a pair of players only depends on their strategies
+and their relative phase difference, $\Delta \phi$.
+Communicative players always pay a cost $c$.
+If both players are non-communicative, the payoff is zero;
+conversely, if both players are communicative,
+the payoff is $B_0 f(\Delta \phi) - c$,
+where the sinusoidal Kuramoto coupling
+$f(\Delta \phi) = [1+\cos(\phi_j - \phi_i)]/2$
+is scaled by the joint CC benefit, $B_0$.
+When exactly one of the players is communicative,
+we introduce an asymmetry $\alpha$ to allow for differing payoffs
+between the communicative and non-communicative players.
+If the tail-player is communicative,
+the payoff is $2 \alpha \beta_0 f(\Delta \phi) - c$,
+where $\beta_0$ is the mixed benefit parameter.
+If the tail player is non-communicative,
+the payoff is $2 (1-\alpha) \beta_0 f(\Delta \phi)$.
+These payoffs are summarized in the payoff matrix
+of \cref{fig:payoff_matrix}.
+This asymmetry $\alpha$ allows us to promote or suppress communicativeness.
 
-\subsection{Quantities of interest}
-\label{sec:stats_setup}
-A variety of statistics will be used to quantify the evolution
-of the games' populations.
-First, we determine the frequency of communicative strategies
-$f_{\text{comm}}$ as the fraction of players employing
-a communicative strategy $C$ at a given time step.
-We are also interested in defining the time-averaged communicative frequency
-by averaging $f_{\text{comm}}$ over the entire simulation;
-for simulation times long compared to the mutation turnover time
-$T_{\text{turn}} \gg N/\mu$,
-the initial, random distribution of strategies will be negligible
-and the time-average will correspond to the long-time limit.
-
-We are interested in comparing the $f_{\text{comm}}$ simulation results
-to an analytic model.
-In the appendix, we analytically extend the work of \tripp{}
-to account for benefit asymmetry $\alpha$.
-The resulting communicative fraction \cref{eq:full_analytic}
-is derived for the well-mixed case.
-To apply \cref{eq:full_analytic} to non-complete graphs such as
-the \gls{celegans} connectome,
-we replace the degree $N-1$ with the average degree of the graph
-$N-1 \to \overline{d}$.
-Note that $\overline{d} = \num{19}$
-for the well-mixed case with $N=20$ players
-and $\overline{d} = \num{12.36}$ for the \gls{celegans} case.
-
+\subsection{Parameter space}
 \begin{figure}
   \centering
   \begin{subcaptiongroup}
@@ -428,99 +349,8 @@ of this three-dimensional phase space:
 and is an extension of figure 1 in \tripp{},
 while \cref{fig:phase-diagram-B_alpha} shows a $B$-$\alpha$ slice.
 
-We will analyze the types of games being played by
-identifying the most common game type across all player interactions,
-weighted by the interaction graph edge weights,
-at each time step.
-Then, we calculate the frequency of this ``most common game'' across
-all time steps of a given simulation to determine the distribution
-of games commonly played.
-Note that a player pair's game type is determined solely
-by their relative phase $\Delta \phi$ and is independent
-of the players' communicativeness.
-Furthermore, this metric is only sensitive to the
-plurality game and therefore provides no information
-on the presence/absence of minority game types.
 
-Given that this evolutionary game model was inspired
-by the Kuramoto system of coupled oscillators,
-we will also use the standard Kuramoto order parameter:
-\begin{equation}
-  \rho = \frac{1}{N} \abs{\sum_{j=1}^N e^{\im \phi_j}}
-  \label{eq:order_parameter}
-\end{equation}
-This parameter ranges from zero to one, inclusive,
-and represents how coherent the population is,
-with $\rho = 1$ for completely coherent and $\rho = 0$ completely incoherent.
 
-Finally, we need a way to quantify
-the chimera-like quality of the population.
-To compare with a previous analysis~\citep{hizanidis2016chimera} of
-chimera-like states \gls{celegans} models,
-we will define a pair of indices related to
-chimera-like quality and metastability~\citep{shanahan2010metastable}.
-First, we need to organize the game's nodes
-into $M$ disjoint communities.
-We split the nodes into $M=2$ communities $C_m$
-by taking a subset
-(the first \num{8E4} steps for computations ease)
-of the simulation results
-for the \gls{celegans} simulation with asymmetry $\alpha = \num{0.75}$.
-We then calculate the covariance matrix $K_{i,j}$ of the strategy indices
-(ensuring that communicative ($C$, $\phi_i$)
-and non-communicative ($N$, $\phi_i$) are treated distinctly)
-and calculate the row-wise covariance-sums  $\sum_i K_{i,j}$.
-After finding the node with the maximum covariance-sum
-$\cov_{\text{max}} \coloneqq \max_j{\sum_i K_{i,j}}$,
-we form a community by collecting all nodes $j$ with covariance-sum
-at least \num{1500}, $\sum_i K_{i,j} \ge 1500$.
-Note that \num{1500} is approximately \SI{81}{\percent}
-of the maximum covariance-sum,
-so this ensure we only group nodes with high covariance-sum.
-Finally, we place all the remaining nodes in a second community.
-
-With these disjoint communities $C_m$, we then calculate
-the time-dependent, community-wise order parameter $\rho_m(t)$
-as
-\begin{equation}
-  \rho_m(t) \coloneqq \frac{1}{N_m} \abs{\sum_{j \in C_m} e^{\im \phi_j}}
-\end{equation}
-across members $j$ of community $C_m$ with size $N_m$.
-Then, we define a chimera-like index $\chi$
-\begin{equation}
-  \chi = \aab{
-    \sigma_{\text{chi}}}_T
-    \text{\qquad with \qquad}
-    \sigma_{\text{chi}} \coloneqq \frac{1}{M-1} \sum_{m=1}^M
-    \pab{\rho_m(t) - \aab{\rho_m(t)}_M}^2
-  \label{eq:chimera_index}
-\end{equation}
-and a metastability index $\lambda$
-\begin{equation}
-  \lambda = \aab{
-    \sigma_{\text{met}}}_M
-    \text{\qquad with \qquad}
-    \sigma_{\text{met}} \coloneqq \frac{1}{T-1} \sum_{t=1}^T
-    \pab{\rho_m(t) - \aab{\rho_m(t)}_T}^2
-  \label{eq:metastability_index}
-\end{equation}
-across the $M$ communities and $T$ time steps.
-The chimera-like index measures the difference in coherence between communities:
-complete homogeneity between communities
-(\eg{} all fully synchronized \emph{or} fully desynchronized)
-corresponds to $\chi = 0$,
-while having two equally-sized communities
-with one fully synchronized and one fully desynchronized
-for all times yields a maximum $\chi = 2/7 \approx
-\num{0.29}$~\citep{shanahan2010metastable}.
-Likewise, the metastability index $\lambda$ measures how metastable
-the system is (\ie{} transiting between synchronicity and desynchronicity).
-A system that is fully synchronized or desynchronized gives $\lambda = 0$,
-while spending equal times in each states yields $\lambda = 1/12
-\approx \num{0.08}$~\citep{shanahan2010metastable}.
-
-\section{Results}
-\label{sec:results}
 \subsection{Complete graphs}
 \label{sec:complete_graph}
 
@@ -1271,6 +1101,205 @@ Additionally, it could prove fruitful to analytically study
 the dynamics of game types as a function of the payoff asymmetry
 to better understand how exponential fixation-time
 game types attract population states.
+
+\section{Methods}
+\label{sec:methods}
+
+\subsection{Game setup}
+\label{sec:game_setup}
+We model the system of evolving, coupled oscillators
+by discretizing the $2\pi$ phase angle into $m$ discrete phases $2 \pi j/m$
+for $j \in 0, \ldots, m-1$.
+The game's strategy space is the outer product of the $m$ phases
+($m = 20$ for our simulations) and $2$ communicative choices,
+communicative $C$ and non-communicative $N$.
+For a given pair of phases, $\phi_i$ and $\phi_j$, the game is specified
+by the payoff matrix
+\begin{equation}
+\begin{bNiceMatrix}[first-col,first-row,hvlines]
+  & C, \phi_j & N, \phi_j \\
+  C, \phi_i & B_0 f(\Delta \phi) - c & 2 \alpha \beta_0 f(\Delta \phi) - c \\
+  N, \phi_i & 2 (1 - \alpha) \beta_0 f(\Delta \phi) & 0
+\end{bNiceMatrix}
+\label{eq:payoff-matrix}
+\end{equation}
+with $f(\Delta \phi) = [1+\cos(\phi_j - \phi_i)]/2$
+(\pcref{fig:payoff_matrix}).
+Here, $B_0$, $\beta_0$, $\alpha$, and $c$ are fixed parameters
+defining the game.
+The cost $c$ represents the penalty paid by communicative players,
+and $B_0$ and $\beta_0$ are the maximum benefits paid with
+joint CC communicators and mixed CN players, respectively.
+The phase-dependent function $f(\Delta \phi)$ encodes
+the influence of phase mismatches.
+Finally, the benefit asymmetry $\alpha \in [0,1]$ breaks the symmetry
+between the payoff for the communicator and the non-communicator
+when exactly one player is communicative.
+
+\subsection{Population setup}
+\label{sec:pop_setup}
+
+In this study, we consider a collection of different population graphs
+to highlight the role of structure on communicativeness.
+Given $N$ players, we associate a pair
+of weighted, directed graphs to the population.
+First, we use an interaction graph with $N$ nodes representing players
+and weighted, directed edges representing games between players.
+Second, we implement a reproduction graph with the $N$ nodes
+still representing players
+but the edges now corresponding to the ability of nodes to replace one another.
+For simplicity, our reproduction graphs are identical to the interaction graph
+with a single self-loop added to each node.
+These self-loops are necessary in the reproduction graph
+to ensure that each node has positive indegree
+as required by the Moran process described in the next section.
+
+\subsection{Birth-death Moran process}
+\label{sec:evo_setup}
+% TODO: Bd is hugely different from death-Birth dynamics (dB);
+% this dB is more favorable for cooperation
+% Try this instead?
+The population is updated according to a birth-death Moran process
+with exponential fitness~\citep[\eg \cf][]{lieberman2005evolutionary}.
+On each turn, the following steps are performed.
+First, a game is played on each edge $j$ in the interaction graph,
+each edge's payoff $\pi_j$ is scaled by the edge weight $w_j$,
+and the relevant payoff $w_j \pi_j$ is awarded to the tail node only.
+\Cref{fig:player_interactions} shows an illustration of this process
+for a single pair of interacting players connected by a pair of
+weighted, directed edges.
+The total fitness for node $i$ is the exponential of the product
+between the selection strength $\delta$
+and the sum of payoffs to node $i$,
+or $f_i = \exp(\delta \sum_j w_j \pi_j)$ with the sum
+over all edges inwardly incident to node $i$.
+Then, a single focal node is chosen for reproduction
+with probability proportional to the node's fitness $f_i$.
+Finally, a node is chosen for replacement amongst the birth node's outneighbors
+with probability proportional to the reproduction graph's edge weight.
+With mutation probability $\mu$,
+the death node is replaced by a player with a uniformly random strategy;
+otherwise, it is replaced by a player with the same strategy as the birth node.
+This birth-death process is repeated for each turn.
+
+\subsection{Quantities of interest}
+\label{sec:stats_setup}
+A variety of statistics will be used to quantify the evolution
+of the games' populations.
+First, we determine the frequency of communicative strategies
+$f_{\text{comm}}$ as the fraction of players employing
+a communicative strategy $C$ at a given time step.
+We are also interested in defining the time-averaged communicative frequency
+by averaging $f_{\text{comm}}$ over the entire simulation;
+for simulation times long compared to the mutation turnover time
+$T_{\text{turn}} \gg N/\mu$,
+the initial, random distribution of strategies will be negligible
+and the time-average will correspond to the long-time limit.
+
+We are interested in comparing the $f_{\text{comm}}$ simulation results
+to an analytic model.
+In the appendix, we analytically extend the work of \tripp{}
+to account for benefit asymmetry $\alpha$.
+The resulting communicative fraction \cref{eq:full_analytic}
+is derived for the well-mixed case.
+To apply \cref{eq:full_analytic} to non-complete graphs such as
+the \gls{celegans} connectome,
+we replace the degree $N-1$ with the average degree of the graph
+$N-1 \to \overline{d}$.
+Note that $\overline{d} = \num{19}$
+for the well-mixed case with $N=20$ players
+and $\overline{d} = \num{12.36}$ for the \gls{celegans} case.
+
+We will analyze the types of games being played by
+identifying the most common game type across all player interactions,
+weighted by the interaction graph edge weights,
+at each time step.
+Then, we calculate the frequency of this ``most common game'' across
+all time steps of a given simulation to determine the distribution
+of games commonly played.
+Note that a player pair's game type is determined solely
+by their relative phase $\Delta \phi$ and is independent
+of the players' communicativeness.
+Furthermore, this metric is only sensitive to the
+plurality game and therefore provides no information
+on the presence/absence of minority game types.
+
+Given that this evolutionary game model was inspired
+by the Kuramoto system of coupled oscillators,
+we will also use the standard Kuramoto order parameter:
+\begin{equation}
+  \rho = \frac{1}{N} \abs{\sum_{j=1}^N e^{\im \phi_j}}
+  \label{eq:order_parameter}
+\end{equation}
+This parameter ranges from zero to one, inclusive,
+and represents how coherent the population is,
+with $\rho = 1$ for completely coherent and $\rho = 0$ completely incoherent.
+
+Finally, we need a way to quantify
+the chimera-like quality of the population.
+To compare with a previous analysis~\citep{hizanidis2016chimera} of
+chimera-like states \gls{celegans} models,
+we will define a pair of indices related to
+chimera-like quality and metastability~\citep{shanahan2010metastable}.
+First, we need to organize the game's nodes
+into $M$ disjoint communities.
+We split the nodes into $M=2$ communities $C_m$
+by taking a subset
+(the first \num{8E4} steps for computations ease)
+of the simulation results
+for the \gls{celegans} simulation with asymmetry $\alpha = \num{0.75}$.
+We then calculate the covariance matrix $K_{i,j}$ of the strategy indices
+(ensuring that communicative ($C$, $\phi_i$)
+and non-communicative ($N$, $\phi_i$) are treated distinctly)
+and calculate the row-wise covariance-sums  $\sum_i K_{i,j}$.
+After finding the node with the maximum covariance-sum
+$\cov_{\text{max}} \coloneqq \max_j{\sum_i K_{i,j}}$,
+we form a community by collecting all nodes $j$ with covariance-sum
+at least \num{1500}, $\sum_i K_{i,j} \ge 1500$.
+Note that \num{1500} is approximately \SI{81}{\percent}
+of the maximum covariance-sum,
+so this ensure we only group nodes with high covariance-sum.
+Finally, we place all the remaining nodes in a second community.
+
+With these disjoint communities $C_m$, we then calculate
+the time-dependent, community-wise order parameter $\rho_m(t)$
+as
+\begin{equation}
+  \rho_m(t) \coloneqq \frac{1}{N_m} \abs{\sum_{j \in C_m} e^{\im \phi_j}}
+\end{equation}
+across members $j$ of community $C_m$ with size $N_m$.
+Then, we define a chimera-like index $\chi$
+\begin{equation}
+  \chi = \aab{
+    \sigma_{\text{chi}}}_T
+    \text{\qquad with \qquad}
+    \sigma_{\text{chi}} \coloneqq \frac{1}{M-1} \sum_{m=1}^M
+    \pab{\rho_m(t) - \aab{\rho_m(t)}_M}^2
+  \label{eq:chimera_index}
+\end{equation}
+and a metastability index $\lambda$
+\begin{equation}
+  \lambda = \aab{
+    \sigma_{\text{met}}}_M
+    \text{\qquad with \qquad}
+    \sigma_{\text{met}} \coloneqq \frac{1}{T-1} \sum_{t=1}^T
+    \pab{\rho_m(t) - \aab{\rho_m(t)}_T}^2
+  \label{eq:metastability_index}
+\end{equation}
+across the $M$ communities and $T$ time steps.
+The chimera-like index measures the difference in coherence between communities:
+complete homogeneity between communities
+(\eg{} all fully synchronized \emph{or} fully desynchronized)
+corresponds to $\chi = 0$,
+while having two equally-sized communities
+with one fully synchronized and one fully desynchronized
+for all times yields a maximum $\chi = 2/7 \approx
+\num{0.29}$~\citep{shanahan2010metastable}.
+Likewise, the metastability index $\lambda$ measures how metastable
+the system is (\ie{} transiting between synchronicity and desynchronicity).
+A system that is fully synchronized or desynchronized gives $\lambda = 0$,
+while spending equal times in each states yields $\lambda = 1/12
+\approx \num{0.08}$~\citep{shanahan2010metastable}.
 
 %\subsubsection{Acknowledgements}
 

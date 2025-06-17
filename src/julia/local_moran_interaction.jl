@@ -292,8 +292,10 @@ function play!(actions::AbstractVector,
     death_idx = sample(rng, 1:N, aux.weights_int)
 
     # Check for mutation
+    mutation = false
     if rand(rng) <= lmi.epsilon
         new_strategy = rand(rng, 1:(lmi.num_actions))
+	mutation = true
     else
         new_strategy = actions[focal_idx]
     end
@@ -304,7 +306,7 @@ function play!(actions::AbstractVector,
     # Update aux variables
     update_aux!(aux, new_strategy, death_idx, lmi)
 
-    return nothing
+    return mutation
 end
 
 function count!(counts::AbstractVector{N}, new_values::AbstractVector{N}) where {N}
@@ -329,14 +331,18 @@ function time_series(lmi::LocalMoranInteraction{N}, ts_length::Integer,
         throw(ArgumentError("payoff_counting_method must be a string in set [\"loop\", \"single-update\", \"matrix\"]"))
     end
     out = Matrix{Int}(undef, N, ts_length + 1)
+    steps_following_mutation = Integer[]
     for i in 1:N
         out[i, 1] = actions[i]
     end
     for t in 1:ts_length
-        play!(actions, rng, lmi, aux)
+        mutation = play!(actions, rng, lmi, aux)
         out[:, t + 1] = actions
+	if mutation
+		push!(steps_following_mutation, t+1)
+	end
     end
-    return out
+    return out, steps_following_mutation
 end
 
 function cumulative(lmi::LocalMoranInteraction{N}, ts_length::Integer,
@@ -867,7 +873,7 @@ function calc_timeseries(config::Dict)
     nb_players = size(interaction_adj_matrix)[1]
 
     # Run the model for weak selection strength
-    all_populations = time_series(LocalMoranInteraction(NormalFormGame(payoff_matrix(nb_phases,
+    all_populations, steps_following_mutation = time_series(LocalMoranInteraction(NormalFormGame(payoff_matrix(nb_phases,
                                                                                      B,
                                                                                      0.95 *
                                                                                      B,
@@ -879,7 +885,7 @@ function calc_timeseries(config::Dict)
                                   time_steps, payoff_update_method)
 
     # Package results
-    return @strdict(all_populations, cost, nb_phases, nb_players, mutation_rate, interaction_adj_matrix)
+    return @strdict(all_populations, steps_following_mutation, cost, nb_phases, nb_players, mutation_rate, interaction_adj_matrix)
 end
 
 function calc_timeseries_statistics(config::Dict)
@@ -887,7 +893,7 @@ function calc_timeseries_statistics(config::Dict)
     data = calc_timeseries(config)
 
     # Unpack variables
-    @unpack all_populations, cost, nb_phases, nb_players, mutation_rate, interaction_adj_matrix = data
+    @unpack all_populations, steps_following_mutation, cost, nb_phases, nb_players, mutation_rate, interaction_adj_matrix = data
     @unpack B_factor, symmetry_breaking, selection_strength, adj_matrix_source, payoff_update_method, time_steps, nb_phases = config
 
     # Extract results
@@ -912,7 +918,7 @@ function calc_timeseries_statistics(config::Dict)
                                           counts; dims=1); dims=1)
 
     # Package results
-    return @strdict(fraction_communicative, order_parameters, most_common_game_types,
+    return @strdict(fraction_communicative, steps_following_mutation, order_parameters, most_common_game_types,
                     strategy_parity)
 end
 
@@ -1496,6 +1502,15 @@ function extract_timeseries_statistics(; B_factor::Real, selection_strength::Rea
 
     # Write out data
     CSV.write(datadir("processed","timeseries_statistics",savename(config,"csv")), df)
+
+    # Create a dictionary with only the parameters that affect the RNG
+    rng_config = Dict(key => config[key] for key in ["adj_matrix_source", "payoff_update_method", "time_steps"])
+
+    # Convert mutation timestep vector to DataFrame
+    mutation_timesteps = DataFrame(mutation_timesteps=data["steps_following_mutation"])
+
+    # Write out mutation times
+    CSV.write(datadir("processed","mutation_timesteps", savename(rng_config,"csv")), mutation_timesteps)
 end
 
 function extract_chimera_indices(community_algorithm::String;

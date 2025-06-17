@@ -236,8 +236,22 @@
 
     % Add all entries to legend
     \expandafter\pgfplotsinvokeforeach\expandafter{\gameTypes}{%
-      \addlegendimage{ybar, single ybar legend, #1, draw=black}%
-      \addlegendentry{#1}%
+      \ifthenelse{\equal{#1}{all_communicative}}
+        {
+          \addlegendimage{ybar, single ybar legend, all_communicative, draw=black}%
+          \addlegendentry{all-C}%
+        }
+        {
+          \ifthenelse{\equal{#1}{all_noncommunicative}}
+          {
+            \addlegendimage{ybar, single ybar legend, all_noncommunicative, draw=black}%
+            \addlegendentry{all-N}%
+          }
+          {
+            \addlegendimage{ybar, single ybar legend, #1, draw=black}%
+            \addlegendentry{#1}%
+          }
+        }
     }%
     % Also add order parameter
     \addlegendimage{ybar, single ybar legend, fill=magenta, draw=black}%

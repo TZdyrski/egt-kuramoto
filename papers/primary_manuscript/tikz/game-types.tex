@@ -68,11 +68,25 @@
           \fi
         }
       }
-        % Add all entries to legend
-        \expandafter\pgfplotsinvokeforeach\expandafter{\colNames}{%
-          \addlegendimage{ybar, single ybar legend, #1, draw=black}%
-          \addlegendentry{#1}%
-        }%
+      % Add all entries to legend
+      \expandafter\pgfplotsinvokeforeach\expandafter{\colNames}{%
+        \ifthenelse{\equal{#1}{all_communicative}}
+          {
+            \addlegendimage{ybar, single ybar legend, all_communicative, draw=black}%
+            \addlegendentry{all-C}%
+          }
+          {
+            \ifthenelse{\equal{#1}{all_noncommunicative}}
+            {
+              \addlegendimage{ybar, single ybar legend, all_noncommunicative, draw=black}%
+              \addlegendentry{all-N}%
+            }
+            {
+              \addlegendimage{ybar, single ybar legend, #1, draw=black}%
+              \addlegendentry{#1}%
+            }
+          }
+      }%
     \end{axis}
     \node[anchor=north] (title-x) at ($(group c1r1.south east)!0.5!(group c2r1.south west)-(0,0.5cm)$) {Asymmetry $\alpha$};
     \path (group c1r1.south west) -- node[below={1cm}]{\pgfplotslegendfromname{CommonLegend2}} (group c2r1.south east);

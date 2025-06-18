@@ -806,7 +806,7 @@ of the particular $\alpha = \num{0.75}$ simulation.
       The underlying game types explain the persistence
       and origins of chimera states.
     }
-    The most common game type amongst all player interactions
+    The plurality game type amongst all player interactions
     (weighted by the interaction graph edge weight),
     expressed as a fraction of all games played,
     for different values of the asymmetry $\alpha$.
@@ -831,7 +831,7 @@ of the particular $\alpha = \num{0.75}$ simulation.
 
 Next, we would like to understand the types of games being played
 during the population's evolution.
-In \cref{fig:game-type}, we investigate the most common game type
+In \cref{fig:game-type}, we investigate the plurality game type
 amongst all player interactions at each time step~(\cf \cref{sec:stats_setup}),
 where the number of interactions between two players
 is the corresponding edge weight of the interaction graph.
@@ -857,7 +857,7 @@ dilemma for $\alpha = 0, 0.25$, chicken for $\alpha = 0.5$,
 hero for $\alpha = 0.75$, and deadlock for $\alpha = 1$.
 Additionally, the \gls{celegans} system displays
 some game-type heterogeneity, with
-deadlock-type game being the most common
+deadlock-type game being the plurality
 \SIrange{1}{14}{\percent} of the time
 for asymmetry $\alpha \le 0.5$.
 This shows that, as the asymmetry is varied,
@@ -943,14 +943,14 @@ show a small level of game-type heterogeneity
 respectively).
 This is likely a result of the average degree
 of the different complete and non-complete graphs.
-Since \cref{fig:game-type} depicts the most common game at each time step,
-we need to consider the conditions under which a game type can be most common.
+Since \cref{fig:game-type} depicts the plurality game at each time step,
+we need to consider the conditions under which a game type can be the plurality.
 For the complete, well-mixed case, the game type corresponding
 to the synchronized $\Delta \phi = 0$ state
 is easily obtained---for instance, if the entire graph is synchronized,
 or largely synchronized.
 We can easily show two conditions when the $\Delta \phi = 0$ game type
-is \emph{not} the most common game type:
+is \emph{not} the plurality game type:
 when there are $p$ equal-sized groups
 with phases that differ by $2 \pi/p$ (\cf \cref{sec:multiple_equal_groups});
 or when the game is almost evenly split between two groups
@@ -963,10 +963,10 @@ For the $N = 20$ well-mixed case, this corresponds
 each group containing between \numrange{8}{12} players,
 but the magenta order parameter in \cref{fig:time-series_well-mixed_alpha-075}
 shows the well-mixed system spends must of its time with very few invaders---fewer
-than the \numrange{8}{12} required to flip the most-common game type.
+than the \numrange{8}{12} required to flip the plurality game type.
 
 However, the \gls{celegans} case does display some heterogeneity
-in most-common game type~\cref{fig:game-type_celegans-full}.
+in plurality game type~\cref{fig:game-type_celegans-full}.
 While the number of players $N = 300$ is much larger
 than the complete, well-mixed case,
 the average degree $\overline{d}$
@@ -976,7 +976,7 @@ with two major populations
 and assume they are randomly distributed (for ease of computation),
 then the same calculations as above
 (\cf \cref{sec:two_unequal_groups_incomplete}) show that
-the synchronized game type will \emph{not} be the most-common game
+the synchronized game type will \emph{not} be the plurality game
 if the fraction of invaders is within
 $\pm 1/(2 \sqrt{\overline{d}} + 1)$
 of $0.5$, or \numrange{0.37}{0.63}.
@@ -1225,10 +1225,10 @@ for the well-mixed case with $N=20$ players
 and $\overline{d} = \num{12.36}$ for the \gls{celegans} case.
 
 We will analyze the types of games being played by
-identifying the most common game type across all player interactions,
+identifying the plurality game type across all player interactions,
 weighted by the interaction graph edge weights,
 at each time step.
-Then, we calculate the frequency of this ``most common game'' across
+Then, we calculate the frequency of this ``plurality game'' across
 all time steps of a given simulation to determine the distribution
 of games commonly played.
 Note that a player pair's game type is determined solely

@@ -6,6 +6,26 @@ to calculate the $\alpha$-dependent average payoff functions.
 Since the mutation rate is low, we can consider a population with only two strategies.
 As in \tripp{}, we only consider the case where those strategies are different,
 $E = (C, \phi_i)$ and $F = (N, \phi_j)$.
+The case where both players are communicative always gives the
+``double coordination'' type game~\citep{bruns2015names}
+\begin{equation}
+\begin{bNiceMatrix}[first-col,first-row,hvlines]
+  & C, \phi_i & C, \phi_j \\
+  C, \phi_i & B_0 - c & B_0 f(\Delta \phi) - c  \\
+  C, \phi_j & B_0 f(\Delta \phi) - c & B_0 - c
+\end{bNiceMatrix}
+\end{equation}
+while the case where both players are non-communicative gives the neutral game
+\begin{equation}
+\begin{bNiceMatrix}[first-col,first-row]
+  & N, \phi_i & N, \phi_j \\
+  N, \phi_i & 0 & 0 \\
+  N, \phi_j & 0 & 0
+\end{bNiceMatrix}
+\end{equation}
+
+Then, the average payoff of each strategy
+across the entire population is
 \begin{align}
   \pi_E(k) &= \ab(\frac{k-1}{n-1}) \pab{B_0 - c}
                 + \ab(\frac{n-k}{n-1}) \ab(\beta(\Delta\phi) 2\alpha - c) \\

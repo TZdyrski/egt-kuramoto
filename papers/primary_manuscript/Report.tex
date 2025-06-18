@@ -1188,11 +1188,12 @@ This birth-death process is repeated for each turn.
 \label{sec:stats_setup}
 \subsubsection{Communication frequency}
 We define the frequency of communicative strategies
-$f_{\text{comm}}$ as the fraction of players employing
+$f_{\text{comm}}(t)$ as the fraction of players employing
 a communicative strategy $C$ at a given time step.
 We also define the time-averaged communicative frequency
-by averaging $f_{\text{comm}}$ over the entire simulation;
-for simulation times long compared to the mutation turnover time
+$f_{\text{comm}}$
+by averaging $f_{\text{comm}}(t)$ over the entire simulation.
+For simulation times long compared to the mutation turnover time
 $T_{\text{turn}} \gg N/\mu$,
 the initial, random distribution of strategies will be negligible
 and the time-average will correspond to the long-time limit.

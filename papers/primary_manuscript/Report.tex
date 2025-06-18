@@ -43,22 +43,19 @@ and
 
 \abstract{
   % Basic introduction
-  Chimera states are configurations of networked oscillators
-  characterized by the simultaneous coexistence
+  Chimera states of networked oscillators
+  are configurations with a simultaneous coexistence
   of synchronized and incoherent populations.
-  These chimera states have been observed
-  in numerous brain systems~\citep{santos2017chimera,bansal2019cognitive},
-  and are hypothesized to be a key component
+  These states have been observed
+  in various brain systems~\citep{santos2017chimera,bansal2019cognitive},
+  and may be a key component
   in human cognition~\citep{bansal2019cognitive}.
   % Detailed background
-  While physical models of neuron behaviors and connections
-  are quite complex,
-  aspects of neural dynamics have been modelled
-  using Kuramoto networks
-  of sinusoidally-coupled oscillators~\citep{cabral2011role}.
-  Recent work has even suggested that Kuramoto dynamics
-  on the \gls{dmelanogaster} connectome
-  can give rise to chimera-like states~\citep{deng2024chimera}.
+  Recent work~\citep{deng2024chimera} has investigated
+  chimera-like states in \gls{dmelanogaster}
+  using a Kuramoto model
+  of sinusoidally-coupled oscillators,
+  a frequent model for complex neuron behavior~\citep{cabral2011role}.
   % General problem
   However, the small-scale evolutionary factors
   that could give rise to such chimera-like states
@@ -70,32 +67,27 @@ and
   with large-scale, chimera-like states
   on a graph of the \gls{celegans} connectome.
   % Main results
-  We generalize prior applications
-  of evolutionary Kuramoto dynamics on complete graphs
-  to networks with weighted, directed graphs.
-  The \gls{celegans} network exhibits much higher disorder
-  than the well-mixed population,
-  and the game types played by each network
-  are analyzed using the payoff parameter space.
+  We extend an evolutionary Kuramoto model from complete graphs
+  to weighted, directed graphs.
+  The \gls{celegans} network exhibits much stronger disorder
+  than the well-mixed population.
   Additionally, we find that the network has
   a low metastability ($\lambda < \num{0.01}$)
   but a relatively large chimera-like index ($\xi \approx \num{0.13}$).
   % General context
-  Our results illustrate one potential avenue
-  that evolutionary pressures on individual neurons
-  in highly-nontrivial network topologies
-  could give rise to synchronization via Kuramoto-like mechanisms.
+  Our results connect individual neuron fitness
+  and non-trivial connectivity topology
+  to synchronization via Kuramoto-like mechanisms.
   % Broader perspective
   Chimera-like states
-  in a \gls{celegans} networks of simple neurons
-  suggest that brain connectivity,
-  as opposed to physical neuron properties,
-  could be the primary factor in chimera-like brain states.
+  in this \gls{celegans} network of simple neurons
+  suggest that brain topology
+  is a primary driver of chimera-like brain states.
   Understanding the role of neuronal structure in brain dynamics
-  is a very active area of research,
-  and we believe that this evolutionary graph theory Kuramoto model
-  will be a valuable tool for isolating and identifying
-  the key contributions of graph structure on dynamics.
+  is an active area of research,
+  and this evolutionary graph theory Kuramoto model
+  could be a valuable tool for isolating
+  the influence of graph structure on brain dynamics.
 }
 
 \maketitle

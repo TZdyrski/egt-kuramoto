@@ -1203,11 +1203,28 @@ $f_{\text{comm}}$ in the well-mixed case
 by extend the work of \tripp{} to account for benefit asymmetry $\alpha$.
 
 \subsubsection{Plurality game type}
+Every edge of the interaction graph
+defines a game between the two players it connects.
+Using their relative phase difference $\Delta \phi$,
+we can calculate the payoff matrix.
+Each edge's payoff matrix corresponds to one game type~\citep{bruns2015names}
+by comparing the order of each of the four entries.
+If two entries of the matrix are equal (\ie a non-strict) game,
+the symmetry is broken according to the following order
+\begin{equation}
+\begin{bNiceMatrix}[first-col,first-row,hvlines]
+  & C & N \\
+  C & 2 & 3 \\
+  N & 1 & 4
+\end{bNiceMatrix}
+\end{equation}
+Note that other conventions exist~\citep{bruns2015names}
+wherein the two columns are swapped.
 
-We will analyze the types of games being played by
-identifying the plurality game type across all player interactions,
-weighted by the interaction graph edge weights,
-at each time step.
+At each time step, we calculate the game type for each edge
+of the interaction graph.
+We then identify the plurality game type across all player interactions,
+where each edge's count is weighted by its edge weight.
 Then, we calculate the frequency of this ``plurality game'' across
 all time steps of a given simulation to determine the distribution
 of games commonly played.

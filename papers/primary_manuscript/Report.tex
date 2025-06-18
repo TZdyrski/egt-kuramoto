@@ -1186,6 +1186,7 @@ This birth-death process is repeated for each turn.
 
 \subsection{Statistical indices}
 \label{sec:stats_setup}
+\subsubsection{Communication frequency}
 A variety of statistics will be used to quantify the evolution
 of the games' populations.
 First, we determine the frequency of communicative strategies
@@ -1197,6 +1198,8 @@ for simulation times long compared to the mutation turnover time
 $T_{\text{turn}} \gg N/\mu$,
 the initial, random distribution of strategies will be negligible
 and the time-average will correspond to the long-time limit.
+
+\subsubsection{Plurality game type}
 
 We are interested in comparing the $f_{\text{comm}}$ simulation results
 to an analytic model.
@@ -1226,6 +1229,7 @@ Furthermore, this metric is only sensitive to the
 plurality game and therefore provides no information
 on the presence/absence of minority game types.
 
+\subsubsection{Order parameter}
 Given that this evolutionary game model was inspired
 by the Kuramoto system of coupled oscillators,
 we will also use the standard Kuramoto order parameter:
@@ -1237,6 +1241,7 @@ This parameter ranges from zero to one, inclusive,
 and represents how coherent the population is,
 with $\rho = 1$ for completely coherent and $\rho = 0$ completely disordered.
 
+\subsubsection{Chimera-like index and metastability index}
 Finally, we need a way to quantify
 the chimera-like quality of the population.
 To compare with a previous analysis~\citep{hizanidis2016chimera} of

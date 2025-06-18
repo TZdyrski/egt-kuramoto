@@ -3,8 +3,6 @@ Here, we extend the derivation of the communicative fraction
 in \tripp{} to include an asymmetry $\alpha$.
 First, we use our $\alpha$-dependent payoff matrix, \cref{eq:payoff-matrix},
 to calculate the $\alpha$-dependent average payoff functions.
-For simplicity, we define $\beta(\Delta \phi) = \beta_0 f(\Delta \phi)$.
-Then, we have
 \begin{align}
   \pi_E(k) &= \ab(\frac{k-1}{n-1}) \pab{B_0 - c}
                 + \ab(\frac{n-k}{n-1}) \ab(\beta(\Delta\phi) 2\alpha - c) \\
@@ -19,8 +17,9 @@ and
            &= \ab(\frac{k}{n-1}) 2 (1-\alpha) \beta(\Delta\phi)
 \end{align}
 where $k \in [0,N]$ is the number of $E$-players
-and $\Delta \phi$ is the phase difference between the $E$ and $F$
-strategies.
+$\Delta \phi$ is the phase difference between the $E$ and $F$
+strategies,
+and we defined $\beta(\Delta \phi) = \beta_0 f(\Delta \phi)$.
 Note that the first term of $\pi_E$ corresponds
 to the $E$-$E$ payoff, which has $\Delta \phi = 0$,
 hence $B_0 f(\Delta \phi) = B_0$.

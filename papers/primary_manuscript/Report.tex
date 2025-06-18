@@ -1058,8 +1058,6 @@ Further research is needed to see if this connection between chimeric quality
 and connectivity structure extends to other model organisms.
 
 %\section{Conclusion}
-% TODO: we will add a comprehensive discussion
-% regarding our contribution and limitations, and future work
 In this paper, we extended the evolutionary Kuramoto model
 introduced by \tripp{}
 to include structured interaction and reproduction graphs
@@ -1091,16 +1089,44 @@ the \gls{celegans} population remained far more heterogenous
 with a stable, chimeric mix of both communicators and non-communicators.
 This chimera state in a model of the \gls{celegans} brain connectome
 was suggestive of prior studies finding chimera states in human brains.
+
+A future goal of this work is to apply the EK model
+to entire families of random graphs.
+the limited number of graphs analyzed in this study
+made it challenging to identify exact relationships
+between communicative fraction and graph properties
+such as edge degree, weight, and directionality;
+applying the model to parameterized families could allow
+for fine-tuning these parameters to extract relations.
+Furthermore, the parameter space analysis provided clues
+regarding the types of games the neurons played,
+but additional study is needed to determine a causal relation.
+Studying attractors
+of the parameter space of game types
+could shed light on the long-time game distributions,
+with important implications for the neuron fitness environment.
+Finally, since this study only considered a single connectome,
+it is unclear if the findings regarding chimeric activity
+are generalizable.
+We plan to investigate this connection further
+by extending the model to other model organisms,
+such as that of
+\glsxtrlong{dmelanogaster}~\citep{schlegel2024whole}.
+
+A key takeaway from this study was the importance
+of edge weight on communicativity;
+this has important parallels to neural computing,
+where edge weights are a primary driver of functionality.
+Additionally, the observation of chimeric states
+arising from such simple neuron models
+implies that brain structure is likely
+more important that specific neuron properties
+in producing these critical brain states.
 Overall, evolutionary graph theory allowed us
 to connect low-level payoff details for individual neurons
-to high-level phenomena such as chimera-states.
-Potential avenues of future research include applying the model
-to larger connectomes such as that
-of \glsxtrlong{dmelanogaster}~\citep{schlegel2024whole}.
-Additionally, it could prove fruitful to analytically study
-the dynamics of game types as a function of the payoff asymmetry
-to better understand how exponential fixation-time
-game types attract population states.
+to high-level phenomena such as chimera-states,
+and this model could serve as a valuable tool
+for clarifying the influence of network structure on neural dynamics.
 
 \section{Methods}
 \label{sec:methods}

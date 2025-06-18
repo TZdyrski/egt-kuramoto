@@ -19,3 +19,7 @@
 \pretocmd{\section}{\FloatBarrier}{}{}
 \pretocmd{\subsection}{\FloatBarrier}{}{}
 \pretocmd{\subsubsection}{\FloatBarrier}{}{}
+
+% Add comma separator for numbers
+\sisetup{group-minimum-digits=3}
+\sisetup{group-separator = {,}}

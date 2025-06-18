@@ -188,9 +188,10 @@ and the second equality used \cref{eq:comm_fixation_prob}.
 Unlike in the $\alpha = 1/2$ symmetric case, we cannot factor the
 exponential component out of the sum and cancel the $\rho_{CN,\Delta
 \phi_{qr}}$ terms.
-However, we can asymptotically expand $s_2/s_1$ for small $B_0/c \ll 1$;
+However, we can asymptotically expand $s_2/s_1$ for small
+$B_0/c \coloneqq \epsilon \ll 1$;
 additionally, since all of our simulations use $\beta \propto B$,
-we also assume $\beta/c \ll 1$.
+we also assume $\beta/c \sim \epsilon \ll 1$.
 Finally, to simplify the calculation,
 we define the asymptotic expansion of
 $\rho_{NC,\Delta \phi_{qr}} \coloneqq
@@ -198,15 +199,15 @@ $\rho_{NC,\Delta \phi_{qr}} \coloneqq
 +
 \rho_{NC,\Delta \phi_{qr}}^{(1)}
 +
-\order{B_0^2}
+\order{\epsilon^2}
 $
 where
 $
-\rho_{NC,\Delta \phi_{qr}}^{(i)}
+\rho_{NC,\Delta \phi_{qr}}^{(i)} \sim \epsilon^i
 $
-depends only on terms of total order $i$ in $B_0$ and $\beta$.
+depends only on terms of total order $i$ in $B_0/c$ and $\beta/c$.
 
-Then, to first order in $B_0$ and $\beta$,
+Then, to first order in $\epsilon$
 we have
 \begin{align*}
   \frac{s_2}{s_1}
@@ -245,7 +246,7 @@ we have
     +
     \rho_{NC,\Delta \phi_{qr}}^{(1)}
   }}
-  + \order{B_0^2}
+  + \order{\epsilon^2}
   \\
   &=
   e^{\delta (n-1)^2 c}
@@ -277,7 +278,7 @@ we have
   {\sum_{r=1}^{m} \rho_{NC,\Delta \phi_{qr}}^{(0)}
   }
   \Biggr\}
-  + \order{B_0^2}
+  + \order{\epsilon^2}
   \\
   &=
   e^{\delta (n-1)^2 c}
@@ -288,7 +289,7 @@ we have
     \frac{\delta n (n-1)}{m} (1 - 2 \alpha)
     \sum_{r=1}^{m} \beta(\Delta \phi_{qr})
   }
-  + \order{B_0^2}
+  + \order{\epsilon^2}
   \\
   &=
   \exp \Bab{\delta (n-1) \bab{
@@ -298,7 +299,7 @@ we have
     \frac{n (1 - 2 \alpha)}{m}
     \sum_{r=1}^{m} \beta(\Delta \phi_{qr})
   }}
-  + \order{B_0^2}
+  + \order{\epsilon^2}
   \\
   &=
   \exp \Bab{ \delta (n-1) \bab{
@@ -307,7 +308,7 @@ we have
     +
     \frac{n (1 - 2 \alpha)}{2} \beta_0
   }}
-  + \order{B_0^2}
+  + \order{\epsilon^2}
 \end{align*}
 Where, in the last line, we used
 the definition of
@@ -326,7 +327,7 @@ we find the probability of communicative fixation as
   \label{eq:full_analytic}
 \end{equation}
 with $s_2/s_1$ given by \cref{eq:full_analytic_frac},
-and the asymptotic, small $B_0/c$ approximation given by
+and the asymptotic, small $\epsilon$ approximation given by
 \begin{equation}
   m s_1 = \frac{1}{1 + s_2/s_1}
   \approx

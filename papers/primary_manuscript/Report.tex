@@ -1283,20 +1283,24 @@ Then, we define a chimera-like index $\chi$
 \begin{equation}
   \chi = \aab{
     \sigma_{\text{chi}}}_T
-    \text{\qquad with \qquad}
-    \sigma_{\text{chi}} \coloneqq \frac{1}{M-1} \sum_{m=1}^M
-    \pab{\rho_m(t) - \aab{\rho_m(t)}_M}^2
   \label{eq:chimera_index}
 \end{equation}
+where
+\begin{equation*}
+    \sigma_{\text{chi}} \coloneqq \frac{1}{M-1} \sum_{m=1}^M
+    \pab{\rho_m(t) - \aab{\rho_m(t)}_M}^2
+\end{equation*}
 and a metastability index $\lambda$
 \begin{equation}
   \lambda = \aab{
     \sigma_{\text{met}}}_M
-    \text{\qquad with \qquad}
-    \sigma_{\text{met}} \coloneqq \frac{1}{T-1} \sum_{t=1}^T
-    \pab{\rho_m(t) - \aab{\rho_m(t)}_T}^2
   \label{eq:metastability_index}
 \end{equation}
+where
+\begin{equation*}
+    \sigma_{\text{met}} \coloneqq \frac{1}{T-1} \sum_{t=1}^T
+    \pab{\rho_m(t) - \aab{\rho_m(t)}_T}^2
+\end{equation*}
 across the $M$ communities and $T$ time steps.
 The chimera-like index measures the difference in coherence between communities:
 complete homogeneity between communities

@@ -694,11 +694,9 @@ to the population.
     as functions of the asymmetry $\alpha$
     for the
     weighted, directed \gls{celegans} connectome.
-    The indices were calculated after splitting the graph
-    into two communities according to the nodes' relative covariance
-    for the $\alpha = \num{0.75}$ simulation
-    and grouped according to whether the sum
-    of a node's relative covariances sum is above \num{1500}.
+    To calculate the indices,
+    we split the graph into two communities according to the nodes'
+    relative covariance (\cf{} \cref{sec:chimera-metastability-ref}).
     The simulation were run for \num{8E6} time steps.
     \protect{\subref{fig:graph_celegans_asymmetry0}}--\protect{\subref{fig:graph_celegans_asymmetry1}}
     A snapshot of the \gls{celegans} connectome where
@@ -1232,7 +1230,7 @@ This parameter ranges from zero to one, inclusive,
 and represents how coherent the population is,
 with $\rho = 1$ for fully coherent and $\rho = 0$ fully disordered.
 
-\subsubsection{Chimera-like index and metastability index}
+\subsubsection{Chimera-like index and metastability index}\label{sec:chimera-metastability-def}
 To compare with a previous analysis~\citep{hizanidis2016chimera} of
 chimera-like states \gls{celegans} models,
 we define a pair of indices related to

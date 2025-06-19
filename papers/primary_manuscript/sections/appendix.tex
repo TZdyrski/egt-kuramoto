@@ -70,63 +70,47 @@ Thus, equation 16 of \tripp{} becomes
     \ab(2 \beta(\Delta\phi) - B_0) k
                  + B_0 - 2 \alpha n \beta(\Delta\phi) + (n-1) c)]
 \end{align*}
-
-Continuing to follow the derivation of \tripp{},
-we can calculate the ratio of fixation probabilities $\rho_F/\rho_E$ as
+and we find
 \begin{equation}
   \begin{aligned}
-    \frac{\rho_F}{\rho_E} &= \prod_{k=1}^{n-1} \gamma_k \\
-           &= \exp \ab\{
-                \delta
-                \sum_{k=1}^{n-1}
-                \ab[
-    \ab(2 \beta(\Delta\phi) - B_0) k
-                 + B_0 - 2 \alpha n \beta(\Delta\phi) + (n-1) c
-                 ]
-                 \} \\
-           &= \exp \ab\{
-                \delta
-                \ab[
-                \ab(2 \beta(\Delta\phi) - B_0) \frac{n(n-1)}{2}
-                 + \ab(B_0 - 2 \alpha n \beta(\Delta\phi) + (n-1) c) (n-1)
-                 ]
-                 \} \\
-           &= \exp \ab\{
-                \delta (n-1)
-                \ab[
-                (n-1) c + n \beta(\Delta\phi) (1 - 2 \alpha)
-                - \frac{n-2}{2} B_0
-                 ]
-                 \}
+    \prod_{k=1}^j  \gamma_k
+      &= \prod_{k=1}^j \exp\ab[\delta \ab(
+      \ab(2 \beta(\Delta\phi_{qr}) - B_0) k
+      + B_0 - 2 \alpha n \beta(\Delta\phi_{qr}) + (n-1) c)]
+      \\
+      &= \exp\ab[\delta \sum_{k=1}^j \ab(
+      \ab(2 \beta(\Delta\phi_{qr}) - B_0) k
+      + B_0 - 2 \alpha n \beta(\Delta\phi_{qr}) + (n-1) c)]
+      \\
+      &= \exp\ab[\delta \ab(
+      \ab(2 \beta(\Delta\phi_{qr}) - B_0) \frac{j(j+1)}{2}
+      + j \ab(B_0 - 2 \alpha n \beta(\Delta\phi_{qr}) + (n-1) c))]
+      \\
+      &= \exp\ab[\delta \ab(
+      \ab(\beta(\Delta\phi_{qr}) - \frac{B_0}{2}) j^2
+      + j \ab(\frac{B_0}{2} + \beta(\Delta\phi_{qr}) (1 - 2 \alpha n)  + (n-1) c))]
   \end{aligned}
-  \label{eq:fixation_prob_ratio}
+  \label{eq:gamma_prod}
 \end{equation}
-Notice, now the ratio of $\rho_F/\rho_E$ depends of $\Delta \phi$,
-unlike in the $\alpha=0.5$ case considered by \tripp{}.
-
-Similarly, since $\rho_E + \rho_F = 1$, we have
+The rest of the derivation in this section of \tripp{} holds.
+In particular, we will re-use two equations:
 \begin{equation}
-  \begin{aligned}
-    \rho_E &= \frac{1}{1+\rho_F/\rho_E}
-           = \frac{1}{1+\sum_{j=1}^{n-1} \prod_{k=1}^j \gamma_k} \\
-           &= \ab(1+\sum_{j=1}^{n-1} \prod_{k=1}^j \exp\ab[\delta \ab(
-           \ab(2 \beta(\Delta\phi_{qr}) - B_0) k
-           + B_0 - 2 \alpha n \beta(\Delta\phi_{qr}) + (n-1) c)])^{-1}
-                 \\
-           &= \ab(1+\sum_{j=1}^{n-1} \exp\ab[\delta \sum_{k=1}^j \ab(
-           \ab(2 \beta(\Delta\phi_{qr}) - B_0) k
-           + B_0 - 2 \alpha n \beta(\Delta\phi_{qr}) + (n-1) c)])^{-1}
-                 \\
-           &= \ab(1+\sum_{j=1}^{n-1} \exp\ab[\delta \ab(
-           \ab(2 \beta(\Delta\phi_{qr}) - B_0) j(j+1)/2
-           + j \ab(B_0 - 2 \alpha n \beta(\Delta\phi_{qr}) + (n-1) c))])^{-1}
-                 \\
-           &= \ab(1+\sum_{j=1}^{n-1} \exp\ab[\delta \ab(
-           \ab(\beta(\Delta\phi_{qr}) - B_0/2) j^2
-           + j \ab(B_0/2 + \beta(\Delta\phi_{qr}) (1 - 2 \alpha n)  + (n-1) c))])^{-1}
-  \end{aligned}
+    \rho_E = \frac{1}{1+\sum_{j=1}^{n-1} \prod_{k=1}^j \gamma_k}
   \label{eq:comm_fixation_prob}
 \end{equation}
+and
+\begin{equation}
+  \frac{\rho_F}{\rho_E} = \prod_{k=1}^{n-1} \gamma_k
+  \label{eq:fixation_prob_ratio}
+\end{equation}
+Additionally, we note that
+\cref{eq:gamma_prod} can be substituted into \cref{eq:fixation_prob_ratio}
+with $j=n-1$.
+This shows that $\rho_F/\rho_E$
+now depends of $\Delta \phi_{qr}$,
+unlike in the $\alpha=0.5$ case considered by \tripp{}
+where it simplifies to
+$\rho_F/\rho_E = \exp \ab(\delta \ab[(n-1)c - B_0 (n-2)/2])$.
 
 Following section 5 in the appendix of \tripp{},
 we apply these results from the two-population case
@@ -185,9 +169,10 @@ gives the ratio of the stationary state eigenvalues $s_1/s_2$ as
 \end{align}
 The first equality used \cref{eq:fixation_prob_ratio}
 and the second equality used \cref{eq:comm_fixation_prob}.
-Unlike in the $\alpha = 0.5$ symmetric case, we cannot factor the
-exponential component out of the sum and cancel the $\rho_{CN,\Delta
-\phi_{qr}}$ terms.
+Unlike in the $\alpha = 0.5$ symmetric case,
+the ratio $\rho_F/\rho_E$ depends on $\Delta \phi_{qr}$,
+so we cannot factor the exponential component out of the sum
+and cancel the $\rho_{CN,\Delta \phi_{qr}}$ terms.
 However, we can asymptotically expand $s_2/s_1$ for small
 $B_0/c \coloneqq \epsilon \ll 1$;
 additionally, since all of our simulations use $\beta \propto B$,

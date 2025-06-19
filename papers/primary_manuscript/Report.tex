@@ -714,7 +714,7 @@ with others remaining disordered: this is characteristic of a chimera state.
 In order to quantify this chimera-like effect, we will investigate
 the chimera-like index $\chi$ (\pcref{eq:chimera_index})
 and metastability index $\lambda$ (\pcref{eq:metastability_index}).
-As discussed in \cref{sec:stats_setup},
+As discussed in \cref{sec:chimera-metastability-def},
 the chimera-like index
 measures the coherence difference between communities of players,
 is equal to the time-averaged community covariance,
@@ -808,7 +808,7 @@ of the particular $\alpha = \num{0.75}$ simulation.
 Next, we seek to understand the types of games
 that nodes play during the population's evolution.
 In \cref{fig:game-type}, we investigate the plurality game type
-amongst all player interactions at each time step~(\cf{} \cref{sec:stats_setup}),
+amongst all player interactions at each time step~(\cf{} \cref{sec:plurality_game_type}),
 where the number of interactions between two players
 is the corresponding edge weight of the interaction graph.
 \Cref{fig:game-type} shows what fraction of time
@@ -1155,7 +1155,7 @@ the death node is replaced by a player with a uniformly random strategy;
 otherwise, it is replaced by a player with the same strategy as the birth node.
 This birth-death process is repeated for each turn.
 
-\subsection{Statistical indices}\label{sec:stats_setup}
+\subsection{Statistical indices}
 \subsubsection{Communication frequency}
 We define the frequency of communicative strategies
 $f_{\text{comm}}(t)$ as the fraction of players employing
@@ -1172,7 +1172,7 @@ we derive an analytic expression \cref{eq:full_analytic} for
 $f_{\text{comm}}$ in the well-mixed case
 by extend the work of \tripp{} to account for benefit asymmetry $\alpha$.
 
-\subsubsection{Plurality game type}
+\subsubsection{Plurality game type}\label{sec:plurality_game_type}
 Every edge of the interaction graph
 defines a game between the two players it connects.
 Using their relative phase difference $\Delta \phi$,

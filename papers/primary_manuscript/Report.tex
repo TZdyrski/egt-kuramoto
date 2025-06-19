@@ -205,8 +205,7 @@ to the large-scale communicativeness properties
 while also investigating the influence
 the \gls{celegans} connectome shape on chimera-like states.
 
-\section{Results}
-\label{sec:results}
+\section{Results}\label{sec:results}
 
 \subsection{Model Enhancements}
 \begin{figure*}
@@ -242,8 +241,7 @@ the \gls{celegans} connectome shape on chimera-like states.
     The payoff matrix shows the reward the row-player $(s_i, \phi_i)$
     receives after playing a game with the column-player $(s_j, \phi_j)$
     depending on each player's strategy $s$ and the phase difference $\Delta \phi$.
-  }
-  \label{fig:connectivity}
+  }\label{fig:connectivity}
 \end{figure*}
 
 We extend the EK game from \tripp{} in two ways:
@@ -336,8 +334,7 @@ of \cref{fig:payoff_matrix}.
     $\beta_0 = \num{0.95} B_0$.
     \protect{\subref{fig:phase-diagram-B_beta}}
     is an extension of figure 1 from \tripp{}.
-  }
-  \label{fig:phase-diagram}
+  }\label{fig:phase-diagram}
 \end{figure*}
 
 One of the key aspects of the EK model
@@ -355,8 +352,7 @@ while \cref{fig:phase-diagram-B_alpha} shows a $B$-$\alpha$ slice.
 
 
 
-\subsection{Complete graphs}
-\label{sec:complete_graph}
+\subsection{Complete graphs}\label{sec:complete_graph}
 
 \begin{figure*}
   \centering
@@ -415,8 +411,7 @@ while \cref{fig:phase-diagram-B_alpha} shows a $B$-$\alpha$ slice.
     the mutation rate is $\mu=\num{1E-4}$,
     and
     the cost $c$ is \num{0.1}.
-  }
-  \label{fig:well-mixed}
+  }\label{fig:well-mixed}
 \end{figure*}
 
 First, we will explore the influence of the newly introduced asymmetry
@@ -513,8 +508,7 @@ The temporary drops in communicative frequency $f_{\text{comm}}$
 and order parameter $\rho$ are likely the result of mutations,
 which are expected to occur, on average, every $1/\mu = \num{1E4}$ time steps.
 
-\subsection{\glsfmtshort{celegans} graphs}
-\label{sec:elegans_graph}
+\subsection{\glsfmtshort{celegans} graphs}\label{sec:elegans_graph}
 
 Here, we consider the weighted, directed hermaphroditic \gls{celegans} connectome.
 For reference, \cref{fig:graph} shows the $N = 300$ nodes and the directed edges
@@ -585,8 +579,7 @@ in \cref{sec:discussion}.
     the maximum mixed benefit $\beta_0$ is $\num{0.95} B_0$ at each step,
     and
     the cost $c$ is \num{0.1}.
-  }
-  \label{fig:c-elegans}
+  }\label{fig:c-elegans}
 \end{figure*}
 
 Next, to quantify the observations of \cref{fig:graph},
@@ -726,8 +719,7 @@ to the population.
     $B_0$ is \num{0.15},
     and
     $\beta_0$ is $\num{0.95} B_0$.
-  }
-  \label{fig:chimera-index}
+  }\label{fig:chimera-index}
 \end{figure*}
 
 Time-lapse animations of the system's time evolution
@@ -825,8 +817,7 @@ of the particular $\alpha = \num{0.75}$ simulation.
     $B_0$ is \num{0.15},
     $\beta_0$ is $\num{0.95} B_0$,
     and the simulation were run for \num{8E6} time steps.
-  }
-  \label{fig:game-type}
+  }\label{fig:game-type}
 \end{figure*}
 
 Next, we would like to understand the types of games being played
@@ -865,8 +856,7 @@ This shows that, as the asymmetry is varied,
 different game types dominate the population's evolution,
 and network topology influences how dominant these game types are.
 
-\section{Discussion}
-\label{sec:discussion}
+\section{Discussion}\label{sec:discussion}
 
 %\subsection{Game-type dynamics}
 The makeup of game types displayed in \cref{fig:game-type}
@@ -1106,11 +1096,9 @@ to high-level phenomena such as chimera-states,
 and this model could serve as a valuable tool
 for clarifying the influence of network structure on neural dynamics.
 
-\section{Methods}
-\label{sec:methods}
+\section{Methods}\label{sec:methods}
 
-\subsection{Game setup}
-\label{sec:game_setup}
+\subsection{Game setup}\label{sec:game_setup}
 We model the system of evolving, coupled oscillators
 by discretizing the $2\pi$ phase angle into $m$ discrete phases $2 \pi j/m$
 for $j \in 0, \ldots, m-1$.
@@ -1140,8 +1128,7 @@ Finally, the benefit asymmetry $\alpha \in [0,1]$ breaks the symmetry
 between the payoff for the communicator and the non-communicator
 when exactly one player is communicative.
 
-\subsection{Population setup}
-\label{sec:pop_setup}
+\subsection{Population setup}\label{sec:pop_setup}
 
 Given $N$ players, we associate a pair
 of weighted, directed graphs to the population.
@@ -1156,8 +1143,7 @@ These self-loops are necessary in the reproduction graph
 to ensure that each node has positive indegree
 as required by the Moran process described in the next section.
 
-\subsection{Birth-death Moran process}
-\label{sec:evo_setup}
+\subsection{Birth-death Moran process}\label{sec:evo_setup}
 % TODO: Bd is hugely different from death-Birth dynamics (dB);
 % this dB is more favorable for cooperation
 % Try this instead?
@@ -1184,8 +1170,7 @@ the death node is replaced by a player with a uniformly random strategy;
 otherwise, it is replaced by a player with the same strategy as the birth node.
 This birth-death process is repeated for each turn.
 
-\subsection{Statistical indices}
-\label{sec:stats_setup}
+\subsection{Statistical indices}\label{sec:stats_setup}
 \subsubsection{Communication frequency}
 We define the frequency of communicative strategies
 $f_{\text{comm}}(t)$ as the fraction of players employing

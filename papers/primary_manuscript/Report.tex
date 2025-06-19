@@ -1241,10 +1241,10 @@ by taking a subset
 (the first \num{8E4} steps for computations ease)
 of the simulation results
 for the \gls{celegans} simulation with asymmetry $\alpha = \num{0.75}$.
-We then calculate the covariance matrix $K_{i,j}$ of the strategy indices
-(ensuring that communicative ($C$, $\phi_i$)
-and non-communicative ($N$, $\phi_i$) are treated distinctly)
-and calculate the row-wise covariance-sums  $\sum_i K_{i,j}$.
+We then calculate the covariance matrix $K_{i,j}$ of the strategy indices,
+ensuring that communicative ($C$, $\phi_i$)
+and non-communicative ($N$, $\phi_i$) are treated distinctly.
+Next, we calculate the row-wise covariance-sums  $\sum_i K_{i,j}$.
 After finding the node with the maximum covariance-sum
 $\cov_{\text{max}} \coloneqq \max_j{\sum_i K_{i,j}}$,
 we form a community by collecting all nodes $j$ with covariance-sum

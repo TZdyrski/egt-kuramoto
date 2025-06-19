@@ -48,7 +48,7 @@ and
   are configurations with a simultaneous coexistence
   of synchronized and disordered populations.
   These states have been observed
-  in various brain systems~\citep{santos2017chimera,bansal2019cognitive},
+  in brain systems~\citep{santos2017chimera,bansal2019cognitive},
   and may be a key component
   in human cognition~\citep{bansal2019cognitive}.
   % Detailed background
@@ -74,7 +74,7 @@ and
   than the well-mixed population.
   Additionally, we find that the network has
   a low metastability ($\lambda < \num{0.01}$)
-  but a relatively large chimera-like index ($\xi \approx \num{0.13}$).
+  but a moderately large chimera-like index ($\xi \approx \num{0.13}$).
   % General context
   Our results connect individual neuron fitness
   and non-trivial connectivity topology
@@ -151,8 +151,8 @@ strategy pair with an independent dimension representing the player's ``phase''.
 on a complete graph, and the players' payoffs were modulated
 by a sinusoidal-dependence on their relative phases,
 representing the classic Kuramoto oscillator coupling.
-This study showed the emergence of various communicative (C)
-and non-communicative (N) regimes depending on the relative sizes
+This study showed the emergence of communicative (C)
+and non-communicative (N) regimes modulated by the relative sizes
 of the joint CC benefit $B_0$, the mixed CN/NC benefit $\beta_0$,
 and the cost $c$ imposed on communicators.
 
@@ -174,7 +174,7 @@ remain particularly poorly understood.
 %\subsection{\glsfmtshort{celegans} connectome}
 The nematode \gls{celegans}
 is a model organism in neuroscience due to
-its relatively simple brain connectome~\citep{cook2019whole}.
+its simple brain connectome~\citep{cook2019whole}.
 With a connectome containing just \num{302} neurons,
 the hermaphroditic \gls{celegans} is far more tractable to study
 than the nearly \num{100} billion neurons
@@ -338,7 +338,7 @@ of \cref{fig:payoff_matrix}.
 \end{figure*}
 
 One of the key aspects of the EK model
-is that many different $2 \times 2$ game types
+is that multiple $2 \times 2$ game types
 are available to the players during the population's evolution,
 such as deadlock, dilemma, chicken,
 \etc{}~\citep{bruns2015names}.
@@ -473,14 +473,14 @@ and maximum mixed benefit $\beta_0$ is $\num{0.95} B_0$.
 when the system heavily favors non-communicative players
 with $\alpha = 0$.
 It is unsurprising, then, that the system is virtually
-always in a completely non-communicative regime, as indicated by the
+always in a fully non-communicative regime, as indicated by the
 black line at $f_{\text{comm}} = 0$,
 with only a single, early excursion to an unsynchronized
 deadlock-type game (light blue).
 \Cref{fig:time-series_well-mixed_alpha-075} depicts an asymmetry $\alpha =0.75$
 that moderately encourages communicativeness.
 This plot shows slightly less metastability:
-the system spends most of its time in a completely communicative state
+the system spends most of its time in a fully communicative state
 (gray line at $f_{\text{comm}} = 1$)
 but has occasional dips to complete non-communication
 (black line at $f_{\text{comm}} = 0$)
@@ -498,7 +498,7 @@ Finally, \cref{fig:time-series_well-mixed_alpha-1} shows the
 $\alpha = 1$ case where communication is heavily incentivized.
 Here, we see the opposite result from
 \cref{fig:time-series_well-mixed_alpha-0}:
-the system is virtually always in the completely communicative regime,
+the system is virtually always in the fully communicative regime,
 with only brief excursions to unsynchronized,
 deadlock-type games (light blue).
 We note that all three scenarios are nearly always synchronized;
@@ -623,12 +623,12 @@ the directed case still shows a monotonic increase
 from low communicativeness for $B_0 < 0.1$
 to full communicativeness for $B_0 \ge 0.2$.
 This implies that the quality of directedness
-plays a relatively small role in the qualitative shape
+plays a smaller role in the qualitative shape
 of the \subref{fig:comm-frac_celegans-full} full \gls{celegans} case.
 On the other hand,
 the \subref{fig:comm-frac_celegans-undirected}
 \emph{weighted}, undirected connectome
-looks quite similar to the \subref{fig:comm-frac_celegans-full}
+looks similar to the \subref{fig:comm-frac_celegans-full}
 full \gls{celegans} case.
 In particular, this \subref{fig:comm-frac_celegans-undirected}
 weighted case
@@ -754,10 +754,10 @@ maximum joint benefit $B_0 = 0.15$,
 and maximum mixed benefit $\beta_0 = \num{0.95} B_0$.
 
 The metastability displayed in \cref{fig:chimera-index}
-is quite low at $\le \num{0.01}$ compared
-to a theoretical maximum of \num{0.08}.
-This implies that the system is quite stable
-and spends most of its time at a fairly constant
+is less than \num{0.01}, much smaller
+than the theoretical maximum of \num{0.08}.
+This implies that the system is metastable
+and spends most of its time at a nearly constant
 synchronicity $\rho_m(t)$.
 Furthermore, while the metastability is higher (more unstable)
 at $\approx \num{0.01}$ for the $\alpha = 0$ case,
@@ -765,10 +765,10 @@ the metastability drops precipitously for larger $\alpha$,
 always staying below \num{0.004} implying that
 higher asymmetry $\alpha$ makes the system more stable.
 On the other hand, the chimera-like index $\chi$
-attains fairly large values of \numrange{0.06}{0.13}
+attains large values of \numrange{0.06}{0.13}
 indicating a high chimeric quality.
 Considering the theoretical maximum is \num{0.28},
-the system is quite chimeric at nearly half the maximum.
+the system has high chimeric quality at nearly half the maximum.
 Given that the chimera-like index is averaged over time,
 this deviation from a complete chimera state
 arises from both imperfect separation of the coherent/disordered populations
@@ -884,8 +884,8 @@ the \cref{fig:game-type_celegans-full} \gls{celegans} setup.
 We can compare the \cref{fig:game-type_well-mixed}
 $\alpha = 0.5$ case
 to the time-series results in figure 4 of \tripp{}.
-Those results also show the system spending the vast majority
-of its time in a synchronized state.
+Those results also show the system spending
+virtually all of its time in a synchronized state.
 When the \tripp{} system was not synchronized,
 it displayed chicken (denoted ``snowdrift'')
 and staghunt (denoted ``coordination'',
@@ -975,7 +975,7 @@ We notice that the order parameter in \cref{fig:time-series_celegans-full}
 actually spends a good deal of time in this range,
 allowing for game types that don't correspond to the nearly-synchronized games.
 While the $\alpha = 0.75$ case depicted in \cref{fig:time-series_celegans-full}
-still mostly displays the nearly-synchronized hero-type game
+still displays the nearly-synchronized hero-type game
 (likely because the hero region in \cref{fig:phase-diagram-B_alpha}
 contains most of the white $\Delta \phi$ dots for $\alpha = 0.75$),
 the $\alpha = 0, 0.25, 0.5$ cases all have wider $\Delta \phi$ regimes where
@@ -1004,11 +1004,11 @@ We notice a large region of light red representing
 a synchronized group of non-communicators,
 as well as a mix of desynchronized neighbors.
 This coexistence of strong synchronization and disorder
-is consistent with the relatively high
+is consistent with the high
 chimera-like index $\chi$ observed in \cref{fig:chimera-index} for $\alpha = 0$.
 Likewise, the $\alpha = 0.75$ case depicted in \cref{fig:graph}
 has an even higher $\chi = \num{0.13}$.
-It displays a very large
+It displays a large
 synchronized group of non-communicative players with identical phases in red,
 as well as a spread of desynchronized players with varying phases/colors.
 In contrast,
@@ -1028,7 +1028,7 @@ Therefore, the strength of the chimera state
 Additionally, this is similar to the maximum value of \num{0.12}
 observed in previous studies on chimera states
 for modular \gls{celegans} networks~\citep{hizanidis2016chimera}.
-The agreement between these very different models
+The agreement between these different models
 of the \gls{celegans} connectome
 support the claim that the connectivity structure---rather than
 a particular neuron model or any biochemical qualities---is responsible
@@ -1050,7 +1050,7 @@ had a much stronger influence on the shape of the communication frequency plot
 than the graph's directedness did.
 Finally, we found qualitative differences between the composition
 of the well-mixed populations and the \gls{celegans} populations.
-While the well-mixed players had largely homogeneous populations
+While the well-mixed players had homogeneous populations
 that occasionally switched between fully communicative
 and fully non communicative,
 the \gls{celegans} population remained far more heterogenous
@@ -1231,7 +1231,7 @@ we also define the standard Kuramoto order parameter:
 \end{equation}
 This parameter ranges from zero to one, inclusive,
 and represents how coherent the population is,
-with $\rho = 1$ for completely coherent and $\rho = 0$ completely disordered.
+with $\rho = 1$ for fully coherent and $\rho = 0$ fully disordered.
 
 \subsubsection{Chimera-like index and metastability index}
 To compare with a previous analysis~\citep{hizanidis2016chimera} of

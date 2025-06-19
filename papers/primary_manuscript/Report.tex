@@ -209,7 +209,7 @@ the \gls{celegans} connectome shape on chimera-like states.
 \label{sec:results}
 
 \subsection{Model Enhancements}
-\begin{figure}
+\begin{figure*}
   \centering
   \begin{nomemoize} % NiceMatrix uses the tikz option `remember picture`;
                     % this automatically aborts memoization, so disable it to save time
@@ -244,7 +244,7 @@ the \gls{celegans} connectome shape on chimera-like states.
     depending on each player's strategy $s$ and the phase difference $\Delta \phi$.
   }
   \label{fig:connectivity}
-\end{figure}
+\end{figure*}
 
 We extend the EK game from \tripp{} in two ways:
 placing the player network on a directed, weighted graph;
@@ -296,7 +296,7 @@ These payoffs are summarized in the payoff matrix
 of \cref{fig:payoff_matrix}.
 
 \subsection{Parameter space}
-\begin{figure}
+\begin{figure*}
   \centering
   \begin{subcaptiongroup}
     \stackinset{l}{2.7in}{t}{0pt}%
@@ -338,7 +338,7 @@ of \cref{fig:payoff_matrix}.
     is an extension of figure 1 from \tripp{}.
   }
   \label{fig:phase-diagram}
-\end{figure}
+\end{figure*}
 
 One of the key aspects of the EK model
 is that many different $2 \times 2$ game types
@@ -358,7 +358,7 @@ while \cref{fig:phase-diagram-B_alpha} shows a $B$-$\alpha$ slice.
 \subsection{Complete graphs}
 \label{sec:complete_graph}
 
-\begin{figure}
+\begin{figure*}
   \centering
   \begin{subcaptiongroup}
     \stackinset{l}{3.4in}{t}{2.5in}%
@@ -417,7 +417,7 @@ while \cref{fig:phase-diagram-B_alpha} shows a $B$-$\alpha$ slice.
     the cost $c$ is \num{0.1}.
   }
   \label{fig:well-mixed}
-\end{figure}
+\end{figure*}
 
 First, we will explore the influence of the newly introduced asymmetry
 on the population's evolution by
@@ -533,7 +533,7 @@ This mixture of synchronized and desynchronized nodes
 is reflective of a chimera state and will be discussed more
 in \cref{sec:discussion}.
 
-\begin{figure}
+\begin{figure*}
   \centering
   \begin{subcaptiongroup}
     \stackinset{l}{0.35in}{t}{3.7in}%
@@ -587,7 +587,7 @@ in \cref{sec:discussion}.
     the cost $c$ is \num{0.1}.
   }
   \label{fig:c-elegans}
-\end{figure}
+\end{figure*}
 
 Next, to quantify the observations of \cref{fig:graph},
 \cref{fig:comm-frac_celegans-full} shows the fraction of players
@@ -674,7 +674,7 @@ Again, these are most likely the results of mutations introduced
 to the population.
 
 \subsubsection{Chimera-like index}
-\begin{figure}
+\begin{figure*}
   \centering
   \pgfplotsset{width=0.4\textwidth}
   \begin{subcaptiongroup}
@@ -728,7 +728,7 @@ to the population.
     $\beta_0$ is $\num{0.95} B_0$.
   }
   \label{fig:chimera-index}
-\end{figure}
+\end{figure*}
 
 Time-lapse animations of the system's time evolution
 (see supplementary materials)
@@ -791,7 +791,7 @@ corresponds to an intrinsic separation rather than an artifact
 of the particular $\alpha = \num{0.75}$ simulation.
 
 \subsubsection{Game types}
-\begin{figure}
+\begin{figure*}
   \centering
   \begin{subcaptiongroup}
     \stackinset{l}{2.3in}{t}{0pt}%
@@ -827,7 +827,7 @@ of the particular $\alpha = \num{0.75}$ simulation.
     and the simulation were run for \num{8E6} time steps.
   }
   \label{fig:game-type}
-\end{figure}
+\end{figure*}
 
 Next, we would like to understand the types of games being played
 during the population's evolution.
@@ -1319,6 +1319,7 @@ while spending equal times in each states yields $\lambda = 1/12
 \bibliography{references.bib}
 
 \appendix
+\onecolumn
 \input{sections/appendix.tex}
 
 \end{document}

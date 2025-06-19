@@ -126,9 +126,8 @@ using game-theoretic approaches.
 Kuramoto oscillators are groups of networked oscillators
 where the coupling strength depends sinusoidally
 on the oscillators' phase difference.
-Kuramoto networks are studied for their ability to display
-tunable synchronization.
-This synchronization has also made them popular
+Kuramoto networks display tunable synchronization
+which has made them popular
 as a model for neuron behaviour~\citep{cabral2011role,deng2024chimera},
 While other studies~\citep{antonioni2017coevolution}
 have motivated this Kuramoto connection
@@ -140,15 +139,16 @@ It also allowed them to investigate how cooperation might arise
 amongst collections of communicative and non-communicative neurons
 in the suprachiasmatic nucleus.
 Though permanent cells such as neurons don't reproduce,
-the activation features (\ie{} strategies) can still
-be studied with evolutionary game theory
-if learning is treated as
+evolutionary game theory can still apply to their
+activation features (\ie{} strategies)
+by treating learning as
 an evolutionary process~\citep{cohen2009evolutionary}.
 This evolutionary Kuramoto model
 supplemented the usual communicative/non-communicative
 strategy pair with an independent dimension representing the player's ``phase''.
 \tripp{} assumed a well-mixed model of players
-on a complete graph, and the players' payoffs were modulated
+on a complete graph,
+and they modulated the players' payoffs
 by a sinusoidal-dependence on their relative phases,
 representing the classic Kuramoto oscillator coupling.
 This study showed the emergence of communicative (C)
@@ -161,8 +161,9 @@ One intriguing aspect of neuron oscillations
 is the observation of chimera states~\citep{majhi2019chimera}.
 These states exhibit the simultaneous existence
 of coherent and disordered phases~\citep{abrams2004chimera}.
-Chimera states have been proposed
-as a key component of human cognitive organization~\citep{bansal2019cognitive},
+Previous studies have proposed
+chimera states as
+a key component of human cognitive organization~\citep{bansal2019cognitive},
 a facilitator of spiking and bursting phases~\citep{santos2017chimera},
 and an outcome of modular networks~\citep{hizanidis2016chimera}.
 Despite the observed importance of these chimera states,
@@ -229,7 +230,7 @@ the \gls{celegans} connectome shape on chimera-like states.
     }
     \protect{\subref{fig:graph_well-mixed}}
     The graph of the well-mixed population showing $N=20$ players,
-    with each pair players being connected by a directed edge in each direction.
+    with each pair players connected by a directed edge in each direction.
     \protect{\subref{fig:player_interactions}}
     The connectivity between two sample players, $i$ and $j$,
     showing directed, weighted edges $w_i$ and $w_j$.
@@ -254,20 +255,21 @@ for the well-mixed population in \tripp{} represented as a complete graph.
 Each directed edge on the interaction graph
 represents a single game between the two connected nodes (players).
 The game's payoffs only flow to the tail node,
-but the usual, bidirectional game can be represented by
+but it is possible to represent
+the usual, bidirectional game by
 a pair of edges in both directions,
 as shown in \cref{fig:player_interactions}.
 We note that the \gls{celegans} connectome
 has \num{38} self-loops, \num{669} bidirectional edge pairs,
 and \num{2331} unpaired edges.
-Finally, each payoff is scaled by the edge's weight;
+Finally, we scale each payoff by the edge's weight;
 since the \gls{celegans} weights are all integers,
-the edge weight can be interpreted as the number of games played
+we can interpret the edge weight as the number of games played
 between the two nodes.
 
 We also generalize the payoff structure to incorporate
 an asymmetry between communicators and non-communicators.
-Each player (node) is represented by a 2-tuple of parameters,
+Each player (node) corresponds to a 2-tuple of parameters,
 its strategy $s_i$---either communicative $C$ or non-communicative $N$---
 and its phase $\phi_i$---taking one of \num{20} evenly-spaced values
 between $0$ and $2 \pi$.
@@ -277,9 +279,9 @@ Communicative players always pay a cost $c$.
 If both players are non-communicative, the payoff is zero;
 conversely, if both players are communicative,
 the payoff is $B_0 f(\Delta \phi) - c$,
-where the sinusoidal Kuramoto coupling
-$f(\Delta \phi) = [1+\cos(\phi_j - \phi_i)]/2$
-is scaled by the joint CC benefit, $B_0$.
+where $B_0$ is the joint CC benefit
+and $f(\Delta \phi) = [1+\cos(\phi_j - \phi_i)]/2$
+is the sinusoidal Kuramoto coupling.
 When exactly one of the players is communicative,
 we introduce an asymmetry $\alpha \in [0,1]$ to allow for differing payoffs
 between the communicative and non-communicative players.
@@ -290,8 +292,7 @@ If the tail player is non-communicative,
 the payoff is $2 (1-\alpha) \beta_0 f(\Delta \phi)$.
 This asymmetry $\alpha$ allows us to promote or suppress communicativeness,
 and $\alpha = 0.5$ reproduces the symmetric case of \tripp{}.
-These payoffs are summarized in the payoff matrix
-of \cref{fig:payoff_matrix}.
+The payoff matrix in \cref{fig:payoff_matrix} summarizes these payoffs.
 
 \subsection{Parameter space}
 \begin{figure*}
@@ -323,7 +324,7 @@ of \cref{fig:payoff_matrix}.
     $B = B_0 [1 + \cos(\Delta \phi)]/2$
     and
     $\beta = \beta_0 [1 + \cos(\Delta \phi)]/2$.
-    The game type corresponding to each color is displayed in the legend.
+    The legend displays the game type corresponding to each color.
     The white dots represent the $m=20$ potential phase differences.
     The cost $c$ is \num{0.1};
     for
@@ -380,7 +381,7 @@ while \cref{fig:phase-diagram-B_alpha} shows a $B$-$\alpha$ slice.
     The marks represent the simulation results
     and the lines represent the theory predictions.
     The $B_0$ step size is \num{0.04},
-    and the simulations were run for \num{2E8} time steps.
+    and the simulations ran for \num{2E8} time steps.
     \protect{\subref{fig:time-series_well-mixed_alpha-0}}--\protect{\subref{fig:time-series_well-mixed_alpha-1}}
     Scatter plots where
     the left vertical axis of each subplot gives
@@ -401,7 +402,7 @@ while \cref{fig:phase-diagram-B_alpha} shows a $B$-$\alpha$ slice.
     and
     \protect{\subref{fig:time-series_well-mixed_alpha-1}}
     $\alpha = 1$,
-    and the simulation were run for \num{8E5} time steps.
+    and the simulation ran for \num{8E5} time steps.
     For all four subplots,
     the network topologies are the
     $N=20$ well-mixed population,
@@ -460,7 +461,7 @@ $\rho \in [0,1]$
 given by \cref{eq:order_parameter}.
 These plots shows the results
 for a well-mixed population of $N=20$ players,
-and the simulations were run
+and the simulations ran
 for \num{8E5} time steps with
 selection strength $\delta = 0.2$,
 asymmetry $\alpha = 0.75$,
@@ -505,8 +506,8 @@ We note that all three scenarios are nearly always synchronized;
 the order parameter $\rho$ (magenta) is almost always $\rho = 1$,
 with only occasional dips.
 The temporary drops in communicative frequency $f_{\text{comm}}$
-and order parameter $\rho$ are likely the result of mutations,
-which are expected to occur, on average, every $1/\mu = \num{1E4}$ time steps.
+and order parameter $\rho$ are likely the result of mutations
+which occur, on average, every $1/\mu = \num{1E4}$ time steps.
 
 \subsection{\glsfmtshort{celegans} graphs}\label{sec:elegans_graph}
 
@@ -524,8 +525,7 @@ We note the large, synchronized group
 of red, non-communicative nodes in the bottom of the graph,
 as well as the remaining unsynchronized nodes around it.
 This mixture of synchronized and desynchronized nodes
-is reflective of a chimera state and will be discussed more
-in \cref{sec:discussion}.
+is reflective of a chimera state.
 
 \begin{figure*}
   \centering
@@ -567,11 +567,11 @@ in \cref{sec:discussion}.
     \protect{\subref{fig:comm-frac_celegans-undirected}}
     weighted, undirected \gls{celegans} connectome.
     The $B_0$ step size is \num{0.04} and
-    the simulations were run for \num{2E8} time steps.
+    the simulations ran for \num{2E8} time steps.
     \protect{\subref{fig:time-series_celegans-full}}
     Scatter plot with the same axes and coloring
     as \protect{\crefrange{fig:time-series_well-mixed_alpha-0}{fig:time-series_well-mixed_alpha-1}}.
-    The simulation was run for \num{8E5} time steps.
+    The simulation ran for \num{8E5} time steps.
     For all cases,
     the selection strength is $\delta=0.2$,
     the asymmetry is $\alpha=0.75$,
@@ -588,8 +588,8 @@ using communicative strategies $f_{\text{comm}}$ averaged across
 the entire simulation of \num{2E8} time steps as a function
 of the maximum joint benefit $B_0$
 for the \gls{celegans} connectome network topologies.
-In addition, two variants of the full weighted, directed \gls{celegans}
-connectome are shown:
+In addition, the figure shows two variants
+of the full weighted, directed \gls{celegans} connectome:
 a \subref{fig:comm-frac_celegans-unweighted} \emph{directed} but unweighted case
 and
 a \subref{fig:comm-frac_celegans-undirected} \emph{weighted} but undirected case.
@@ -645,7 +645,7 @@ as we did for the well-mixed case in
 \crefrange{fig:time-series_well-mixed_alpha-0}{fig:time-series_well-mixed_alpha-1}.
 The setup is the same as in
 \crefrange{fig:time-series_well-mixed_alpha-0}{fig:time-series_well-mixed_alpha-1}
-except that the complete interaction graph is replaced with the \gls{celegans} connectome.
+after replacing the complete interaction graph with the \gls{celegans} connectome.
 Compared to the well-mixed case,
 the \subref{fig:time-series_celegans-full} \gls{celegans} case
 depicts a far more heterogeneous population.
@@ -697,7 +697,7 @@ to the population.
     To calculate the indices,
     we split the graph into two communities according to the nodes'
     relative covariance (\cf{} \cref{sec:chimera-metastability-ref}).
-    The simulation were run for \num{8E6} time steps.
+    The simulation ran for \num{8E6} time steps.
     \protect{\subref{fig:graph_celegans_asymmetry0}}--\protect{\subref{fig:graph_celegans_asymmetry1}}
     A snapshot of the \gls{celegans} connectome where
     blue colors are communicative,
@@ -729,12 +729,12 @@ and metastability index $\lambda$ (\pcref{eq:metastability_index}).
 As discussed in \cref{sec:stats_setup},
 the chimera-like index
 measures the coherence difference between communities of players,
-is calculated as the time-averaged community covariance,
+equals the time-averaged community covariance,
 and has a theoretical maximum value of \num{0.29}.
 Conversely, the metastability index
 represents how often the system transitions
 between synchronicity and desynchronicity,
-is calculated as the community-average of the temporal covariance,
+equals the community-average of the temporal covariance,
 and has a practical maximum of \num{0.08}.
 \Cref{fig:chimera-index} shows these results
 as functions of the asymmetry $\alpha$.
@@ -742,7 +742,7 @@ The left vertical axis depicts the chimera-like index $\chi$
 in a solid line,
 while the right vertical axis shows the metastability index
 in a dashed line.
-These simulations were run with
+These simulations ran with
 for \num{8E6} time steps with
 selection strength $\delta = 0.2$,
 mutation rate $\mu=\num{1E-4}$,
@@ -766,8 +766,8 @@ attains large values of \numrange{0.06}{0.13}
 indicating a high chimeric quality.
 Considering the theoretical maximum is \num{0.28},
 the system has high chimeric quality at nearly half the maximum.
-Given that the chimera-like index is averaged over time,
-this deviation from a complete chimera state
+Given that we average the chimera-like index over time,
+the system's deviation from a complete chimera state
 arises from both imperfect separation of the coherent/disordered populations
 as well as time fluctuations in the chimeric quality.
 While we observe that $\chi$ has a maximum at $\alpha = \num{0.75}$,
@@ -813,12 +813,12 @@ of the particular $\alpha = \num{0.75}$ simulation.
     the cost $c$ is \num{0.1},
     $B_0$ is \num{0.15},
     $\beta_0$ is $\num{0.95} B_0$,
-    and the simulation were run for \num{8E6} time steps.
+    and the simulation ran for \num{8E6} time steps.
   }\label{fig:game-type}
 \end{figure*}
 
-Next, we seek to understand the types of games being played
-during the population's evolution.
+Next, we seek to understand the types of games
+that nodes play during the population's evolution.
 In \cref{fig:game-type}, we investigate the plurality game type
 amongst all player interactions at each time step~(\cf{} \cref{sec:stats_setup}),
 where the number of interactions between two players
@@ -833,15 +833,15 @@ and
 \gls{celegans} connectome
 network topologies.
 The \subref{fig:game-type_well-mixed} well-mixed case
-shows that the time evolution for each asymmetry $\alpha$
-is dominated by synchronized play
-for over \SI{99.3}{\percent} of the runtime.
+shows that system is fully synchronized
+for over \SI{99.3}{\percent} of the runtime
+across every asymmetry $\alpha$.
 In contrast, the
 \subref{fig:game-type_celegans-full} \gls{celegans} connectome system
 is never synchronized.
 Instead, disordered game types (\ie{} states other than ``all-C'' or ``all-N'')
 dominate,
-with the dominant game type changing as the asymmetry is varied:
+with the dominant game type changing as the asymmetry varies:
 dilemma for $\alpha = 0, 0.25$, chicken for $\alpha = 0.5$,
 hero for $\alpha = 0.75$, and deadlock for $\alpha = 1$.
 Additionally, the \gls{celegans} system displays
@@ -849,7 +849,7 @@ some game-type heterogeneity, with
 deadlock-type game being the plurality
 \SIrange{1}{14}{\percent} of the time
 for asymmetry $\alpha \le 0.5$.
-This shows that, as the asymmetry is varied,
+This shows that, as the asymmetry varies,
 different game types dominate the population's evolution,
 and network topology influences how dominant these game types are.
 
@@ -920,8 +920,8 @@ that have exponentially slow fixation times~\citep{antal2006fixation},
 so one might expect that these games would be over-represented
 due to their long fixation times.
 Nevertheless, the strong $\alpha = 1$ communicativeness bias
-enhances synchronization and ensures that
-chimeric qualities are suppressed
+enhances synchronization and suppresses
+chimeric qualities
 (\cf{} the low $\chi$ for $\alpha = 1$ in \cref{fig:chimera-index}).
 
 We can further explain this distribution of disordered games
@@ -1065,7 +1065,7 @@ applying the model to parameterized families of graphs could allow
 for fine-tuning these parameters to extract these relations.
 Furthermore, the parameter space analysis provided clues
 regarding the types of games the neurons played,
-but additional study is needed to determine a causal relation.
+but additional study is necessary to determine a causal relation.
 Studying attractors
 of the parameter space of game types
 could shed light on the long-time game distributions,
@@ -1147,7 +1147,7 @@ as required by the Moran process described in the next section.
 The population is updated according to a birth-death Moran process
 with exponential fitness~\citep{lieberman2005evolutionary}.
 On each turn, the following steps are performed.
-First, a game is played on each edge $j$ in the interaction graph,
+First, pairs of nodes play a game on each edge $j$ in the interaction graph,
 each edge's payoff $\pi_j$ is scaled by the edge weight $w_j$,
 and the relevant payoff $w_j \pi_j$ is awarded to the tail node only.
 \Cref{fig:player_interactions} shows an illustration of this process
@@ -1192,7 +1192,7 @@ we can calculate the payoff matrix.
 Each edge's payoff matrix corresponds to one game type~\citep{bruns2015names}
 by comparing the order of each of the four entries.
 If two entries of the matrix are equal (\ie{} a non-strict) game,
-the symmetry is broken according to the following order
+we break the symmetry according to the following order
 \begin{equation}
 \begin{bNiceMatrix}[first-col,first-row,hvlines]
   & C & N \\
@@ -1201,7 +1201,7 @@ the symmetry is broken according to the following order
 \end{bNiceMatrix}
 \end{equation}
 Note that other conventions exist~\citep{bruns2015names}
-wherein the two columns are swapped.
+which swap the two columns.
 
 At each time step, we calculate the game type for each edge
 of the interaction graph.
@@ -1210,7 +1210,7 @@ where each edge's count is weighted by its edge weight.
 Then, we calculate the frequency of this ``plurality game'' across
 all time steps of a given simulation to determine the distribution
 of games commonly played.
-Note that an edge's game type is determined solely
+Note that we determine an edge's game type solely
 by their relative phase $\Delta \phi$ and is independent
 of the players' communicativeness.
 Furthermore, this metric is only sensitive to the
@@ -1218,8 +1218,8 @@ plurality game and therefore provides no information
 on the presence/absence of minority game types.
 
 \subsubsection{Order parameter}
-Given that this evolutionary game model was inspired
-by the Kuramoto system of coupled oscillators,
+Given that the Kuramoto system of coupled oscillators
+inspired this evolutionary game model,
 we also define the standard Kuramoto order parameter:
 \begin{equation}
   \rho = \frac{1}{N} \abs{\sum_{j=1}^N e^{\im \phi_j}}

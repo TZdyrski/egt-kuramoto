@@ -90,63 +90,46 @@ and
 Evolutionary game theory (EGT) is the application
 of game theory to evolving populations
 of players with fixed strategies.
-This tool is particularly well-suited to studying how microscopic interaction rules
-give rise to macroscopic population patterns
-such as cooperation~\citep{sigmund1999evolutionary}
-and has been applied to fields ranging from international politics to ecology
-to protein folding~\citep{traulsen2023future}.
+This tool is useful for studying how local interaction rules
+yield large-scale patterns such as cooperation~\citep{sigmund1999evolutionary}
+and has found use in fields including international politics, ecology,
+and protein folding~\citep{traulsen2023future}.
+Studies~\citep{cohen2009evolutionary,antonioni2017coevolution,tripp2022evolutionary}
+have even applied EGT to non-reproducing neurons by treating the learning
+of interneuron communication strategies as an evolutionary process.
 Evolutionary \emph{graph} theory places evolutionary game theory
 on graphs to investigate the role of structure on population evolution.
 Prior studies have found that structure
 qualitatively changes game evolution.
-For instance, cooperation can be enhanced by
-decreasing the average number of edges~\citep{ohtsuki2006simple}
-or having an intermediate proportion
-of unidirectional edges~\citep{su2022evolution},
-while cooperation is suppressed
-for edge-weighted graphs~\citep{bhaumik2024constant}.
-Thus, the complex influences of
-incompleteness, directedness, and weightedness combine
-to determine the variety of outcomes for evolving populations.
+For instance, cooperation is enhanced by
+small-degree nodes~\citep{ohtsuki2006simple}
+or unidirectional edges~\citep{su2022evolution}
+and suppressed by weighted edges~\citep{bhaumik2024constant}.
+Thus, any analysis of evolving, structured populations
+must include the effects of
+incompleteness, directedness, and weightedness.
 
 %\subsection{Evolutionary Kuramoto dynamics}
-Previously, Tripp, Fu, and Pauls~\citep{tripp2022evolutionary}
-(abbreviated \tripp{} hereafter)
-created an EGT model
-to capture the behaviour of Kuramoto oscillators
-using game-theoretic approaches.
-Kuramoto oscillators are groups of networked oscillators
+Kuramoto networks are groups of coupled oscillators
 where the coupling strength depends sinusoidally
 on the oscillators' phase difference.
-Kuramoto networks display tunable synchronization
-which has made them popular
-as a model for neuron behaviour~\citep{cabral2011role,deng2024chimera},
-While other studies~\citep{antonioni2017coevolution}
-have motivated this Kuramoto connection
-by modeling the continuous phase parameter $\phi$ with EGT,
-those models were limited to only the prisoner's dilemma game type.
-However, \tripp{} discretized the phase parameter,
-allowing them to incorporate games beyond the prisoner's dilemma.
-It also allowed them to investigate how cooperation might arise
-amongst collections of communicative and non-communicative neurons
-in the suprachiasmatic nucleus.
-Though permanent cells such as neurons don't reproduce,
-evolutionary game theory can still apply to their
-activation features (\ie{} strategies)
-by treating learning as
-an evolutionary process~\citep{cohen2009evolutionary}.
-This evolutionary Kuramoto model
-supplemented the usual communicative/non-communicative
-strategy pair with an independent dimension representing the player's ``phase''.
-\tripp{} assumed a well-mixed model of players
-on a complete graph,
-and they modulated the players' payoffs
-by a sinusoidal-dependence on their relative phases,
-representing the classic Kuramoto oscillator coupling.
-This study showed the emergence of communicative (C)
-and non-communicative (N) regimes modulated by the relative sizes
-of the joint CC benefit $B_0$, the mixed CN/NC benefit $\beta_0$,
-and the cost $c$ imposed on communicators.
+These networks are popular
+models for neuron behaviour~\citep{cabral2011role,deng2024chimera}
+because they exhibit tunable synchronization.
+Prior studies~\citep{antonioni2017coevolution}
+have modelled interneuron communication
+with Kuramoto oscillators and EGT
+using the prisoner's dilemma game type.
+Tripp, Fu, and Pauls~\citep{tripp2022evolutionary}
+(abbreviated \tripp{} hereafter)
+generalized this approach to dynamically changing game types
+with their evolutionary Kuramoto (EK) model.
+\tripp{} considered a well-mixed player population
+characterized by a communicative/non-communicative strategy
+and quantized Kuramoto phase.
+They showed how the relationship between communication benefit and cost
+influences the emergence of synchronized communication
+or non-communication.
 
 %\subsection{Chimera states}
 One intriguing aspect of neuron oscillations
@@ -160,18 +143,13 @@ a facilitator of spiking and bursting phases~\citep{santos2017chimera},
 and an outcome of modular networks~\citep{hizanidis2016chimera}.
 Despite the observed importance of these chimera states,
 the factors that give rise to coherent/disordered coexistence
-remain incompletely characterized,
-and the origins of chimera states
-remain particularly poorly understood.
+remain incompletely characterized.
 
 %\subsection{\glsfmtshort{celegans} connectome}
 The nematode \gls{celegans}
 is a model organism in neuroscience due to
-its simple brain connectome~\citep{cook2019whole}.
-With a connectome containing just \num{302} neurons,
-the hermaphroditic \gls{celegans} is far more tractable to study
-than the nearly \num{100} billion neurons
-in the human brain~\citep{von2016search}.
+its simple brain connectome~\citep{cook2019whole}
+of only \num{302} neurons.
 Despite their simplicity, models of the \gls{celegans} brain
 still display a wide array of complex phenomena including
 topologically-central rich clubs
@@ -184,7 +162,7 @@ to the \gls{celegans} connectome model.
 
 %\subsection{Outline}
 In this paper,we will generalize
-the Evolutionary Kuramoto (EK) model
+the evolutionary Kuramoto model
 of \tripp{} by adding an asymmetry between
 the communicator and non-communicator payoffs
 and applying it to incomplete, directed, and weighted graphs.

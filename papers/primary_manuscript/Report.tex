@@ -219,50 +219,41 @@ of the \gls{celegans} connectome shape on chimera-like states.
 We extend the EK model from \tripp{} in two ways:
 placing the player network on a directed, weighted graph;
 and introducing a payoff asymmetry.
-Introducing a graph structure, with players represented by nodes
-and interactions by edges, allows us to tailor the interactions.
-For instance, \cref{fig:graph_well-mixed} shows the interaction graph
-for the well-mixed population in \tripp{} represented as a complete graph.
-Each directed edge on the interaction graph
-represents a single game between the two connected nodes (players).
-The game's payoffs only flow to the tail node,
-but it is possible to represent
-the usual, bidirectional game by
+First, we represent the well-mixed population in \tripp{}
+as a complete graph in \cref{fig:graph_well-mixed}
+with players represented by nodes and games by edges.
+We generalize this to directed graphs
+where game (edge) payoffs only flow to the tail players (nodes).
+We can also represent bidirectional games with
 a pair of edges in both directions,
 as shown in \cref{fig:player_interactions}.
-We note that the \gls{celegans} connectome
+For reference, the \gls{celegans} connectome
 has \num{38} self-loops, \num{669} bidirectional edge pairs,
 and \num{2331} unpaired edges.
-Finally, we scale each payoff by the edge's weight;
-since the \gls{celegans} weights are all integers,
-we can interpret the edge weight as the number of games played
-between the two nodes.
+Finally, we interpret the \gls{celegans} integer-valued
+edge weights as the number of connections between nodes,
+so these weights scale each payoff.
 
 We also generalize the payoff structure to incorporate
 an asymmetry between communicators and non-communicators.
-Each player (node) corresponds to a 2-tuple of parameters,
-its strategy $s_i$---either communicative $C$ or non-communicative $N$---
+We characterized each player (node) by its
+strategy $s_i$---either communicative $C$ or non-communicative $N$---
 and its phase $\phi_i$---taking one of \num{20} evenly-spaced values
 between $0$ and $2 \pi$.
-The payoffs between a pair of players depend only on their strategies
-and their relative phase difference $\Delta \phi$.
 Communicative players always pay a cost $c$.
-If both players are non-communicative, the payoff is zero;
-conversely, if both players are communicative,
-the payoff is $B_0 f(\Delta \phi) - c$,
-where $B_0$ is the joint CC benefit
-and $f(\Delta \phi) = [1+\cos(\phi_j - \phi_i)]/2$
-is the sinusoidal Kuramoto coupling.
-When exactly one of the players is communicative,
-we introduce an asymmetry $\alpha \in [0,1]$ to allow for differing payoffs
-between the communicative and non-communicative players.
-If the tail-player is communicative,
-the payoff is $2 \alpha \beta_0 f(\Delta \phi) - c$,
-where $\beta_0$ is the mixed benefit parameter.
-If the tail player is non-communicative,
-the payoff is $2 (1-\alpha) \beta_0 f(\Delta \phi)$.
-This asymmetry $\alpha$ allows us to promote or suppress communicativeness,
-and $\alpha = 0.5$ reproduces the symmetric case of \tripp{}.
+A game's benefit depends on whether the number of communicators is
+zero (\num{0} benefit), one ($\beta_0$ mixed benefit),
+or two ($B_0 > \beta_0$ joint benefit).
+We incorporate the relative phase difference $\Delta \phi$
+by modulating these benefits with a sinusoidal Kuramoto coupling
+$f(\Delta \phi) = [1+\cos(\phi_j - \phi_i)]/2$.
+Our new contribution is an asymmetry $\alpha \in [0,1]$
+that biases the mixed benefit $\beta_0$ when exactly one of the players is communicative.
+We multiply the $C$ player's mixed benefit by $\alpha/2$
+and the $N$ player's benefit by $(1 - \alpha)/2$.
+Using $\alpha = 0.5$ reproduces the symmetric case of \tripp{},
+and increasing (decreasing) $\alpha$ allows us
+to promote (suppress) communicativeness.
 The payoff matrix in \cref{fig:payoff_matrix} summarizes these payoffs.
 
 \subsection{Parameter space}
@@ -314,10 +305,10 @@ is that multiple $2 \times 2$ game types
 are available to the players during the population's evolution,
 such as deadlock, dilemma, chicken,
 \etc{}~\citep{bruns2015names}.
-We can visualize this by looking at the phase space of games
-as a function of the three parameters $\beta$, $B$, and $\alpha$.
-\Cref{fig:phase-diagram} shows two particular slices
-of this three-dimensional phase space:
+We can visualize these games by looking at two-dimensional slices
+of the three-dimension phase space
+characterized by $\alpha$, $\beta \coloneqq \beta_0 f(\Delta \phi)$,
+and $B \coloneqq B_0 f(\Delta \phi)$.
 \cref{fig:phase-diagram-B_beta} shows a $B$-$\beta$ slice of phase space
 and is an extension of figure 1 in \tripp{},
 while \cref{fig:phase-diagram-B_alpha} shows a $B$-$\alpha$ slice.
@@ -406,13 +397,9 @@ corresponding to their $B_0 = 2 (N-1) c/(N-2) = 0.21$ break-even condition.
 We also see that increasing (decreasing)
 the asymmetry $\alpha$ dilates (stretches) this sigmoid function
 in the $B_0$ direction.
-In particular, for the larger $\alpha$'s, the $f_{\text{comm}}$ curve
-rises more steeply and at smaller values of $B_0$.
 This $\alpha$-dependence is reasonable,
 as increasing $\alpha$ corresponds to biasing the payoff
 in a mixed $C$-$N$ interaction towards the communicative partner.
-Therefore, it is unsurprising that the proportion of communicative players
-increases with increasing $\alpha$.
 
 While \cref{fig:multi-comm-frac} displays
 the time-averaged system state,
@@ -445,36 +432,29 @@ and maximum mixed benefit $\beta_0$ is $\num{0.95} B_0$.
 \Cref{fig:time-series_well-mixed_alpha-0} shows the time-variation
 when the system heavily favors non-communicative players
 with $\alpha = 0$.
-It is unsurprising, then, that the system is virtually
-always in a fully non-communicative regime, as indicated by the
-black line at $f_{\text{comm}} = 0$,
-with only a single, early excursion to an unsynchronized
-deadlock-type game (light blue).
-\Cref{fig:time-series_well-mixed_alpha-075} depicts an asymmetry $\alpha =0.75$
+After an initial disordered, deadlock-type game (light blue),
+the system synchronizes in the non-communicative regime
+(black line at $f_{\text{comm}} = 0$).
+\Cref{fig:time-series_well-mixed_alpha-075} depicts an asymmetry $\alpha = 0.75$
 that moderately encourages communicativeness.
-This plot shows slightly less metastability:
-the system spends most of its time in a fully communicative state
-(gray line at $f_{\text{comm}} = 1$)
-but has occasional dips to complete non-communication
+The system is synchronized in a communicative state
+(gray line at $f_{\text{comm}} = 1$) \SI{92}{\percent} of the time,
+with unstable excursions to synchronized, non-communicative states
 (black line at $f_{\text{comm}} = 0$)
-and even unsynchronized states with hero-type games
+and disordered, hero-type game states
 (orange line with $0 < f_{\text{comm}} < 1$).
-Nevertheless, it is apparent that the system does not spend appreciable time
-in these unsynchronized states, as the orange lines are a small fraction
-of the total time.
-This observation is consistent with \cref{fig:multi-comm-frac},
-which shows that these simulation parameters
-($B_0 = 0.15$ and $\alpha = 0.75$)
-should give rise to a communicative regime
-approximately \SI{75}{\percent} of the time.
+This \SI{92}{\percent} communicative rate is higher than the expected \SI{75}{\percent}
+from \cref{fig:multi-comm-frac} (for $B_0 = 0.15$ and $\alpha = 0.75$),
+likely due to the small timespan shown in
+\cref{fig:time-series_well-mixed_alpha-075}.
 Finally, \cref{fig:time-series_well-mixed_alpha-1} shows the
 $\alpha = 1$ case where communication is heavily incentivized.
-Here, we see the opposite result from
-\cref{fig:time-series_well-mixed_alpha-0}:
-the system is virtually always in the fully communicative regime,
-with only brief excursions to unsynchronized,
-deadlock-type games (light blue).
-We note that all three scenarios are nearly always synchronized;
+In contrast to the \subref{fig:time-series_well-mixed_alpha-0} $\alpha = 0$ case,
+the system is virtually always synchronized in the communicative regime,
+with only brief excursions to deadlock-type games (light blue).
+We note that all three
+\subref{fig:time-series_well-mixed_alpha-0}-\subref{fig:time-series_well-mixed_alpha-1}
+scenarios are virtually always synchronized;
 the order parameter $\rho$ (magenta) is almost always $\rho = 1$,
 with only occasional dips.
 The temporary drops in communicative frequency $f_{\text{comm}}$
@@ -486,18 +466,13 @@ which occur, on average, every $1/\mu = \num{1E4}$ time steps.
 Here, we consider the weighted, directed hermaphroditic \gls{celegans} connectome.
 For reference, \cref{fig:graph} shows the $N = 300$ nodes and the directed edges
 (we exclude the two unconnected neurons CANL/CANR).
-The network layout shows that there are two main clusters of neurons,
-one large group on the bottom of \cref{fig:graph} and a smaller group
-near the top.
 The nodes are colored according to their strategy at a particular time step,
 with blues representing communicative strategies
 and reds representing non-communicative ones,
 with different shades corresponding to different phases $\phi$.
-We note the large, synchronized group
-of red, non-communicative nodes in the bottom of the graph,
-as well as the remaining unsynchronized nodes around it.
-This mixture of synchronized and disordered nodes
-is reflective of a chimera state.
+We note the chimera-like character
+of the large, synchronized group of red nodes
+coexisting with disordered neighboring nodes.
 
 \begin{figure*}
   \centering
@@ -561,64 +536,47 @@ using communicative strategies $f_{\text{comm}}$ averaged across
 the entire simulation of \num{2E8} time steps as a function
 of the maximum joint benefit $B_0$
 for the \gls{celegans} connectome network topologies.
-In addition, the figure shows two variants
-of the full weighted, directed \gls{celegans} connectome:
-a \subref{fig:comm-frac_celegans-unweighted} \emph{directed} but unweighted case
-and
-a \subref{fig:comm-frac_celegans-undirected} \emph{weighted} but undirected case.
-The plots use a selection strength of $\delta=0.2$
+All subplots use a selection strength of $\delta=0.2$
 and an asymmetry of $\alpha=0.75$.
 
 We note that the behaviour
 of the \subref{fig:comm-frac_celegans-full} \gls{celegans} case
 is qualitatively distinct
 from the $\alpha = 0.75$ well-mixed case in \cref{fig:multi-comm-frac}.
-We see that the \gls{celegans} population is almost universally non-communicative
-for $B_0 \le 0.08$,
-followed by an immediate jump to a maximum communicative fraction
-of \num{0.77} of $B_0 = 1.6$.
-This communicative fraction then slowly declines
-to a horizontal asymptote around \num{0.60}.
-This deviation implies that the \gls{celegans} case
-has qualitatively different behavior compared to the baseline, well-mixed case.
-We can investigate the cause of the deviation
-between the \cref{fig:multi-comm-frac} well-mixed
-and \cref{fig:comm-frac_celegans-full} full \gls{celegans} case
-by looking at variations to the \gls{celegans} network topology.
+The communicative fraction $f_{\text{comm}}$
+is flatter for $B_0 \le 0.08$,
+has a steep jump to \num{0.77} at $B_0 = 1.6$,
+and decreases to a horizontal asymptote around \num{0.60}.
+We can isolate the cause of this deviation
+from the \cref{fig:multi-comm-frac} well-mixed
+behavior by looking at variations to the \cref{fig:comm-frac_celegans-full}
+\gls{celegans} network topology.
 First, the \subref{fig:comm-frac_celegans-unweighted}
 \emph{directed}, unweighted connectome
 is qualitatively similar to the
 \subref{fig:multi-comm-frac}
-well-mixed case:
-while the directed \gls{celegans} case exhibits a steeper rise
-than well-mixed case,
-the directed case still shows a monotonic increase
+well-mixed case with a monotonic increase
 from low communicativeness for $B_0 < 0.1$
 to full communicativeness for $B_0 \ge 0.2$.
-This implies that the quality of directedness
-plays a smaller role in the qualitative shape
+This implies that directedness
+plays only a small role in the qualitative shape
 of the \subref{fig:comm-frac_celegans-full} full \gls{celegans} case.
-On the other hand,
+Conversely,
 the \subref{fig:comm-frac_celegans-undirected}
 \emph{weighted}, undirected connectome
 looks similar to the \subref{fig:comm-frac_celegans-full}
-full \gls{celegans} case.
-In particular, this \subref{fig:comm-frac_celegans-undirected}
-weighted case
-shows the same plateau at $f_{\text{comm}} \approx 0.7$
-seen in the \subref{fig:comm-frac_celegans-full} full \gls{celegans} case,
+full \gls{celegans} case,
+displaying the same plateau at $f_{\text{comm}} \approx 0.7$,
 though the peak around $B_0 = 0.15$ is less pronounced.
 This similarity implies that the connectome's edge weights
-are the most relevant aspect influencing the deviation
-of the \subref{fig:comm-frac_celegans-full} \gls{celegans}
-results from the well-mixed results.
+cause most of the deviation
+between the \subref{fig:comm-frac_celegans-full} full \gls{celegans}
+case and the \cref{fig:multi-comm-frac} well-mixed case.
 
 We can also investigate the time-evolution of the \gls{celegans} system
-as we did for the well-mixed case in
-\crefrange{fig:time-series_well-mixed_alpha-0}{fig:time-series_well-mixed_alpha-1}.
-The setup is the same as in
+using the same parameters as the
 \crefrange{fig:time-series_well-mixed_alpha-0}{fig:time-series_well-mixed_alpha-1}
-after replacing the complete interaction graph with the \gls{celegans} connectome.
+well-mixed case but with the \gls{celegans} connectome graph.
 Compared to the well-mixed case,
 the \subref{fig:time-series_celegans-full} \gls{celegans} case
 depicts a far more heterogeneous population.
@@ -626,18 +584,15 @@ Here, the population never stabilizes
 to a fully communicative or non-communicative state.
 Instead, both its communicative frequency and order parameter
 stay between \SIrange{40}{70}{\percent}.
-With a communicative frequency $f_{\text{comm}}$ averaging approximately \SI{60}{\percent},
-this is similar to the $f_{\text{comm}} \approx \SI{70}{\percent}$ seen
-in \cref{fig:comm-frac_celegans-full} with $B_0 = 0.15$;
-the deviation from \SI{70}{\percent} is reflective of the
-stochasticity in this small, \num{8E5} time-step sample.
-Compared to the \cref{fig:time-series_well-mixed_alpha-075} well-mixed case,
-the \gls{celegans} case shows less stability to mutations.
-Instead of the homogeneous communicative state with impulse disturbances,
-the \gls{celegans} case depicts heterogeneous communicativeness
-interrupted by discontinuous jumps.
-Again, these are most likely the results of mutations introduced
-to the population.
+The mean communicative frequency $f_{\text{comm}} \approx \SI{60}{\percent}$
+is similar to the expected $f_{\text{comm}} \approx \SI{70}{\percent}$
+from \cref{fig:comm-frac_celegans-full} with $B_0 = 0.15$;
+the discrepancy comes from the stochasticity
+in this small, \num{8E5} time-step sample.
+Finally, the \gls{celegans} case is less stable to mutations
+than the \cref{fig:time-series_well-mixed_alpha-075} well-mixed case:
+instead of stable synchronized states with transient impulses,
+the \gls{celegans} case depicts disordered states with discontinuous offsets.
 
 \subsection{Chimera-like index}
 \begin{figure*}
@@ -715,13 +670,9 @@ and has a practical maximum of \num{0.08}~\citep{shanahan2010metastable}.
 and
 \subref{fig:metastability_index} metastability index $\lambda$
 as functions of the asymmetry $\alpha$.
-These simulations ran with
-for \num{8E6} time steps with
-selection strength $\delta = 0.2$,
-mutation rate $\mu=\num{1E-4}$,
-cost $c = \num{0.1}$,
-maximum joint benefit $B_0 = 0.15$,
-and maximum mixed benefit $\beta_0 = \num{0.95} B_0$.
+These simulations ran with the same parameters as the
+\crefrange{fig:comm-frac_celegans-full}{fig:comm-frac_celegans-undirected}
+\gls{celegans} time-series data.
 
 The metastability displayed in \cref{fig:chimera-index}
 is less than \num{0.01}, much smaller
@@ -734,11 +685,10 @@ at $\approx \num{0.01}$ for the $\alpha = 0$ case,
 the metastability drops precipitously for larger $\alpha$,
 always staying below \num{0.004} implying that
 higher asymmetry $\alpha$ makes the system more stable.
-On the other hand, the chimera-like index $\chi$
-attains large values of \numrange{0.06}{0.13}
-indicating a high chimeric quality.
-Considering the theoretical maximum is \num{0.28},
-the system has high chimeric quality at nearly half the maximum.
+Conversely, the chimera-like index $\chi$
+indicates a high chimeric quality
+with values (\numrange{0.06}{0.13})
+nearly half of the theoretical maximum (\num{0.28}).
 Given that we average the chimera-like index over time,
 the system's deviation from a complete chimera state
 arises from both imperfect separation of the coherent/disordered populations
@@ -746,11 +696,9 @@ as well as time fluctuations in the chimeric quality.
 While we observe that $\chi$ has a maximum at $\alpha = \num{0.75}$,
 we caution that this is likely the result of calculating the communities
 based on the $\alpha = \num{0.75}$ covariances.
-Nevertheless, the fact that $\chi$ remains elevated
-for the other asymmetries $\alpha$
-implies that this particular community decomposition
-corresponds to an intrinsic separation rather than an artifact
-of the particular $\alpha = \num{0.75}$ simulation.
+Nevertheless, the high $\chi$ value for all asymmetries $\alpha$
+implies that the strong chimeric character is intrinsic
+rather than an artifact of our $\alpha = \num{0.75}$ choice.
 
 \subsection{Game types}
 \begin{figure*}
@@ -819,9 +767,8 @@ some game-type heterogeneity, with
 a second game type (deadlock) being the plurality
 \SIrange{1}{14}{\percent} of the time
 for asymmetries $\alpha \le 0.5$.
-This shows that, as the asymmetry varies,
-different game types dominate the population's evolution,
-and network topology influences how dominant these game types are.
+Overall, we see that graph structure decreases synchronization
+and asymmetry influences the dominant game types.
 
 \section{Discussion}\label{sec:discussion}
 
@@ -1121,6 +1068,9 @@ On each turn, the following steps are performed.
 First, pairs of nodes play a game on each edge $j$ in the interaction graph,
 each edge's payoff $\pi_j$ is scaled by the edge weight $w_j$,
 and the relevant payoff $w_j \pi_j$ is awarded to the tail node only.
+Since the \gls{celegans} edge weights are integers,
+we can also interpret each edge weight as the number of games played
+between the two nodes.
 \Cref{fig:player_interactions} shows an illustration of this process
 for a single pair of interacting players connected by a pair of
 weighted, directed edges.

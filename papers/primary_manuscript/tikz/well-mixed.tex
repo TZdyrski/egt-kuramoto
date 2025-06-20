@@ -19,8 +19,7 @@
     scale only axis, % ensure overlaid axes align
     ]
     \nextgroupplot[fraction communicative chart,
-    xlabel style={align=center},
-    xlabel={Maximum benefit of \\ mutual communication, $B_0$},
+    xlabel={Maximum joint benefit $B_0$},
     legend style={at={(0.99,0.5)},anchor=east},
     % Activate Brewer color cycle
     cycle list/Greens-5,
@@ -197,7 +196,7 @@
     \addlegendimage{ybar, single ybar legend, fill=magenta, draw=black}%
     \addlegendentry{order parameter}%
   \end{axis}
-  \node[rotate=90,anchor=south] at ($(group c1r1.north west)!0.5!(group c1r2.south west)-(1cm,0)$) {Frequency of communicative strategies $f_{\text{comm}}$};
+  \node[rotate=90,anchor=south] at ($(group c1r1.north west)!0.5!(group c1r2.south west)-(1cm,0)$) {Communicative frequency $f_{\text{comm}}$};
   \node[rotate=90,anchor=north,magenta] at ($(group c2r1.north east)!0.5!(group c2r2.south east)+(1cm,0)$) {Order Parameter};
 
   % Make an invisible axis to create a legend that is the union

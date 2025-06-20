@@ -220,8 +220,8 @@ of the \gls{celegans} connectome shape on chimera-like states.
       Evolutionary Kuramoto dynamics with weighted neural connectivity.
     }
     \protect{\subref{fig:graph_well-mixed}}
-    The graph of the well-mixed population showing $N=20$ players,
-    with each pair players connected by a directed edge in each direction.
+    The graph of a well-mixed population with $N=20$ players
+    where each pair of players is connected by a directed edge in each direction.
     \protect{\subref{fig:player_interactions}}
     The connectivity between two sample players, $i$ and $j$,
     showing directed, weighted edges $w_i$ and $w_j$.
@@ -232,7 +232,8 @@ of the \gls{celegans} connectome shape on chimera-like states.
     \protect{\subref{fig:payoff_matrix}}
     The payoff matrix shows the reward the row-player $(s_i, \phi_i)$
     receives after playing a game with the column-player $(s_j, \phi_j)$
-    depending on each player's strategy $s$ and the phase difference $\Delta \phi$.
+    depending on each player's strategy $s$ and
+    their relative phase difference $\Delta \phi$.
   }\label{fig:connectivity}
 \end{figure*}
 
@@ -394,8 +395,11 @@ and highlight which regions of parameter space are accessible.
     and
     \protect{\subref{fig:time-series_well-mixed_alpha-1}}
     $\alpha = 1$,
+    maximum joint benefit is $B_0 = 0.15$,
     and the simulations ran for \num{8E5} time steps.
-    For all four subplots,
+    For all four
+    \protect{\subref{fig:multi-comm-frac}}--\protect{\subref{fig:time-series_well-mixed_alpha-1}}
+    subplots,
     the network topologies are the
     $N=20$ well-mixed population,
     the maximum mixed benefit $\beta_0$ is $\num{0.95} B_0$ at each step,
@@ -560,7 +564,8 @@ is reflective of a chimera state.
     \protect{\subref{fig:time-series_celegans-full}}
     Scatter plot with the same axes and coloring
     as \protect{\crefrange{fig:time-series_well-mixed_alpha-0}{fig:time-series_well-mixed_alpha-1}}.
-    The simulation ran for \num{8E5} time steps.
+    The maximum joint benefit is $B_0 = 0.15$ and
+    the simulation ran for \num{8E5} time steps.
     For all cases,
     the selection strength is $\delta=0.2$,
     the asymmetry is $\alpha=0.75$,
@@ -695,16 +700,16 @@ to the population.
     The asymmetry is
     \protect{\subref{fig:graph_celegans_asymmetry0}}
     $\alpha = 0$
-    and
+    or
     \protect{\subref{fig:graph_celegans_asymmetry1}}
     $\alpha = 1$.
     For all cases,
     the selection strength is $\delta=0.2$,
     the mutation rate is $\mu=\num{1E-4}$,
     the cost $c$ is \num{0.1},
-    $B_0$ is \num{0.15},
+    the maximum joint benefit $B_0$ is \num{0.15},
     and
-    $\beta_0$ is $\num{0.95} B_0$.
+    the maximum mixed benefit $\beta_0$ is $\num{0.95} B_0$.
   }\label{fig:chimera-index}
 \end{figure*}
 
@@ -785,8 +790,8 @@ of the particular $\alpha = \num{0.75}$ simulation.
       and origins of chimera states.
     }
     The plurality game type amongst all player interactions
-    (weighted by the interaction graph edge weight),
-    expressed as a fraction of all games played,
+    (weighted by graph edge weight)
+    expressed as a fraction of all games played
     for different values of the asymmetry $\alpha$.
     The game types are color-coded according to the legend;
     additionally, ``all-C'' and ``all-N'' represent when the population
@@ -800,8 +805,8 @@ of the particular $\alpha = \num{0.75}$ simulation.
     The selection strength is $\delta=0.2$,
     the mutation rate is $\mu=\num{1E-4}$,
     the cost $c$ is \num{0.1},
-    $B_0$ is \num{0.15},
-    $\beta_0$ is $\num{0.95} B_0$,
+    the maximum joint benefit $B_0$ is \num{0.15},
+    the maximum mixed benefit $\beta_0$ is $\num{0.95} B_0$,
     and the simulations ran for \num{8E6} time steps.
   }\label{fig:game-type}
 \end{figure*}

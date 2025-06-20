@@ -775,14 +775,15 @@ and asymmetry influences the dominant game types.
 %\subsection{Game-type dynamics}
 The distribution of game types displayed in \cref{fig:game-type}
 deserves additional discussion.
-For the \cref{fig:game-type_well-mixed} well-mixed case,
-the system is virtually always synchronized,
+The \cref{fig:game-type_well-mixed} well-mixed case
+is virtually always synchronized,
 as corroborated by the order parameter $\rho \approx 1$ in
 \crefrange{fig:time-series_well-mixed_alpha-0}{fig:time-series_well-mixed_alpha-1}.
-Additionally, the specific frequency of communicative synchronization (``all-C'')
-and non-communicative synchronization (``all-N'')
-approximately matches the predicted $f_{\text{comm}}$
-frequency displayed in \cref{fig:multi-comm-frac} for $B_0=0.15$.
+Furthermore,
+the $\alpha$-dependence of the
+communicative synchronization (``all-C'') fraction
+approximates the communicative frequency $f_{\text{comm}}$
+in \cref{fig:multi-comm-frac} for $B_0=0.15$.
 For the $< \SI{1}{\percent}$ of the time when the well-mixed system is
 \emph{not} synchronized, the other game types are
 dilemma (\SI{0.2}{\percent} for $\alpha = 0, 0.25$)
@@ -814,106 +815,80 @@ However, the chicken-type game is consistent with our
 
 Next, we consider the distribution of disordered games
 in \cref{fig:game-type} as functions of $\alpha$.
-Recall that the disordered game types
-in the \cref{fig:game-type_well-mixed}
-well-mixed setup
-and the most-frequent plurality games in the \cref{fig:game-type_celegans-full}
-\gls{celegans} setup
-are identical,
+Recall that the most-frequent disordered games
+in \cref{fig:game-type_well-mixed}
+and \cref{fig:game-type_celegans-full} are identical,
 so this discussion applies to both setups.
-We note that the most-frequent plurality games
-across each $\alpha$ all correspond
-to the nearly-synchronized $\Delta \phi \approx 0$ game types
-(\ie{} the game type of the rightmost white dots \cref{fig:game-type}).
-This indicates that the majority game type almost always
-corresponds to games between nearly-synchronized individuals.
-This is somewhat surprising for the $\alpha = 1$ case:
-there, four of the $m = 20$ phase differences
-($\Delta \phi = 4 \pi/20, 5 \pi/20, 15\pi/20, 16\pi/20$)
-fall in the pink, battle-type region.
-The warm colors (red, orange, and pink)
-represent the game types (chicken, hero, and battle, respectively)
-that have exponentially slow fixation times~\citep{antal2006fixation},
-so one might expect that these games would be over-represented
-due to their long fixation times.
-Nevertheless, the strong $\alpha = 1$ communicativeness bias
-enhances synchronization and suppresses
-chimeric qualities
-(\cf{} the low $\chi$ for $\alpha = 1$ in \cref{fig:chimera-index}).
+In the \cref{fig:phase-diagram-B_alpha}
+$B-\alpha$ parameter plane,
+each of the five $\alpha$ values
+correspond to a horizontal line of white dots.
+Additionally, the warm colors (red, orange, and pink)
+represent game types (chicken, hero, and battle, respectively)
+with exponentially slow fixation times~\citep{antal2006fixation}.
+So we might expect any constant-$\alpha$ line (white dots) intersecting
+a warm-colored region
+to be dominated by the corresponding game in \cref{fig:game-type}.
+This is the case with $\alpha = 0.5, 0.75$,
+but not for $\alpha = 1$,
+which mainly shows deadlock type games.
+Instead, we note that every $\alpha$ case \emph{is} dominated
+by the game-type of the rightmost white dots
+representing nearly-synchronized $\Delta \phi \approx 0$ configurations.
 
-We can further explain this distribution of disordered games
-by considering the well-mixed graph's average degree.
-Since \cref{fig:game-type} depicts the plurality game at each time step,
-we need to consider the conditions under which a game type can be the plurality.
-For the well-mixed case, the game type corresponding
-to the nearly-synchronized $\Delta \phi \approx 0$ state
-is easily obtained---for instance, if the entire graph is largely synchronized.
-We can easily derive two conditions when the $\Delta \phi \approx 0$ game types
-are \emph{not} the plurality game type:
-when there are $p$ equal-sized groups
+We can explain the prevalence of nearly-synchronous game types
+by considering game-plurality requirements.
+We easily obtain nearly-synchronized $\Delta \phi \approx 0$
+game-type pluralities whenever the graph is largely synchronized.
+Finding circumstances when $\Delta \phi \approx 0$ game types
+are \emph{not} the plurality is more challenging,
+but we identify two such scenarios in \cref{sec:multiple_equal_groups}:
+configurations with $p$ equal-sized groups
 with phases that differ by $2 \pi/p$ (\cf{} \cref{sec:multiple_equal_groups});
-or when the game is almost evenly split between two groups
-with fraction within $\pm 1/(2 \sqrt{N})$ of $0.5$
+or when the population is almost evenly split between two groups
+with fractions between $0.5 \pm 1/(2 \sqrt{N})$
 (\cf{} \cref{sec:two_unequal_groups}).
 Given the low mutation rate, it is unlikely to have
 multiple populations with roughly equal sizes,
-so the evenly-split case is more likely.
+so the evenly-split scenario is more likely.
 For the $N = 20$ well-mixed case, this corresponds
-to each group containing \numrange{8}{12} players,
-but the magenta order parameter in \cref{fig:time-series_well-mixed_alpha-075}
+to \SIrange{39}{62}{\percent}, or \numrange{8}{12} players.
+But the magenta order parameter in \cref{fig:time-series_well-mixed_alpha-075}
 shows that the well-mixed system spends must of its time
 with fewer than the required \num{8} invaders.
 This explains why the well-mixed graph's disordered games
 are still nearly-synchronized.
 
-This same analysis of graph degree explains why the
-\cref{fig:game-type_celegans-full} \gls{celegans} graph
-exhibits game-type heterogeneity
-for $\alpha = 0,0.25,0.5$,
-with significant levels of less-frequent plurality games
+These graph-degree conditions also help explain the
+game distributions for the
+\cref{fig:game-type_celegans-full} \gls{celegans} graph.
+Each $\alpha$-value is still dominated by the nearly-synchronized
+game types, as these are still the most likely.
+Nevertheless, the $\alpha = 0$, $0.25$, and $0.5$ cases
+show significant levels of non-synchronized game types
 (\SI{13}{\percent}, \SI{3}{\percent}, and \SI{1}{\percent} deadlock games,
 respectively).
-While the number of players $N = 300$ is much larger
-than the well-mixed case,
-the average degree $\overline{d}$
-is smaller (\num{12.36} \vs{} \num{19}).
-Therefore, if we consider the \gls{celegans} graph
-with two major populations
-and assume they are spatially distributed randomly (for ease of computation),
-similar calculations as above
-(\cf{} \cref{sec:two_unequal_groups_incomplete}) show that
-the nearly-synchronized game types will \emph{not} be the plurality game
-if the fraction of invaders is within
-$\pm \sqrt{(N-1)/(N \overline{d})}/2$
-of $0.5$, or \numrange{0.36}{0.64}.
-We notice that the order parameter in \cref{fig:time-series_celegans-full}
-actually spends a good deal of time in this range,
-allowing for game types that don't correspond to the nearly-synchronized games.
-While the $\alpha = 0.75$ case depicted in \cref{fig:time-series_celegans-full}
-still displays the nearly-synchronized hero-type game
-(likely because the hero region in \cref{fig:phase-diagram-B_alpha}
-contains most of the white $\Delta \phi$ dots for $\alpha = 0.75$),
-the $\alpha = 0, 0.25, 0.5$ cases all have wider $\Delta \phi$ regimes where
-the non-synchronized deadlock-type games can appear,
-as illustrated in \cref{fig:game-type_celegans-full}.
-Furthermore, the decreased in-degree of the \gls{celegans} could allow
-for additional enhancement of the non-synchronized game types.
-For instance, if regions of the connectome have a structure with more edges
-\emph{between} player populations than \emph{amongst} them
-(similar to a bipartite graph),
-this would preferentially enhance non-synchronized game type edges.
+While the $0.5 \pm 1/(2 \sqrt{N})$ condition above seems to imply it
+should be \emph{harder} for the \gls{celegans} graph to show
+non-synchronized deadlock games since
+the number of players $N=300$ is larger,
+we note that the \gls{celegans} average degree $\overline{d}$
+is \emph{smaller} (\num{12.36} \vs{} \num{19}).
+Indeed, repeating the derivation for (random regular) incomplete graphs
+(\cf{} \cref{sec:two_unequal_groups_incomplete})
+shows that we must replace $N$ with $N \overline{d}/(N-1)$,
+widening the range to \SIrange{36}{64}{\percent}.
+The order parameter in \cref{fig:time-series_celegans-full}
+is usually in this range,
+allowing for non-synchronized game types like deadlock.
 
 %\subsection{Chimera states}
 Next, we will discuss the observed chimera states.
-The chimera-like quality is inherently time-dependent
-(\cf{} \cref{eq:chimera_index})
-and is therefore most evident in time-varying animations (see supplemental materials).
-Nevertheless, carefully chosen snapshots can still convey some of the chimera-like aspects.
+While the chimera-like quality is inherently time-dependent
+(\cf{} \pcref{eq:chimera_index})
+carefully chosen snapshots can still convey some of the chimera-like aspects.
 \Cref{fig:graph_celegans_asymmetry0} shows a snapshot of the communication strategies
-for asymmetry $\alpha = 0$ using the same color scheme as \cref{fig:graph}:
-blues represent communicative strategies
-and reds represent non-communicative ones,
-with different shades corresponding to different phases $\phi$.
+for asymmetry $\alpha = 0$ using the same color scheme as \cref{fig:graph}.
 We notice a large region of light red representing
 a synchronized group of non-communicators,
 as well as a mix of disordered neighbors.
@@ -921,27 +896,25 @@ This coexistence of strong synchronization and disorder
 is consistent with the high
 chimera-like index $\chi$ observed in \cref{fig:chimera-index} for $\alpha = 0$.
 Likewise, the $\alpha = 0.75$ case depicted in \cref{fig:graph}
-has an even higher $\chi = \num{0.13}$.
-It displays a large
-synchronized group of non-communicative players with identical phases in red,
-as well as a spread of disordered players with varying phases/colors.
+has an even higher $\chi = \num{0.13}$,
+consistent with the coexistence of a large,
+synchronized non-communicative group (red)
+and disordered neighbors (varying phases/colors).
 In contrast,
-\cref{fig:graph_celegans_asymmetry1} shows a snapshot for $\alpha = 1$.
-From \cref{fig:chimera-index}, we expect a lower chimera-like index
-of $\chi = \num{0.06}$, which corresponds to the smaller group
-of synchronized communicators in dark blue
-(not to be confused with the separate group of communicators
-in \emph{light blue} on the center-left of the cluster).
-Therefore, these snapshots give a glimpse of how the chimera-like quality
-manifests on the \gls{celegans} graph.
+\cref{fig:graph_celegans_asymmetry1} shows a snapshot for $\alpha = 1$,
+for which we expect a lower chimera-like index of $\chi = \num{0.06}$.
+Indeed, we see that the large communicative (red) group
+in \cref{fig:graph_celegans_asymmetry1}
+or \cref{fig:graph} has fractured into two different
+communicative (blue) groups, lowering the chimeric quality.
+Therefore, these snapshots give a glimpse of the chimera-like quality
+in the \gls{celegans} populations.
 
-Previous studies~\citep{bansal2019cognitive,santos2017chimera}
-have noted the significance of chimera states in cognitive systems.
-Therefore, the strength of the chimera state
-(with a notably high chimera-like index of \num{0.13}) is particularly striking.
-Additionally, this is similar to the maximum value of \num{0.12}
-observed in previous studies on chimera states
-for modular \gls{celegans} networks~\citep{hizanidis2016chimera}.
+Another study of the \gls{celegans} connectome also found
+chimera-like states using an entirely non-game-theory tool,
+modular neural networks~\citep{hizanidis2016chimera}.
+That study found a maximum chimera-like index of \num{0.12},
+similar to our value of \num{0.13}.
 The agreement between these different models
 of the \gls{celegans} connectome
 support the claim that the connectivity structure---rather than
@@ -951,48 +924,43 @@ for the chimera states.
 %\section{Conclusion}
 In this paper, we extended the evolutionary Kuramoto model
 introduced by \tripp{}
-to include structured interaction graphs
-as well as an asymmetry between
+to include weighted, structured interaction graphs
+and an asymmetry between
 the communicator and non-communicator payoffs.
 We first applied this model to a well-mixed population
 and found that increasing (decreasing) the asymmetry
 inhibits (promotes) communicativity.
 Next, we applied the model to
 a family of graphs deriving from the \gls{celegans} connectome.
-This revealed that the weightedness of the graph
-had a much stronger influence on the shape of the communication frequency plot
-than the graph's directedness did.
-Finally, we found qualitative differences between the composition
-of the well-mixed populations and the \gls{celegans} populations.
-While the well-mixed players had homogeneous populations
-that occasionally switched between fully communicative
-and fully non communicative,
-the \gls{celegans} population remained far more heterogenous
-with a stable, chimeric mix of both communicators and non-communicators
-playing a variety of game types.
-This chimera state in a model of the \gls{celegans} brain connectome
-was suggestive of prior studies finding chimera states in human brains.
+This revealed that the graph's weightedness
+has a much stronger influence on the communication frequency
+than the graph's directedness does.
+Finally, while the well-mixed players have homogeneous populations
+that occasionally switch between synchronized communicative
+and  non-communicative states,
+the \gls{celegans} population remains far more heterogenous
+with a stable, chimeric mix of disordered game types.
 
 A future goal of this work is to apply the EK model
-to entire families of random graphs.
+to entire families of random regular graphs.
 The limited number of graphs analyzed in this study
-make it challenging to identify exact relationships
+prevent the identification of exact relationships
 between the communicative fraction and graph properties
 such as edge degree, weight, and directionality;
 applying the model to parameterized families of graphs could allow
-for fine-tuning these parameters to extract these relations.
-Furthermore, the parameter space analysis provided clues
+for fine-tuning the parameters to extract these relations.
+Furthermore, the parameter-space analysis provided clues
 regarding the types of games the neurons played,
 but additional study is necessary to determine a causal relation.
-Studying attractors
-of the parameter space of game types
-could shed light on the long-time game distributions,
-with important implications for the neuron fitness environment.
+Studying the parameter space attractors
+could provide this connection
+by revealing the long-time game distributions
+and yielding important implications for the neurons' fitness landscape.
 Finally, since this study only considers a single species' connectome,
-it is unclear if the findings regarding chimeric activity's
-primary dependence on graph structure are generalizable.
+it is unclear if our findings regarding the dependence
+of chimeric activity on graph structure are generalizable.
 We plan to investigate this connection further
-by extending the model to other model organisms,
+by applying our EK setup to other model organisms,
 such as that of
 \glsxtrlong{dmelanogaster}~\citep{schlegel2024whole}.
 
@@ -1002,9 +970,8 @@ this has important parallels to neural computing,
 where edge weights are a primary driver of functionality.
 Additionally, the observation of chimeric states
 arising from such simple neuron models
-implies that brain structure is likely
-more important that specific neuron properties
-in producing these critical brain states.
+implies that neuron structure is likely
+a key component in producing these critical brain states.
 Overall, evolutionary graph theory allowed us
 to connect low-level payoff details for individual neurons
 to high-level phenomena such as chimera-states,

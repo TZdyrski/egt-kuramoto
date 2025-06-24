@@ -56,6 +56,7 @@
         "texlive-memoize"
         "texlive-advice"
         "texlive-collargs"
+        "texlive-placeins"
         "perl"
         "perl-pdf-api2"
         ))

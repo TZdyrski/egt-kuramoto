@@ -203,7 +203,7 @@ of the \gls{celegans} connectome shape on chimera-like states.
     where each pair of players is connected by a directed edge in each direction.
     \protect{\subref{fig:player_interactions}}
     The connectivity between two sample players, $i$ and $j$,
-    showing directed, weighted edges $w_i$ and $w_j$.
+    showing directed, weighted edges $w_{ij}$ and $w_{ji}$.
     Each player has a strategy-phase pair $(s, \phi)$,
     with the strategy being either communicative ($C$) or non-communicative ($N$)
     and the phase being $\phi = 2\pi k/m$ with $m$ the number of phases
@@ -223,7 +223,7 @@ First, we represent a well-mixed population
 as a complete graph in \cref{fig:graph_well-mixed}
 with players represented by nodes and games by edges.
 We generalize this to directed graphs
-where game (edge) payoffs only flow to the tail players (nodes).
+where game (edge) payoffs only flow to the head players (nodes).
 We can also represent bidirectional games with
 a pair of edges in both directions,
 as shown in \cref{fig:player_interactions}.
@@ -1031,9 +1031,10 @@ as required by the Moran process described in the next section.
 The population is updated according to a birth-death Moran process
 with exponential fitness~\citep{lieberman2005evolutionary}.
 On each turn, the following steps are performed.
-First, pairs of nodes play a game on each edge $j$ in the interaction graph,
-each edge's payoff $\pi_j$ is scaled by the edge weight $w_j$,
-and the relevant payoff $w_j \pi_j$ is awarded to the tail node only.
+First, each edge in the interaction graph corresponds to a game
+between head node $i$ and tail node $j$,
+the edge's payoff $\pi_{ji}$ is scaled by the edge weight $w_{ji}$,
+and the relevant payoff $w_{ji} \pi_{ji}$ is awarded to the head node only.
 Since the \gls{celegans} edge weights are integers,
 we can also interpret each edge weight as the number of games played
 between the two nodes.
@@ -1043,7 +1044,7 @@ weighted, directed edges.
 The total fitness for node $i$ is the exponential of the product
 between the selection strength $\delta$
 and the sum of payoffs to node $i$,
-or $f_i = \exp(\delta \sum_j w_j \pi_j)$ with the sum
+or $f_i = \exp(\delta \sum_j w_{ji} \pi_{ji})$ with the sum
 over all edges inwardly incident to node $i$.
 Then, a single focal node is chosen for reproduction
 with probability proportional to the node's fitness $f_i$.

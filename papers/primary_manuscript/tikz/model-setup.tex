@@ -25,8 +25,8 @@
       \draw[- Latex, thick] (neuron_i.center) node [fill,circle,inner sep=2pt] {} -- (neuron_i.north west);
       \draw[- Latex, thick] (neuron_j.center) node [fill,circle,inner sep=2pt] {}-- (neuron_j.east);
 
-      \draw[- Latex, thick] (neuron_j.south west) -- node[midway,above,anchor=north] (arrow_bot) {$w_j$} (neuron_i.south east);
-      \draw[- Latex, thick] (neuron_i.north east) -- node[midway,below,anchor=south] {$w_i$} (neuron_j.north west);
+      \draw[- Latex, thick] (neuron_j.south west) -- node[midway,above,anchor=north] (arrow_bot) {$w_{ji}$} (neuron_i.south east);
+      \draw[- Latex, thick] (neuron_i.north east) -- node[midway,below,anchor=south] {$w_{ij}$} (neuron_j.north west);
 
       \node [align=left,below=of arrow_bot] {Strategy $s_i$: \begin{tabular}{l} \textbf{C}: communicative \\ \textbf{N}: non-communicative\end{tabular}
           \\[10]

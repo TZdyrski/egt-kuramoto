@@ -451,7 +451,8 @@ Finally, \cref{fig:time-series_well-mixed_alpha-1} shows the
 $\alpha = 1$ case where communication is heavily incentivized.
 In contrast to the \subref{fig:time-series_well-mixed_alpha-0} $\alpha = 0$ case,
 the system is virtually always synchronized in the communicative regime,
-with only brief excursions to deadlock-type games (light blue).
+with only brief excursions to deadlock (light blue)
+or harmony (light orange) type games.
 We note that all three
 \subref{fig:time-series_well-mixed_alpha-0}-\subref{fig:time-series_well-mixed_alpha-1}
 scenarios are virtually always synchronized;
@@ -1079,74 +1080,28 @@ we can calculate the payoff matrix.
 By comparing the order of each of the four entries,
 we determine the game type using
 a topological taxonomy~\citep{bruns2015names}.
-For instance, we find a dilemma game type (``prisoner's dilemma'')
-if the entries of the payoff matrix \cref{eq:payoff-matrix}
-have the following order (with $4$ being the largest):
-\begin{equation}
-\begin{bNiceMatrix}[first-col,first-row,hvlines]
-  & C & N \\
-  C & 3 & 1 \\
-  N & 4 & 2
-\end{bNiceMatrix}
-\end{equation}
-Note that this uses the ``left-up'' convention,
-but other conventions
-such as the ``right-up'' convention exist~\citep{bruns2015names}.
-
-\subsection{Tied game types}
-This taxonomy~\citep{bruns2015names}
-gives compound names to games with tied payoffs, such as
-``middle deadlock'' for a tie between deadlock and dilemma games:
-\begin{equation}
-\begin{bNiceMatrix}[first-col,first-row,hvlines]
-  & C & N \\
-  C & 3 & 1 \\
-  N & 4 & 3
-\end{bNiceMatrix}
-\label{eq:tied_game}
-\end{equation}
-These non-strict games occur on the borders of parameter space
-between two game regions.
-\Cref{fig:phase-diagram-B_alpha} shows that we have non-strict games
-exactly when $\alpha = 1$, or $B/c = 0$
-(\ie{} $\Delta \phi = \pi$).
-We chose to simplify the game type nomenclature in our plots
-by using a convention to break ties.
-First, we put the payoff matrix in standard form
-by simultaneously swapping the rows and columns
-to ensure $4$ is in the leftmost column,
-and the transpose of the matrix has $4$ in the uppermost row.
-Then, if any entries of the matrix are equal,
-we break the ties according to the following order
-\begin{equation}
-\begin{bNiceMatrix}[first-col,first-row,hvlines]
-  & C & N \\
-  C & 4 & 1 \\
-  N & 3 & 2
-\end{bNiceMatrix}
-\end{equation}
-For instance, the example in \cref{eq:tied_game}
-is already in standard form,
-so the tie between the $CC$ and $NN$ entries
-is broken as $CC > NN$,
-and we label the \cref{eq:tied_game} matrix
-as a dilemma type game.
-Referring back to \cref{fig:phase-diagram-B_alpha},
-our convention breaks the $\alpha = 1$ ties as follows:
-deadlock and compromise ties are labelled deadlock, % low lock
-chicken and battle ties are labelled chicken, % mid battle
-and
-compromise and harmony ties are labelled compromise. % high harmony
-Additionally, all of the $B/c = 0$ ties
-correspond to the payoff matrix
-\begin{equation}
-\begin{bNiceMatrix}[first-col,first-row,hvlines]
-  & C & N \\
-  C & -c & -c \\
-  N & 0 & 0
-\end{bNiceMatrix}
-\end{equation}
-with cost $c = 0.1$, which we label as deadlock. % double compromise
+Using this taxonomy, we calculate the ordinal rank of the four entries
+in the \cref{eq:payoff-matrix} payoff matrix
+and assign a unique name (\eg{} dilemma, deadlock, chicken, \etc{})
+to each strict, symmetric game type.
+However, \cref{fig:phase-diagram-B_alpha}
+shows that game type lies on the border between two game types
+when $\alpha = 1$ or $B/c = 0$ (corresponding to $\Delta \phi = \pi$).
+The taxonomy classifies these non-strict games
+according the number and location of ties (``high tie'', ``middle tie'',
+``double tie'', \etc{}).
+It also defines a convention for choosing one of the neighboring game types
+to get a binomial nomenclature (\eg{} ``high harmony'', ``mid compromise'',
+``double coordination'', \etc{}).
+We follow the same convention for choosing a neighboring game
+but drop the tie-indicator to keep our figure legends simple.
+Specifically, referring to \cref{fig:phase-diagram-B_alpha},
+the $\alpha = 1$ tie between deadlock and compromise games
+formally corresponds to ``low [dead]lock'',
+but we label it as deadlock.
+Likewise, all of the $B/c = 0$ payoff matrices
+correspond to the ``double harmony'' game type,
+but we denote them as simply ``harmony''.
 
 \subsection{Plurality game type}\label{sec:plurality_game_type}
 At each time step, we calculate the game type for each edge

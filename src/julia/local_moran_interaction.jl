@@ -444,6 +444,8 @@ end
 
 @enum GameType harmony chicken battle hero compromise concord staghunt dilemma deadlock assurance coordination peace
 
+@enum TieType low mid high double triple basic zero
+
 const paired_colors = ColorBrewer.palette("Paired", 12)
 const game_type_colors = Dict(harmony => paired_colors[7],
                               chicken => paired_colors[6], # exponential fixation time
@@ -471,6 +473,55 @@ const game_type_full_names = Dict(chicken => "Snowdrift", # Also called chicken
                                   peace => "Peace",
                                   harmony => "Harmony",
                                   concord => "Concord")
+
+# Source: doi:10.3390/g6040495
+# In left-up convention (modified from right-up convention by swapping columns)
+const game_taxonomy = Dict(
+			 [4 2;3 1] => (missing, concord),
+			 [4 3;2 1] => (missing, harmony),
+			 [4 3;1 2] => (missing, peace),
+			 [4 2;1 3] => (missing, coordination),
+			 [4 1;2 3] => (missing, assurance),
+			 [4 1;3 2] => (missing, staghunt),
+			 [3 1;4 2] => (missing, dilemma),
+			 [2 1;4 3] => (missing, deadlock),
+			 [1 2;4 3] => (missing, compromise),
+			 [1 3;4 2] => (missing, hero),
+			 [2 3;4 1] => (missing, battle),
+			 [3 2;4 1] => (missing, chicken),
+			 [2 3;4 2] => (low, battle),
+			 [2 2;4 3] => (low, deadlock),
+			 [3 2;4 2] => (low, dilemma),
+			 [4 2;2 3] => (low, coordination),
+			 [4 3;2 2] => (low, harmony),
+			 [4 2;3 2] => (low, concord),
+			 [3 3;4 1] => (mid, battle),
+			 [1 3;4 3] => (mid, compromise),
+			 [3 1;4 3] => (mid, deadlock),
+			 [4 1;3 3] => (mid, staghunt),
+			 [4 3;1 3] => (mid, peace),
+			 [4 3;3 1] => (mid, harmony),
+			 [1 4;4 2] => (high, hero),
+			 [2 4;4 1] => (high, hero), # high battle \approx high hero
+			 [4 2;4 1] => (high, concord), # = high chicken
+			 [4 1;4 2] => (high, staghunt), # = high dilemma
+			 [4 2;1 4] => (high, coordination),
+			 [4 1;2 4] => (high, coordination), # high assurance \approx high coord
+			 [4 4;1 2] => (high, peace),
+			 [2 1;4 4] => (high, peace), # high deadlock \approx high peace
+			 [4 4;2 1] => (high, harmony),
+			 [1 2;4 4] => (high, harmony), # high compromise \approx high harmony
+			 [4 2;4 2] => (double, staghunt), # = double dilemma
+			 [4 2;2 4] => (double, coordination),
+			 [2 4;4 2] => (double, coordination), # double hero \approx double coord
+			 [4 4;2 2] => (double, harmony),
+			 [2 2;4 4] => (double, harmony), # double compromise \approx double harmony
+			 [4 4;1 4] => (triple, deadlock),
+			 [4 4;4 1] => (triple, harmony),
+			 [3 3;4 3] => (basic, dilemma),
+			 [4 3;3 3] => (basic, harmony),
+			 [4 4;4 4] => (zero, missing),
+			 )
 
 function game_type_inequalities(R::Real, S::Real, T::Real, P::Real)
     # Break ties in direction T < R < S < P
@@ -515,39 +566,40 @@ function swap_strategies!(payoff_matrix::AbstractMatrix)
                                                                                                               2]
 end
 
-function canonical_payoff!(payoff_matrix::AbstractMatrix)
-    # Using our convention that symmetric games imply the col-player's
-    # payoff matrix is the transpose of the provided (row-player's) payoff
-    # matrix, apply Robinson & Goforth's convention of highest row-player payoff in
-    # right-column and highest col-player payoff in lower-row (note:
-    # col-player criteria is switched to match our transpose-convention
-    # above) by swapping rows and columns
-    # For symmetric games, this is equivalent to renaming strategies (C <->
-    # N) for both players simultaneously to ensure the max payoff is in the
-    # right column
-    # Note: assumes there is a unique maximum payoff
-    max_index_orig = argmax(payoff_matrix)
-    # Ensure highest row-player payoff is in right-column
-    if max_index_orig[2] == 1
-        swap_strategies!(payoff_matrix)
-    end
-end
-
 function game_type(payoff_matrix::AbstractMatrix)
-    # Canonicalize
-    canonical_payoff!(payoff_matrix)
-    # Check ordering of payoffs
-    R = payoff_matrix[1, 1]
-    S = payoff_matrix[1, 2]
-    T = payoff_matrix[2, 1]
-    P = payoff_matrix[2, 2]
-    for game_type in instances(GameType)
-        if (&)(game_type_inequalities(R, S, T, P)[game_type]...)
-            return game_type
-        end
+    # Schema: doi:10.3390/g6040495
+
+    # Make ordinal using modified compete rank
+    ordinal_payoffs = 5 .- competerank(-payoff_matrix)
+
+    # Orient in left-up:
+    # put highest row-player payoff in left column
+    # and highest col-player payoff in top row
+    #
+    # (Since we are dealing with symmetric games,
+    # we only need to ensure the row-player condition,
+    # as the col-player condition is automatically satisfied)
+    #
+    # (side note: we use left-up convention,
+    # so the col-player's matrix is the transpose of the row-player's matrix;
+    # in right-up convention, the col-player's matrix is the
+    # "anti-transpose" of the row-player's matrix,
+    # ie a transpose across the anti-diagonal)
+    function canonical_payoff!(matrix)
+	# Put in left-up orientation
+	# by ensuring (at least one of)
+	# the highest entry (4) # is in the left column
+	if ! (4 in matrix[:,1])
+		swap_strategies!(matrix)
+	end
     end
-    # Non-strict inequality implying one or more ties
-    throw(ErrorException("Should never hit this since tie-breaking is handled with non-strict inequalities"))
+    canonical_payoff!(ordinal_payoffs)
+
+    # Determine ties
+    binomial_nomenclature = game_taxonomy[ordinal_payoffs]
+
+    # Drop tie information
+    game_type = binomial_nomenclature[2]
 end
 
 @memoize function game_types_per_strategy_pair(mutual_benefit_synchronous::Real,

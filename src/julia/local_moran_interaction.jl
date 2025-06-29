@@ -794,11 +794,7 @@ end
 
 function calc_cumulative(config::Dict)
     # Unpack values
-    @unpack selection_strength, symmetry_breaking, adj_matrix_source, payoff_update_method, time_steps, nb_phases = config
-
-    # Define system
-    cost = 0.1
-    mutation_rate = 0.0001
+    @unpack selection_strength, symmetry_breaking, adj_matrix_source, payoff_update_method, time_steps, nb_phases, cost, mutation_rate = config
 
     # Define interaction graph and reproduction graphs
     interaction_adj_matrix, reproduction_adj_matrix = get_adj_matrices(adj_matrix_source)
@@ -831,18 +827,24 @@ function calc_cumulative(config::Dict)
     fraction_communicative = nb_communicative ./ (time_steps * nb_players)
 
     # Package results
-    return @strdict(Bs, nb_players, cost, fraction_communicative)
+    return @strdict(Bs, nb_players, fraction_communicative)
 end
 
 function plot_cumulative(selection_strength::Real, symmetry_breaking::Real,
                          adj_matrix_source::String="well-mixed",
                          payoff_update_method::String="single-update",
                          time_steps::Integer=2_000_000,
-			 nb_phases::Integer=20)
+			 nb_phases::Integer=20,
+			 cost::Real=0.1,
+			 mutation_rate::Real=0.0001,
+			 )
 
     # Load results
     config = @strdict(adj_matrix_source, payoff_update_method, time_steps,
-                      selection_strength, symmetry_breaking, nb_phases)
+                      selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate)
+    if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
+	    config["nb_players"] = 20
+    end
     data, _ = produce_or_load(calc_cumulative, config, datadir("raw","cumulative"))
 
     # Produce figure
@@ -893,12 +895,12 @@ function generate_cumulative_plot(data::Dict, config::Dict)
 
     lines!(ax, data["Bs"][begin] .. data["Bs"][end],
 	   B0 -> analytic_frac_communicative(B0, beta0(B0);
-			selection_strength=config["selection_strength"], cost=data["cost"], nb_players=nb_effective,
+			selection_strength=config["selection_strength"], cost=config["cost"], nb_players=nb_effective,
 			symmetry_breaking=config["symmetry_breaking"], nb_phases=config["nb_phases"]); label="Theory",
            color=:orange)
     lines!(ax, data["Bs"][begin] .. data["Bs"][end],
            B0 -> 1 / (1 + exp(config["selection_strength"] * (nb_effective - 1) *
-                              ((nb_effective - 1) * data["cost"]
+                              ((nb_effective - 1) * config["cost"]
 			       + nb_effective * beta0(B0) * (1-2*config["symmetry_breaking"])/2
                               - (nb_effective - 2) / 2 * B0))); label="Approx. Theory",
            color=:purple, linestyle=:dash)
@@ -912,11 +914,9 @@ end
 
 function calc_timeseries(config::Dict)
     # Unpack variables
-    @unpack B_factor, selection_strength, symmetry_breaking, adj_matrix_source, payoff_update_method, time_steps, nb_phases = config
+    @unpack B_factor, selection_strength, symmetry_breaking, adj_matrix_source, payoff_update_method, time_steps, nb_phases, cost, mutation_rate = config
 
     # Define system
-    cost = 0.1
-    mutation_rate = 0.0001
     B = cost * B_factor
 
     # Define interaction graph and reproduction graphs
@@ -937,7 +937,7 @@ function calc_timeseries(config::Dict)
                                   time_steps, payoff_update_method)
 
     # Package results
-    return @strdict(all_populations, steps_following_mutation, cost, nb_phases, nb_players, mutation_rate, interaction_adj_matrix)
+    return @strdict(all_populations, steps_following_mutation, nb_phases, nb_players, interaction_adj_matrix)
 end
 
 function calc_timeseries_statistics(config::Dict)
@@ -945,8 +945,8 @@ function calc_timeseries_statistics(config::Dict)
     data = calc_timeseries(config)
 
     # Unpack variables
-    @unpack all_populations, steps_following_mutation, cost, nb_phases, nb_players, mutation_rate, interaction_adj_matrix = data
-    @unpack B_factor, symmetry_breaking, selection_strength, adj_matrix_source, payoff_update_method, time_steps, nb_phases = config
+    @unpack all_populations, steps_following_mutation, nb_phases, nb_players, interaction_adj_matrix = data
+    @unpack B_factor, symmetry_breaking, selection_strength, adj_matrix_source, payoff_update_method, time_steps, nb_phases, cost, mutation_rate = config
 
     # Extract results
     most_common_game_types = dropdims(mapslices(x -> extract_most_common_game_types(x,
@@ -1002,10 +1002,16 @@ function plot_timeseries(B_factor::Real, selection_strength::Real, symmetry_brea
                          adj_matrix_source::String="well-mixed",
                          payoff_update_method::String="single-update",
                          time_steps::Integer=80_000,
-			 nb_phases::Integer=20)
+			 nb_phases::Integer=20,
+			 cost::Real=0.1,
+			 mutation_rate::Real=0.0001,
+			 )
     # Load results
     config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_factor,
-                      symmetry_breaking, selection_strength, nb_phases)
+                      symmetry_breaking, selection_strength, nb_phases, cost, mutation_rate)
+    if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
+	    config["nb_players"] = 20
+    end
     data = produce_or_load(calc_timeseries_statistics, config,
                            datadir("raw","timeseries_statistics"))[1]
 
@@ -1154,10 +1160,16 @@ function plot_graph_evolution(B_factor::Real, selection_strength::Real,
                               adj_matrix_source::String="well-mixed",
                               payoff_update_method::String="single-update",
                               time_steps::Integer=80_000,
-                              nb_phases::Integer=20)
+                              nb_phases::Integer=20,
+			      cost::Real=0.1,
+			      mutation_rate::Real=0.0001,
+			      )
     # Load results
     config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_factor,
-                      selection_strength, symmetry_breaking, nb_phases)
+                      selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate)
+    if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
+	    config["nb_players"] = 20
+    end
     data, _ = produce_or_load(calc_timeseries, config, datadir("raw","timeseries"))
 
     # Generate graph
@@ -1492,12 +1504,12 @@ function extract_cumulative(type::String; selection_strength::Real,
         beta0(B0) = 0.95*B0
         if type == "theory"
             func = B0 -> analytic_frac_communicative(B0, beta0(B0);
-                selection_strength=config["selection_strength"], cost=data["cost"],
+                selection_strength=config["selection_strength"], cost=config["cost"],
                 nb_players=nb_effective, symmetry_breaking=config["symmetry_breaking"],
                 nb_phases=config["nb_phases"])
         else
             func = B0 -> 1 / (1 + exp(config["selection_strength"] * (nb_effective - 1) *
-                              ((nb_effective - 1) * data["cost"]
+                              ((nb_effective - 1) * config["cost"]
                    + nb_effective * beta0(B0) * (1-2*config["symmetry_breaking"])/2
                               - (nb_effective - 2) / 2 * B0)))
         end

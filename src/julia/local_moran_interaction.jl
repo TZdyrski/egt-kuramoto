@@ -25,13 +25,16 @@ using Colors
 using ColorBrewer
 using Memoize
 using DimensionalData
+using DimensionalData.Lookups
 using SplitApplyCombine
 using CondaPkg
 using PythonCall
 using CSV
 using PlotUtils
 using JLD2
-#using CombinatorialMultiGrid
+using HDF5
+using NetCDF
+using YAXArrays
 
 function payoff_matrix(nb_phases::Integer,
                        mutual_benefit_synchronous::Real,
@@ -1108,6 +1111,16 @@ function plot_connected_components(
     return fig
 end
 
+function load_all_cumulative(time_steps::Integer=200_000_000)
+    # Load dataframe
+    df_raw = collect_results(datadir("raw","cumulative"); rinclude = [Regex("time_steps=$time_steps[._]")])
+
+    # Add path
+    df = transform(df_raw, :path => (x-> DataFrame(map(y -> parse_savename(y)[2], x))) => AsTable)
+
+    return df
+end
+
 function load_all_timeseries(time_steps::Integer=80_000)
     # Load dataframe
     df_raw = collect_results(datadir("raw","timeseries"); rinclude = [Regex("time_steps=$time_steps[._]")])
@@ -1720,6 +1733,143 @@ function calc_number_unidirection_bidirectional_edges(adj_matrix_source::String)
 		  "bidirectional_edge_pairs" => bidirectional_edge_pairs)
 
     return results
+end
+
+function create_netcdf(adj_matrix_source::String;cumulative_time_steps::Integer=200_000_000, timeseries_time_steps::Integer=800_000)
+	# Load data
+	df_cumulative = @rsubset(load_all_cumulative(cumulative_time_steps), :matrix_source == adj_matrix_source)
+	df_timeseries = @rsubset(load_all_timeseries(timeseries_time_steps), :adj_matrix_source == adj_matrix_source)
+	df_timeseries_statistics = @rsubset(load_all_timeseries_statistics(timeseries_time_steps), :adj_matrix_source == adj_matrix_source)
+
+	# Ensure column name consistency
+	rename!(df_cumulative, :matrix_source => :adj_matrix_source)
+
+	function get_properties(df,adj_matrix_source)
+		property_list = ["payoff_update_method", "time_steps", "nb_phases", "adj_matrix_source"]
+		properties_df = unique(select(df, property_list))
+		if nrow(properties_df) != 1
+			throw(ErrorException("Datasets with adj_matrix_source==$adj_matrix_source do not have identical properties=$property_list"))
+		end
+		properties_dict = Dict(names(properties_df[1,:]) .=> values(properties_df[1,:]))
+		if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
+		    properties_dict["nb_players"] = 20
+		end
+		properties_dict["cost"] = 0.1
+		properties_dict["mutation_rate"] = 0.0001
+		return properties_dict
+	end
+	properties_dict_cumulative = get_properties(df_cumulative,adj_matrix_source)
+	properties_dict_timeseries = get_properties(df_timeseries,adj_matrix_source)
+	transform!(df_timeseries, :factor => ByRow(x -> x*properties_dict_timeseries["cost"]) => :maximum_joint_benefit)
+	properties_dict_timeseries_statistics = get_properties(df_timeseries,adj_matrix_source)
+	transform!(df_timeseries_statistics, :factor => ByRow(x -> x*properties_dict_timeseries_statistics["cost"]) => :maximum_joint_benefit)
+
+	# Combine into a YAXArray
+	axes = (
+		Dim{:maximum_joint_benefit}(df_cumulative.Bs[1]),
+		Dim{:symmetry_breaking}(unique(df_cumulative.symmetry_breaking)),
+		Dim{:selection_strength}(unique(df_cumulative.selection_strength)),
+		)
+	cumulative = YAXArray(axes,
+			      stack(only(@rsubset(df_cumulative, :symmetry_breaking == alpha,  :selection_strength == delta)).fraction_communicative
+				    for alpha in axes[2], delta in axes[3]),
+			      properties_dict_cumulative,
+			      )
+	savecube(cumulative, datadir("processed","netcdf","$adj_matrix_source-cumulative.nc"), driver=:netcdf, overwrite=true)
+
+
+	nb_players = size(df_timeseries.all_populations[1])[1]
+	axes_timeseries = (
+	        Dim{:player_index}(1:nb_players),
+	        Dim{:time_step}(0:properties_dict_timeseries["time_steps"]),
+		Dim{:symmetry_breaking}(unique(df_timeseries.symmetry_breaking), span=Regular(0.25)),
+		Dim{:maximum_joint_benefit}(round.(unique(df_timeseries_statistics.maximum_joint_benefit);digits=5)), # use timeseries_statistics as it is a strict superset
+		Dim{:selection_strength}(unique(df_timeseries.selection_strength), span=Regular(4.8)),
+		)
+	axes_timeseries_statistics = (
+	        Dim{:time_step}(0:properties_dict_timeseries_statistics["time_steps"]),
+		Dim{:symmetry_breaking}(unique(df_timeseries_statistics.symmetry_breaking), span=Regular(0.25)),
+		Dim{:maximum_joint_benefit}(round.(unique(df_timeseries_statistics.maximum_joint_benefit);digits=5)),
+		Dim{:selection_strength}(unique(df_timeseries_statistics.selection_strength), span=Regular(4.8)),
+		)
+	if axes_timeseries[[2,3,4,5]] != axes_timeseries_statistics[[1,2,3,4]]
+		throw(ErrorException("timeseries and timeseries_statistics have different axes"))
+	end
+
+	axes = axes_timeseries
+
+	# Combine into a YAXArray
+	timeseries = YAXArray(axes,
+			      stack(only(
+					       begin
+						       x = @rsubset(df_timeseries, :symmetry_breaking == alpha,  :selection_strength == delta, :maximum_joint_benefit == B_0)
+						       !isempty(x) ? x : DataFrame(all_populations = [fill(missing, size(axes[[1,2]]))])
+					       end
+					 ).all_populations
+				    for alpha in axes[3], B_0 in axes[4], delta in axes[5]),
+			      properties_dict_timeseries,
+			      )
+	#savecube(timeseries, datadir("processed","netcdf","$adj_matrix_source-timeseries.nc"), driver=:netcdf, overwrite=true)
+
+	# Combine into a YAXArray
+	axes = axes_timeseries[[2,3,4,5]]
+	transform!(df_timeseries_statistics, :most_common_game_types => ByRow(x -> Integer.(x)) => :most_common_game_types)
+	most_common_game_types = YAXArray(
+					    axes,
+					    stack(only(
+						       begin
+							       x = @rsubset(df_timeseries_statistics, :symmetry_breaking == alpha,  :selection_strength == delta, :maximum_joint_benefit == B_0)
+							       !isempty(x) ? x : DataFrame(most_common_game_types = [fill(missing, size(axes[1]))])
+						       end
+						       ).most_common_game_types
+						  for alpha in axes[2], B_0 in axes[3], delta in axes[4]),
+					    merge(properties_dict_timeseries_statistics, Dict("enum_lookup:" .* string.(Integer.(instances(GameType)))
+						       .=> String.(Symbol.(instances(GameType))))),
+
+					   )
+	order_parameters = YAXArray(
+					    axes,
+					    stack(only(
+						       begin
+							       x = @rsubset(df_timeseries_statistics, :symmetry_breaking == alpha,  :selection_strength == delta, :maximum_joint_benefit == B_0)
+							       !isempty(x) ? x : DataFrame(order_parameters = [fill(missing, size(axes[1]))])
+						       end
+						       ).order_parameters
+						  for alpha in axes[2], B_0 in axes[3], delta in axes[4]),
+					    properties_dict_timeseries_statistics,
+					   )
+	transform!(df_timeseries_statistics, :strategy_parity => ByRow(x -> Integer.(x)) => :strategy_parity)
+	strategy_parity = YAXArray(
+					    axes,
+					    stack(only(
+						       begin
+							       x = @rsubset(df_timeseries_statistics, :symmetry_breaking == alpha,  :selection_strength == delta, :maximum_joint_benefit == B_0)
+							       !isempty(x) ? x : DataFrame(strategy_parity = [fill(missing, size(axes[1]))])
+						       end
+						       ).strategy_parity
+						  for alpha in axes[2], B_0 in axes[3], delta in axes[4]),
+					    merge(properties_dict_timeseries_statistics, Dict("enum_lookup:" .* string.(Integer.(instances(StrategyParity)))
+						       .=> String.(Symbol.(instances(StrategyParity))))),
+					   )
+	fraction_communicative = YAXArray(
+					    axes,
+					    stack(only(
+						       begin
+							       x = @rsubset(df_timeseries_statistics, :symmetry_breaking == alpha,  :selection_strength == delta, :maximum_joint_benefit == B_0)
+							       !isempty(x) ? x : DataFrame(fraction_communicative = [fill(missing, size(axes[1]))])
+						       end
+						       ).fraction_communicative
+						  for alpha in axes[2], B_0 in axes[3], delta in axes[4]),
+					    properties_dict_timeseries_statistics,
+					   )
+	timeseries_statistics = Dataset(; Dict(:most_common_game_types => most_common_game_types,
+					       :order_parameters => order_parameters,
+					       :strategy_parity => strategy_parity,
+					       :fraction_communicative => fraction_communicative,
+					       :timeseries => timeseries,
+					       )...)
+	savedataset(timeseries_statistics, path=datadir("processed","netcdf","$adj_matrix_source-timeseries-statistics.nc"), driver=:netcdf, overwrite=true)
+	return nothing
 end
 
 end

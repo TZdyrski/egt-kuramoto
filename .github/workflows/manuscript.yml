@@ -1,0 +1,31 @@
+name: Manuscript Compilation
+on:
+  push:
+    tags:
+      - '*.*.*' # semantic versioning
+jobs:
+  build_latex:
+    runs-on: ubuntu-latest
+    container: pkgforge/debian-guix:x86_64-v2025.06.26
+    permissions:
+      contents: write
+    steps:
+      - name: Start guix daemon
+        run: '~root/.config/guix/current/bin/guix-daemon --build-users-group=guixbuild --disable-chroot &'
+      - name: Set up Git repository
+        uses: actions/checkout@v2
+      - name: Compile LaTeX document
+        working-directory: papers/primary_manuscript
+        # Note: pass disable to memoize to create smaller PDF
+        run: |
+          SOURCE_DATE_EPOCH=0 TZ=Zulu guix time-machine -C channels.scm -- \
+          shell --pure -E SOURCE_DATE_EPOCH -E TZ -m manifest.scm -- \
+          latexmk -auxdir=latex.aux -lualatex \
+          -usepretex="\PassOptionsToPackage{disable}{memoize} \pdfvariable suppressoptionalinfo 512\relax" \
+          Report.tex
+      - name: Create Release
+        id: create_release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: papers/primary_manuscript/Report.pdf
+          artifactContentType: application/pdf

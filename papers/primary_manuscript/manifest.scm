@@ -57,4 +57,5 @@
         "texlive-advice"
         "texlive-collargs"
         "texlive-placeins"
+        "texlive-bin"
         ))

@@ -1376,9 +1376,7 @@ function calc_coalescence_times(graph::Graphs.SimpleGraphs.AbstractSimpleGraph)
 end
 
 function get_celegans_connectome()
-    connectome_and_muscles = get_celegans_connectome_labelled()["connectome"]
-    # Remove connections to muscles
-    connectome = connectome_and_muscles[:, [1:20..., 51:322..., 438:445...]]
+    connectome = get_celegans_connectome_labelled()["connectome"]
     # Replace "Missing" data with zeros
     replace!(connectome, missing => 0)
     return connectome
@@ -1393,10 +1391,14 @@ end
 
 function get_celegans_connectome_labelled()
     connectome_and_muscles_with_labels = read(dataset("celegans-connectome-cook"), Matrix)
-    row_labels = connectome_and_muscles_with_labels[:, 1]
-    col_labels = connectome_and_muscles_with_labels[1, :]
-    connectome_and_muscles = connectome_and_muscles_with_labels[2:end, 2:end]
-    results = Dict("connectome" => connectome_and_muscles, "row_labels" => row_labels,
+    connectome_with_labels = connectome_and_muscles_with_labels[:, [1:21..., 52:323..., 439:446...]]
+    row_labels = connectome_with_labels[2:end, 1]
+    col_labels = connectome_with_labels[1, 2:end]
+    if row_labels != col_labels
+      throw(ErrorException("Rows and columns in c-elegans adjacency table do not match up"))
+    end
+    connectome = connectome_with_labels[2:end, 2:end]
+    results = Dict("connectome" => connectome, "row_labels" => row_labels,
                    "col_labels" => col_labels)
     return results
 end

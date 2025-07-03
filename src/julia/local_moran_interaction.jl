@@ -1737,7 +1737,7 @@ function calc_number_unidirection_bidirectional_edges(adj_matrix_source::String)
     return results
 end
 
-function create_netcdf(adj_matrix_source::String;cumulative_time_steps::Integer=200_000_000, timeseries_time_steps::Integer=800_000)
+function create_netcdf(adj_matrix_source::String;cumulative_time_steps::Integer=200_000_000, timeseries_time_steps::Integer=800_000, decimation_factor::Integer=1000)
 	# Load data
 	df_cumulative = @rsubset(load_all_cumulative(cumulative_time_steps), :matrix_source == adj_matrix_source)
 	df_timeseries = @rsubset(load_all_timeseries(timeseries_time_steps), :adj_matrix_source == adj_matrix_source)
@@ -1777,8 +1777,7 @@ function create_netcdf(adj_matrix_source::String;cumulative_time_steps::Integer=
 				    for alpha in axes[2], delta in axes[3]),
 			      properties_dict_cumulative,
 			      )
-	savecube(cumulative, datadir("processed","netcdf","$adj_matrix_source-cumulative.nc"), driver=:netcdf, overwrite=true)
-
+	savecube(cumulative, datadir("processed","netcdf","cumulative_matrixSource=$(adj_matrix_source)_timesteps=$cumulative_time_steps.nc"), driver=:netcdf, overwrite=true)
 
 	nb_players = size(df_timeseries.all_populations[1])[1]
 	axes_timeseries = (
@@ -1870,7 +1869,14 @@ function create_netcdf(adj_matrix_source::String;cumulative_time_steps::Integer=
 					       :fraction_communicative => fraction_communicative,
 					       :timeseries => timeseries,
 					       )...)
-	savedataset(timeseries_statistics, path=datadir("processed","netcdf","$adj_matrix_source-timeseries-statistics.nc"), driver=:netcdf, overwrite=true)
+	savedataset(timeseries_statistics,
+		    path=datadir("processed","netcdf", "timeseries-statistics_matrixSource=$(adj_matrix_source)_timesteps=$timeseries_time_steps.nc"),
+		    driver=:netcdf, overwrite=true, compress=9)
+
+	timeseries_statistics_decimated = timeseries_statistics[time_step = 1:decimation_factor:timeseries_time_steps]
+	savedataset(timeseries_statistics_decimated,
+		    path=datadir("processed","netcdf", "timeseries-statistics_decimationFactor=$(decimation_factor)_matrixSource=$(adj_matrix_source)_timesteps=$timeseries_time_steps.nc"),
+		    driver=:netcdf, overwrite=true)
 	return nothing
 end
 

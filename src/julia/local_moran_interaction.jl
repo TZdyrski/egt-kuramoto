@@ -1746,24 +1746,25 @@ function create_netcdf(adj_matrix_source::String;cumulative_time_steps::Integer=
 	# Ensure column name consistency
 	rename!(df_cumulative, :matrix_source => :adj_matrix_source)
 
-	function get_properties(df,adj_matrix_source)
-		property_list = ["payoff_update_method", "time_steps", "nb_phases", "adj_matrix_source"]
+	function get_properties(df,adj_matrix_source; include_time_steps::Bool=true)
+		property_list = ["payoff_update_method", "nb_phases", "adj_matrix_source", "cost", "mutation_rate"]
+		if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
+			append!(property_list, ["nb_players"])
+		end
+		if include_time_steps
+			append!(property_list, ["time_steps"])
+		end
 		properties_df = unique(select(df, property_list))
 		if nrow(properties_df) != 1
 			throw(ErrorException("Datasets with adj_matrix_source==$adj_matrix_source do not have identical properties=$property_list"))
 		end
 		properties_dict = Dict(names(properties_df[1,:]) .=> values(properties_df[1,:]))
-		if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
-		    properties_dict["nb_players"] = 20
-		end
-		properties_dict["cost"] = 0.1
-		properties_dict["mutation_rate"] = 0.0001
 		return properties_dict
 	end
-	properties_dict_cumulative = get_properties(df_cumulative,adj_matrix_source)
-	properties_dict_timeseries = get_properties(df_timeseries,adj_matrix_source)
+	properties_dict_cumulative = get_properties(df_cumulative,adj_matrix_source; include_time_steps=true)
+	properties_dict_timeseries = get_properties(df_timeseries,adj_matrix_source; include_time_steps=false)
 	transform!(df_timeseries, :factor => ByRow(x -> x*properties_dict_timeseries["cost"]) => :maximum_joint_benefit)
-	properties_dict_timeseries_statistics = get_properties(df_timeseries,adj_matrix_source)
+	properties_dict_timeseries_statistics = get_properties(df_timeseries,adj_matrix_source; include_time_steps=false)
 	transform!(df_timeseries_statistics, :factor => ByRow(x -> x*properties_dict_timeseries_statistics["cost"]) => :maximum_joint_benefit)
 
 	# Combine into a YAXArray
@@ -1782,13 +1783,13 @@ function create_netcdf(adj_matrix_source::String;cumulative_time_steps::Integer=
 	nb_players = size(df_timeseries.all_populations[1])[1]
 	axes_timeseries = (
 	        Dim{:player_index}(1:nb_players),
-	        Dim{:time_step}(0:properties_dict_timeseries["time_steps"]),
+		Dim{:time_step}(0:timeseries_time_steps),
 		Dim{:symmetry_breaking}(unique(df_timeseries.symmetry_breaking), span=Regular(0.25)),
 		Dim{:maximum_joint_benefit}(round.(unique(df_timeseries_statistics.maximum_joint_benefit);digits=5)), # use timeseries_statistics as it is a strict superset
 		Dim{:selection_strength}(unique(df_timeseries.selection_strength), span=Regular(4.8)),
 		)
 	axes_timeseries_statistics = (
-	        Dim{:time_step}(0:properties_dict_timeseries_statistics["time_steps"]),
+		Dim{:time_step}(0:timeseries_time_steps),
 		Dim{:symmetry_breaking}(unique(df_timeseries_statistics.symmetry_breaking), span=Regular(0.25)),
 		Dim{:maximum_joint_benefit}(round.(unique(df_timeseries_statistics.maximum_joint_benefit);digits=5)),
 		Dim{:selection_strength}(unique(df_timeseries_statistics.selection_strength), span=Regular(4.8)),

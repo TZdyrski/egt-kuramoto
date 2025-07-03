@@ -1811,7 +1811,6 @@ function create_netcdf(adj_matrix_source::String;cumulative_time_steps::Integer=
 				    for alpha in axes[3], B_0 in axes[4], delta in axes[5]),
 			      properties_dict_timeseries,
 			      )
-	#savecube(timeseries, datadir("processed","netcdf","$adj_matrix_source-timeseries.nc"), driver=:netcdf, overwrite=true)
 
 	# Combine into a YAXArray
 	axes = axes_timeseries[[2,3,4,5]]

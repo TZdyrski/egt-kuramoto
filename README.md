@@ -1,4 +1,5 @@
 # 2024_EGT_Kuramoto
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/TZdyrski/egt-kuramoto/HEAD?urlpath=pluto%2Fopen%3Furl%3Dhttps%253A%252F%252Fraw.githubusercontent.com%252FTZdyrski%252Fegt-kuramoto%252Frefs%252Fheads%252Fmain%252Fnotebooks%252FEKT_Plots.jl)
 
 This code base is using the [Julia Language](https://julialang.org/) and
 [DrWatson](https://juliadynamics.github.io/DrWatson.jl/stable/)

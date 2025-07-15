@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Run notebook to pre-download files
+#julia --optimize=0 --project=binder --heap-size-hint=1G *.jl
+
+# Precompile
+julia --project=binder -e 'using PackageCompiler; create_sysimage(;sysimage_path="sysimage.so", cpu_target="generic")'

@@ -63,9 +63,6 @@ md"## Communicative Fraction"
 # ╔═╡ 974538d6-19da-4251-8441-a0ff70a85e39
 md"# Time Dependent Features"
 
-# ╔═╡ 9166474d-67ae-47d2-9bf0-04eda2fcce3d
-md"### Time step"
-
 # ╔═╡ 60a09648-d129-4005-9d06-df6844d28955
 md"### Maximum Joint Benefit"
 
@@ -74,9 +71,6 @@ md"### Maximum Joint Benefit"
 
 # ╔═╡ 507c9c3f-7fd9-4f1a-ad7d-743697a5c580
 maximum_joint_benefit
-
-# ╔═╡ fa0030dd-4cb3-4edb-9067-119552d3d0ab
-md"## Time snapshot"
 
 # ╔═╡ 4d0adc28-0eaa-481b-934a-a4344a638c22
 md"## Time Series"
@@ -99,8 +93,8 @@ begin
 			# If file is already downloaded to current directory, use it
 			file = filename
 		else
-			# Download file to current directory
-			file = Downloads.download(url, filename)
+			# Download file to /tmp
+			file = Downloads.download(url)
 		end
 		return file
 	end
@@ -142,12 +136,6 @@ begin
 	nb_phases = cumulative_da.properties["nb_phases"]
 	cost = cumulative_da.properties["cost"]
 end;
-
-# ╔═╡ 074771dd-e442-484d-94b1-8d023d7ae74d
-@bind time_step PlutoUI.Slider(collect(timeseries_ds.time_step); default=554000)
-
-# ╔═╡ 57277407-6b80-40a5-87de-ef026c8b2c04
-time_step
 
 # ╔═╡ a0682454-e0f1-4e8c-b4fc-0066facbd79a
 # Get graphs
@@ -478,32 +466,6 @@ begin
 								  length=nb_phases)
 	cooperative_colormap = [cooperative_colors; noncooperative_colors]
 end;
-
-# ╔═╡ 16b202df-7050-4505-8a4a-2f32f6ade20b
-begin
-	# Get timeseries data
-	local timeseries_data = timeseries_ds.timeseries[
-		time_step = At(time_step),
-		selection_strength = At(selection_strength),
-		maximum_joint_benefit = At(maximum_joint_benefit),
-		symmetry_breaking = At(symmetry_breaking),
-	]
-
-	if ! any(ismissing.(timeseries_data))
-		# Apply colormap
-		local colors = cooperative_colormap[timeseries_data]
-
-		# Create plot
-		GC.gc()
-		local fig = graphplot(graph;
-				  node_color=colors,
-				  layout=Stress(),
-				  arrow_show=false, edge_color=(:black, 0.05),
-				  edge_plottype=:linesegments)
-		GC.gc()
-		fig
-	end
-end
 
 # ╔═╡ 54ba97a0-7da0-4227-8427-f54701df0c5c
 begin
@@ -2761,14 +2723,9 @@ version = "3.6.0+0"
 # ╟─64b0ba25-8a2e-427e-baf0-984389802336
 # ╟─d2829848-20fe-4f52-a71b-976ca9d0131a
 # ╟─974538d6-19da-4251-8441-a0ff70a85e39
-# ╟─9166474d-67ae-47d2-9bf0-04eda2fcce3d
-# ╟─074771dd-e442-484d-94b1-8d023d7ae74d
-# ╟─57277407-6b80-40a5-87de-ef026c8b2c04
 # ╟─60a09648-d129-4005-9d06-df6844d28955
 # ╟─cb324cb3-48ea-4a3a-b4c7-cf3d84a9030a
 # ╟─507c9c3f-7fd9-4f1a-ad7d-743697a5c580
-# ╟─fa0030dd-4cb3-4edb-9067-119552d3d0ab
-# ╟─16b202df-7050-4505-8a4a-2f32f6ade20b
 # ╟─4d0adc28-0eaa-481b-934a-a4344a638c22
 # ╟─0b9e9e44-6c46-4481-bf89-07cd11c76adb
 # ╟─74c12270-0058-4c09-817a-ac46f799518f

@@ -1,14 +1,12 @@
 %! TeX program = lualatex
-%\documentclass[pdflatex,lineno,referee,sn-nature]{sn-jnl}
-\documentclass[pdflatex,twocolumn,sn-nature,super]{sn-jnl}
-\pdfvariable objcompresslevel=0
+\documentclass[pdflatex,lineno,referee,sn-nature]{sn-jnl}
+%\documentclass[pdflatex,twocolumn,sn-nature,super]{sn-jnl}
 
 % Silence warning from caption about unknown document class
 \usepackage{silence}
 \WarningFilter*{caption}{Unknown document class}
 
 % Memoize tikz drawings
-%\usepackage{nomemoize}
 \usepackage[extract=tex]{memoize}
 \mmzset{
   padding=0pt, % Remove padding around figure for journal submission
@@ -34,13 +32,14 @@ in neural populations}
 \href{https://orcid.org/0000-0003-3039-172X}{Thomas Zdyrski}$^{1}$,
 \href{https://orcid.org/0000-0002-0281-2868}{Scott Pauls}$^{1}$,
 and
-\href{https://orcid.org/0000-0001-8252-1990}{Feng Fu}$^{1}$
+\href{https://orcid.org/0000-0001-8252-1990}{Feng Fu}$^{1,2}$
 }
 
-\affil{$^{1}$Department of Mathematics, Dartmouth College, Hanover, NH 03755
+\affil{$^{1}$Department of Mathematics, Dartmouth College, Hanover, NH 03755\\
+$^{2}$Department of Biomedical Data Science, Geisel School of Medicine at Dartmouth, Lebanon, NH 03756
 }
 
-%\keywords{xxxx, xxxx, xxxx}
+%\keywords{neural synchronization, game theory, evolutionary graph theory}
 %\pw{}
 
 %TC:ignore
@@ -164,7 +163,7 @@ of evolutionary Kuramoto dynamics and chimera states
 to the \gls{celegans} connectome model.
 
 %\subsection{Outline}
-In this paper,we will generalize
+In this paper, we will generalize
 the evolutionary Kuramoto model
 by adding an asymmetry between
 the communicator and non-communicator payoffs

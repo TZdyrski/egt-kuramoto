@@ -123,16 +123,12 @@ Prior studies~\citep{antonioni2017coevolution}
 have modelled interneuron communication
 with Kuramoto oscillators and EGT
 using the prisoner's dilemma game type.
-Tripp, Fu, and Pauls~\citep{tripp2022evolutionary}
-(abbreviated \tripp{} hereafter)
-generalized this approach to dynamically changing game types
-with their evolutionary Kuramoto (EK) model.
-\tripp{} considered a well-mixed player population
-characterized by a communicative/non-communicative strategy
-and quantized Kuramoto phase.
-They showed how the relationship between communication benefit and cost
+Other studies~\citep{tripp2022evolutionary}
+generalized this approach to include dynamically changing game types
+by introducing an evolutionary Kuramoto (EK) model
+to show how the relationship between communication benefit and cost
 influences the emergence of synchronized communication
-or non-communication.
+or non-communication regimes.
 
 %\subsection{Chimera states}
 One intriguing aspect of neuron oscillations
@@ -298,8 +294,6 @@ The payoff matrix in \cref{fig:payoff_matrix} summarizes these payoffs.
     and for
     \protect{\subref{fig:phase-diagram-B_alpha}}
     $\beta_0 = \num{0.95} B_0$.
-    \protect{\subref{fig:phase-diagram-B_beta}}
-    is an extension of figure 1 from \tripp{}.
   }\label{fig:phase-diagram}
 \end{figure*}
 
@@ -322,7 +316,7 @@ of the three-dimension phase space
 characterized by $\alpha$, $\beta \coloneqq \beta_0 f(\Delta \phi)$,
 and $B \coloneqq B_0 f(\Delta \phi)$.
 \cref{fig:phase-diagram-B_beta} shows a $B$-$\beta$ slice of phase space
-and is an extension of figure 1 in \tripp{},
+and generalizes figure 1 in source~\citep{tripp2022evolutionary},
 while \cref{fig:phase-diagram-B_alpha} shows a $B$-$\alpha$ slice.
 Each straight line of white dots represent permissible values of the $M = 20$ phases
 $\Delta \phi_i$ across our simulations
@@ -402,8 +396,9 @@ result (\pcref{eq:full_analytic}) for a well-mixed population.
 In general, $f_{\text{comm}}$ is low for small $B_0$,
 rises to $f_{\text{comm}} = 0.5$ at some break-even $B_0$,
 and plateaus to $f_{\text{comm}} \approx 1$ for large $B_0$.
-We note that the $\alpha = 0.5$ case corresponds
-to the setup in \tripp{} and produces qualitatively similar results,
+We can validate our model by comparing our
+$\alpha = 0.5$ case with a previous study~\citep{tripp2022evolutionary}
+to observe qualitatively similar results,
 with our break-even $B_0 \approx 0.21$
 corresponding to their $B_0 = 2 (N-1) c/(N-2) = 0.21$ break-even condition.
 We also see that increasing (decreasing)
@@ -811,11 +806,12 @@ the \cref{fig:game-type_celegans-full} \gls{celegans} setup.
 
 We can compare the \cref{fig:game-type_well-mixed}
 $\alpha = 0.5$ case
-to the time-series results in figure 4 of \tripp{}.
+to the time-series results
+in previous studies~\citep{tripp2022evolutionary}.
 Those results also show the system spending
 virtually all of its time in a synchronized state.
-When the \tripp{} system was not synchronized,
-it displayed chicken (denoted ``snowdrift'' in \tripp{})
+When not synchronized, their system had plurality
+chicken (denoted ``snowdrift'' therein)
 and staghunt (denoted ``coordination'',
 not to be confused with the coordination-type game
 in our \cref{fig:phase-diagram}) games.
@@ -1083,7 +1079,7 @@ and the time-average will correspond to the long-time limit.
 In the supplemental material,
 we derive an analytic expression \cref{eq:full_analytic} for
 $f_{\text{comm}}$ in the well-mixed case
-by extending the work of \tripp{} to account for benefit asymmetry $\alpha$.
+by incorporating the benefit asymmetry $\alpha$.
 
 \subsection{Game type nomenclature}
 Every edge of the interaction graph

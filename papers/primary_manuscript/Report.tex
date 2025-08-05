@@ -1124,9 +1124,10 @@ where each edge's count is weighted by its edge weight.
 Then, we calculate the frequency of this ``plurality game'' across
 all time steps of a given simulation to determine the distribution
 of games commonly played.
-Note that we determine an edge's game type solely
-by their relative phase $\Delta \phi$ and is independent
-of the players' communicativeness.
+Note that an edge's game type is independent
+of the players' communicativeness and only depends on
+their dynamically-evolving relative phase $\Delta \phi$
+and the fixed game parameters $c$, $B_0$, $\beta_0$, and $\alpha$.
 Furthermore, this metric is only sensitive to the
 plurality game and therefore provides no information
 on the presence/absence of minority game types.

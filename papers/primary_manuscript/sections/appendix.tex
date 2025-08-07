@@ -49,10 +49,8 @@ We now model the Moran process
 as a Markov chain where each state $i \in \Bab{0,1,\ldots,n}$
 is the number of (communicative) $E$ strategies.
 In particular, since the Moran process changes, at most, one strategy per time step,
-this Markov chain has the same fixation probabilities
-as an absorbing, heterogeneous one-dimensional random walk in $i$;
-unlike a true random walk, this Markov chain can take a step a zero-length step,
-but this doesn't affect the fixation probabilities.
+this Markov chain has the same fixation probabilities as a gambler's ruin problem
+(though it has different fixation times due to the possibility of zero-length steps).
 Therefore, we denote $x_i$ as the probability that state $i$ will fixate
 to state $n$ with all players using strategy $E$.
 Then, the $E$ and $F$ fixation probabilities defined above are given by

@@ -65,12 +65,14 @@ from state $i$ to state $j$ as
   p_{i,i+1} &= \frac{n-i}{n} \frac{i f_E(i)}{i f_E(i) + (n-i) f_F(i)} \\
   p_{i,i} &= 1 - p_{i,i+1} - p_{i,i-1}
 \end{align*}
-Furthermore, since each state $i$ can only transition
-to itself or an immediate neighbor,
-we obtain the recurrence relations
+Then, we obtain a recurrence relation for $x_i$ by conditioning
+on the outcome of the first step:
+\begin{align*}
+  x_i &= x_{i-1} p_{i,i-1} + x_i p_{i,i} + x_{i+1} p_{i,i+1} \\
+\end{align*}
+with boundary values
 \begin{align*}
   x_0 &= 0 \\
-  x_i &= x_{i-1} p_{i,i-1} + x_i p_{i,i} + x_{i+1} p_{i,i+1} \\
   x_1 &= 1
 \end{align*}
 Using the $p_{i,i} = 1 - p_{i,i+1} - p_{i,i-1}$ relation from above

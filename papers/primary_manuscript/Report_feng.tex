@@ -46,52 +46,12 @@ $^{2}$Department of Biomedical Data Science, Geisel School of Medicine at Dartmo
 %TC:ignore
 \abstract{
 
- % Basic introduction
-  Chimera states of networked oscillators
-  exhibit coexisting
-  synchronized and disordered populations,
-  are present
-  in brains~\citep{santos2017chimera,bansal2019cognitive},
-  and may be pivotal in human cognition~\citep{bansal2019cognitive}.
-  % Detailed background
-  Prior studies~\citep{deng2024chimera} investigated
-  chimera-like brain states \gls{dmelanogaster}
-  using sinusoidally-coupled Kuramoto oscillators,
-  a frequent model for neuron dynamics~\citep{cabral2011role}.
-  % General problem
-  However, the small-scale evolutionary factors
-  leading to chimera-like states remains poorly understood.
-  % Key takeaway
-  In this work,
-  we use evolutionary graph theory
-  to connect single-neuron payoffs
-  with network-wide chimera-like states
-  on the \gls{celegans} connectome graph.
-  % Main results
-  We extend an evolutionary Kuramoto model for complete graphs
-  to the weighted, directed \gls{celegans} network.
-  This network shows stronger disorder
-  than well-mixed populations do.
-  Additionally, we find the network has
-  low metastability ($\lambda < \num{0.01}$)
-  but a large chimera-like index ($\xi \approx \num{0.13}$).
-  % General context
-  Our results connect individual neuron fitness
-  and non-trivial brain topology
-  to chimera-like brain states.
-  % Broader perspective
-  Our model represents a simple tool to probe
-  the influence of graph structure on chimera-like brain states.
-
-
+Neural synchronization is central to maintaining circadian rhythms. However, incomplete synchronization often gives rise to chimera states, where coherent and incoherent dynamics coexist. While previous studies have explored such patterns using networks of coupled oscillators, it remains unclear why neurons commit to communication or how chimera states persist. Here, we investigate the coevolution of neuronal phases and communication strategies on directed, weighted networks, where interaction payoffs depend on phase alignment and may be asymmetric due to unilateral communication. We find that both connection weights and directionality influence the stability of communicative strategies -- and, consequently, full synchronization -- as well as the strategic nature of neuronal interactions. Applying our framework to the C. elegans connectome, we show that emergent payoff structures such as the snowdrift game underpin the formation of chimera states. Our computational results demonstrate a promising neurogame-theoretic perspective, leveraging evolutionary graph theory to shed light on mechanisms of neuronal coordination beyond classical synchronization models.
 
  
 }
 %TC:endignore
 
-
-
-%Neural synchronization is central to maintaining circadian rhythms. However, incomplete synchronization often gives rise to chimera states, where coherent and incoherent dynamics coexist. While previous studies have explored such patterns using networks of coupled oscillators, it remains unclear why neurons commit to communication or how chimera states persist. Here, we investigate the coevolution of neuronal phases and communication strategies on directed, weighted networks, where interaction payoffs depend on phase alignment and may be asymmetric due to unilateral communication. We find that both connection weights and directionality influence the stability of communicative strategies -- and, consequently, full synchronization -- as well as the strategic nature of neuronal interactions. Applying our framework to the C. elegans connectome, we show that emergent payoff structures such as the snowdrift game underpin the formation of chimera states. Our computational results demonstrate a promising neurogame-theoretic perspective, leveraging evolutionary graph theory to shed light on mechanisms of neuronal coordination beyond classical synchronization models.
 
 
 \maketitle
@@ -165,11 +125,8 @@ topologically-central rich clubs
 crucial to motor neurons~\citep{towlson2013rich},
 phenomenological connections to control theory~\citep{yan2017network},
 and chimera states~\citep{hizanidis2016chimera}.
-Therefore, this work will investigate the applicability
-of evolutionary Kuramoto dynamics and chimera states
-to the \gls{celegans} connectome model.
 
-%\subsection{Outline}
+  %\subsection{Outline}
 In this paper, we will generalize
 the evolutionary Kuramoto model
 by adding an asymmetry between
@@ -178,17 +135,35 @@ and applying it to incomplete, directed, and weighted graphs.
 These generalizations will allow us to apply the EK model
 to the \gls{celegans} connectome
 and analyze its communicativeness properties.
+
+    In this work,
+  we use evolutionary graph theory
+  to connect single-neuron payoffs
+  with network-wide chimera-like states
+  on the \gls{celegans} connectome graph.
+  
+Therefore, this work will investigate the applicability
+of evolutionary Kuramoto dynamics and chimera states
+to the \gls{celegans} connectome model. 
 The model's simulation statistics
 will allow us to connect
 the individual neurons' payoffs
 to the large-scale communicativeness properties
 while also investigating the influence
-of the \gls{celegans} connectome shape on chimera-like states.
-Our EK model's simplicity and versatility make it a valuable tool
-for investigating brain dynamics such as chimera states.
+of the \gls{celegans} connectome shape on chimera-like states. This network shows stronger disorder
+  than well-mixed populations do.
+  Additionally, we find the network has
+  low metastability ($\lambda < \num{0.01}$)
+  but a large chimera-like index ($\xi \approx \num{0.13}$).
+  % General context
+  Our results connect individual neuron fitness
+  and non-trivial brain topology
+  to chimera-like brain states.
+  % Broader perspective
+  Our computational model represents a simple yet versatile tool to illuminate
+  the influence of neural connectivity on chimera-like brain states beyond classical synchronization models.
 
-
-
+ 
 \section{Results}\label{sec:results}
 
 \subsection{Model}
@@ -944,6 +919,22 @@ support the claim that the connectivity structure---rather than
 a particular neuron model or any biochemical qualities---is responsible
 for the chimera states.
 
+% Basic introduction
+  Chimera states of networked oscillators
+  exhibit coexisting
+  synchronized and disordered populations,
+  are present
+  in brains~\citep{santos2017chimera,bansal2019cognitive},
+  and may be pivotal in human cognition~\citep{bansal2019cognitive}.
+  % Detailed background
+  Prior studies~\citep{deng2024chimera} investigated
+  chimera-like brain states \gls{dmelanogaster}
+  using sinusoidally-coupled Kuramoto oscillators,
+  a frequent model for neuron dynamics~\citep{cabral2011role}.
+  % General problem
+  However, the small-scale evolutionary factors
+  leading to chimera-like states remains poorly understood.
+  % Key takeaway
 %\section{Conclusion}
 In this paper, we extended the evolutionary Kuramoto model
 to include weighted, structured interaction graphs

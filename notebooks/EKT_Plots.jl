@@ -336,7 +336,7 @@ begin
 			maximum_joint_benefit = At(maximum_joint_benefit),
 			symmetry_breaking = At(symmetry_breaking),
 		]
-	
+
 		if ! any(ismissing.(ds.most_common_game_types))
 			game_parity_or_type = [enum_to_parity[strategy_parity] != mixed ? enum_to_parity[strategy_parity] : enum_to_strategy[game_type]
 		                           for (strategy_parity, game_type) in
@@ -349,7 +349,7 @@ begin
 							   color=collect(colors),
 							   linewidth=5,
 							  )
-	
+
 		    # Plot order parameter
 		    local ax2 = Axis(fig[1, 1];
 		               ylabel="Order parameter",
@@ -363,7 +363,7 @@ begin
 							   lookup(ds.order_parameters, :time_step),
 							   collect(ds.order_parameters);
 							   color=:magenta)
-	
+
 		    # Add legend
 			local game_list = unique(game_parity_or_type)
 			local legend_items = [PolyElement(color=game_type_or_parity_colors[game]) for game in game_list]
@@ -374,7 +374,7 @@ begin
 			append!(name_list, ["Order parameter"])
 		    axislegend(ax1, legend_items, name_list;
 		               position=:rb)
-	
+
 			# Return figure
 			fig
 		else
@@ -393,7 +393,7 @@ begin
 			maximum_joint_benefit = At(maximum_joint_benefit),
 			symmetry_breaking = At(symmetry_breaking),
 		]
-	
+
 		if !any(ismissing.(ds.most_common_game_types))
 			# Plot histogram of game types
 		    local game_parity_or_type = [enum_to_parity[strategy_parity] != mixed ? enum_to_parity[strategy_parity] : enum_to_strategy[game_type]
@@ -401,7 +401,7 @@ begin
 		                               zip(ds.strategy_parity,
 										   ds.most_common_game_types)]
 		    local hist_data = proportionmap(game_parity_or_type)
-	
+
 		    local fig = Figure()
 			local name_list = String.(Symbol.(collect(keys(hist_data))))
 			replace!(name_list, "all_communicative" => "all-C",
@@ -412,7 +412,7 @@ begin
 		               xticks=(1:length(keys(hist_data)), name_list))
 		    barplot!(ax, collect(values(hist_data));
 					color = [game_type_or_parity_colors[game] for game in keys(hist_data)])
-	
+
 			# Return figure
 			fig
 		else
@@ -430,14 +430,14 @@ begin
 			selection_strength = At(selection_strength),
 			maximum_joint_benefit = At(maximum_joint_benefit),
 		]
-	
+
 		if ! any(ismissing.(ds.most_common_game_types))
 			local game_parity_or_type = [enum_to_parity[strategy_parity] != mixed ? enum_to_parity[strategy_parity] : enum_to_strategy[game_type]
 		                           for (strategy_parity, game_type) in
 		                               zip(ds.strategy_parity,
 										   ds.most_common_game_types)]
 			local game_type_distribution = [proportionmap(slice) for slice in eachslice(game_parity_or_type, dims=timeseries_ds.symmetry_breaking)]
-	
+
 		    # Generate plot
 		    local fig = Figure()
 		    local ax = Axis(fig[1, 1];
@@ -451,7 +451,7 @@ begin
 						 color = [game_type_or_parity_colors[game] for game in keys(row)],
 						 width=0.2)
 		    end
-	
+
 		    # Add legend
 			local game_list = unique(collect(Iterators.flatten(map(keys,game_type_distribution))))
 			local legend_items = [PolyElement(color=game_type_or_parity_colors[game]) for game in game_list]
@@ -459,7 +459,7 @@ begin
 			replace!(name_list, "all_communicative" => "all-C",
 									"all_noncommunicative" => "all-N")
 			Legend(fig[2,1], legend_items,name_list, orientation=:horizontal)
-	
+
 			# Return figure
 			fig
 		else
@@ -491,25 +491,25 @@ begin
 			maximum_joint_benefit = At(maximum_joint_benefit),
 			symmetry_breaking = At(symmetry_breaking),
 		]
-	
+
 		if ! any(ismissing.(timeseries_data))
 			# It seems WGLMakie animations aren't working yet
 			CairoMakie.activate!()
-	
+
 			# Apply colormap
 			local colors = cooperative_colormap[timeseries_data]
-	
+
 		    # Set animation parameters
 		    local num_times = size(timeseries_data, :time_step)
 		    local total_time_s = 10
 		    local framerate_Hz = 30
 		    local time_stride = round(num_times / (framerate_Hz * total_time_s))
-	
+
 		    # Generate animation
 		    local time = Observable(1)
 		    local layout = Stress()
 			local titleStr = @lift("Time step = "*string(timeseries_data.time_step[$time]))
-	
+
 		    # Create plot
 		    local color_observable = @lift(colors[:, $time])
 			local fig = Figure()
@@ -521,12 +521,12 @@ begin
 		                                    arrow_show=false,
 											edge_color=(:black, 0.05),
 		                                    edge_plottype=:linesegments)
-	
+
 		    recording = Record(fig, 1:time_stride:num_times; framerate=framerate_Hz) do t
 		        return time[] = t
 		    end
 			WGLMakie.activate!()
-	
+
 			# Return recording
 			recording
 		else

@@ -90,12 +90,13 @@ set_theme!(theme_latexfonts())
 # Download data
 begin
 	function open_or_download(filename::String,url::String)
-		if isfile(filename)
+		path = joinpath(tempdir(),filename)
+		if isfile(path)
 			# If file is already downloaded to current directory, use it
-			file = filename
+			file = path
 		else
 			# Download file to /tmp
-			file = Downloads.download(url)
+			file = Downloads.download(url, path)
 		end
 		return file
 	end

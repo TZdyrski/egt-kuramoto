@@ -1692,6 +1692,9 @@ function extract_game_types(; B_factor::Real, selection_strength::Real,
     # Combine asymmetries into a single data frame
     df_missing = vcat(DataFrame.(game_type_symbols)...; cols=:union)
 
+    # Sort columns alphabetically
+    select!(df_missing, sort(names(df_missing)))
+
     # Add asymmetry
     insertcols!(df_missing, 1, :asymmetry => df_all_asymm.symmetry_breaking)
 

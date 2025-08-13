@@ -62,7 +62,7 @@ Neural synchronization is central to maintaining circadian rhythms. However, inc
 %\subsection{Impact of structure on game evolution}
 Evolutionary game theory (EGT) is the application
 of game theory to evolving populations
-of players with fixed strategies.
+of individuals with behavioral strategies.
 This tool is useful for studying how local interaction rules
 yield large-scale patterns such as cooperation~\citep{sigmund1999evolutionary}
 and has found use in fields including international politics, ecology,
@@ -70,16 +70,16 @@ and protein folding~\citep{traulsen2023future}.
 Studies~\citep{cohen2009evolutionary,antonioni2017coevolution,tripp2022evolutionary}
 have even applied EGT to non-reproducing neurons by treating the learning
 of interneuron communication strategies as an evolutionary process.
-Evolutionary \emph{graph} theory places evolutionary game theory
-on graphs to investigate the role of structure on population evolution.
+Evolutionary \emph{graph} theory places evolutionary games
+on graphs to investigate the role of structure in population evolution.
 Prior studies have found that structure
 qualitatively changes game evolution.
 For instance, cooperation is enhanced by
 small-degree nodes~\citep{ohtsuki2006simple}
 or unidirectional edges~\citep{su2022evolution}
 and suppressed by weighted edges~\citep{bhaumik2024constant}.
-Thus, any analysis of evolving, structured populations
-must include the effects of
+Thus, the study of evolving, structured populations
+should account for the effects of
 incompleteness, directedness, and weightedness.
 
 %\subsection{Evolutionary Kuramoto dynamics}
@@ -136,32 +136,13 @@ These generalizations will allow us to apply the EK model
 to the \gls{celegans} connectome
 and analyze its communicativeness properties.
 
-    In this work,
-  we use evolutionary graph theory
-  to connect single-neuron payoffs
-  with network-wide chimera-like states
-  on the \gls{celegans} connectome graph.
-  
-Therefore, this work will investigate the applicability
+Specifically, we will use evolutionary graph theory to connect single-neuron payoffs with network-wide chimera-like states on the \gls{celegans} connectome graph. To this end, this work will investigate the applicability
 of evolutionary Kuramoto dynamics and chimera states
-to the \gls{celegans} connectome model. 
-The model's simulation statistics
-will allow us to connect
-the individual neurons' payoffs
-to the large-scale communicativeness properties
-while also investigating the influence
-of the \gls{celegans} connectome shape on chimera-like states. This network shows stronger disorder
-  than well-mixed populations do.
-  Additionally, we find the network has
-  low metastability ($\lambda < \num{0.01}$)
-  but a large chimera-like index ($\xi \approx \num{0.13}$).
-  % General context
-  Our results connect individual neuron fitness
-  and non-trivial brain topology
-  to chimera-like brain states.
-  % Broader perspective
-  Our computational model represents a simple yet versatile tool to illuminate
-  the influence of neural connectivity on chimera-like brain states beyond classical synchronization models.
+to the \gls{celegans} connectome model. The model's simulation statistics
+will allow us to connect the individual neurons' payoffs to the large-scale communicativeness properties while also investigating the influence
+of the \gls{celegans} connectome shape on chimera-like states. This network shows stronger disorder than well-mixed populations do Additionally, we find the network has low metastability ($\lambda < \num{0.01}$) but a large chimera-like index ($\xi \approx \num{0.13}$).
+
+Our results connect individual neuron fitness and non-trivial brain topology to chimera-like brain states. Our computational model represents a simple yet versatile framework to illuminate the influence of neural connectivity on chimera-like brain states beyond classical synchronization models.
 
  
 \section{Results}\label{sec:results}
@@ -237,8 +218,8 @@ by modulating these benefits with a sinusoidal Kuramoto coupling
 $f(\Delta \phi) = [1+\cos(\phi_j - \phi_i)]/2$.
 Our new contribution is an asymmetry $\alpha \in [0,1]$
 that biases the mixed benefit $\beta_0$ when exactly one of the players is communicative.
-We multiply the $C$ player's mixed benefit by $\alpha/2$
-and the $N$ player's benefit by $(1 - \alpha)/2$.
+We multiply the $C$ player's mixed benefit by $2\alpha$
+and the $N$ player's benefit by $2(1 - \alpha)$.
 Using $\alpha = 0.5$ reproduces the symmetric case,
 and increasing (decreasing) $\alpha$ allows us
 to promote (suppress) communicativeness.
@@ -287,8 +268,7 @@ The payoff matrix in \cref{fig:payoff_matrix} summarizes these payoffs.
 \end{figure*}
 
 One of the key aspects of the EK model
-is that multiple $2 \times 2$ game types
-are available to the players during the population's evolution.
+is that multiple $2 \times 2$ game types can emerge among the players during the population's evolution.
 These game types~\citep{bruns2015names} include
 dilemma (\aka{} ``prisoner's dilemma''),
 deadlock (dilemma with the middle two payoffs swapped,
@@ -737,9 +717,9 @@ rather than an artifact of our $\alpha = \num{0.75}$ choice.
 Next, we seek to understand the types of games
 that nodes play during the population's evolution.
 In \cref{fig:game-type}, we investigate the plurality game type
-amongst all player interactions at each time step~(\cf{} \cref{sec:plurality_game_type})
+amongst all player interactions at each time step~(\cf{} \cref{sec:plurality_game_type}).
 \Cref{fig:game-type} shows the fraction of time
-a given game type is the plurality for different values
+that a given game type is the plurality for different values
 of the asymmetry $\alpha$ for
 \subref{fig:game-type_well-mixed}
 $N=20$ well-mixed,
@@ -753,7 +733,7 @@ for over \SI{99.3}{\percent} of the runtime
 across every asymmetry $\alpha$.
 In contrast, the
 \subref{fig:game-type_celegans-full} \gls{celegans} connectome system
-is never synchronized.
+is essentially never synchronized.
 Instead, disordered game types (\ie{} states other than ``all-C'' or ``all-N'')
 dominate,
 with the dominant game type changing as the asymmetry varies:
@@ -763,9 +743,9 @@ Additionally, the \gls{celegans} system displays
 some game-type heterogeneity, with
 a second game type (deadlock) being the plurality
 \SIrange{1}{14}{\percent} of the time
-for asymmetries $\alpha \le 0.5$.
+for asymmetries $\alpha \le 0.5$. In line with \cref{fig:chimera-index}, the game types of chicken and hero, with bigger chimera-like index for $\alpha$ values at $0.5$ and $0.75$,respectively, underlie the neuronal interactions. Despite their subtle difference in the ranking order of payoff values, both game types allow coexistence in a snowdrift-game-like fashion. Such payoff structure is known to have an exponential fixation time~\citep{antal2006fixation}, thereby giving rise to the persistence of chimera states. 
 Overall, we see that graph structure decreases synchronization
-and asymmetry influences the dominant game types.
+and asymmetry influences the dominant game types, which, in turn, underpin the formation of chimera states.
 
 \section{Discussion}\label{sec:discussion}
 
@@ -852,7 +832,7 @@ so the evenly-split scenario is more likely.
 For the $N = 20$ well-mixed case, this corresponds
 to \SIrange{39}{62}{\percent}, or \numrange{8}{12} players.
 But the magenta order parameter in \cref{fig:time-series_well-mixed_alpha-075}
-shows that the well-mixed system spends must of its time
+shows that the well-mixed system spends most of its time
 with fewer than the required \num{8} invaders.
 This explains why the well-mixed graph's disordered games
 are still nearly-synchronized.
@@ -912,11 +892,8 @@ Another study of the \gls{celegans} connectome also found
 chimera-like states using an entirely non-game-theory tool,
 modular neural networks~\citep{hizanidis2016chimera}.
 That study found a maximum chimera-like index of \num{0.12},
-similar to our value of \num{0.13}.
-The agreement between these different models
-of the \gls{celegans} connectome
-support the claim that the connectivity structure---rather than
-a particular neuron model or any biochemical qualities---is responsible
+in agreement with our value of \num{0.13}, despite the different network models
+of the \gls{celegans} connectome considered. Our study reveals that, in addition to the connectivity structure, the emergent game type characterizing neuronal interactions is primarily responsible
 for the chimera states.
 
 % Basic introduction
@@ -954,10 +931,10 @@ and  non-communicative states,
 the \gls{celegans} population remains far more heterogenous
 with a stable, chimeric mix of disordered game types.
 
-A future goal of this work is to apply the EK model
-to entire families of random regular graphs.
-The limited number of graphs analyzed in this study
-prevent the identification of exact relationships
+It is straightforward to apply the EK model
+to families of generative brain network models~\citep{betzel2016generative}.
+The limited number of empirical graphs analyzed in this study
+hinders the identification of exact relationships
 between the communicative fraction and graph properties
 such as edge degree, weight, and directionality;
 applying the model to parameterized families of graphs could allow
@@ -972,7 +949,7 @@ and yielding important implications for the neurons' fitness landscape.
 Finally, since this study only considers a single species' connectome,
 it is unclear if our findings regarding the dependence
 of chimeric activity on graph structure are generalizable.
-We plan to investigate this connection further
+Therefore, it is of interest to investigate this connection further
 by applying our EK setup to other model organisms,
 such as that of
 \glsxtrlong{dmelanogaster}~\citep{schlegel2024whole}.
@@ -982,13 +959,13 @@ of edge weight on communicativity;
 this has important parallels to neural computing,
 where edge weights are a primary driver of functionality.
 Additionally, the observation of chimeric states
-arising from such simple neuron models
-implies that neuron structure is likely
+arising from such simple neurogame-theoretic models
+implies that the nature of neuron interactions is likely
 a key component in producing these critical brain states.
 Overall, evolutionary graph theory allowed us
 to connect low-level payoff details for individual neurons
 to high-level phenomena such as chimera-states,
-and this model could serve as a valuable tool
+and this model could serve as a valuable computational framework
 for clarifying the influence of network structure on neural dynamics.
 
 %TC:ignore

@@ -45,10 +45,26 @@ $^{2}$Department of Biomedical Data Science, Geisel School of Medicine at Dartmo
 
 %TC:ignore
 \abstract{
-
-Neural synchronization is central to maintaining circadian rhythms. However, incomplete synchronization often gives rise to chimera states, where coherent and incoherent dynamics coexist. While previous studies have explored such patterns using networks of coupled oscillators, it remains unclear why neurons commit to communication or how chimera states persist. Here, we investigate the coevolution of neuronal phases and communication strategies on directed, weighted networks, where interaction payoffs depend on phase alignment and may be asymmetric due to unilateral communication. We find that both connection weights and directionality influence the stability of communicative strategies -- and, consequently, full synchronization -- as well as the strategic nature of neuronal interactions. Applying our framework to the C. elegans connectome, we show that emergent payoff structures such as the snowdrift game underpin the formation of chimera states. Our computational results demonstrate a promising neurogame-theoretic perspective, leveraging evolutionary graph theory to shed light on mechanisms of neuronal coordination beyond classical synchronization models.
-
- 
+Neural synchronization is central to maintaining circadian rhythms.
+However, incomplete synchronization often gives rise to chimera states,
+where coherent and incoherent dynamics coexist.
+While previous studies have explored such patterns
+using networks of coupled oscillators,
+it remains unclear why neurons commit to communication
+or how chimera states persist.
+Here, we investigate the coevolution of neuronal phases
+and communication strategies on directed, weighted networks,
+where interaction payoffs depend on phase alignment
+and may be asymmetric due to unilateral communication.
+We find that both connection weights and directionality influence the stability
+of communicative strategies -- and, consequently,
+full synchronization -- as well as the strategic nature of neuronal interactions.
+Applying our framework to the C. elegans connectome,
+we show that emergent payoff structures such as the snowdrift game
+underpin the formation of chimera states.
+Our computational results demonstrate a promising neurogame-theoretic perspective,
+leveraging evolutionary graph theory to shed light on mechanisms
+of neuronal coordination beyond classical synchronization models.
 }
 %TC:endignore
 
@@ -126,7 +142,7 @@ crucial to motor neurons~\citep{towlson2013rich},
 phenomenological connections to control theory~\citep{yan2017network},
 and chimera states~\citep{hizanidis2016chimera}.
 
-  %\subsection{Outline}
+%\subsection{Outline}
 In this paper, we will generalize
 the evolutionary Kuramoto model
 by adding an asymmetry between
@@ -136,15 +152,25 @@ These generalizations will allow us to apply the EK model
 to the \gls{celegans} connectome
 and analyze its communicativeness properties.
 
-Specifically, we will use evolutionary graph theory to connect single-neuron payoffs with network-wide chimera-like states on the \gls{celegans} connectome graph. To this end, this work will investigate the applicability
+Specifically, we will use evolutionary graph theory to connect single-neuron payoffs
+with network-wide chimera-like states on the \gls{celegans} connectome graph.
+To this end, this work will investigate the applicability
 of evolutionary Kuramoto dynamics and chimera states
-to the \gls{celegans} connectome model. The model's simulation statistics
-will allow us to connect the individual neurons' payoffs to the large-scale communicativeness properties while also investigating the influence
-of the \gls{celegans} connectome shape on chimera-like states. This network shows stronger disorder than well-mixed populations do Additionally, we find the network has low metastability ($\lambda < \num{0.01}$) but a large chimera-like index ($\xi \approx \num{0.13}$).
+to the \gls{celegans} connectome model.
+The model's simulation statistics will allow us to connect
+the individual neurons' payoffs to the large-scale communicativeness properties
+while also investigating the influence of the \gls{celegans} connectome
+shape on chimera-like states.
+This network shows stronger disorder than well-mixed populations do
+Additionally, we find the network has low metastability ($\lambda < \num{0.01}$)
+but a large chimera-like index ($\xi \approx \num{0.13}$).
 
-Our results connect individual neuron fitness and non-trivial brain topology to chimera-like brain states. Our computational model represents a simple yet versatile framework to illuminate the influence of neural connectivity on chimera-like brain states beyond classical synchronization models.
+Our results connect individual neuron fitness and non-trivial brain topology
+to chimera-like brain states.
+Our computational model represents a simple yet versatile framework
+to illuminate the influence of neural connectivity on chimera-like brain states
+beyond classical synchronization models.
 
- 
 \section{Results}\label{sec:results}
 
 \subsection{Model}
@@ -268,7 +294,8 @@ The payoff matrix in \cref{fig:payoff_matrix} summarizes these payoffs.
 \end{figure*}
 
 One of the key aspects of the EK model
-is that multiple $2 \times 2$ game types can emerge among the players during the population's evolution.
+is that multiple $2 \times 2$ game types can emerge
+among the players during the population's evolution.
 These game types~\citep{bruns2015names} include
 dilemma (\aka{} ``prisoner's dilemma''),
 deadlock (dilemma with the middle two payoffs swapped,
@@ -743,9 +770,18 @@ Additionally, the \gls{celegans} system displays
 some game-type heterogeneity, with
 a second game type (deadlock) being the plurality
 \SIrange{1}{14}{\percent} of the time
-for asymmetries $\alpha \le 0.5$. In line with \cref{fig:chimera-index}, the game types of chicken and hero, with bigger chimera-like index for $\alpha$ values at $0.5$ and $0.75$,respectively, underlie the neuronal interactions. Despite their subtle difference in the ranking order of payoff values, both game types allow coexistence in a snowdrift-game-like fashion. Such payoff structure is known to have an exponential fixation time~\citep{antal2006fixation}, thereby giving rise to the persistence of chimera states. 
+for asymmetries $\alpha \le 0.5$.
+In line with \cref{fig:chimera-index}, the game types of chicken and hero,
+with bigger chimera-like index for $\alpha$ values at $0.5$ and $0.75$,respectively,
+underlie the neuronal interactions.
+Despite their subtle difference in the ranking order of payoff values,
+both game types allow coexistence in a snowdrift-game-like fashion.
+Such payoff structure is known to have
+an exponential fixation time~\citep{antal2006fixation},
+thereby giving rise to the persistence of chimera states.
 Overall, we see that graph structure decreases synchronization
-and asymmetry influences the dominant game types, which, in turn, underpin the formation of chimera states.
+and asymmetry influences the dominant game types, which, in turn,
+underpin the formation of chimera states.
 
 \section{Discussion}\label{sec:discussion}
 
@@ -893,26 +929,24 @@ chimera-like states using an entirely non-game-theory tool,
 modular neural networks~\citep{hizanidis2016chimera}.
 That study found a maximum chimera-like index of \num{0.12},
 in agreement with our value of \num{0.13}, despite the different network models
-of the \gls{celegans} connectome considered. Our study reveals that, in addition to the connectivity structure, the emergent game type characterizing neuronal interactions is primarily responsible
+of the \gls{celegans} connectome considered.
+Our study reveals that, in addition to the connectivity structure,
+the emergent game type characterizing neuronal interactions is primarily responsible
 for the chimera states.
 
-% Basic introduction
-  Chimera states of networked oscillators
-  exhibit coexisting
-  synchronized and disordered populations,
-  are present
-  in brains~\citep{santos2017chimera,bansal2019cognitive},
-  and may be pivotal in human cognition~\citep{bansal2019cognitive}.
-  % Detailed background
-  Prior studies~\citep{deng2024chimera} investigated
-  chimera-like brain states in \gls{dmelanogaster}
-  using sinusoidally-coupled Kuramoto oscillators,
-  a frequent model for neuron dynamics~\citep{cabral2011role}.
-  % General problem
-  However, the small-scale evolutionary factors
-  leading to chimera-like states remains poorly understood.
-  % Key takeaway
 %\section{Conclusion}
+Chimera states of networked oscillators
+exhibit coexisting
+synchronized and disordered populations,
+are present
+in brains~\citep{santos2017chimera,bansal2019cognitive},
+and may be pivotal in human cognition~\citep{bansal2019cognitive}.
+Prior studies~\citep{deng2024chimera} investigated
+chimera-like brain states in \gls{dmelanogaster}
+using sinusoidally-coupled Kuramoto oscillators,
+a frequent model for neuron dynamics~\citep{cabral2011role}.
+However, the small-scale evolutionary factors
+leading to chimera-like states remains poorly understood.
 In this paper, we extended the evolutionary Kuramoto model
 to include weighted, structured interaction graphs
 and an asymmetry between

@@ -17,6 +17,7 @@ macro bind(def, element)
 end
 
 # ╔═╡ 50ccf7ba-55f7-11f0-1752-a5d12fed803c
+# ╠═╡ show_logs = false
 using CairoMakie, WGLMakie, Downloads, YAXArrays, NetCDF, PlutoUI, LaTeXStrings, Graphs, StatsBase, XLSX, MetaGraphsNext, SimpleWeightedGraphs, NetworkLayout, GraphMakie, Colors, ColorBrewer
 
 # ╔═╡ 3bb479c9-6dc1-4abf-88ed-f95b7f555972

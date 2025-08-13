@@ -8,19 +8,28 @@
 \input{preamble}
 
 \begin{document}
-\begin{tikzpicture}[
-    spy using outlines={rectangle, lens={yscale=100}, connect spies, width=4cm, height=1.5cm,
-    },
-  ]
+\begin{tikzpicture}
   \begin{groupplot}[
     width=0.5\textwidth,
-    group style={group size=2 by 1},
+    group style={group size=2 by 2, vertical sep=0.5cm},
     ymin=0,
     ymax=1,
     enlarge x limits=0.2, % Make room for subcaption labels
     enlarge y limits=0.05,
     xtick=data,
     ]
+    \nextgroupplot[xticklabel=\empty, ymin=0.99, ymax=1.0, height=3cm, blue,
+      yticklabel style={/pgf/number format/.cd,precision=3}
+    ]
+        % Note: this table names must appear in the `\tablename` loop below
+        \pgfplotstableread{../../../data/processed/gametype/B_factor=1.5_adj_matrix_source=well-mixed_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_time_steps=8000000.csv}{\loadtable}
+        \pgfplotstableforeachcolumn\loadtable\as\col
+        {
+          \ifnum\pgfplotstablecol=0\else%
+            \expandafter\addplot\expandafter[\col,ybar stacked,draw=none,xtick=none] table[x=asymmetry, y=\col] {\loadtable};
+          \fi
+        }
+    \nextgroupplot[hide axis, height=3cm]
     \nextgroupplot
         % Note: this table names must appear in the `\tablename` loop below
         \pgfplotstableread{../../../data/processed/gametype/B_factor=1.5_adj_matrix_source=well-mixed_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_time_steps=8000000.csv}{\loadtable}
@@ -97,8 +106,8 @@
           }
       }%
     \end{axis}
-    \spy[blue] on (plot-top_well-mixed) in node at ($(group c1r1.north)+(0,1cm)$);
-    \node[anchor=north] (title-x) at ($(group c1r1.south east)!0.5!(group c2r1.south west)-(0,0.5cm)$) {Asymmetry $\alpha$};
-    \path (group c1r1.south west) -- node[below={1cm}]{\pgfplotslegendfromname{CommonLegend2}} (group c2r1.south east);
+    \draw[blue] (group c1r1.south) -- (group c1r2.north);
+    \node[anchor=north] (title-x) at ($(group c1r2.south east)!0.5!(group c2r2.south west)-(0,0.5cm)$) {Asymmetry $\alpha$};
+    \path (group c1r2.south west) -- node[below={1cm}]{\pgfplotslegendfromname{CommonLegend2}} (group c2r2.south east);
 \end{tikzpicture}
 \end{document}

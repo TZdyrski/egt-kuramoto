@@ -22,7 +22,7 @@
       yticklabel style={/pgf/number format/.cd,precision=3}
     ]
         % Note: this table names must appear in the `\tablename` loop below
-        \pgfplotstableread{../../../data/processed/gametype/B_factor=1.5_adj_matrix_source=well-mixed_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_time_steps=8000000.csv}{\loadtable}
+        \pgfplotstableread{../../data/processed/gametype/B_factor=1.5_adj_matrix_source=well-mixed_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_time_steps=8000000.csv}{\loadtable}
         \pgfplotstableforeachcolumn\loadtable\as\col
         {
           \ifnum\pgfplotstablecol=0\else%

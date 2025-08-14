@@ -601,7 +601,6 @@ the \gls{celegans} case depicts disordered states with discontinuous offsets.
 \subsection{Chimera-like index}
 \begin{figure*}
   \centering
-  \pgfplotsset{width=0.4\textwidth}
   \begin{subcaptiongroup}
     \stackinset{l}{3in}{t}{2.5in}%
       {\phantomcaption\label{fig:graph_celegans_asymmetry1}\captiontext*{}}{%
@@ -663,7 +662,7 @@ the chimera-like index
 measures the coherence difference between communities of players,
 is equal to the time-averaged community covariance,
 and has a theoretical maximum value
-of \num{0.29}~\citep{shanahan2010metastable}.
+of $M/[4(M-1)] = \num{0.5}$~\citep{shanahan2010metastable}.
 Conversely, the metastability index
 represents how often the system transitions
 between synchronicity and disorder,
@@ -681,10 +680,10 @@ These simulations ran with the same parameters as the
 The metastability displayed in \cref{fig:chimera-index}
 is less than \num{0.01}, much smaller
 than the theoretical maximum of \num{0.08}.
-This implies that the system is metastable
+This implies that the system has low metastability
 and spends most of its time at a nearly constant
 synchronicity $\rho_m(t)$.
-Furthermore, while the metastability is higher (more unstable)
+Furthermore, while the metastability is higher (more stability variations)
 at $\approx \num{0.01}$ for the $\alpha = 0$ case,
 the metastability drops precipitously for larger $\alpha$,
 always staying below \num{0.004} implying that
@@ -692,7 +691,7 @@ higher asymmetry $\alpha$ makes the system more stable.
 Conversely, the chimera-like index $\chi$
 indicates a high chimeric quality
 with values (\numrange{0.06}{0.13})
-nearly half of the theoretical maximum (\num{0.28}).
+nearly a quarter of the theoretical maximum (\num{0.5}).
 Given that we average the chimera-like index over time,
 the system's deviation from a complete chimera state
 arises from both imperfect separation of the coherent/disordered populations
@@ -708,9 +707,9 @@ rather than an artifact of our $\alpha = \num{0.75}$ choice.
 \begin{figure*}
   \centering
   \begin{subcaptiongroup}
-    \stackinset{l}{2.3in}{t}{0pt}%
+    \stackinset{l}{2.4in}{t}{0.8in}%
       {\phantomcaption\label{fig:game-type_celegans-full}\captiontext*{}}{%
-    \stackinset{l}{0in}{t}{0pt}%
+    \stackinset{l}{0in}{t}{0.8in}%
       {\phantomcaption\label{fig:game-type_well-mixed}\captiontext*{}}{%
     {\includestandalone{tikz/game-types}}%
   }}
@@ -732,6 +731,9 @@ rather than an artifact of our $\alpha = \num{0.75}$ choice.
     and
     \protect{\subref{fig:game-type_celegans-full}}
     weighted, directed \gls{celegans} connectome.
+    A blue inset above the
+    \protect{\subref{fig:game-type_well-mixed}}
+    well-mixed panel shows the magnified upper region.
     The selection strength is $\delta=0.2$,
     the mutation rate is $\mu=\num{1E-4}$,
     the cost $c$ is \num{0.1},
@@ -758,6 +760,16 @@ The \subref{fig:game-type_well-mixed} well-mixed case
 shows that system is fully synchronized
 for over \SI{99.3}{\percent} of the runtime
 across every asymmetry $\alpha$.
+For the $< \SI{1}{\percent}$ of the time when the well-mixed system is
+\emph{not} synchronized,
+the magnified inset (blue) above
+\cref{fig:game-type_well-mixed}
+shows that the other notable plurality game types are
+dilemma (\SI{0.2}{\percent} for $\alpha = 0, 0.25$)
+chicken (\SI{0.3}{\percent} for $\alpha = 0.5$),
+hero (\SI{0.3}{\percent} for $\alpha = 0.75$),
+and
+deadlock (\SI{0.3}{\percent} for $\alpha = 1$).
 In contrast, the
 \subref{fig:game-type_celegans-full} \gls{celegans} connectome system
 is essentially never synchronized.
@@ -766,6 +778,10 @@ dominate,
 with the dominant game type changing as the asymmetry varies:
 dilemma for $\alpha = 0, 0.25$, chicken for $\alpha = 0.5$,
 hero for $\alpha = 0.75$, and deadlock for $\alpha = 1$.
+We note that these dominant game types
+are the same as the most-frequent \emph{disordered} plurality games,
+for each $\alpha$, as those played in
+the \cref{fig:game-type_well-mixed} well-mixed setup (\cf{} blue inset).
 Additionally, the \gls{celegans} system displays
 some game-type heterogeneity, with
 a second game type (deadlock) being the plurality
@@ -797,17 +813,6 @@ the $\alpha$-dependence of the
 communicative synchronization (``all-C'') fraction
 approximates the communicative frequency $f_{\text{comm}}$
 in \cref{fig:multi-comm-frac} for $B_0=0.15$.
-For the $< \SI{1}{\percent}$ of the time when the well-mixed system is
-\emph{not} synchronized, the other game types are
-dilemma (\SI{0.2}{\percent} for $\alpha = 0, 0.25$)
-chicken (\SI{0.3}{\percent} for $\alpha = 0.5$),
-hero (\SI{0.3}{\percent} for $\alpha = 0.75$),
-and
-deadlock (\SI{0.3}{\percent} for $\alpha = 1$).
-We note that these disordered game types
-are the same as the most-frequent plurality games,
-for each $\alpha$, as those played in
-the \cref{fig:game-type_celegans-full} \gls{celegans} setup.
 
 We can compare the \cref{fig:game-type_well-mixed}
 $\alpha = 0.5$ case
@@ -1110,9 +1115,10 @@ in the \cref{eq:payoff-matrix} payoff matrix
 and assign a unique name (\eg{} dilemma, deadlock, chicken, \etc{})
 to each strict, symmetric game type.
 However, \cref{fig:phase-diagram-B_alpha}
-shows that game type lies on the border between two game types
-when $\alpha = 1$ or $B/c = 0$ (corresponding to $\Delta \phi = \pi$).
-The taxonomy classifies these non-strict games
+shows that some games lie on the border between two game types,
+such as when $\alpha = 1$ or $B/c = 0$
+(bordering game types for $B/c > 0$ and $B/c < 0$, not shown).
+The taxonomy~\citep{bruns2015names} classifies these non-strict games
 according the number and location of ties (``high tie'', ``middle tie'',
 ``double tie'', \etc{}).
 It also defines a convention for choosing one of the neighboring game types
@@ -1137,7 +1143,7 @@ Then, we calculate the frequency of this ``plurality game'' across
 all time steps of a given simulation to determine the distribution
 of games commonly played.
 Note that an edge's game type is independent
-of the players' communicativeness and only depends on
+of the players' communication strategy (N or C) and only depends on
 their dynamically-evolving relative phase $\Delta \phi$
 and the fixed game parameters $c$, $B_0$, $\beta_0$, and $\alpha$.
 Furthermore, this metric is only sensitive to the
@@ -1215,15 +1221,17 @@ The chimera-like index measures the difference in coherence between communities:
 complete homogeneity between communities
 (\eg{} all fully synchronized \emph{or} fully disordered)
 corresponds to $\chi = 0$,
-while having two equally-sized communities
-with one fully synchronized and one fully disordered
-for all times yields a maximum $\chi = 2/7 \approx
-\num{0.29}$~\citep{shanahan2010metastable}.
+while having $M$ communities
+with half fully synchronized ($\rho_m = 1$)
+and the other half fully disordered ($\rho_m = 0$)
+for all times yields a maximum $\chi = M/[4(M-1)]
+= 1/2$ for our $M=2$\approx~\citep{shanahan2010metastable}.
 Likewise, the metastability index $\lambda$ measures how metastable
 the system is (\ie{} transiting between synchronicity and disorder).
-A system that is fully synchronized or disordered gives $\lambda = 0$,
-while spending equal times in each states yields $\lambda = 1/12
-\approx \num{0.08}$~\citep{shanahan2010metastable}.
+A system that is fully synchronized or disordered gives $\lambda = 0$;
+$\lambda$ is maximized for a system spending equal times in each state,
+where the variance of the uniform distribution gives
+$\lambda = 1/12 \approx \num{0.08}$~\citep{shanahan2010metastable}.
 %TC:endignore
 
 %\subsection{Acknowledgements}

@@ -662,7 +662,7 @@ the chimera-like index
 measures the coherence difference between communities of players,
 is equal to the time-averaged community covariance,
 and has a theoretical maximum value
-of \num{0.29}~\citep{shanahan2010metastable}.
+of $M/[4(M-1)] = \num{0.5}$~\citep{shanahan2010metastable}.
 Conversely, the metastability index
 represents how often the system transitions
 between synchronicity and disorder,
@@ -691,7 +691,7 @@ higher asymmetry $\alpha$ makes the system more stable.
 Conversely, the chimera-like index $\chi$
 indicates a high chimeric quality
 with values (\numrange{0.06}{0.13})
-nearly half of the theoretical maximum (\num{0.28}).
+nearly a quarter of the theoretical maximum (\num{0.5}).
 Given that we average the chimera-like index over time,
 the system's deviation from a complete chimera state
 arises from both imperfect separation of the coherent/disordered populations
@@ -1221,10 +1221,11 @@ The chimera-like index measures the difference in coherence between communities:
 complete homogeneity between communities
 (\eg{} all fully synchronized \emph{or} fully disordered)
 corresponds to $\chi = 0$,
-while having two equally-sized communities
-with one fully synchronized and one fully disordered
-for all times yields a maximum $\chi = 2/7 \approx
-\num{0.29}$~\citep{shanahan2010metastable}.
+while having $M$ communities
+with half fully synchronized ($\rho_m = 1$)
+and the other half fully disordered ($\rho_m = 0$)
+for all times yields a maximum $\chi = M/[4(M-1)]
+= 1/2$ for our $M=2$\approx~\citep{shanahan2010metastable}.
 Likewise, the metastability index $\lambda$ measures how metastable
 the system is (\ie{} transiting between synchronicity and disorder).
 A system that is fully synchronized or disordered gives $\lambda = 0$;

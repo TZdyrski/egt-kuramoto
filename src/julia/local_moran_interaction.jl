@@ -482,6 +482,7 @@ const game_type_full_names = Dict(chicken => "Snowdrift", # Also called chicken
 
 # Source: doi:10.3390/g6040495
 # In left-up convention (modified from right-up convention by swapping columns)
+# = means exactly the same payoff matrix, \approx means equivalent up to swap_strategies!
 const game_taxonomy = Dict(
 			 [4 2;3 1] => (missing, concord),
 			 [4 3;2 1] => (missing, harmony),
@@ -517,9 +518,10 @@ const game_taxonomy = Dict(
 			 [2 1;4 4] => (high, peace), # high deadlock \approx high peace
 			 [4 4;2 1] => (high, harmony),
 			 [1 2;4 4] => (high, harmony), # high compromise \approx high harmony
-			 [4 2;4 2] => (double, staghunt), # = double dilemma
+			 [4 2;4 2] => (double, staghunt), # = double dilemma; note: bruns2015 claims double dilemma = double dilemma, which is tautologically true, but (correctly) states double dilemma = double staghunt elsewhere
 			 [4 2;2 4] => (double, coordination),
-			 [2 4;4 2] => (double, coordination), # double hero \approx double coord
+			 [2 4;4 2] => (double, coordination), # double hero \approx double coordination; note: this is the only equivalent pair that is not related by swap_strategies!;
+			 # Instead, they are related by swapping only the columns or rows, but not both. Usually, doing this produces a non-symmetric game, but it this case, it is still symmetric
 			 [4 4;2 2] => (double, harmony),
 			 [2 2;4 4] => (double, harmony), # double compromise \approx double harmony
 			 [4 4;1 4] => (triple, deadlock),

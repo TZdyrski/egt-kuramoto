@@ -648,7 +648,7 @@ function extract_most_common_game_types(strategies_per_player::AbstractVector{<:
                                         symmetry_breaking::Real,
                                         nb_phases::Integer,
                                         interaction_adj_matrix::AbstractMatrix{<:Integer})
-    players_per_phase = mod1.(strategies_per_player, nb_phases)
+    phases_per_player = mod1.(strategies_per_player, nb_phases)
 
     # Get game type of each startegy interaction pair
     game_types = game_types_per_strategy_pair(mutual_benefit_synchronous,
@@ -662,8 +662,8 @@ function extract_most_common_game_types(strategies_per_player::AbstractVector{<:
             continue
         end
         (row, col) = Tuple(cart_idx)
-        row_phase = players_per_phase[row]
-        col_phase = players_per_phase[col]
+        row_phase = phases_per_player[row]
+        col_phase = phases_per_player[col]
         game_type = game_types[row_phase, col_phase]
         game_counts[game_type] += value
     end

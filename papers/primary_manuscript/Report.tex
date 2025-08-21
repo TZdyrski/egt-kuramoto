@@ -204,10 +204,11 @@ beyond classical synchronization models.
     and the phase being $\phi = 2\pi k/m$ with $m$ the number of phases
     and $k \in 0,\ldots,m-1$.
     \protect{\subref{fig:payoff_matrix}}
-    The payoff matrix shows the reward the row-player $(s_i, \phi_i)$
-    receives after playing a game with the column-player $(s_j, \phi_j)$
-    depending on each player's strategy $s$ and
-    their relative phase difference $\Delta \phi$.
+    The payoff matrix shows the reward the row-player $(C, \phi_i)$
+    receives after playing a game with the column-player $(N, \phi_j)$
+    depending on each player's strategy and
+    their relative phase difference $\Delta \phi$
+    and assuming either player can switch strategy and phase to the other's.
   }\label{fig:connectivity}
 \end{figure*}
 
@@ -249,7 +250,10 @@ and the $N$ player's benefit by $2(1 - \alpha)$.
 Using $\alpha = 0.5$ reproduces the symmetric case,
 and increasing (decreasing) $\alpha$ allows us
 to promote (suppress) communicativeness.
-The payoff matrix in \cref{fig:payoff_matrix} summarizes these payoffs.
+The payoff matrix in \cref{fig:payoff_matrix} summarizes these payoffs
+for $CN$ or $NC$ interactions;
+$CC$ interactions are always double-cooperation games
+while $NN$ interactions are always neutral games.
 
 \subsection{Parameter space}
 \begin{figure*}
@@ -1021,9 +1025,9 @@ For a given pair of phases, $\phi_i$ and $\phi_j$, the game is specified
 by the payoff matrix
 \begin{equation}
 \begin{bNiceMatrix}[first-col,first-row,hvlines]
-  & C, \phi_j & N, \phi_j \\
+  & C, \phi_i & N, \phi_j \\
   C, \phi_i & B_0 f(\Delta \phi) - c & 2 \alpha \beta_0 f(\Delta \phi) - c \\
-  N, \phi_i & 2 (1 - \alpha) \beta_0 f(\Delta \phi) & 0
+  N, \phi_j & 2 (1 - \alpha) \beta_0 f(\Delta \phi) & 0
 \end{bNiceMatrix}
 \label{eq:payoff-matrix}
 \end{equation}
@@ -1103,6 +1107,7 @@ $f_{\text{comm}}$ in the well-mixed case
 by incorporating the benefit asymmetry $\alpha$.
 
 \subsection{Game type nomenclature}
+\label{sec:game-type-nomenclature}
 Every edge of the interaction graph
 defines a game between the two players it connects.
 Using their relative phase difference $\Delta \phi$,
@@ -1137,6 +1142,11 @@ but we denote them as simply ``harmony''.
 \subsection{Plurality game type}\label{sec:plurality_game_type}
 At each time step, we calculate the game type for each edge
 of the interaction graph.
+We determine the game type by creating a two-by-two payoff matrix of possibilities
+where both players have the hypothetical option of switching to the other player's
+strategy/phase pairing.
+Using the taxonomy discussed in \cref{sec:game-type-nomenclature},
+we then assign a game type to that interaction.
 We then identify the plurality game type across all player interactions,
 where each edge's count is weighted by its edge weight.
 Then, we calculate the frequency of this ``plurality game'' across

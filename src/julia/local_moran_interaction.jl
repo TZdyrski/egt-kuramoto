@@ -617,17 +617,20 @@ end
                                                cost::Real,
                                                symmetry_breaking::Real,
                                                nb_phases::Integer)
+    # Choose game type by assuming either player can switch (strategy,phase) to the other player, giving a 2x2 payoff matrix
 
     # Define payoff response submatrices
     payoff = payoff_matrix(nb_phases, mutual_benefit_synchronous,
                            unilateral_benefit_synchronous, cost; symmetry_breaking)
 
     # Define game type per strategy pair
-    game_types = Matrix{GameType}(undef, nb_phases, nb_phases)
+    game_types = similar(payoff, GameType)
     for idx in eachindex(IndexCartesian(), game_types)
-        strategy_offset = CartesianIndices((0:nb_phases:nb_phases, 0:nb_phases:nb_phases))
-        indices = idx .+ strategy_offset
-        game_types[idx] = game_type(@view payoff[indices])
+	row_player_idx = idx[1]
+	col_player_idx = idx[2]
+        game_types[idx] = game_type([
+			     [payoff[row_player_idx,col_player_idx], payoff[col_player_idx,col_player_idx]] [payoff[row_player_idx,row_player_idx], payoff[col_player_idx,row_player_idx]]
+			    ])
     end
     return game_types
 end
@@ -655,8 +658,6 @@ function extract_most_common_game_types(strategies_per_player::AbstractVector{<:
                                         symmetry_breaking::Real,
                                         nb_phases::Integer,
                                         interaction_adj_matrix::AbstractMatrix{<:Integer})
-    phases_per_player = mod1.(strategies_per_player, nb_phases)
-
     # Get game type of each startegy interaction pair
     game_types = game_types_per_strategy_pair(mutual_benefit_synchronous,
                                               unilateral_benefit_synchronous, cost,
@@ -669,8 +670,8 @@ function extract_most_common_game_types(strategies_per_player::AbstractVector{<:
             continue
         end
         (row, col) = Tuple(cart_idx)
-        row_phase = phases_per_player[row]
-        col_phase = phases_per_player[col]
+        row_phase = strategies_per_player[row]
+        col_phase = strategies_per_player[col]
         game_type = game_types[row_phase, col_phase]
         game_counts[game_type] += value
     end

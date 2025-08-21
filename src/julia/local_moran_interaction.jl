@@ -445,7 +445,7 @@ function fraction_communicative(cumulative_populations, time_steps, nb_players)
     return fraction_communicative
 end
 
-@enum GameType harmony chicken battle hero compromise concord staghunt dilemma deadlock assurance coordination peace
+@enum GameType harmony chicken battle hero compromise concord staghunt dilemma deadlock assurance coordination peace neutral
 
 @enum TieType low mid high double triple basic zero
 
@@ -461,7 +461,8 @@ const game_type_colors = Dict(harmony => paired_colors[7],
                               deadlock => paired_colors[1],
                               assurance => paired_colors[10],
                               coordination => paired_colors[9],
-                              peace => paired_colors[12]
+                              peace => paired_colors[12],
+                              neutral => :grey,
                              )
 
 const game_type_full_names = Dict(chicken => "Snowdrift", # Also called chicken
@@ -475,7 +476,9 @@ const game_type_full_names = Dict(chicken => "Snowdrift", # Also called chicken
                                   coordination => "Coordination",
                                   peace => "Peace",
                                   harmony => "Harmony",
-                                  concord => "Concord")
+                                  concord => "Concord",
+                                  neutral => "Neutral",
+				  )
 
 # Source: doi:10.3390/g6040495
 # In left-up convention (modified from right-up convention by swapping columns)
@@ -523,7 +526,7 @@ const game_taxonomy = Dict(
 			 [4 4;4 1] => (triple, harmony),
 			 [3 3;4 3] => (basic, dilemma),
 			 [4 3;3 3] => (basic, harmony),
-			 [4 4;4 4] => (zero, missing),
+			 [4 4;4 4] => (zero, neutral),
 			 )
 
 function game_type_inequalities(R::Real, S::Real, T::Real, P::Real)

@@ -36,6 +36,8 @@ using HDF5
 using NetCDF
 using YAXArrays
 
+unilateral_to_mutual_benefit = 0.95 # \beta_0/B_0
+
 function payoff_matrix(nb_phases::Integer,
                        mutual_benefit_synchronous::Real,
                        unilateral_benefit_synchronous::Real, cost::Real;
@@ -821,7 +823,7 @@ function calc_cumulative(config::Dict)
     # Run the model for weak selection strength
     @time cumulative_populations = [cumulative(LocalMoranInteraction(NormalFormGame(payoff_matrix(nb_phases,
                                                                                                   B,
-                                                                                                  0.95 *
+                                                                                                  unilateral_to_mutual_benefit *
                                                                                                   B,
                                                                                                   cost;
                                                                                                   symmetry_breaking)),
@@ -897,7 +899,7 @@ function generate_cumulative_plot(data::Dict, config::Dict)
               ylabel="Frequency of communicative strategies",
               limits=(nothing, nothing, 0, 1))
     scatter!(ax, data["Bs"], data["fraction_communicative"]; label="Simulation")
-    beta0(B0) = 0.95*B0
+    beta0(B0) = unilateral_to_mutual_benefit*B0
 
     # Generate graph
     interaction_adj_matrix, _ = get_adj_matrices(config["adj_matrix_source"])
@@ -938,7 +940,7 @@ function calc_timeseries(config::Dict)
     # Run the model for weak selection strength
     all_populations, steps_following_mutation = time_series(LocalMoranInteraction(NormalFormGame(payoff_matrix(nb_phases,
                                                                                      B,
-                                                                                     0.95 *
+                                                                                     unilateral_to_mutual_benefit *
                                                                                      B,
                                                                                      cost;
                                                                                      symmetry_breaking)),
@@ -963,7 +965,7 @@ function calc_timeseries_statistics(config::Dict)
     most_common_game_types = dropdims(mapslices(x -> extract_most_common_game_types(x,
                                                                                     B_factor *
                                                                                     cost,
-                                                                                    0.95 *
+                                                                                    unilateral_to_mutual_benefit *
                                                                                     B_factor *
                                                                                     cost,
                                                                                     cost,
@@ -1524,7 +1526,7 @@ function extract_cumulative(type::String; selection_strength::Real,
         graph = SimpleDiGraph(interaction_adj_matrix)
         nb_effective = ( mean(indegree(graph))+1) # Add one since n=degree+1 for well-mixed case
 
-        beta0(B0) = 0.95*B0
+        beta0(B0) = unilateral_to_mutual_benefit*B0
         if type == "theory"
             func = B0 -> analytic_frac_communicative(B0, beta0(B0);
                 selection_strength=config["selection_strength"], cost=config["cost"],

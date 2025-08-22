@@ -963,7 +963,7 @@ function calc_timeseries_statistics(config::Dict)
     most_common_game_types = dropdims(mapslices(x -> extract_most_common_game_types(x,
                                                                                     B_factor *
                                                                                     cost,
-                                                                                    0.9 *
+                                                                                    0.95 *
                                                                                     B_factor *
                                                                                     cost,
                                                                                     cost,

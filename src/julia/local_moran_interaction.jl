@@ -1204,7 +1204,7 @@ function plot_graph_evolution(B_factor::Real, selection_strength::Real,
 
     # Save animation
     filename = plotsdir("animations", savename(config, "gif"))
-    save(filename, fig)
+    save(filename, animation)
 
 end
 function generate_graph_evolution(data, graph::Graphs.SimpleGraphs.AbstractSimpleGraph)

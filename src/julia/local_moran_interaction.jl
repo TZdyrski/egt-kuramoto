@@ -284,7 +284,13 @@ function play!(actions::AbstractVector,
     calc_payoffs!(aux, actions, lmi)
 
     # Calculate all fitnesses
-    aux.fitnesses .= exp.(lmi.beta .* (aux.payoffs .- mean(aux.payoffs)))
+    # Note: normally, the fitness is exp(beta*(payoffs - mean(payoffs)))
+    # However, if some payoffs are much larger than the mean
+    # exponentiation can cause float overflow to Inf, which will cause errors in StatsBase.sample
+    # Therefore, change (payoffs - mean(payoffs)) to (payoffs - maximum(payoffs));
+    # this will ensure all fitnesses are less than one,
+    # but the relative ratio of each fitness is unchanged, so the weighted sampling is unchanged
+    aux.fitnesses .= exp.(lmi.beta .* (aux.payoffs .- maximum(aux.payoffs)))
 
     # Choose focal (birth) node
     update_weights!(aux.weights_float, aux.fitnesses)

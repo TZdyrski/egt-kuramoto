@@ -2,7 +2,8 @@ using DrWatson
 @quickactivate "2024_EGT_Kuramoto"
 
 # Here you may include files from the source directory
-include(srcdir("julia", "local_moran_interaction.jl"))
+include(srcdir("julia", "run_simulations.jl"))
+include(srcdir("julia", "plotting.jl"))
 
 update_method = "single-update"
 
@@ -13,7 +14,7 @@ for num_time_steps in Int.([2E3, 2E6, 2E8])
                               "random-regular-graph", "random-regular-digraph"]
         for selection_strength in [0.005, 0.2, 5]
             for symmetry_breaking in [0, 1 / 4, 1 / 2, 3 / 4, 1]
-                local_moran_interaction.plot_cumulative(selection_strength,
+                plot_cumulative(selection_strength,
                                                         symmetry_breaking,
                                                         adj_matrix_source, update_method,
                                                         num_time_steps)
@@ -29,7 +30,7 @@ for adj_matrix_source in ["well-mixed", "c-elegans", "c-elegans-unweighted",
     for (B_factor, selection_strength) in zip([0.005, 1.5, 2.5], [0.2, 5])
         for num_time_steps in Int.([8E4, 8E5, 8E6])
             for symmetry_breaking in [0, 1 / 4, 1 / 2, 3 / 4, 1]
-                local_moran_interaction.plot_timeseries(B_factor, selection_strength,
+                plot_timeseries(B_factor, selection_strength,
                                                         symmetry_breaking,
                                                         adj_matrix_source, update_method,
                                                         num_time_steps)
@@ -39,10 +40,10 @@ for adj_matrix_source in ["well-mixed", "c-elegans", "c-elegans-unweighted",
 end
 
 # Plot heatmap
-local_moran_interaction.save_heatmap()
+save_heatmap()
 
 # Plot game-type regions
-local_moran_interaction.plot_payoff_regions()
+plot_payoff_regions()
 
 # Plot colored graph
 for adj_matrix_source in ["well-mixed", "c-elegans", "c-elegans-unweighted",
@@ -51,7 +52,7 @@ for adj_matrix_source in ["well-mixed", "c-elegans", "c-elegans-unweighted",
     for (B_factor, selection_strength) in zip([1.5, 2.5], [0.2, 5])
         for num_time_steps in Int.([8E4, 8E5, 8E6])
             for symmetry_breaking in [0, 1 / 4, 1 / 2, 3 / 4, 1]
-                local_moran_interaction.plot_graph_evolution(B_factor, selection_strength,
+                plot_graph_evolution(B_factor, selection_strength,
                                                              symmetry_breaking,
                                                              adj_matrix_source,
                                                              update_method, num_time_steps)

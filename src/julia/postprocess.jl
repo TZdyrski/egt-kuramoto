@@ -355,7 +355,7 @@ function calc_coalescence_times(graph::Graphs.SimpleGraphs.AbstractSimpleGraph)
 end
 
 function export_graph_nodes_edges(time_step::Union{Real,Nothing}=nothing;
-                              B_factor::Union{Real,Nothing}=nothing, selection_strength::Union{Real,Nothing}=nothing,
+                              B_to_c::Union{Real,Nothing}=nothing, selection_strength::Union{Real,Nothing}=nothing,
                               symmetry_breaking::Union{Real,Nothing}=nothing,
                               adj_matrix_source::String="well-mixed",
                               payoff_update_method::String="single-update",
@@ -376,7 +376,7 @@ function export_graph_nodes_edges(time_step::Union{Real,Nothing}=nothing;
             nodes_df, graph_edges = generate_nodes_edges(graph)
     else
             # Generate configuration
-            config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_factor,
+            config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_to_c,
                               selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate)
 	    if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 		    config["nb_players"] = 20
@@ -498,7 +498,7 @@ function calc_timeseries_statistics(config::Dict)
                                                                                     B_to_c *
                                                                                     cost,
                                                                                     unilateral_benefit_synchronous *
-                                                                                    B_factor *
+                                                                                    B_to_c *
                                                                                     cost,
                                                                                     cost,
                                                                                     symmetry_breaking,
@@ -519,7 +519,7 @@ function calc_timeseries_statistics(config::Dict)
                     strategy_parity)
 end
 
-function extract_timeseries_statistics(; B_factor::Real, selection_strength::Real,
+function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
                               symmetry_breaking::Real,
                               adj_matrix_source::String="well-mixed",
                               payoff_update_method::String="single-update",
@@ -531,7 +531,7 @@ function extract_timeseries_statistics(; B_factor::Real, selection_strength::Rea
 			      )
 
     # Generate configuration
-    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_factor,
+    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_to_c,
                       selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = 20
@@ -575,7 +575,7 @@ function extract_timeseries_statistics(; B_factor::Real, selection_strength::Rea
 end
 
 function extract_chimera_indices(community_algorithm::String;
-                              B_factor::Real, selection_strength::Real,
+                              B_to_c::Real, selection_strength::Real,
                               adj_matrix_source::String="well-mixed",
                               payoff_update_method::String="single-update",
                               time_steps::Integer=80_000,
@@ -590,7 +590,7 @@ function extract_chimera_indices(community_algorithm::String;
     graph = SimpleWeightedDiGraph(interaction_adj_matrix)
 
     # Generate configuration
-    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_factor,
+    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_to_c,
                       selection_strength, nb_phases, cost, mutation_rate)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = 20
@@ -601,8 +601,8 @@ function extract_chimera_indices(community_algorithm::String;
 
     # Select subset of dataframe
     df_all_asymm = @rsubset(df_all, :selection_strength == selection_strength,
-                            :adj_matrix_source == adj_matrix_source, :factor == B_factor,
-                            :payoff_update_method == payoff_update_method, :time_steps == times_steps,
+                            :adj_matrix_source == adj_matrix_source, :to_c == B_to_c,
+                            :payoff_update_method == payoff_update_method, :time_steps == time_steps,
                             :nb_phases == nb_phases)
 
     # Get communities
@@ -650,7 +650,7 @@ function extract_chimera_indices(community_algorithm::String;
     CSV.write(datadir("processed","chimeraindex",savename(config,"csv")), df)
 end
 
-function extract_game_types(; B_factor::Real, selection_strength::Real,
+function extract_game_types(; B_to_c::Real, selection_strength::Real,
                               adj_matrix_source::String="well-mixed",
                               payoff_update_method::String="single-update",
                               time_steps::Integer=80_000,
@@ -660,7 +660,7 @@ function extract_game_types(; B_factor::Real, selection_strength::Real,
 			      )
 
     # Generate configuration
-    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_factor,
+    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_to_c,
                       selection_strength, nb_phases, cost, mutation_rate)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = 20
@@ -671,7 +671,7 @@ function extract_game_types(; B_factor::Real, selection_strength::Real,
 
     # Select subset of dataframe
     df_all_asymm = @rsubset(df_all, :selection_strength == selection_strength,
-                            :adj_matrix_source == adj_matrix_source, :factor == B_factor)
+                            :adj_matrix_source == adj_matrix_source, :to_c == B_to_c)
     # Combine parity and game type
     transform!(df_all_asymm,
 	       [:strategy_parity, :most_common_game_types] => ByRow((parity_col,game_col) ->
@@ -760,9 +760,9 @@ function create_netcdf(adj_matrix_source::String;cumulative_time_steps::Integer=
 	end
 	properties_dict_cumulative = get_properties(df_cumulative,adj_matrix_source; include_time_steps=true)
 	properties_dict_timeseries = get_properties(df_timeseries,adj_matrix_source; include_time_steps=false)
-	transform!(df_timeseries, :factor => ByRow(x -> x*properties_dict_timeseries["cost"]) => :maximum_joint_benefit)
+	transform!(df_timeseries, :to_c => ByRow(x -> x*properties_dict_timeseries["cost"]) => :maximum_joint_benefit)
 	properties_dict_timeseries_statistics = get_properties(df_timeseries,adj_matrix_source; include_time_steps=false)
-	transform!(df_timeseries_statistics, :factor => ByRow(x -> x*properties_dict_timeseries_statistics["cost"]) => :maximum_joint_benefit)
+	transform!(df_timeseries_statistics, :to_c => ByRow(x -> x*properties_dict_timeseries_statistics["cost"]) => :maximum_joint_benefit)
 
 	# Combine into a YAXArray
 	axes = (

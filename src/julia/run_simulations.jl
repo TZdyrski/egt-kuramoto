@@ -79,10 +79,10 @@ end
 
 function calc_timeseries(config::Dict)
     # Unpack variables
-    @unpack B_factor, selection_strength, symmetry_breaking, adj_matrix_source, payoff_update_method, time_steps, nb_phases, cost, mutation_rate = config
+    @unpack B_to_c, selection_strength, symmetry_breaking, adj_matrix_source, payoff_update_method, time_steps, nb_phases, cost, mutation_rate = config
 
     # Define system
-    B = cost * B_factor
+    B = cost * B_to_c
 
     # Define interaction graph and reproduction graphs
     interaction_adj_matrix, reproduction_adj_matrix = get_adj_matrices(adj_matrix_source)

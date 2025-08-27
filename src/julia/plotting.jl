@@ -114,7 +114,7 @@ function get_frame(data, time_step::Integer; adj_matrix_source::String="well-mix
     return (fig,colors)
 end
 
-function plot_timeseries(B_factor::Real, selection_strength::Real, symmetry_breaking::Real,
+function plot_timeseries(B_to_c::Real, selection_strength::Real, symmetry_breaking::Real,
                          adj_matrix_source::String="well-mixed",
                          payoff_update_method::String="single-update",
                          time_steps::Integer=80_000,
@@ -123,7 +123,7 @@ function plot_timeseries(B_factor::Real, selection_strength::Real, symmetry_brea
 			 mutation_rate::Real=0.0001,
 			 )
     # Load results
-    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_factor,
+    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_to_c,
                       symmetry_breaking, selection_strength, nb_phases, cost, mutation_rate)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = 20
@@ -225,12 +225,12 @@ function plot_connected_components(
 end
 
 function generate_game_type_distribution_vs_asymmetry_plot(df;
-                                                  B_factor::Real,
+                                                  B_to_c::Real,
                                                   selection_strength::Real,
                                                   adj_matrix_source::String="well-mixed",
                                                   )
     # Select subset of dataframe
-    df_all_asymm = @rsubset(df, :selection_strength == selection_strength, :adj_matrix_source == adj_matrix_source, :factor == B_factor)
+    df_all_asymm = @rsubset(df, :selection_strength == selection_strength, :adj_matrix_source == adj_matrix_source, :factor == B_to_c)
     game_types = proportionmap.(df_all_asymm.most_common_game_types)
 
     # Generate plot
@@ -244,7 +244,7 @@ function generate_game_type_distribution_vs_asymmetry_plot(df;
     return fig
 end
 
-function plot_graph_evolution(B_factor::Real, selection_strength::Real,
+function plot_graph_evolution(B_to_c::Real, selection_strength::Real,
                               symmetry_breaking::Real,
                               adj_matrix_source::String="well-mixed",
                               payoff_update_method::String="single-update",
@@ -254,7 +254,7 @@ function plot_graph_evolution(B_factor::Real, selection_strength::Real,
 			      mutation_rate::Real=0.0001,
 			      )
     # Load results
-    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_factor,
+    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_to_c,
                       selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = 20

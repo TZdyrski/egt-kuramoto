@@ -11,7 +11,7 @@ export_graph_nodes_edges(adj_matrix_source="well-mixed")
 time_step = 560000
 for symmetry_breaking in [0.0,0.75,1.0]
         export_graph_nodes_edges(
-            time_step;B_factor=1.5, selection_strength=0.2,
+            time_step;B_to_c=1.5, selection_strength=0.2,
             symmetry_breaking=symmetry_breaking, adj_matrix_source="c-elegans",
             time_steps=8000000)
 end
@@ -34,7 +34,7 @@ end
 for adj_matrix_source in ["well-mixed", "c-elegans"]
         for symmetry_breaking in [0.0, 0.25, 0.5, 0.75, 1.0]
             extract_timeseries_statistics(
-                B_factor=1.5, selection_strength=0.2,
+                B_to_c=1.5, selection_strength=0.2,
                 symmetry_breaking=symmetry_breaking, adj_matrix_source=adj_matrix_source,
                 time_steps=800000)
         end
@@ -45,7 +45,7 @@ covariance_cutoff=1500
 for community_algorithm in ["covariance", "infomap"]
     extract_chimera_indices(
         community_algorithm;
-        B_factor=1.5, selection_strength=0.2,
+        B_to_c=1.5, selection_strength=0.2,
         adj_matrix_source="c-elegans",
         time_steps=8000000,
         covariance_cutoff=covariance_cutoff)
@@ -54,7 +54,7 @@ end
 # Save game types
 for adj_matrix_source in ["well-mixed", "c-elegans"]
     extract_game_types(
-        B_factor=1.5, selection_strength=0.2,
+        B_to_c=1.5, selection_strength=0.2,
         adj_matrix_source=adj_matrix_source,
         time_steps=8000000)
 end

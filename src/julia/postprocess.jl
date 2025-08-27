@@ -362,6 +362,7 @@ function export_graph_nodes_edges(time_step::Union{Real,Nothing}=nothing;
                               time_steps::Integer=80_000,
                               nb_phases::Integer=20,
                               cost::Real=0.1,
+                              beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
 			      )
     # Generate graph
@@ -376,7 +377,7 @@ function export_graph_nodes_edges(time_step::Union{Real,Nothing}=nothing;
             nodes_df, graph_edges = generate_nodes_edges(graph)
     else
             # Generate configuration
-            config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_to_c,
+            config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_to_c, beta_to_B,
                               selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate)
 	    if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 		    config["nb_players"] = 20
@@ -436,11 +437,12 @@ function extract_cumulative(type::String; selection_strength::Real,
                               time_steps::Integer=80_000,
                               nb_phases::Integer=20,
                               cost::Real=0.1,
+                              beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
 			      )
 
     # Generate configuration
-    config = @strdict(adj_matrix_source, payoff_update_method, time_steps,
+    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, beta_to_B,
                       selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = 20
@@ -458,7 +460,7 @@ function extract_cumulative(type::String; selection_strength::Real,
         graph = SimpleDiGraph(interaction_adj_matrix)
         nb_effective = ( mean(indegree(graph))+1) # Add one since n=degree+1 for well-mixed case
 
-        beta0(B0) = unilateral_to_mutual_benefit*B0
+        beta0(B0) = beta_to_B*B0
         if type == "theory"
             func = B0 -> analytic_frac_communicative(B0, beta0(B0);
                 selection_strength=config["selection_strength"], cost=config["cost"],
@@ -491,13 +493,13 @@ function calc_timeseries_statistics(config::Dict)
 
     # Unpack variables
     @unpack all_populations, steps_following_mutation, nb_phases, nb_players, interaction_adj_matrix = data
-    @unpack B_to_c, symmetry_breaking, selection_strength, adj_matrix_source, payoff_update_method, time_steps, nb_phases, cost, mutation_rate = config
+    @unpack B_to_c, symmetry_breaking, selection_strength, adj_matrix_source, payoff_update_method, time_steps, nb_phases, cost, beta_to_B, mutation_rate = config
 
     # Extract results
     most_common_game_types = dropdims(mapslices(x -> extract_most_common_game_types(x,
                                                                                     B_to_c *
                                                                                     cost,
-                                                                                    unilateral_benefit_synchronous *
+                                                                                    beta_to_B *
                                                                                     B_to_c *
                                                                                     cost,
                                                                                     cost,
@@ -527,11 +529,12 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
                               nb_phases::Integer=20,
                               num_samples::Integer=1000,
                               cost::Real=0.1,
+                              beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
 			      )
 
     # Generate configuration
-    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_to_c,
+    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_to_c, beta_to_B,
                       selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = 20
@@ -581,6 +584,7 @@ function extract_chimera_indices(community_algorithm::String;
                               time_steps::Integer=80_000,
                               nb_phases::Integer=20,
                               cost::Real=0.1,
+                              beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
                               covariance_cutoff::Real,
 			      )
@@ -590,7 +594,7 @@ function extract_chimera_indices(community_algorithm::String;
     graph = SimpleWeightedDiGraph(interaction_adj_matrix)
 
     # Generate configuration
-    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_to_c,
+    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_to_c, beta_to_B,
                       selection_strength, nb_phases, cost, mutation_rate)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = 20
@@ -656,11 +660,12 @@ function extract_game_types(; B_to_c::Real, selection_strength::Real,
                               time_steps::Integer=80_000,
                               nb_phases::Integer=20,
                               cost::Real=0.1,
+                              beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
 			      )
 
     # Generate configuration
-    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_to_c,
+    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_to_c, beta_to_B,
                       selection_strength, nb_phases, cost, mutation_rate)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = 20

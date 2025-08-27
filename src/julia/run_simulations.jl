@@ -4,8 +4,6 @@ using BlockArrays
 include("moran.jl")
 include("postprocess.jl")
 
-unilateral_to_mutual_benefit = 0.95 # \beta_0/B_0
-
 function payoff_matrix(nb_phases::Integer,
                        mutual_benefit_synchronous::Real,
                        unilateral_benefit_synchronous::Real, cost::Real;
@@ -41,7 +39,7 @@ end
 
 function calc_cumulative(config::Dict)
     # Unpack values
-    @unpack selection_strength, symmetry_breaking, adj_matrix_source, payoff_update_method, time_steps, nb_phases, cost, mutation_rate = config
+    @unpack selection_strength, symmetry_breaking, adj_matrix_source, payoff_update_method, time_steps, nb_phases, cost, beta_to_B, mutation_rate = config
 
     # Define interaction graph and reproduction graphs
     interaction_adj_matrix, reproduction_adj_matrix = get_adj_matrices(adj_matrix_source)
@@ -57,7 +55,7 @@ function calc_cumulative(config::Dict)
     # Run the model for weak selection strength
     @time cumulative_populations = [cumulative(Moran(NormalFormGame(payoff_matrix(nb_phases,
                                                                                                   B,
-                                                                                                  unilateral_to_mutual_benefit *
+                                                                                                  beta_to_B *
                                                                                                   B,
                                                                                                   cost;
                                                                                                   symmetry_breaking)),
@@ -79,7 +77,7 @@ end
 
 function calc_timeseries(config::Dict)
     # Unpack variables
-    @unpack B_to_c, selection_strength, symmetry_breaking, adj_matrix_source, payoff_update_method, time_steps, nb_phases, cost, mutation_rate = config
+    @unpack B_to_c, selection_strength, symmetry_breaking, adj_matrix_source, payoff_update_method, time_steps, nb_phases, cost, beta_to_B, mutation_rate = config
 
     # Define system
     B = cost * B_to_c
@@ -92,7 +90,7 @@ function calc_timeseries(config::Dict)
     # Run the model for weak selection strength
     all_populations, steps_following_mutation = time_series(Moran(NormalFormGame(payoff_matrix(nb_phases,
                                                                                      B,
-                                                                                     unilateral_to_mutual_benefit *
+                                                                                     beta_to_B *
                                                                                      B,
                                                                                      cost;
                                                                                      symmetry_breaking)),

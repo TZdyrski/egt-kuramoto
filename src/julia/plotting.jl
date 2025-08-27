@@ -34,11 +34,12 @@ function plot_cumulative(selection_strength::Real, symmetry_breaking::Real,
                          time_steps::Integer=2_000_000,
 			 nb_phases::Integer=20,
 			 cost::Real=0.1,
+			 beta_to_B::Real=0.95,
 			 mutation_rate::Real=0.0001,
 			 )
 
     # Load results
-    config = @strdict(adj_matrix_source, payoff_update_method, time_steps,
+    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, beta_to_B,
                       selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = 20
@@ -64,7 +65,7 @@ function generate_cumulative_plot(data::Dict, config::Dict)
               ylabel="Frequency of communicative strategies",
               limits=(nothing, nothing, 0, 1))
     scatter!(ax, data["Bs"], data["fraction_communicative"]; label="Simulation")
-    beta0(B0) = unilateral_to_mutual_benefit*B0
+    beta0(B0) = config["beta_to_B"]*B0
 
     # Generate graph
     interaction_adj_matrix, _ = get_adj_matrices(config["adj_matrix_source"])
@@ -120,10 +121,11 @@ function plot_timeseries(B_to_c::Real, selection_strength::Real, symmetry_breaki
                          time_steps::Integer=80_000,
 			 nb_phases::Integer=20,
 			 cost::Real=0.1,
+			 beta_to_B::Real=0.95,
 			 mutation_rate::Real=0.0001,
 			 )
     # Load results
-    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_to_c,
+    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_to_c, beta_to_B,
                       symmetry_breaking, selection_strength, nb_phases, cost, mutation_rate)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = 20
@@ -251,10 +253,11 @@ function plot_graph_evolution(B_to_c::Real, selection_strength::Real,
                               time_steps::Integer=80_000,
                               nb_phases::Integer=20,
 			      cost::Real=0.1,
+			      beta_to_B::Real=0.95,
 			      mutation_rate::Real=0.0001,
 			      )
     # Load results
-    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_to_c,
+    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_to_c, beta_to_B,
                       selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = 20

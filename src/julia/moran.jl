@@ -1,6 +1,7 @@
 using GameTheory
 using Random
 using StatsBase
+using Graphs
 
 struct Moran{N,T1<:Real,S<:Integer,S2<:Integer,T2<:Real,T3<:Real,
                              AT1<:AbstractMatrix{<:T1},AT2<:AbstractMatrix{<:T1},

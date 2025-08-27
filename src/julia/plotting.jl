@@ -44,7 +44,7 @@ function plot_cumulative(selection_strength::Real, symmetry_breaking::Real,
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = 20
     end
-    data, _ = produce_or_load(calc_cumulative, config, datadir("raw","cumulative"))
+    data = wload(datadir("raw", "cumulative", savename(config,"jld2")))
 
     # Produce figure
     fig = generate_cumulative_plot(data, config)
@@ -130,8 +130,7 @@ function plot_timeseries(B_to_c::Real, selection_strength::Real, symmetry_breaki
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = 20
     end
-    data = produce_or_load(calc_timeseries_statistics, config,
-                           datadir("raw","timeseries_statistics"))[1]
+    data = wload(datadir("raw", "timeseries", savename(config,"jld2")))
 
     # Produce figure
     fig = generate_timeseries_plot(data; time_steps)
@@ -262,7 +261,7 @@ function plot_graph_evolution(B_to_c::Real, selection_strength::Real,
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = 20
     end
-    data, _ = produce_or_load(calc_timeseries, config, datadir("raw","timeseries"))
+    data = wload(datadir("raw", "timeseries", savename(config,"jld2")))
 
     # Generate graph
     interaction_adj_matrix, _ = get_adj_matrices(adj_matrix_source)
@@ -272,7 +271,7 @@ function plot_graph_evolution(B_to_c::Real, selection_strength::Real,
     animation = generate_graph_evolution(data, graph)
 
     # Save animation
-    filename = plotsdir("animations", savename(config, "gif"))
+    filename = plotsdir("animations", savename(config, "mp4"))
     save(filename, animation)
 
 end

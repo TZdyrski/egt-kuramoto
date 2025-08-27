@@ -4,6 +4,13 @@ using DrWatson
 # Here you may include files from the source directory
 include(srcdir("julia", "postprocess.jl"))
 
+# Print number of unidirectional and bidirectional edges
+for adj_matrix_source in ["well-mixed", "c-elegans", "c-elegans-unweighted",
+                          "c-elegans-undirected"]
+    results = calc_number_unidirection_bidirectional_edges(adj_matrix_source)
+    println("Source: $adj_matrix_source: $results")
+end
+
 # Save well-mixed graph
 export_graph_nodes_edges(adj_matrix_source="well-mixed")
 
@@ -57,4 +64,10 @@ for adj_matrix_source in ["well-mixed", "c-elegans"]
         B_to_c=1.5, selection_strength=0.2,
         adj_matrix_source=adj_matrix_source,
         time_steps=8000000)
+end
+
+# Save results in NetCDF format
+for adj_matrix_source in ["well-mixed", "c-elegans", "c-elegans-unweighted",
+                          "c-elegans-undirected"]
+    create_netcdf(adj_matrix_source;cumulative_time_steps=2000, timeseries_time_steps=8000)
 end

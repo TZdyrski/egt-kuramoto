@@ -1,40 +1,25 @@
 using DrWatson
-using BlockArrays
 
 include("moran.jl")
-include("postprocess.jl")
+include("utils.jl")
 
-function payoff_matrix(nb_phases::Integer,
-                       mutual_benefit_synchronous::Real,
-                       unilateral_benefit_synchronous::Real, cost::Real;
-                       symmetry_breaking::Real=1 / 2)
-    benefit_scaling = [(1 + cos(2 * pi * (phi_j - phi_i))) / 2
-                       for phi_i in (0:(nb_phases - 1)) / nb_phases,
-                           phi_j in (0:(nb_phases - 1)) / nb_phases]
-    payoff_matrix = Matrix(mortar([[mutual_benefit_synchronous*ones(size(benefit_scaling)) .- cost,
-                                    2 * (1 - symmetry_breaking) *
-                                    unilateral_benefit_synchronous * benefit_scaling];;
-                                   [2 * symmetry_breaking * unilateral_benefit_synchronous *
-                                    benefit_scaling .- cost,
-                                    zeros(eltype(benefit_scaling), size(benefit_scaling))]]) .+
-                           cost)
-    return payoff_matrix
-end
+function calc_and_save_cumulative(selection_strength::Real, symmetry_breaking::Real,
+                         adj_matrix_source::String="well-mixed",
+                         payoff_update_method::String="single-update",
+                         time_steps::Integer=2_000_000,
+			 nb_phases::Integer=20,
+			 cost::Real=0.1,
+			 beta_to_B::Real=0.95,
+			 mutation_rate::Real=0.0001,
+			 )
 
-function extract_num_communicative(players_per_strategy::AbstractVector{<:Integer})
-    @assert iseven(length(players_per_strategy))
-    # Define matrix that extracts number of communicative players
-    N = div(length(players_per_strategy), 2)
-    communicative_matrix = [ones(Int, N); zeros(Int, N)]
-    # communicatative have value < nb_phases
-    num_communicative = dot(players_per_strategy, communicative_matrix)
-    return num_communicative
-end
-
-function fraction_communicative(cumulative_populations, time_steps, nb_players)
-    nb_communicative = extract_num_communicative(cumulative_populations)
-    fraction_communicative = nb_communicative ./ (time_steps * nb_players)
-    return fraction_communicative
+    # Load results
+    config = @strdict(adj_matrix_source, payoff_update_method, time_steps,
+                      selection_strength, symmetry_breaking, nb_phases, cost, beta_to_B, mutation_rate)
+    if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
+	    config["nb_players"] = 20
+    end
+    data, _ = produce_or_load(calc_cumulative, config, datadir("raw","cumulative"))
 end
 
 function calc_cumulative(config::Dict)
@@ -75,6 +60,25 @@ function calc_cumulative(config::Dict)
     return @strdict(Bs, nb_players, fraction_communicative)
 end
 
+function calc_and_save_timeseries(B_to_c::Real, selection_strength::Real, symmetry_breaking::Real,
+                         adj_matrix_source::String="well-mixed",
+                         payoff_update_method::String="single-update",
+                         time_steps::Integer=80_000,
+			 nb_phases::Integer=20,
+			 cost::Real=0.1,
+			 beta_to_B::Real=0.95,
+			 mutation_rate::Real=0.0001,
+			 )
+    # Load results
+    config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_to_c, beta_to_B,
+                      symmetry_breaking, selection_strength, nb_phases, cost, mutation_rate)
+    if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
+	    config["nb_players"] = 20
+    end
+    data, _ = produce_or_load(calc_timeseries, config, datadir("raw","timeseries"))
+end
+
+
 function calc_timeseries(config::Dict)
     # Unpack variables
     @unpack B_to_c, selection_strength, symmetry_breaking, adj_matrix_source, payoff_update_method, time_steps, nb_phases, cost, beta_to_B, mutation_rate = config
@@ -102,4 +106,3 @@ function calc_timeseries(config::Dict)
     # Package results
     return @strdict(all_populations, steps_following_mutation, nb_phases, nb_players, interaction_adj_matrix)
 end
-

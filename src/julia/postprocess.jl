@@ -41,23 +41,6 @@ function load_all_timeseries(time_steps::Integer=80_000)
     return df
 end
 
-function load_all_timeseries_statistics(time_steps::Integer=80_000)
-    # Load dataframe
-    df_raw = collect_results(datadir("raw","timeseries_statistics"); rinclude = [Regex("time_steps=$time_steps[._]")])
-
-    # Check if GameTypes were reconstructed from JLD2
-    if typeof(df_raw.most_common_game_types) == Vector{Union{Missing, Vector{JLD2.ReconstructedPrimitive{:GameType, UInt32}}}}
-        # Convert JLD2 Reconstruct variables back to GameType enums
-        transform!(df_raw, :most_common_game_types => (x -> map(y -> map(z -> GameType(z.val), y), x)) => :most_common_game_types)
-        transform!(df_raw, :strategy_parity => (x -> map(y -> map(z -> StrategyParity(z.val), y), x)) => :strategy_parity)
-    end
-
-    # Add path
-    df = transform(df_raw, :path => (x-> DataFrame(map(y -> parse_savename(y)[2], x))) => AsTable)
-
-    return df
-end
-
 # Source: doi:10.3390/g6040495
 # In left-up convention (modified from right-up convention by swapping columns)
 # = means exactly the same payoff matrix, \approx means equivalent up to swap_strategies!
@@ -119,17 +102,6 @@ function combine_communicative_noncommunicative(players_per_strategy::AbstractVe
                                      Matrix{Int}(I, nb_phases, nb_phases))
     phase_idxs = combine_com_noncom_matrix * players_per_strategy
     return phase_idxs
-end
-
-function swap_strategies!(payoff_matrix::AbstractMatrix)
-    return payoff_matrix[2, 2], payoff_matrix[2, 1], payoff_matrix[1, 2], payoff_matrix[1, 1] = payoff_matrix[1,
-                                                                                                              1],
-                                                                                                payoff_matrix[1,
-                                                                                                              2],
-                                                                                                payoff_matrix[2,
-                                                                                                              1],
-                                                                                                payoff_matrix[2,
-                                                                                                              2]
 end
 
 function game_type(payoff_matrix::AbstractMatrix)
@@ -379,12 +351,12 @@ function export_graph_nodes_edges(time_step::Union{Real,Nothing}=nothing;
             # Generate configuration
             config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_to_c, beta_to_B,
                               selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate)
-	    if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
-		    config["nb_players"] = 20
-	    end
+            if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
+                config["nb_players"] = 20
+            end
 
             # Get data
-            data = wload(datadir("raw","timeseries",savename(config,"jld2")))
+            data = wload(datadir("raw", "timeseries", savename(config,"jld2")))
 
             # Calculate nodes and edges
             nodes_df, graph_edges = generate_nodes_edges(graph; data, time_step)
@@ -487,14 +459,8 @@ function extract_cumulative(type::String; selection_strength::Real,
     CSV.write(datadir("processed","cumulative",savename(config,"csv")), df)
 end
 
-function calc_timeseries_statistics(config::Dict)
-    # Calculate timeseries
-    data = calc_timeseries(config)
-
-    # Unpack variables
-    @unpack all_populations, steps_following_mutation, nb_phases, nb_players, interaction_adj_matrix = data
-    @unpack B_to_c, symmetry_breaking, selection_strength, adj_matrix_source, payoff_update_method, time_steps, nb_phases, cost, beta_to_B, mutation_rate = config
-
+function calc_timeseries_statistics(all_populations::AbstractMatrix{<:Integer}, nb_phases::Integer, nb_players::Integer,
+  symmetry_breaking::Real, B_to_c::Real, beta_to_B::Real, cost::Real, interaction_adj_matrix::AbstractMatrix{<:Integer})
     # Extract results
     most_common_game_types = dropdims(mapslices(x -> extract_most_common_game_types(x,
                                                                                     B_to_c *
@@ -517,8 +483,7 @@ function calc_timeseries_statistics(config::Dict)
                                           counts; dims=1); dims=1)
 
     # Package results
-    return @strdict(fraction_communicative, steps_following_mutation, order_parameters, most_common_game_types,
-                    strategy_parity)
+    return @strdict(fraction_communicative, order_parameters, most_common_game_types, strategy_parity)
 end
 
 function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
@@ -533,48 +498,55 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
                               mutation_rate::Real=0.0001,
 			      )
 
-    # Generate configuration
+    # Create config dict for saving filename
     config = @strdict(adj_matrix_source, payoff_update_method, time_steps, B_to_c, beta_to_B,
                       selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
-	    config["nb_players"] = 20
+      config["nb_players"] = 20
     end
 
-    # Get data
-    data = wload(datadir("raw","timeseries_statistics",savename(config,"jld2")))
+    # Create a dictionary with only the parameters that affect the RNG
+    rng_config = Dict(key => config[key] for key in ["adj_matrix_source", "payoff_update_method", "time_steps"])
+
+    # Get data and load into dataframe
+    data_dict = wload(datadir("raw", "timeseries", savename(config, "jld2")))
+    # Add configuration
+    data_dict = merge(data_dict, config)
+    # Wrap all elements in a list to allow for matrices in individual
+    # DataFrame elements
+    data_dict = Dict(k => [v] for (k,v) in data_dict)
+    # Convert to dataframe
+    df_all_asymm = DataFrame(data_dict)
+
+    # Generate statistics
+    statistics = transform(df_all_asymm, [:all_populations, :nb_phases, :nb_players, :symmetry_breaking,
+        :B_to_c, :beta_to_B, :cost, :interaction_adj_matrix] => ByRow(calc_timeseries_statistics) => AsTable)
 
     # Replace game type if all communicative/noncommunicative
-    game_type_or_parity = [strategy_parity != mixed ? strategy_parity :
-              game_type
-              for (strategy_parity, game_type) in
-                  zip(data["strategy_parity"], data["most_common_game_types"])]
+    transform!(statistics, [:strategy_parity, :most_common_game_types] => ByRow((strategy_parity, game_type) -> strategy_parity != mixed ? strategy_parity :
+      game_type) => :game_type_or_parity)
 
-    # Create data frame
-    df = DataFrame(communicative_fraction=data["fraction_communicative"],
-                   order_parameter=data["order_parameters"],
-                   game_type=game_type_or_parity)
+    # Write out mutation times
+    CSV.write(datadir("processed","mutation_timesteps", savename(rng_config,"csv")),
+      rename(select(statistics, :steps_following_mutation), Dict(:steps_following_mutation => :mutation_timesteps)))
+
+    # Select subset of columns and rename
+    rename!(select!(statistics,
+      [:fraction_communicative, :order_parameters , :game_type_or_parity]),
+      Dict(:fraction_communicative => :communicative_fraction, :order_parameters => :order_parameter, :game_type_or_parity => :game_type))
 
     # Add time
-    insertcols!(df, 1, :time => 1:nrow(df))
+    insertcols!(statistics, 1, :time => 1:nrow(statistics))
 
     # Only plot subset of points to prevent large file sizes
     downsample_ratio = Int(floor((time_steps + 1) / num_samples))
 
     # Downsample
-    # Note: the populations include the initial data, so we need one more than time-steps
-    df = df[1:downsample_ratio:end,:]
+    # Note: the populations include the initial statistics, so we need one more than time-steps
+    statistics = statistics[1:downsample_ratio:end,:]
 
-    # Write out data
-    CSV.write(datadir("processed","timeseries_statistics",savename(config,"csv")), df)
-
-    # Create a dictionary with only the parameters that affect the RNG
-    rng_config = Dict(key => config[key] for key in ["adj_matrix_source", "payoff_update_method", "time_steps"])
-
-    # Convert mutation timestep vector to DataFrame
-    mutation_timesteps = DataFrame(mutation_timesteps=data["steps_following_mutation"])
-
-    # Write out mutation times
-    CSV.write(datadir("processed","mutation_timesteps", savename(rng_config,"csv")), mutation_timesteps)
+    # Write out statistics
+    CSV.write(datadir("processed","timeseries_statistics",savename(config,"csv")), statistics)
 end
 
 function extract_chimera_indices(community_algorithm::String;
@@ -600,14 +572,20 @@ function extract_chimera_indices(community_algorithm::String;
 	    config["nb_players"] = 20
     end
 
-    # Get data
-    df_all = load_all_timeseries(time_steps)
-
-    # Select subset of dataframe
-    df_all_asymm = @rsubset(df_all, :selection_strength == selection_strength,
-                            :adj_matrix_source == adj_matrix_source, :to_c == B_to_c,
-                            :payoff_update_method == payoff_update_method, :time_steps == time_steps,
-                            :nb_phases == nb_phases)
+    df_all_asymm = DataFrame()
+    for symmetry_breaking in [0,0.25,0.5,0.75,1.0]
+      config_with_asymmetry = merge(config,Dict("symmetry_breaking" => symmetry_breaking))
+      # Get data and load into dataframe
+      data_dict = wload(datadir("raw", "timeseries",
+          savename(config_with_asymmetry, "jld2")))
+      # Add configuration
+      data_dict = merge(data_dict, config_with_asymmetry)
+      # Wrap all elements in a list to allow for matrices in individual
+      # DataFrame elements
+      data_dict = Dict(k => [v] for (k,v) in data_dict)
+      # Append to dataframe
+      append!(df_all_asymm, data_dict)
+    end
 
     # Get communities
     if community_algorithm == "covariance"
@@ -671,12 +649,25 @@ function extract_game_types(; B_to_c::Real, selection_strength::Real,
 	    config["nb_players"] = 20
     end
 
-    # Get data
-    df_all = load_all_timeseries_statistics(time_steps)
+    df_all_asymm = DataFrame()
+    for symmetry_breaking in [0,0.25,0.5,0.75,1.0]
+      config_with_asymmetry = merge(config,Dict("symmetry_breaking" => symmetry_breaking))
+      # Get data and load into dataframe
+      data_dict = wload(datadir("raw", "timeseries",
+          savename(config_with_asymmetry, "jld2")))
+      # Add configuration
+      data_dict = merge(data_dict, config_with_asymmetry)
+      # Wrap all elements in a list to allow for matrices in individual
+      # DataFrame elements
+      data_dict = Dict(k => [v] for (k,v) in data_dict)
+      # Append to dataframe
+      append!(df_all_asymm, data_dict)
+    end
 
-    # Select subset of dataframe
-    df_all_asymm = @rsubset(df_all, :selection_strength == selection_strength,
-                            :adj_matrix_source == adj_matrix_source, :to_c == B_to_c)
+    # Generate statistics
+    transform!(df_all_asymm, [:all_populations, :nb_phases, :nb_players, :symmetry_breaking,
+        :B_to_c, :beta_to_B, :cost, :interaction_adj_matrix] => ByRow(calc_timeseries_statistics) => AsTable)
+
     # Combine parity and game type
     transform!(df_all_asymm,
 	       [:strategy_parity, :most_common_game_types] => ByRow((parity_col,game_col) ->
@@ -743,7 +734,8 @@ function create_netcdf(adj_matrix_source::String;cumulative_time_steps::Integer=
 	# Load data
 	df_cumulative = @rsubset(load_all_cumulative(cumulative_time_steps), :matrix_source == adj_matrix_source)
 	df_timeseries = @rsubset(load_all_timeseries(timeseries_time_steps), :adj_matrix_source == adj_matrix_source)
-	df_timeseries_statistics = @rsubset(load_all_timeseries_statistics(timeseries_time_steps), :adj_matrix_source == adj_matrix_source)
+  transform!(df_timeseries, [:all_populations, :nb_phases, :nb_players, :symmetry_breaking,
+        :to_c, :beta_to_B, :cost, :interaction_adj_matrix] => ByRow(calc_timeseries_statistics) => AsTable)
 
 	# Ensure column name consistency
 	rename!(df_cumulative, :matrix_source => :adj_matrix_source)
@@ -766,8 +758,6 @@ function create_netcdf(adj_matrix_source::String;cumulative_time_steps::Integer=
 	properties_dict_cumulative = get_properties(df_cumulative,adj_matrix_source; include_time_steps=true)
 	properties_dict_timeseries = get_properties(df_timeseries,adj_matrix_source; include_time_steps=false)
 	transform!(df_timeseries, :to_c => ByRow(x -> x*properties_dict_timeseries["cost"]) => :maximum_joint_benefit)
-	properties_dict_timeseries_statistics = get_properties(df_timeseries,adj_matrix_source; include_time_steps=false)
-	transform!(df_timeseries_statistics, :to_c => ByRow(x -> x*properties_dict_timeseries_statistics["cost"]) => :maximum_joint_benefit)
 
 	# Combine into a YAXArray
 	axes = (
@@ -786,96 +776,79 @@ function create_netcdf(adj_matrix_source::String;cumulative_time_steps::Integer=
 
 	symmetry_breaking_timeseries_vals = unique(df_timeseries.symmetry_breaking)
 	selection_strength_timeseries_vals = unique(df_timeseries.selection_strength)
-	maximum_joint_benefit_timeseries_vals = unique(df_timeseries_statistics.maximum_joint_benefit) # use timeseries_statistics as it is a strict superset
+	maximum_joint_benefit_timeseries_vals = unique(df_timeseries.maximum_joint_benefit)
 	axes_timeseries = (
-	        Dim{:player_index}(1:nb_players),
 		Dim{:time_step}(0:timeseries_time_steps),
 		Dim{:symmetry_breaking}(symmetry_breaking_timeseries_vals, span=Regular(0.25)),
 		Dim{:maximum_joint_benefit}(round.(maximum_joint_benefit_timeseries_vals; digits=5)),
 		Dim{:selection_strength}(selection_strength_timeseries_vals, span=Regular(4.8)),
 		)
-	symmetry_breaking_timeseries_statistics_vals = unique(df_timeseries_statistics.symmetry_breaking)
-	selection_strength_timeseries_statistics_vals = unique(df_timeseries_statistics.selection_strength)
-	maximum_joint_benefit_timeseries_statistics_vals = unique(df_timeseries_statistics.maximum_joint_benefit)
-	axes_timeseries_statistics = (
-		Dim{:time_step}(0:timeseries_time_steps),
-		Dim{:symmetry_breaking}(unique(df_timeseries_statistics.symmetry_breaking), span=Regular(0.25)),
-		Dim{:maximum_joint_benefit}(round.(unique(df_timeseries_statistics.maximum_joint_benefit);digits=5)),
-		Dim{:selection_strength}(unique(df_timeseries_statistics.selection_strength), span=Regular(4.8)),
-		)
-	if axes_timeseries[[2,3,4,5]] != axes_timeseries_statistics[[1,2,3,4]]
-		throw(ErrorException("timeseries and timeseries_statistics have different axes"))
-	end
-
-	axes_ref = axes_timeseries
+  axes_timeseries_with_players = (Dim{:player_index}(1:nb_players), axes_timeseries...)
 
 	# Combine into a YAXArray
-	timeseries = YAXArray(axes_ref,
+	transform!(df_timeseries, :most_common_game_types => ByRow(x -> Integer.(x)) => :most_common_game_types)
+	timeseries = YAXArray(axes_timeseries_with_players,
 			      stack(only(
 					       begin
 						       x = @rsubset(df_timeseries, :symmetry_breaking == alpha,  :selection_strength == delta, :maximum_joint_benefit == B_0)
-						       !isempty(x) ? x : DataFrame(all_populations = [fill(missing, size(axes_ref[[1,2]]))])
+						       !isempty(x) ? x : DataFrame(all_populations = [fill(missing, size(axes_timeseries[[1,2]]))])
 					       end
 					 ).all_populations
 				    for alpha in symmetry_breaking_timeseries_vals, B_0 in maximum_joint_benefit_timeseries_vals,
-				    delta in selection_strength_timeseries_vals), # Use *_vals instead elements of axes_ref because axes rounds maximum_joint_benefit
+				    delta in selection_strength_timeseries_vals), # Use *_vals instead elements of axes_timeseries because axes rounds maximum_joint_benefit
 			      properties_dict_timeseries,
 			      )
-
-	# Combine into a YAXArray
-	axes_ref = axes_timeseries[[2,3,4,5]]
-	transform!(df_timeseries_statistics, :most_common_game_types => ByRow(x -> Integer.(x)) => :most_common_game_types)
 	most_common_game_types = YAXArray(
-					    axes_ref,
+					    axes_timeseries,
 					    stack(only(
 						       begin
-							       x = @rsubset(df_timeseries_statistics, :symmetry_breaking == alpha,  :selection_strength == delta, :maximum_joint_benefit == B_0)
-							       !isempty(x) ? x : DataFrame(most_common_game_types = [fill(missing, size(axes_ref[1]))])
+							       x = @rsubset(df_timeseries, :symmetry_breaking == alpha,  :selection_strength == delta, :maximum_joint_benefit == B_0)
+							       !isempty(x) ? x : DataFrame(most_common_game_types = [fill(missing, size(axes_timeseries[1]))])
 						       end
 						       ).most_common_game_types
-						  for alpha in symmetry_breaking_timeseries_statistics_vals, B_0 in maximum_joint_benefit_timeseries_statistics_vals,
-						  delta in selection_strength_timeseries_statistics_vals), # Use *_vals instead elements of axes_ref because axes rounds maximum_joint_benefit
-					    merge(properties_dict_timeseries_statistics, Dict("enum_lookup:" .* string.(Integer.(instances(GameType)))
+						  for alpha in symmetry_breaking_timeseries_vals, B_0 in maximum_joint_benefit_timeseries_vals,
+						  delta in selection_strength_timeseries_vals), # Use *_vals instead elements of axes_timeseries because axes rounds maximum_joint_benefit
+					    merge(properties_dict_timeseries, Dict("enum_lookup:" .* string.(Integer.(instances(GameType)))
 						       .=> String.(Symbol.(instances(GameType))))),
 
 					   )
 	order_parameters = YAXArray(
-					    axes_ref,
+					    axes_timeseries,
 					    stack(only(
 						       begin
-							       x = @rsubset(df_timeseries_statistics, :symmetry_breaking == alpha,  :selection_strength == delta, :maximum_joint_benefit == B_0)
-							       !isempty(x) ? x : DataFrame(order_parameters = [fill(missing, size(axes_ref[1]))])
+							       x = @rsubset(df_timeseries, :symmetry_breaking == alpha,  :selection_strength == delta, :maximum_joint_benefit == B_0)
+							       !isempty(x) ? x : DataFrame(order_parameters = [fill(missing, size(axes_timeseries[1]))])
 						       end
 						       ).order_parameters
-						  for alpha in symmetry_breaking_timeseries_statistics_vals, B_0 in maximum_joint_benefit_timeseries_statistics_vals,
-						  delta in selection_strength_timeseries_statistics_vals), # Use *_vals instead elements of axes_ref because axes rounds maximum_joint_benefit
-					    properties_dict_timeseries_statistics,
+						  for alpha in symmetry_breaking_timeseries_vals, B_0 in maximum_joint_benefit_timeseries_vals,
+						  delta in selection_strength_timeseries_vals), # Use *_vals instead elements of axes_timeseries because axes rounds maximum_joint_benefit
+					    properties_dict_timeseries,
 					   )
-	transform!(df_timeseries_statistics, :strategy_parity => ByRow(x -> Integer.(x)) => :strategy_parity)
+	transform!(df_timeseries, :strategy_parity => ByRow(x -> Integer.(x)) => :strategy_parity)
 	strategy_parity = YAXArray(
-					    axes_ref,
+					    axes_timeseries,
 					    stack(only(
 						       begin
-							       x = @rsubset(df_timeseries_statistics, :symmetry_breaking == alpha,  :selection_strength == delta, :maximum_joint_benefit == B_0)
-							       !isempty(x) ? x : DataFrame(strategy_parity = [fill(missing, size(axes_ref[1]))])
+							       x = @rsubset(df_timeseries, :symmetry_breaking == alpha,  :selection_strength == delta, :maximum_joint_benefit == B_0)
+							       !isempty(x) ? x : DataFrame(strategy_parity = [fill(missing, size(axes_timeseries[1]))])
 						       end
 						       ).strategy_parity
-						  for alpha in symmetry_breaking_timeseries_statistics_vals, B_0 in maximum_joint_benefit_timeseries_statistics_vals,
-						  delta in selection_strength_timeseries_statistics_vals), # Use *_vals instead elements of axes_ref because axes rounds maximum_joint_benefit
-					    merge(properties_dict_timeseries_statistics, Dict("enum_lookup:" .* string.(Integer.(instances(StrategyParity)))
+						  for alpha in symmetry_breaking_timeseries_vals, B_0 in maximum_joint_benefit_timeseries_vals,
+						  delta in selection_strength_timeseries_vals), # Use *_vals instead elements of axes_timeseries because axes rounds maximum_joint_benefit
+					    merge(properties_dict_timeseries, Dict("enum_lookup:" .* string.(Integer.(instances(StrategyParity)))
 						       .=> String.(Symbol.(instances(StrategyParity))))),
 					   )
 	fraction_communicative = YAXArray(
-					    axes_ref,
+					    axes_timeseries,
 					    stack(only(
 						       begin
-							       x = @rsubset(df_timeseries_statistics, :symmetry_breaking == alpha,  :selection_strength == delta, :maximum_joint_benefit == B_0)
-							       !isempty(x) ? x : DataFrame(fraction_communicative = [fill(missing, size(axes_ref[1]))])
+							       x = @rsubset(df_timeseries, :symmetry_breaking == alpha,  :selection_strength == delta, :maximum_joint_benefit == B_0)
+							       !isempty(x) ? x : DataFrame(fraction_communicative = [fill(missing, size(axes_timeseries[1]))])
 						       end
 						       ).fraction_communicative
-						  for alpha in symmetry_breaking_timeseries_statistics_vals, B_0 in maximum_joint_benefit_timeseries_statistics_vals,
-						  delta in selection_strength_timeseries_statistics_vals), # Use *_vals instead elements of axes_ref because axes rounds maximum_joint_benefit
-					    properties_dict_timeseries_statistics,
+						  for alpha in symmetry_breaking_timeseries_vals, B_0 in maximum_joint_benefit_timeseries_vals,
+						  delta in selection_strength_timeseries_vals), # Use *_vals instead elements of axes_timeseries because axes rounds maximum_joint_benefit
+					    properties_dict_timeseries,
 					   )
 	timeseries_statistics = Dataset(; Dict(:most_common_game_types => most_common_game_types,
 					       :order_parameters => order_parameters,

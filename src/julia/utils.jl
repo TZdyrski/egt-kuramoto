@@ -1,5 +1,16 @@
 using DataToolkit
 using LinearAlgebra
+using BlockArrays
+
+function extract_num_communicative(players_per_strategy::AbstractVector{<:Integer})
+    @assert iseven(length(players_per_strategy))
+    # Define matrix that extracts number of communicative players
+    N = div(length(players_per_strategy), 2)
+    communicative_matrix = [ones(Int, N); zeros(Int, N)]
+    # communicatative have value < nb_phases
+    num_communicative = dot(players_per_strategy, communicative_matrix)
+    return num_communicative
+end
 
 function analytic_frac_communicative(B0,beta0;selection_strength,cost,nb_players,symmetry_breaking,nb_phases)
 	n = nb_players
@@ -19,6 +30,23 @@ function analytic_frac_communicative(B0,beta0;selection_strength,cost,nb_players
 	nu = sum(s2_partials)/sum(s1_partials)
 	frac_communicative = 1/(1+nu)
 	return frac_communicative
+end
+
+function payoff_matrix(nb_phases::Integer,
+                       mutual_benefit_synchronous::Real,
+                       unilateral_benefit_synchronous::Real, cost::Real;
+                       symmetry_breaking::Real=1 / 2)
+    benefit_scaling = [(1 + cos(2 * pi * (phi_j - phi_i))) / 2
+                       for phi_i in (0:(nb_phases - 1)) / nb_phases,
+                           phi_j in (0:(nb_phases - 1)) / nb_phases]
+    payoff_matrix = Matrix(mortar([[mutual_benefit_synchronous*ones(size(benefit_scaling)) .- cost,
+                                    2 * (1 - symmetry_breaking) *
+                                    unilateral_benefit_synchronous * benefit_scaling];;
+                                   [2 * symmetry_breaking * unilateral_benefit_synchronous *
+                                    benefit_scaling .- cost,
+                                    zeros(eltype(benefit_scaling), size(benefit_scaling))]]) .+
+                           cost)
+    return payoff_matrix
 end
 
 function get_adj_matrices(adj_matrix_source::String; nb_players::Integer = 20, regular_degree::Integer = 10, rng::AbstractRNG=Xoshiro(1))
@@ -108,4 +136,15 @@ function get_drosophilia_connectome_labelled()
     # Convert weighted digraph to adjacency matrix
     connectome = adjacency_matrix(connectome_graph)
     return connectome
+end
+
+function swap_strategies!(payoff_matrix::AbstractMatrix)
+    return payoff_matrix[2, 2], payoff_matrix[2, 1], payoff_matrix[1, 2], payoff_matrix[1, 1] = payoff_matrix[1,
+                                                                                                              1],
+                                                                                                payoff_matrix[1,
+                                                                                                              2],
+                                                                                                payoff_matrix[2,
+                                                                                                              1],
+                                                                                                payoff_matrix[2,
+                                                                                                              2]
 end

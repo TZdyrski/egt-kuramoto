@@ -68,7 +68,7 @@ md"# Time Dependent Features"
 md"### Maximum Joint Benefit"
 
 # ╔═╡ cb324cb3-48ea-4a3a-b4c7-cf3d84a9030a
-@bind maximum_joint_benefit PlutoUI.Slider([0.0005,0.15,0.25]; default=0.15)
+@bind maximum_joint_benefit PlutoUI.Slider([0.15,0.25]; default=0.15)
 
 # ╔═╡ 507c9c3f-7fd9-4f1a-ad7d-743697a5c580
 maximum_joint_benefit
@@ -333,144 +333,131 @@ begin
 			   ylabelcolor=:blue,
                limits=(nothing, nothing, -0.05, 1.05))
 
-	if selection_strength == 0.005
-		md"No game-type data for this set of parameters"
+	local ds = timeseries_ds[
+		selection_strength = At(selection_strength),
+		maximum_joint_benefit = At(maximum_joint_benefit),
+		symmetry_breaking = At(symmetry_breaking),
+	]
+
+	if ! any(ismissing.(ds.most_common_game_types))
+		game_parity_or_type = [enum_to_parity[strategy_parity] != mixed ? enum_to_parity[strategy_parity] : enum_to_strategy[game_type]
+				   for (strategy_parity, game_type) in
+				       zip(ds.strategy_parity,
+									   ds.most_common_game_types)]
+		colors = [game_type_or_parity_colors[key] for key in game_parity_or_type]
+	    local li1 = lines!(ax1,
+						   lookup(ds.fraction_communicative, :time_step),
+						   collect(ds.fraction_communicative);
+						   color=collect(colors),
+						   linewidth=5,
+						  )
+
+	    # Plot order parameter
+	    local ax2 = Axis(fig[1, 1];
+		       ylabel="Order parameter",
+		       limits=(nothing, nothing, -0.05, 1.05),
+		       yaxisposition=:right,
+		       yticklabelcolor=:magenta,
+				   ylabelcolor=:magenta)
+	    hidespines!(ax2)
+	    hidexdecorations!(ax2)
+	    local li2 = lines!(ax2,
+						   lookup(ds.order_parameters, :time_step),
+						   collect(ds.order_parameters);
+						   color=:magenta)
+
+	    # Add legend
+		local game_list = unique(game_parity_or_type)
+		local legend_items = [PolyElement(color=game_type_or_parity_colors[game]) for game in game_list]
+		local name_list = [String(Symbol(x)) for x in game_list]
+		replace!(name_list, "all_communicative" => "all-C",
+								"all_noncommunicative" => "all-N")
+		append!(legend_items, [PolyElement(color=:magenta)])
+		append!(name_list, ["Order parameter"])
+	    axislegend(ax1, legend_items, name_list;
+		       position=:rb)
+
+		# Return figure
+		fig
 	else
-
-		local ds = timeseries_ds[
-			selection_strength = At(selection_strength),
-			maximum_joint_benefit = At(maximum_joint_benefit),
-			symmetry_breaking = At(symmetry_breaking),
-		]
-
-		if ! any(ismissing.(ds.most_common_game_types))
-			game_parity_or_type = [enum_to_parity[strategy_parity] != mixed ? enum_to_parity[strategy_parity] : enum_to_strategy[game_type]
-		                           for (strategy_parity, game_type) in
-		                               zip(ds.strategy_parity,
-										   ds.most_common_game_types)]
-			colors = [game_type_or_parity_colors[key] for key in game_parity_or_type]
-		    local li1 = lines!(ax1,
-							   lookup(ds.fraction_communicative, :time_step),
-							   collect(ds.fraction_communicative);
-							   color=collect(colors),
-							   linewidth=5,
-							  )
-
-		    # Plot order parameter
-		    local ax2 = Axis(fig[1, 1];
-		               ylabel="Order parameter",
-		               limits=(nothing, nothing, -0.05, 1.05),
-		               yaxisposition=:right,
-		               yticklabelcolor=:magenta,
-					   ylabelcolor=:magenta)
-		    hidespines!(ax2)
-		    hidexdecorations!(ax2)
-		    local li2 = lines!(ax2,
-							   lookup(ds.order_parameters, :time_step),
-							   collect(ds.order_parameters);
-							   color=:magenta)
-
-		    # Add legend
-			local game_list = unique(game_parity_or_type)
-			local legend_items = [PolyElement(color=game_type_or_parity_colors[game]) for game in game_list]
-			local name_list = [String(Symbol(x)) for x in game_list]
-			replace!(name_list, "all_communicative" => "all-C",
-									"all_noncommunicative" => "all-N")
-			append!(legend_items, [PolyElement(color=:magenta)])
-			append!(name_list, ["Order parameter"])
-		    axislegend(ax1, legend_items, name_list;
-		               position=:rb)
-
-			# Return figure
-			fig
-		else
-			md"No game-type data for this set of parameters"
-		end
+		md"No game-type data for this set of parameters"
 	end
 end
 
 # ╔═╡ b868b861-2962-4a8b-af81-bf85838b1ab9
 begin
-	if selection_strength == 0.005
-		md"No game-type data for this set of parameters"
+	local ds = timeseries_ds[
+		selection_strength = At(selection_strength),
+		maximum_joint_benefit = At(maximum_joint_benefit),
+		symmetry_breaking = At(symmetry_breaking),
+	]
+
+	if !any(ismissing.(ds.most_common_game_types))
+		# Plot histogram of game types
+	    local game_parity_or_type = [enum_to_parity[strategy_parity] != mixed ? enum_to_parity[strategy_parity] : enum_to_strategy[game_type]
+				   for (strategy_parity, game_type) in
+				       zip(ds.strategy_parity,
+									   ds.most_common_game_types)]
+	    local hist_data = proportionmap(game_parity_or_type)
+
+	    local fig = Figure()
+		local name_list = String.(Symbol.(collect(keys(hist_data))))
+		replace!(name_list, "all_communicative" => "all-C",
+								"all_noncommunicative" => "all-N")
+	    local ax = Axis(fig[1,1];
+		       title=L"Strong selection $\delta = 0.2$",
+		       limits=(nothing, nothing, 0, nothing),
+		       xticks=(1:length(keys(hist_data)), name_list))
+	    barplot!(ax, collect(values(hist_data));
+				color = [game_type_or_parity_colors[game] for game in keys(hist_data)])
+
+		# Return figure
+		fig
 	else
-		local ds = timeseries_ds[
-			selection_strength = At(selection_strength),
-			maximum_joint_benefit = At(maximum_joint_benefit),
-			symmetry_breaking = At(symmetry_breaking),
-		]
-
-		if !any(ismissing.(ds.most_common_game_types))
-			# Plot histogram of game types
-		    local game_parity_or_type = [enum_to_parity[strategy_parity] != mixed ? enum_to_parity[strategy_parity] : enum_to_strategy[game_type]
-		                           for (strategy_parity, game_type) in
-		                               zip(ds.strategy_parity,
-										   ds.most_common_game_types)]
-		    local hist_data = proportionmap(game_parity_or_type)
-
-		    local fig = Figure()
-			local name_list = String.(Symbol.(collect(keys(hist_data))))
-			replace!(name_list, "all_communicative" => "all-C",
-									"all_noncommunicative" => "all-N")
-		    local ax = Axis(fig[1,1];
-		               title=L"Strong selection $\delta = 0.2$",
-		               limits=(nothing, nothing, 0, nothing),
-		               xticks=(1:length(keys(hist_data)), name_list))
-		    barplot!(ax, collect(values(hist_data));
-					color = [game_type_or_parity_colors[game] for game in keys(hist_data)])
-
-			# Return figure
-			fig
-		else
-			md"No game-type data for this set of parameters"
-		end
+		md"No game-type data for this set of parameters"
 	end
 end
 
 # ╔═╡ 0e599cc9-42a9-4c32-b441-4ef15346f24e
 begin
-	if selection_strength == 0.005
-		md"No game-type data for this set of parameters"
+	local ds = timeseries_ds[
+		selection_strength = At(selection_strength),
+		maximum_joint_benefit = At(maximum_joint_benefit),
+	]
+
+	if ! any(ismissing.(ds.most_common_game_types))
+		local game_parity_or_type = [enum_to_parity[strategy_parity] != mixed ? enum_to_parity[strategy_parity] : enum_to_strategy[game_type]
+				   for (strategy_parity, game_type) in
+				       zip(ds.strategy_parity,
+									   ds.most_common_game_types)]
+		local game_type_distribution = [proportionmap(slice) for slice in eachslice(game_parity_or_type, dims=timeseries_ds.symmetry_breaking)]
+
+	    # Generate plot
+	    local fig = Figure()
+	    local ax = Axis(fig[1, 1];
+						xlabel = L"Asymmetry $\alpha$",
+						title = "Proportion of Game Types by Asymmetry")
+	    for (indx, row) in enumerate(game_type_distribution)
+		local asymm = ds.symmetry_breaking[indx]
+		barplot!(repeat([asymm],length(row)),
+					 collect(values(row)),
+					 stack = repeat([indx], length(row)),
+					 color = [game_type_or_parity_colors[game] for game in keys(row)],
+					 width=0.2)
+	    end
+
+	    # Add legend
+		local game_list = unique(collect(Iterators.flatten(map(keys,game_type_distribution))))
+		local legend_items = [PolyElement(color=game_type_or_parity_colors[game]) for game in game_list]
+		local name_list = [String(Symbol(x)) for x in game_list]
+		replace!(name_list, "all_communicative" => "all-C",
+								"all_noncommunicative" => "all-N")
+		Legend(fig[2,1], legend_items,name_list, orientation=:horizontal)
+
+		# Return figure
+		fig
 	else
-		local ds = timeseries_ds[
-			selection_strength = At(selection_strength),
-			maximum_joint_benefit = At(maximum_joint_benefit),
-		]
-
-		if ! any(ismissing.(ds.most_common_game_types))
-			local game_parity_or_type = [enum_to_parity[strategy_parity] != mixed ? enum_to_parity[strategy_parity] : enum_to_strategy[game_type]
-		                           for (strategy_parity, game_type) in
-		                               zip(ds.strategy_parity,
-										   ds.most_common_game_types)]
-			local game_type_distribution = [proportionmap(slice) for slice in eachslice(game_parity_or_type, dims=timeseries_ds.symmetry_breaking)]
-
-		    # Generate plot
-		    local fig = Figure()
-		    local ax = Axis(fig[1, 1];
-							xlabel = L"Asymmetry $\alpha$",
-							title = "Proportion of Game Types by Asymmetry")
-		    for (indx, row) in enumerate(game_type_distribution)
-		        local asymm = ds.symmetry_breaking[indx]
-		        barplot!(repeat([asymm],length(row)),
-						 collect(values(row)),
-						 stack = repeat([indx], length(row)),
-						 color = [game_type_or_parity_colors[game] for game in keys(row)],
-						 width=0.2)
-		    end
-
-		    # Add legend
-			local game_list = unique(collect(Iterators.flatten(map(keys,game_type_distribution))))
-			local legend_items = [PolyElement(color=game_type_or_parity_colors[game]) for game in game_list]
-			local name_list = [String(Symbol(x)) for x in game_list]
-			replace!(name_list, "all_communicative" => "all-C",
-									"all_noncommunicative" => "all-N")
-			Legend(fig[2,1], legend_items,name_list, orientation=:horizontal)
-
-			# Return figure
-			fig
-		else
-			md"No game-type data for this set of parameters"
-		end
+		md"No game-type data for this set of parameters"
 	end
 end
 
@@ -488,52 +475,48 @@ end;
 
 # ╔═╡ 54ba97a0-7da0-4227-8427-f54701df0c5c
 begin
-	if selection_strength == 0.005
-		md"No game-type data for this set of parameters"
+	# Get timeseries data
+	local timeseries_data = timeseries_ds.timeseries[
+		selection_strength = At(selection_strength),
+		maximum_joint_benefit = At(maximum_joint_benefit),
+		symmetry_breaking = At(symmetry_breaking),
+	]
+
+	if ! any(ismissing.(timeseries_data))
+		# Apply colormap
+		local colors = cooperative_colormap[timeseries_data]
+
+	    # Set animation parameters
+	    local num_times = size(timeseries_data, :time_step)
+	    local total_time_s = 10
+	    local framerate_Hz = 30
+	    local time_stride = round(num_times / (framerate_Hz * total_time_s))
+
+	    # Generate animation
+	    local time = Observable(1)
+	    local layout = Stress()
+		local titleStr = @lift("Time step = "*string(timeseries_data.time_step[$time]))
+
+	    # Create plot
+	    local color_observable = @lift(colors[:, $time])
+		local fig = Figure()
+	    local ax = Axis(fig[1,1];
+						title=titleStr)
+	    local graph_plot = graphplot!(ax, graph;
+										node_color=color_observable,
+										layout=layout,
+					    arrow_show=false,
+										edge_color=(:black, 0.05),
+					    edge_plottype=:linesegments)
+
+	    recording = Record(fig, 1:time_stride:num_times; framerate=framerate_Hz) do t
+		return time[] = t
+	    end
+
+		# Return recording
+		recording
 	else
-		# Get timeseries data
-		local timeseries_data = timeseries_ds.timeseries[
-			selection_strength = At(selection_strength),
-			maximum_joint_benefit = At(maximum_joint_benefit),
-			symmetry_breaking = At(symmetry_breaking),
-		]
-
-		if ! any(ismissing.(timeseries_data))
-			# Apply colormap
-			local colors = cooperative_colormap[timeseries_data]
-
-		    # Set animation parameters
-		    local num_times = size(timeseries_data, :time_step)
-		    local total_time_s = 10
-		    local framerate_Hz = 30
-		    local time_stride = round(num_times / (framerate_Hz * total_time_s))
-
-		    # Generate animation
-		    local time = Observable(1)
-		    local layout = Stress()
-			local titleStr = @lift("Time step = "*string(timeseries_data.time_step[$time]))
-
-		    # Create plot
-		    local color_observable = @lift(colors[:, $time])
-			local fig = Figure()
-		    local ax = Axis(fig[1,1];
-							title=titleStr)
-		    local graph_plot = graphplot!(ax, graph;
-											node_color=color_observable,
-											layout=layout,
-		                                    arrow_show=false,
-											edge_color=(:black, 0.05),
-		                                    edge_plottype=:linesegments)
-
-		    recording = Record(fig, 1:time_stride:num_times; framerate=framerate_Hz) do t
-		        return time[] = t
-		    end
-
-			# Return recording
-			recording
-		else
-			md"No timeseries data for this set of parameters"
-		end
+		md"No timeseries data for this set of parameters"
 	end
 end
 

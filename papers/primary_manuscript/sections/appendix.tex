@@ -1,3 +1,31 @@
+\section{Two-player game order graphs}\label{sec:order_graphs}
+\begin{center}
+    \includestandalone{tikz/game-payoffs}
+    \captionof{figure}{}\label{fig:order_graphs}
+\end{center}
+
+\Cref{fig:order_graphs} shows the
+order graphs for the 16 symmetric, ordinal two-player games.
+Each sub-panel shows the payoff order for both the column
+and row player.
+The letters correspond to the following payoff matrix
+\begin{equation*}
+  \begin{bNiceMatrix}[first-col,first-row,hvlines]
+    & C & N \\
+    C & A & B \\
+    N & C & D
+  \end{bNiceMatrix}
+\end{equation*}
+The horizontal axis represents the order of row player payoffs,
+and the red lines represent row player options.
+The vertical axis represents the order of row player payoffs,
+and the blue lines represent column player options.
+The arrows show the direction of increasing
+payoff for the relevant player,
+and solid black dots represent Nash equilibria.
+This figure is adapted from the topological taxonomy
+order graphs~\citep{bruns2015names}.
+
 \section{Well-mixed communicative fraction with symmetry breaking}\label{sec:analytic_comm_frac}
 Here, we follow the steady-state communicative fraction derivation
 in the previous EK study~\citep{tripp2022evolutionary}

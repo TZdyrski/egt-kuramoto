@@ -397,8 +397,8 @@ function export_graph_nodes_edges(time_step::Union{Real,Nothing}=nothing;
     insertcols!(nodes_df, 1, :index => 1:nrow(nodes_df))
 
     # Write out vertices and edges
-    CSV.write(datadir("processed",savename("vertices",config,"csv")), nodes_df)
-    CSV.write(datadir("processed","edges_adj_matrix_source=$(adj_matrix_source).csv"), graph_edges)
+    CSV.write(datadir("processed", "graph_structure", savename("vertices",config,"csv")), nodes_df)
+    CSV.write(datadir("processed", "graph_structure", "edges_adj_matrix_source=$(adj_matrix_source).csv"), graph_edges)
 
     return graph_edges
 end

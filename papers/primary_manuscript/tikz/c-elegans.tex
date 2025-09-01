@@ -11,7 +11,7 @@
 \begin{tikzpicture}
   \begin{scope}[rotate=90]
     % Read node coordinates and create nodes
-    \csvreader[head to column names]{../../data/processed/vertices_B_factor=1.5_adj_matrix_source=c-elegans_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_step=560000_time_steps=8000000.csv}{}%
+    \csvreader[head to column names]{../../data/processed/graph_structure/vertices_B_factor=1.5_adj_matrix_source=c-elegans_nb_phases=20_payoff_update_method=single-update_selection_strength=0.2_symmetry_breaking=0.75_time_step=560000_time_steps=8000000.csv}{}%
     {%
       \node[draw, circle, draw=none, index of colormap=\strategyIndex of strategycolors, fill=., inner sep=1.5] (\index) at (\x, \y) {};
     }
@@ -20,7 +20,7 @@
       % Decrease total opacity to prevent high opacity of overlapping edges
       \begin{scope}[transparency group,opacity=.75]
       % Read edges and draw connections between nodes
-      \csvreader[head to column names]{../../data/processed/edges_adj_matrix_source=c-elegans.csv}{}%
+      \csvreader[head to column names]{../../data/processed/graph_structure/edges_adj_matrix_source=c-elegans.csv}{}%
       {%
         % Make individual opacity low; multiple overlapping edges can still have high opacity
         \ifthenelse{\equal{\src}{\dst}}

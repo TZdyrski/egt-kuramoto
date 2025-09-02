@@ -9,8 +9,7 @@ update_method = "single-update"
 # Calc cumulative
 num_time_steps_cumulative = Int(2E8)
 for adj_matrix_source in ["well-mixed", "c-elegans", "c-elegans-unweighted",
-		      "c-elegans-undirected", "c-elegans-undirected-unweighted",
-		      "random-regular-graph", "random-regular-digraph"]
+		      "c-elegans-undirected", "c-elegans-undirected-unweighted"]
     for selection_strength in [0.005, 0.2, 5]
         for symmetry_breaking in [0, 1 / 4, 1 / 2, 3 / 4, 1]
 		calc_and_save_cumulative(selection_strength,
@@ -24,8 +23,7 @@ end
 # Calc time-series
 num_time_steps_timeseries = Int(8E6)
 for adj_matrix_source in ["well-mixed", "c-elegans", "c-elegans-unweighted",
-                          "c-elegans-undirected", "c-elegans-undirected-unweighted",
-                          "random-regular-graph", "random-regular-digraph"]
+                          "c-elegans-undirected", "c-elegans-undirected-unweighted"]
     for (B_to_c, selection_strength) in Iterators.product([1.5, 2.5], [0.005, 0.2, 5])
         for symmetry_breaking in [0, 1 / 4, 1 / 2, 3 / 4, 1]
             calc_and_save_timeseries(B_to_c, selection_strength,

@@ -60,30 +60,10 @@ function update_weights!(w::Weights{S,TA,V}, new_wts::V) where {S,TA,V}
     return w.sum = sum(w.values)
 end
 
-abstract type WorkParams end
-
-struct WorkParamsLoop{AS1<:AbstractVector,AT1<:AbstractVector,AT2<:AbstractVector,
-                      AT3<:AbstractWeights,AS2<:AbstractWeights} <: WorkParams
-    neighbor_idxs::AS1
-    payoffs::AT1
-    fitnesses::AT2
-    weights_float::AT3
-    weights_int::AS2
-end
-
-function WorkParamsLoop(lmi::Moran{N}) where {N}
-    neighbor_idxs = Vector{Int64}(undef, N)
-    payoffs = Vector{Float64}(undef, N)
-    fitnesses = Vector{Float64}(undef, N)
-    weights_float = Weights(ones(Float64, N))
-    weights_int = Weights(ones(Int64, N))
-    return WorkParamsLoop(neighbor_idxs, payoffs, fitnesses, weights_float, weights_int)
-end
-
-struct WorkParamsSingleUpdate{AS1<:AbstractVector,AT1<:AbstractVector,AT2<:AbstractVector,
+struct WorkParams{AS1<:AbstractVector,AT1<:AbstractVector,AT2<:AbstractVector,
                               AT3<:AbstractWeights,AS2<:AbstractWeights,
                               AT4<:AbstractMatrix,AT5<:AbstractMatrix,AT6<:AbstractMatrix,
-                              AT7<:AbstractMatrix} <: WorkParams
+                              AT7<:AbstractMatrix}
     neighbor_idxs::AS1
     payoffs::AT1
     payoffs_transpose::AT7
@@ -95,7 +75,7 @@ struct WorkParamsSingleUpdate{AS1<:AbstractVector,AT1<:AbstractVector,AT2<:Abstr
     payoffs_player_pairwise_transpose::AT6
 end
 
-function WorkParamsSingleUpdate(lmi::Moran{N},
+function WorkParams(lmi::Moran{N},
                                 initial_actions::AbstractVector) where {N}
     neighbor_idxs = Vector{Int64}(undef, N)
     payoffs = Vector{Float64}(undef, N)
@@ -108,63 +88,14 @@ function WorkParamsSingleUpdate(lmi::Moran{N},
     payoffs_player_pairwise_transpose = payoffs_colplayer_per_strategy[:,
                                                                        initial_actions] .*
                                         lmi.interaction_adj_matrix
-    return WorkParamsSingleUpdate(neighbor_idxs, payoffs, payoffs_transpose, fitnesses,
+    return WorkParams(neighbor_idxs, payoffs, payoffs_transpose, fitnesses,
                                   weights_float, weights_int,
                                   payoffs_rowplayer_per_strategy,
                                   payoffs_colplayer_per_strategy,
                                   payoffs_player_pairwise_transpose)
 end
 
-struct WorkParamsMatrix{AS1<:AbstractVector,AT1<:AbstractVector,AT2<:AbstractVector,
-                        AT3<:AbstractWeights,AS2<:AbstractWeights,
-                        AS3<:AbstractMatrix,AT4<:AbstractMatrix,AS4<:AbstractVector} <:
-       WorkParams
-    neighbor_idxs::AS1
-    payoffs::AT1
-    fitnesses::AT2
-    weights_float::AT3
-    weights_int::AS2
-    actions_matrix::AS3
-    actions_matrix_T::AS3
-    work_array_1::AT4
-    work_array_2::AT4
-    work_array_3::AT4
-    ones_matrix::AS4
-end
-
-function WorkParamsMatrix(lmi::Moran{N}) where {N}
-    neighbor_idxs = Vector{Int64}(undef, N)
-    payoffs = Vector{Float64}(undef, N)
-    fitnesses = Vector{Float64}(undef, N)
-    weights_float = Weights(ones(Float64, N))
-    weights_int = Weights(ones(Int64, N))
-    actions_matrix = Matrix{Int64}(undef, N, lmi.num_actions)
-    actions_matrix_T = Matrix{Int64}(undef, lmi.num_actions, N)
-    work_array_1 = Matrix{Float64}(undef, N, lmi.num_actions)
-    work_array_2 = Matrix{Float64}(undef, N, N)
-    work_array_3 = Matrix{Float64}(undef, N, N)
-    ones_matrix = ones(Int64, N)
-    return WorkParamsMatrix(neighbor_idxs, payoffs, fitnesses, weights_float, weights_int,
-                            actions_matrix, actions_matrix_T, work_array_1, work_array_2,
-                            work_array_3, ones_matrix)
-end
-
-function calc_payoffs!(aux::WorkParamsLoop,
-                       actions::AbstractVector,
-                       lmi::Moran{N}) where {N}
-    @inbounds for focal_idx in 1:length(actions)
-        focal_strategy = actions[focal_idx]
-        total = 0.0
-        @inbounds for neighbor_idx in 1:length(actions)
-            neighbor_strategy = actions[neighbor_idx]
-            total += lmi.payoff_matrix_transpose[neighbor_strategy, focal_strategy] *
-                     lmi.interaction_adj_matrix[neighbor_idx, focal_idx]
-        end
-        aux.payoffs[focal_idx] = total
-    end
-end
-
-function calc_payoffs!(aux::WorkParamsSingleUpdate,
+function calc_payoffs!(aux::WorkParams,
                        actions::AbstractVector,
                        lmi::Moran{N}) where {N}
     # Calculate payoffs
@@ -173,12 +104,6 @@ function calc_payoffs!(aux::WorkParamsSingleUpdate,
 end
 
 function update_aux!(aux::WorkParams,
-                     new_strategy::Integer,
-                     death_idx::Integer,
-                     lmi::Moran{N}) where {N}
-end
-
-function update_aux!(aux::WorkParamsSingleUpdate,
                      new_strategy::Integer,
                      death_idx::Integer,
                      lmi::Moran{N}) where {N}
@@ -199,23 +124,6 @@ function update_aux!(aux::WorkParamsSingleUpdate,
         aux.payoffs_player_pairwise_transpose[death_idx, idx] *= lmi.interaction_adj_matrix[death_idx,
                                                                                             idx]
     end
-end
-
-function calc_payoffs!(aux::WorkParamsMatrix,
-                       actions::AbstractVector,
-                       lmi::Moran{N}) where {N}
-    @inbounds for col in 1:(lmi.num_actions), row in 1:N
-        aux.actions_matrix[row, col] = 0
-    end
-    @inbounds for player_idx in 1:N
-        strategy_idx = actions[player_idx]
-        aux.actions_matrix[player_idx, strategy_idx] = 1
-    end
-    transpose!(aux.actions_matrix_T, aux.actions_matrix)
-    mul!(aux.work_array_1, aux.actions_matrix, lmi.players[1].payoff_array)
-    mul!(aux.work_array_2, aux.work_array_1, aux.actions_matrix_T)
-    aux.work_array_3 .= aux.work_array_2 .* lmi.interaction_adj_matrix_transpose
-    return mul!(aux.payoffs, aux.work_array_3, aux.ones_matrix)
 end
 
 function play!(actions::AbstractVector,
@@ -276,19 +184,10 @@ function count_actions!(counts::AbstractVector{N}, new_values::AbstractVector{N}
 end
 
 function time_series(lmi::Moran{N}, ts_length::Integer,
-                     payoff_counting_method::String="single-update",
                      seed::Integer=12345) where {N}
     rng = Xoshiro(seed)
     actions = rand(rng, 1:(lmi.num_actions), N)
-    if payoff_counting_method == "loop"
-        aux = WorkParamsLoop(lmi)
-    elseif payoff_counting_method == "single-update"
-        aux = WorkParamsSingleUpdate(lmi, actions)
-    elseif payoff_counting_method == "matrix"
-        aux = WorkParamsMatrix(lmi)
-    else
-        throw(ArgumentError("payoff_counting_method must be a string in set [\"loop\", \"single-update\", \"matrix\"]"))
-    end
+    aux = WorkParams(lmi, actions)
     out = Matrix{Int}(undef, N, ts_length + 1)
     steps_following_mutation = Integer[]
     for i in 1:N
@@ -305,21 +204,12 @@ function time_series(lmi::Moran{N}, ts_length::Integer,
 end
 
 function cumulative(lmi::Moran{N}, ts_length::Integer,
-                    payoff_counting_method::String="single-update",
                     seed::Integer=12345) where {N}
     rng = Xoshiro(seed)
     actions = rand(rng, 1:(lmi.num_actions), N)
     cumulative = zeros(Int, lmi.num_actions)
     count_actions!(cumulative, actions)
-    if payoff_counting_method == "loop"
-        aux = WorkParamsLoop(lmi)
-    elseif payoff_counting_method == "single-update"
-        aux = WorkParamsSingleUpdate(lmi, actions)
-    elseif payoff_counting_method == "matrix"
-        aux = WorkParamsMatrix(lmi)
-    else
-        throw(ArgumentError("payoff_counting_method must be a string in set [\"loop\", \"single-update\", \"matrix\"]"))
-    end
+    aux = WorkParams(lmi, actions)
     for t in 2:ts_length
         play!(actions, rng, lmi, aux)
         count_actions!(cumulative, actions)

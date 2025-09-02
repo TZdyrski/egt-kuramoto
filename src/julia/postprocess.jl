@@ -104,6 +104,17 @@ function combine_communicative_noncommunicative(players_per_strategy::AbstractVe
     return phase_idxs
 end
 
+function swap_strategies!(payoff_matrix::AbstractMatrix)
+    return payoff_matrix[2, 2], payoff_matrix[2, 1], payoff_matrix[1, 2], payoff_matrix[1, 1] = payoff_matrix[1,
+                                                                                                              1],
+                                                                                                payoff_matrix[1,
+                                                                                                              2],
+                                                                                                payoff_matrix[2,
+                                                                                                              1],
+                                                                                                payoff_matrix[2,
+                                                                                                              2]
+end
+
 function game_type(payoff_matrix::AbstractMatrix)
     # Schema: doi:10.3390/g6040495
 
@@ -400,6 +411,26 @@ function generate_nodes_edges(graph::AbstractGraph;
     end
 
     return df, graph_edges
+end
+
+function analytic_frac_communicative(B0,beta0;selection_strength,cost,nb_players,symmetry_breaking,nb_phases)
+	n = nb_players
+	alpha = symmetry_breaking
+	delta = selection_strength
+	d = nb_phases
+
+	beta(delta_phi) = beta0*(1+cos(delta_phi))/2
+	denom(delta_phi) = 1 + sum([
+			  exp(delta*(j^2*(beta(delta_phi)-B0/2)
+					   +j*(B0/2+beta(delta_phi)*(1-2*alpha*n)+cost*(n-1))))
+			 for j in 1:n-1])
+	omega(delta_phi) = exp(delta*(n-1)*((n-1)*cost+n*beta(delta_phi)*(1-2*alpha)-(n-2)/2*B0))
+
+	s1_partials = [1/denom(delta_phi) for delta_phi in pi/d*(1:d)]
+	s2_partials = [omega(delta_phi) for delta_phi in pi/d*(1:d)] .* s1_partials
+	nu = sum(s2_partials)/sum(s1_partials)
+	frac_communicative = 1/(1+nu)
+	return frac_communicative
 end
 
 function extract_cumulative(type::String; selection_strength::Real,

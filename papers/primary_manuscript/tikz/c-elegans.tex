@@ -124,7 +124,7 @@
     % Prevent underscore from counting as subscript
     \catcode`\_=12
     % Note: these table names must be the same as those in the groupplots
-    \pgfplotsforeachungrouped\tablename in {../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.75_time_steps=800000.csv,../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_symmetry_breaking=0.75_time_steps=800000.csv} {
+    \pgfplotsforeachungrouped\tablename in {../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_symmetry_breaking=0.75_time_steps=800000.csv} {
       % Read table
       \pgfplotstableread\tablename\loadtable
       % Loop over each column

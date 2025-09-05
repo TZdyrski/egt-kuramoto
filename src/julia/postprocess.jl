@@ -553,14 +553,20 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
     statistics = transform(df_all_asymm, [:all_populations, :nb_phases, :nb_players, :symmetry_breaking,
         :B_to_c, :beta_to_B, :cost, :interaction_adj_matrix] => ByRow(calc_timeseries_statistics) => AsTable)
 
-    # Replace game type if all communicative/noncommunicative
-    transform!(statistics, [:strategy_parity, :most_common_game_types] => ByRow((strategy_parity, game_type) -> strategy_parity != mixed ? strategy_parity :
-      game_type) => :game_type_or_parity)
-
     # Write out mutation times
     mkpath(datadir("processed", "mutation_timesteps"))
     CSV.write(datadir("processed","mutation_timesteps", savename(config,"csv")),
       rename(select(statistics, :steps_following_mutation), Dict(:steps_following_mutation => :mutation_timesteps)))
+
+    # Select subset of columns
+    select!(statistics, [:strategy_parity, :most_common_game_types, :fraction_communicative, :order_parameters])
+
+    # Flatten dataframe to convert the 1 row into time_steps+1 rows
+    statistics = DataFrames.flatten(statistics, :)
+
+    # Replace game type if all communicative/noncommunicative
+    transform!(statistics, [:strategy_parity, :most_common_game_types] => ByRow((strategy_parity, game_type) -> strategy_parity != mixed ? strategy_parity :
+      game_type) => :game_type_or_parity)
 
     # Select subset of columns and rename
     rename!(select!(statistics,

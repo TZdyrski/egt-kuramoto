@@ -68,5 +68,7 @@ end
 # Save results in NetCDF format
 for adj_matrix_source in ["well-mixed", "c-elegans", "c-elegans-unweighted",
                           "c-elegans-undirected"]
-    create_netcdf(;adj_matrix_source=adj_matrix_source, cumulative_time_steps=2000, timeseries_time_steps=8000)
+    for (data_type, decimation_factor) in zip(["cumulative", "timeseries-statistics", "timeseries-statistics"], [nothing, nothing, 10000])
+        create_netcdf(; data_type=data_type, adj_matrix_source=adj_matrix_source, cumulative_time_steps=2000, timeseries_time_steps=8000, decimation_factor=decimation_factor)
+    end
 end

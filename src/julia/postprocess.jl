@@ -753,7 +753,8 @@ function calc_number_unidirection_bidirectional_edges(; adj_matrix_source::Strin
 		  "unidirectional_edges" => unidirectional_edges,
 		  "bidirectional_edge_pairs" => bidirectional_edge_pairs)
 
-    return results
+    config = @strdict(adj_matrix_source)
+    CSV.write(datadir("processed", "graph_loop_edge_number", savename(config,"csv")), results)
 end
 
 function create_netcdf(; adj_matrix_source::String, cumulative_time_steps::Integer=200_000_000, timeseries_time_steps::Integer=800_000, decimation_factor::Integer=1000)

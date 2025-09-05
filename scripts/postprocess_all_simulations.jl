@@ -7,8 +7,7 @@ include(srcdir("julia", "postprocess.jl"))
 # Print number of unidirectional and bidirectional edges
 for adj_matrix_source in ["well-mixed", "c-elegans", "c-elegans-unweighted",
                           "c-elegans-undirected"]
-    results = calc_number_unidirection_bidirectional_edges(; adj_matrix_source=adj_matrix_source)
-    println("Source: $adj_matrix_source: $results")
+    calc_number_unidirection_bidirectional_edges(; adj_matrix_source=adj_matrix_source)
 end
 
 # Save well-mixed graph

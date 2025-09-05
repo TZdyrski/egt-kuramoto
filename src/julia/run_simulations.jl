@@ -10,13 +10,14 @@ function calc_and_save_cumulative(;selection_strength::Real, symmetry_breaking::
 			 cost::Real=0.1,
 			 beta_to_B::Real=0.95,
 			 mutation_rate::Real=0.0001,
+			 nb_players::Integer=20,
 			 )
 
     # Load results
     config = @strdict(adj_matrix_source, time_steps,
                       selection_strength, symmetry_breaking, nb_phases, cost, beta_to_B, mutation_rate)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
-	    config["nb_players"] = 20
+	    config["nb_players"] = nb_players
     end
     data, _ = produce_or_load(calc_cumulative, config, datadir("raw","cumulative"))
 end
@@ -66,12 +67,13 @@ function calc_and_save_timeseries(;B_to_c::Real, selection_strength::Real, symme
 			 cost::Real=0.1,
 			 beta_to_B::Real=0.95,
 			 mutation_rate::Real=0.0001,
+			 nb_players::Integer=20,
 			 )
     # Load results
     config = @strdict(adj_matrix_source, time_steps, B_to_c, beta_to_B,
                       symmetry_breaking, selection_strength, nb_phases, cost, mutation_rate)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
-	    config["nb_players"] = 20
+	    config["nb_players"] = nb_players
     end
     data, _ = produce_or_load(calc_timeseries, config, datadir("raw","timeseries"))
 end

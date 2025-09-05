@@ -346,6 +346,7 @@ function export_graph_nodes_edges(; time_step::Union{Real,Nothing}=nothing,
                               cost::Real=0.1,
                               beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
+                              nb_players::Integer=20,
 			      )
     # Generate graph
     interaction_adj_matrix, _ = get_adj_matrices(; adj_matrix_source)
@@ -362,7 +363,7 @@ function export_graph_nodes_edges(; time_step::Union{Real,Nothing}=nothing,
             config = @strdict(adj_matrix_source, time_steps, B_to_c, beta_to_B,
                               selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate)
             if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
-                config["nb_players"] = 20
+                config["nb_players"] = nb_players
             end
 
             # Get data
@@ -440,13 +441,14 @@ function extract_cumulative(; type::String, selection_strength::Real,
                               cost::Real=0.1,
                               beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
+                              nb_players::Integer=20,
 			      )
 
     # Generate configuration
     config = @strdict(adj_matrix_source, time_steps, beta_to_B,
                       selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
-	    config["nb_players"] = 20
+	    config["nb_players"] = nb_players
     end
 
     # Get data
@@ -524,13 +526,14 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
                               cost::Real=0.1,
                               beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
+                              nb_players::Integer=20,
 			      )
 
     # Create config dict for saving filename
     config = @strdict(adj_matrix_source, time_steps, B_to_c, beta_to_B,
                       selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
-      config["nb_players"] = 20
+      config["nb_players"] = nb_players
     end
 
     # Create a dictionary with only the parameters that affect the RNG
@@ -586,6 +589,7 @@ function extract_chimera_indices(; community_algorithm::String,
                               beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
                               covariance_cutoff::Real,
+                              nb_players::Integer=20,
 			      )
 
     # Generate graph
@@ -596,7 +600,7 @@ function extract_chimera_indices(; community_algorithm::String,
     config = @strdict(adj_matrix_source, time_steps, B_to_c, beta_to_B,
                       selection_strength, nb_phases, cost, mutation_rate)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
-	    config["nb_players"] = 20
+	    config["nb_players"] = nb_players
     end
 
     df_all_asymm = DataFrame()
@@ -666,13 +670,14 @@ function extract_game_types(; B_to_c::Real, selection_strength::Real,
                               cost::Real=0.1,
                               beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
+                              nb_players::Integer=20,
 			      )
 
     # Generate configuration
     config = @strdict(adj_matrix_source, time_steps, B_to_c, beta_to_B,
                       selection_strength, nb_phases, cost, mutation_rate)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
-	    config["nb_players"] = 20
+	    config["nb_players"] = nb_players
     end
 
     df_all_asymm = DataFrame()

@@ -539,9 +539,6 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
       config["nb_players"] = nb_players
     end
 
-    # Create a dictionary with only the parameters that affect the RNG
-    rng_config = Dict(key => config[key] for key in ["adj_matrix_source", "time_steps"])
-
     # Get data and load into dataframe
     data_dict = wload(datadir("raw", "timeseries", savename(config, "jld2")))
     # Add configuration
@@ -562,7 +559,7 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
 
     # Write out mutation times
     mkpath(datadir("processed", "mutation_timesteps"))
-    CSV.write(datadir("processed","mutation_timesteps", savename(rng_config,"csv")),
+    CSV.write(datadir("processed","mutation_timesteps", savename(config,"csv")),
       rename(select(statistics, :steps_following_mutation), Dict(:steps_following_mutation => :mutation_timesteps)))
 
     # Select subset of columns and rename

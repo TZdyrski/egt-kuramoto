@@ -1,7 +1,7 @@
 using DrWatson
 @quickactivate "2024_EGT_Kuramoto"
 
-# Here you may include files from the source directory
+# Load source files
 include(srcdir("julia", "run_simulations.jl"))
 
 # Calc cumulative

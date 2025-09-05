@@ -259,6 +259,7 @@ function generate_communities(graph::AbstractSimpleWeightedGraph, community_algo
         end
     elseif community_algorithm == "infomap"
         # InfoMap
+        mkpath(datadir("processed", "InfoMapOutput"))
         CSV.write(datadir("processed","InfoMapOutput","c-elegans-network.txt"), edges(graph); writeheader=false, delim=" ")
         CondaPkg.add("infomap")
         infomap = pyimport("infomap")
@@ -380,6 +381,7 @@ function export_graph_nodes_edges(; time_step::Union{Real,Nothing}=nothing,
     insertcols!(nodes_df, 1, :index => 1:nrow(nodes_df))
 
     # Write out vertices and edges
+    mkpath(datadir("processed", "graph_structure"))
     CSV.write(datadir("processed", "graph_structure", savename("vertices",config,"csv")), nodes_df)
     CSV.write(datadir("processed", "graph_structure", "edges_adj_matrix_source=$(adj_matrix_source).csv"), graph_edges)
 
@@ -487,7 +489,8 @@ function extract_cumulative(; type::String, selection_strength::Real,
     config["type"] = type
 
     # Write out data
-    CSV.write(datadir("processed","cumulative",savename(config,"csv")), df)
+    mkpath(datadir("processed", "cumulative"))
+    CSV.write(datadir("processed","cumulative", savename(config,"csv")), df)
 end
 
 function calc_timeseries_statistics(all_populations::AbstractMatrix{<:Integer}, nb_phases::Integer, nb_players::Integer,
@@ -558,6 +561,7 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
       game_type) => :game_type_or_parity)
 
     # Write out mutation times
+    mkpath(datadir("processed", "mutation_timesteps"))
     CSV.write(datadir("processed","mutation_timesteps", savename(rng_config,"csv")),
       rename(select(statistics, :steps_following_mutation), Dict(:steps_following_mutation => :mutation_timesteps)))
 
@@ -577,7 +581,8 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
     statistics = statistics[1:downsample_ratio:end,:]
 
     # Write out statistics
-    CSV.write(datadir("processed","timeseries_statistics",savename(config,"csv")), statistics)
+    mkpath(datadir("processed", "timeseries_statistics"))
+    CSV.write(datadir("processed","timeseries_statistics", savename(config,"csv")), statistics)
 end
 
 function extract_chimera_indices(; community_algorithm::String,
@@ -660,6 +665,7 @@ function extract_chimera_indices(; community_algorithm::String,
     config["community_algorithm"] = community_algorithm
 
     # Write out data
+    mkpath(datadir("processed", "chimeraindex"))
     CSV.write(datadir("processed","chimeraindex",savename(config,"csv")), df)
 end
 
@@ -723,7 +729,8 @@ function extract_game_types(; B_to_c::Real, selection_strength::Real,
     df = coalesce.(df_missing, 0.0)
 
     # Write out data
-    CSV.write(datadir("processed","gametype",savename(config,"csv")), df)
+    mkpath(datadir("processed", "gametype"))
+    CSV.write(datadir("processed","gametype", savename(config,"csv")), df)
 end
 
 function calc_number_unidirection_bidirectional_edges(; adj_matrix_source::String)
@@ -759,6 +766,7 @@ function calc_number_unidirection_bidirectional_edges(; adj_matrix_source::Strin
 		  "bidirectional_edge_pairs" => bidirectional_edge_pairs)
 
     config = @strdict(adj_matrix_source)
+    mkpath(datadir("processed", "graph_loop_edge_number"))
     CSV.write(datadir("processed", "graph_loop_edge_number", savename(config,"csv")), results)
 end
 

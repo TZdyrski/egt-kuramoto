@@ -10,10 +10,10 @@ for adj_matrix_source in ["well-mixed", "c-elegans", "c-elegans-unweighted",
 		      "c-elegans-undirected", "c-elegans-undirected-unweighted"]
     for selection_strength in [0.005, 0.2, 5]
         for symmetry_breaking in [0, 1 / 4, 1 / 2, 3 / 4, 1]
-		calc_and_save_cumulative(selection_strength,
-							symmetry_breaking,
-							adj_matrix_source,
-							num_time_steps_cumulative)
+		calc_and_save_cumulative(;selection_strength=selection_strength,
+							symmetry_breaking=symmetry_breaking,
+							adj_matrix_source=adj_matrix_source,
+							time_steps=num_time_steps_cumulative)
 	    end
 	end
 end
@@ -24,10 +24,10 @@ for adj_matrix_source in ["well-mixed", "c-elegans", "c-elegans-unweighted",
                           "c-elegans-undirected", "c-elegans-undirected-unweighted"]
     for (B_to_c, selection_strength) in Iterators.product([1.5, 2.5], [0.005, 0.2, 5])
         for symmetry_breaking in [0, 1 / 4, 1 / 2, 3 / 4, 1]
-            calc_and_save_timeseries(B_to_c, selection_strength,
-                                                    symmetry_breaking,
-                                                    adj_matrix_source,
-                                                    num_time_steps_timeseries)
+            calc_and_save_timeseries(;B_to_c=B_to_c, selection_strength=selection_strength,
+                                                    symmetry_breaking=symmetry_breaking,
+                                                    adj_matrix_source=adj_matrix_source,
+                                                    time_steps=num_time_steps_timeseries)
         end
     end
 end

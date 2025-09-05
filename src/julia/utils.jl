@@ -29,7 +29,7 @@ function payoff_matrix(nb_phases::Integer,
     return payoff_matrix
 end
 
-function get_adj_matrices(adj_matrix_source::String; nb_players::Integer = 20, regular_degree::Integer = 10, rng::AbstractRNG=Xoshiro(1))
+function get_adj_matrices(; adj_matrix_source::String, nb_players::Integer = 20, regular_degree::Integer = 10, rng::AbstractRNG=Xoshiro(1))
     # Define interaction graph without loops
     # Define reproduction graph with loops
     if adj_matrix_source == "well-mixed"

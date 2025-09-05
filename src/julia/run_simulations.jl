@@ -3,7 +3,7 @@ using DrWatson
 include("moran.jl")
 include("utils.jl")
 
-function calc_and_save_cumulative(selection_strength::Real, symmetry_breaking::Real,
+function calc_and_save_cumulative(;selection_strength::Real, symmetry_breaking::Real,
                          adj_matrix_source::String="well-mixed",
                          time_steps::Integer=2_000_000,
 			 nb_phases::Integer=20,
@@ -26,7 +26,7 @@ function calc_cumulative(config::Dict)
     @unpack selection_strength, symmetry_breaking, adj_matrix_source, time_steps, nb_phases, cost, beta_to_B, mutation_rate = config
 
     # Define interaction graph and reproduction graphs
-    interaction_adj_matrix, reproduction_adj_matrix = get_adj_matrices(adj_matrix_source)
+    interaction_adj_matrix, reproduction_adj_matrix = get_adj_matrices(; adj_matrix_source)
     # Specify number of players
     nb_players = size(interaction_adj_matrix)[1]
 
@@ -59,7 +59,7 @@ function calc_cumulative(config::Dict)
     return @strdict(Bs, nb_players, fraction_communicative)
 end
 
-function calc_and_save_timeseries(B_to_c::Real, selection_strength::Real, symmetry_breaking::Real,
+function calc_and_save_timeseries(;B_to_c::Real, selection_strength::Real, symmetry_breaking::Real,
                          adj_matrix_source::String="well-mixed",
                          time_steps::Integer=80_000,
 			 nb_phases::Integer=20,
@@ -85,7 +85,7 @@ function calc_timeseries(config::Dict)
     B = cost * B_to_c
 
     # Define interaction graph and reproduction graphs
-    interaction_adj_matrix, reproduction_adj_matrix = get_adj_matrices(adj_matrix_source)
+    interaction_adj_matrix, reproduction_adj_matrix = get_adj_matrices(; adj_matrix_source)
     # Specify number of players
     nb_players = size(interaction_adj_matrix)[1]
 

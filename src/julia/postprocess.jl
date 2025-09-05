@@ -302,7 +302,7 @@ end
 
 function calc_coalescence_times(adj_matrix_source::String="well-mixed")
     # Generate graph
-    interaction_adj_matrix, _ = get_adj_matrices(adj_matrix_source)
+    interaction_adj_matrix, _ = get_adj_matrices(; adj_matrix_source)
     graph = SimpleDiGraph(interaction_adj_matrix)
     return calc_coalescence_times(graph)
 end
@@ -337,7 +337,7 @@ function calc_coalescence_times(graph::Graphs.SimpleGraphs.AbstractSimpleGraph)
     return coalescence_matrix
 end
 
-function export_graph_nodes_edges(time_step::Union{Real,Nothing}=nothing;
+function export_graph_nodes_edges(; time_step::Union{Real,Nothing}=nothing,
                               B_to_c::Union{Real,Nothing}=nothing, selection_strength::Union{Real,Nothing}=nothing,
                               symmetry_breaking::Union{Real,Nothing}=nothing,
                               adj_matrix_source::String="well-mixed",
@@ -348,7 +348,7 @@ function export_graph_nodes_edges(time_step::Union{Real,Nothing}=nothing;
                               mutation_rate::Real=0.0001,
 			      )
     # Generate graph
-    interaction_adj_matrix, _ = get_adj_matrices(adj_matrix_source)
+    interaction_adj_matrix, _ = get_adj_matrices(; adj_matrix_source)
     graph = SimpleDiGraph(interaction_adj_matrix)
 
     if time_step == nothing
@@ -432,7 +432,7 @@ function analytic_frac_communicative(B0,beta0;selection_strength,cost,nb_players
 	return frac_communicative
 end
 
-function extract_cumulative(type::String; selection_strength::Real,
+function extract_cumulative(; type::String, selection_strength::Real,
                               symmetry_breaking::Real,
                               adj_matrix_source::String="well-mixed",
                               time_steps::Integer=80_000,
@@ -457,7 +457,7 @@ function extract_cumulative(type::String; selection_strength::Real,
                        communicative_fraction=data["fraction_communicative"])
     elseif type == "theory" || type == "approx"
         # Generate graph
-        interaction_adj_matrix, _ = get_adj_matrices(adj_matrix_source)
+        interaction_adj_matrix, _ = get_adj_matrices(; adj_matrix_source)
         graph = SimpleDiGraph(interaction_adj_matrix)
         nb_effective = ( mean(indegree(graph))+1) # Add one since n=degree+1 for well-mixed case
 
@@ -577,7 +577,7 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
     CSV.write(datadir("processed","timeseries_statistics",savename(config,"csv")), statistics)
 end
 
-function extract_chimera_indices(community_algorithm::String;
+function extract_chimera_indices(; community_algorithm::String,
                               B_to_c::Real, selection_strength::Real,
                               adj_matrix_source::String="well-mixed",
                               time_steps::Integer=80_000,
@@ -589,7 +589,7 @@ function extract_chimera_indices(community_algorithm::String;
 			      )
 
     # Generate graph
-    interaction_adj_matrix, _ = get_adj_matrices(adj_matrix_source)
+    interaction_adj_matrix, _ = get_adj_matrices(; adj_matrix_source)
     graph = SimpleWeightedDiGraph(interaction_adj_matrix)
 
     # Generate configuration
@@ -721,9 +721,9 @@ function extract_game_types(; B_to_c::Real, selection_strength::Real,
     CSV.write(datadir("processed","gametype",savename(config,"csv")), df)
 end
 
-function calc_number_unidirection_bidirectional_edges(adj_matrix_source::String)
+function calc_number_unidirection_bidirectional_edges(; adj_matrix_source::String)
     # Note: removes edge weights and self-loops
-    interaction_adj_matrix, _ = get_adj_matrices(adj_matrix_source)
+    interaction_adj_matrix, _ = get_adj_matrices(; adj_matrix_source)
     # Form graph
     graph = SimpleWeightedDiGraph(interaction_adj_matrix)
     # Count total number of connections
@@ -756,7 +756,7 @@ function calc_number_unidirection_bidirectional_edges(adj_matrix_source::String)
     return results
 end
 
-function create_netcdf(adj_matrix_source::String;cumulative_time_steps::Integer=200_000_000, timeseries_time_steps::Integer=800_000, decimation_factor::Integer=1000)
+function create_netcdf(; adj_matrix_source::String, cumulative_time_steps::Integer=200_000_000, timeseries_time_steps::Integer=800_000, decimation_factor::Integer=1000)
 	# Load data
 	df_cumulative = @rsubset(load_all_cumulative(cumulative_time_steps), :matrix_source == adj_matrix_source)
 	df_timeseries = @rsubset(load_all_timeseries(timeseries_time_steps), :adj_matrix_source == adj_matrix_source)

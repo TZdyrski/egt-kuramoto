@@ -57,14 +57,10 @@ function get_adj_matrices(; adj_matrix_source::String, nb_players::Integer = 20,
     elseif adj_matrix_source == "c-elegans"
         interaction_adj_matrix = round.(get_celegans_connectome())
         reproduction_adj_matrix = interaction_adj_matrix + I
-    elseif adj_matrix_source == "drosophilia"
-        interaction_adj_matrix = round.(get_drosophilia_connectome())
-        reproduction_adj_matrix = interaction_adj_matrix + I
     else
         throw(ArgumentError("adj_matrix_source must be a string in set [\"well-mixed\", "
                             * "\"c-elegans\", \"c-elegans-unweighted\", "
                             * "\"c-elegans-undirected\", \"c-elegans-undirected-unweighted\", "
-                            * "\"drosophilia\", "
 			    * "\"random-regular-graph\", \"random-regular-digraph\"]"))
     end
     return interaction_adj_matrix, reproduction_adj_matrix
@@ -72,13 +68,6 @@ end
 
 function get_celegans_connectome()
     connectome = get_celegans_connectome_labelled()["connectome"]
-    # Replace "Missing" data with zeros
-    replace!(connectome, missing => 0)
-    return connectome
-end
-
-function get_drosophilia_connectome()
-    connectome = get_drosophilia_connectome_labelled()
     # Replace "Missing" data with zeros
     replace!(connectome, missing => 0)
     return connectome
@@ -96,15 +85,4 @@ function get_celegans_connectome_labelled()
     results = Dict("connectome" => connectome, "row_labels" => row_labels,
                    "col_labels" => col_labels)
     return results
-end
-
-function get_drosophilia_connectome_labelled()
-    # Get adjacency list
-    adjacency_list = read(dataset("drosophilia-connectome"), DataFrame)
-    # Convert adjacency list to weighted digraph
-    connectome_graph = SimpleWeightedDiGraph(adjacency_list.pre_root_id, adjacency_list.post_root_id,
-				       adjacency_list.syn_count)
-    # Convert weighted digraph to adjacency matrix
-    connectome = adjacency_matrix(connectome_graph)
-    return connectome
 end

@@ -19,15 +19,3 @@ description = "Cook 2019 C. elegans connectome"
     driver = "xlsx"
     range = "C3:QN303"
     sheet = "hermaphrodite chemical"
-
-[[drosophilia-connectome]]
-uuid = "73af972c-b31b-4185-bbd9-30d85a32ecf9"
-description = "FlyWire Drosophilia connectome"
-
-    [[drosophilia-connectome.storage]]
-    driver = "web"
-    checksum = "md5:f48f972d262323a102aed49af1396b8a"
-    url = "https://zenodo.org/records/10676866/files/proofread_connections_783.feather"
-
-    [[drosophilia-connectome.loader]]
-    driver = "arrow"

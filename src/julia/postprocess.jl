@@ -520,6 +520,40 @@ function calc_timeseries_statistics(all_populations::AbstractMatrix{<:Integer}, 
     return @strdict(fraction_communicative, order_parameters, most_common_game_types, strategy_parity)
 end
 
+function extract_mutation_timesteps(; B_to_c::Real, selection_strength::Real,
+                              symmetry_breaking::Real,
+                              adj_matrix_source::String="well-mixed",
+                              time_steps::Integer=80_000,
+                              nb_phases::Integer=20,
+                              cost::Real=0.1,
+                              beta_to_B::Real=0.95,
+                              mutation_rate::Real=0.0001,
+                              nb_players::Integer=20,
+			      )
+
+    # Create config dict for saving filename
+    config = @strdict(adj_matrix_source, time_steps, B_to_c, beta_to_B,
+                      selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate)
+    if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
+      config["nb_players"] = nb_players
+    end
+
+    # Get data and load into dataframe
+    data_dict = wload(datadir("raw", "timeseries", savename(config, "jld2")))
+    # Add configuration
+    data_dict = merge(data_dict, config)
+    # Wrap all elements in a list to allow for matrices in individual
+    # DataFrame elements
+    data_dict = Dict(k => [v] for (k,v) in data_dict)
+    # Convert to dataframe
+    df_all_asymm = DataFrame(data_dict)
+
+    # Write out mutation times
+    mkpath(datadir("processed", "mutation_timesteps"))
+    CSV.write(datadir("processed","mutation_timesteps", savename(config,"csv")),
+      rename(select(df_all_asymm , :steps_following_mutation), Dict(:steps_following_mutation => :mutation_timesteps)))
+end
+
 function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
                               symmetry_breaking::Real,
                               adj_matrix_source::String="well-mixed",
@@ -557,11 +591,6 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
     # Generate statistics
     statistics = transform(df_all_asymm, [:all_populations, :nb_phases, :nb_players, :symmetry_breaking,
         :B_to_c, :beta_to_B, :cost, :interaction_adj_matrix] => ByRow(calc_timeseries_statistics) => AsTable)
-
-    # Write out mutation times
-    mkpath(datadir("processed", "mutation_timesteps"))
-    CSV.write(datadir("processed","mutation_timesteps", savename(config,"csv")),
-      rename(select(statistics, :steps_following_mutation), Dict(:steps_following_mutation => :mutation_timesteps)))
 
     # Select subset of columns
     select!(statistics, [:strategy_parity, :most_common_game_types, :fraction_communicative, :order_parameters])

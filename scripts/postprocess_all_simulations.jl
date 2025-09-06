@@ -46,6 +46,16 @@ for adj_matrix_source in ["well-mixed", "c-elegans"]
         end
 end
 
+# Save mutation timesteps
+for adj_matrix_source in ["well-mixed", "c-elegans"]
+        for symmetry_breaking in [0.0, 0.25, 0.5, 0.75, 1.0]
+            extract_mutation_timesteps(;
+                B_to_c=1.5, selection_strength=0.2,
+                symmetry_breaking=symmetry_breaking, adj_matrix_source=adj_matrix_source,
+                time_steps=800000)
+        end
+end
+
 # Save chimera indices
 covariance_cutoff=1500
 for community_algorithm in ["covariance", "infomap"]

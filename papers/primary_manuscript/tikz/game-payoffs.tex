@@ -29,7 +29,7 @@
       group size=3 by 4,
     },
     % Make room for subcaption labels
-    xmin=0.5, xmax=5.5, ymin=0.5, ymax=5.5,
+    xmin=0.5, xmax=5, ymin=0.5, ymax=4.5,
     xtick={1,2,3,4},
     ytick={1,2,3,4},
     xlabel style={red},
@@ -60,24 +60,24 @@
       \noexpand\nextgroupplot[title=\noexpand\MakeUppercase\game]
 
       \noexpand\ifthenelse{\rowC < \rowA \noexpand\AND \colB < \colA}{
-        \noexpand\node[circle,draw=black,fill=black,above,label=A] (A) at (\rowA,\colA) {};
+        \noexpand\node[circle,draw=black,fill=black,label=right:A] (A) at (\rowA,\colA) {};
       }{
-        \noexpand\node[circle,draw=black,fill=white,above,label=A] (A) at (\rowA,\colA) {};
+        \noexpand\node[circle,draw=black,fill=white,label=right:A] (A) at (\rowA,\colA) {};
       }
       \noexpand\ifthenelse{\rowD < \rowB \noexpand\AND \colA < \colB}{
-        \noexpand\node[circle,draw=black,fill=black,label=B] (B) at (\rowB,\colB) {};
+        \noexpand\node[circle,draw=black,fill=black,label=right:B] (B) at (\rowB,\colB) {};
       }{
-        \noexpand\node[circle,draw=black,fill=white,label=B] (B) at (\rowB,\colB) {};
+        \noexpand\node[circle,draw=black,fill=white,label=right:B] (B) at (\rowB,\colB) {};
       }
       \noexpand\ifthenelse{\rowA < \rowC \noexpand\AND \colD < \colC}{
-        \noexpand\node[circle,draw=black,fill=black,label=C] (C) at (\rowC,\colC) {};
+        \noexpand\node[circle,draw=black,fill=black,label=right:C] (C) at (\rowC,\colC) {};
       }{
-        \noexpand\node[circle,draw=black,fill=white,label=C] (C) at (\rowC,\colC) {};
+        \noexpand\node[circle,draw=black,fill=white,label=right:C] (C) at (\rowC,\colC) {};
       }
       \noexpand\ifthenelse{\rowB < \rowD \noexpand\AND \colC < \colD}{
-        \noexpand\node[circle,draw=black,fill=black,label=D] (D) at (\rowD,\colD) {};
+        \noexpand\node[circle,draw=black,fill=black,label=right:D] (D) at (\rowD,\colD) {};
       }{
-        \noexpand\node[circle,draw=black,fill=white,label=D] (D) at (\rowD,\colD) {};
+        \noexpand\node[circle,draw=black,fill=white,label=right:D] (D) at (\rowD,\colD) {};
       }
 
       \noexpand\ifthenelse{\colA < \colB}{

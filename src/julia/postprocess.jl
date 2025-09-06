@@ -564,6 +564,13 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
     # Flatten dataframe to convert the 1 row into time_steps+1 rows
     statistics = DataFrames.flatten(statistics, :)
 
+    # Only save a subset of points to prevent large file sizes
+    downsample_ratio = Int(floor((time_steps + 1) / num_samples))
+
+    # Downsample
+    # Note: the populations include the initial statistics, so we need one more than time-steps
+    statistics = statistics[1:downsample_ratio:end,:]
+
     # Replace game type if all communicative/noncommunicative
     transform!(statistics, [:strategy_parity, :most_common_game_types] => ByRow((strategy_parity, game_type) -> strategy_parity != mixed ? strategy_parity :
       game_type) => :game_type_or_parity)
@@ -575,13 +582,6 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
 
     # Add time
     insertcols!(statistics, 1, :time => 1:nrow(statistics))
-
-    # Only save a subset of points to prevent large file sizes
-    downsample_ratio = Int(floor((time_steps + 1) / num_samples))
-
-    # Downsample
-    # Note: the populations include the initial statistics, so we need one more than time-steps
-    statistics = statistics[1:downsample_ratio:end,:]
 
     # Write out statistics
     mkpath(datadir("processed", "timeseries_statistics"))

@@ -576,7 +576,7 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
     # Add time
     insertcols!(statistics, 1, :time => 1:nrow(statistics))
 
-    # Only plot subset of points to prevent large file sizes
+    # Only save a subset of points to prevent large file sizes
     downsample_ratio = Int(floor((time_steps + 1) / num_samples))
 
     # Downsample

@@ -99,18 +99,8 @@ function get_celegans_connectome_labelled()
 end
 
 function get_drosophilia_connectome_labelled()
-    # Get list of neurons
-    classification = read(dataset("drosophilia-classification"), DataFrame)
-    # Add index as a column
-    classification.index = 1:nrow(classification)
-    # Create dictionary from root ID to index
-    root_id_dictionary = Dict(eachrow(classification[!,["root_id", "index"]]))
     # Get adjacency list
-    adjacency_list_full = read(dataset("drosophilia-connectome"), DataFrame)
-    # Replace root IDs with indices
-    adjacency_list = transform(adjacency_list_full[!,["pre_root_id","post_root_id","syn_count"]],
-			       :pre_root_id => ByRow(x -> root_id_dictionary[x]) => :pre_root_id,
-			       :post_root_id => ByRow(x -> root_id_dictionary[x]) => :post_root_id)
+    adjacency_list = read(dataset("drosophilia-connectome"), DataFrame)
     # Convert adjacency list to weighted digraph
     connectome_graph = SimpleWeightedDiGraph(adjacency_list.pre_root_id, adjacency_list.post_root_id,
 				       adjacency_list.syn_count)

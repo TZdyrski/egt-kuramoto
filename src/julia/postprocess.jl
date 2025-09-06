@@ -525,11 +525,12 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
                               adj_matrix_source::String="well-mixed",
                               time_steps::Integer=80_000,
                               nb_phases::Integer=20,
-                              num_samples::Integer=1000,
                               cost::Real=0.1,
                               beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
                               nb_players::Integer=20,
+                              early_cutoff_fraction::Union{Nothing,Real}=nothing,
+                              num_samples::Integer=1000,
 			      )
 
     # Create config dict for saving filename
@@ -541,6 +542,10 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
 
     # Get data and load into dataframe
     data_dict = wload(datadir("raw", "timeseries", savename(config, "jld2")))
+    # Add additional parameters
+    if !isnothing(early_cutoff_fraction)
+      config["early_cutoff_fraction"] = early_cutoff_fraction
+    end
     # Add configuration
     data_dict = merge(data_dict, config)
     # Wrap all elements in a list to allow for matrices in individual
@@ -564,8 +569,18 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
     # Flatten dataframe to convert the 1 row into time_steps+1 rows
     statistics = DataFrames.flatten(statistics, :)
 
+    # Restrict to initial data
+    if !isnothing(early_cutoff_fraction)
+      # Note: the populations include the initial statistics, so we need one more than time-steps
+      new_end_time = Int(round(time_steps*early_cutoff_fraction))+1
+      statistics = statistics[1:new_end_time,:]
+    end
+
     # Only save a subset of points to prevent large file sizes
-    downsample_ratio = Int(floor((time_steps + 1) / num_samples))
+    downsample_ratio = Int(floor((size(statistics,1) + 1) / num_samples))
+    if downsample_ratio == 0
+        throw(ErrorException("Stride between samples is less than 1; either decrease `num_samples`, increase `time_steps`, or increase `early_cutoff_fraction`"))
+    end
 
     # Downsample
     # Note: the populations include the initial statistics, so we need one more than time-steps

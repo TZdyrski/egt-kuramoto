@@ -42,7 +42,7 @@ for adj_matrix_source in ["well-mixed", "c-elegans"]
             extract_timeseries_statistics(;
                 B_to_c=1.5, selection_strength=0.2,
                 symmetry_breaking=symmetry_breaking, adj_matrix_source=adj_matrix_source,
-                time_steps=800000)
+                early_cutoff_fraction=0.1, time_steps=800000)
         end
 end
 

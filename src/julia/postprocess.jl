@@ -194,11 +194,15 @@ function extract_most_common_game_types(strategies_per_player::AbstractVector{<:
                                         cost::Real,
                                         symmetry_breaking::Real,
                                         nb_phases::Integer,
-                                        interaction_adj_matrix::AbstractMatrix{<:Integer})
+                                        interaction_adj_matrix::AbstractMatrix{<:Integer};
+                                        exclude_neutral::Bool=false,
+                                        )
     # Get game type of each startegy interaction pair
     game_types = game_types_per_strategy_pair(mutual_benefit_synchronous,
                                               unilateral_benefit_synchronous, cost,
                                               symmetry_breaking, nb_phases)
+
+    # Remove neutral and/or synchronized game states
 
     # Count game types
     game_counts = Dict{GameType,Integer}(instances(GameType) .=> 0)
@@ -211,6 +215,10 @@ function extract_most_common_game_types(strategies_per_player::AbstractVector{<:
         col_phase = strategies_per_player[col]
         game_type = game_types[row_phase, col_phase]
         game_counts[game_type] += value
+    end
+
+    if exclude_neutral
+      delete!(game_counts, neutral)
     end
 
     # Find most common game type
@@ -505,7 +513,22 @@ function calc_timeseries_statistics(all_populations::AbstractMatrix{<:Integer}, 
                                                                                     cost,
                                                                                     symmetry_breaking,
                                                                                     nb_phases,
-                                                                                    interaction_adj_matrix),
+                                                                                    interaction_adj_matrix;
+                                                                                    exclude_neutral=false,
+                                                                                    ),
+                                                all_populations; dims=1); dims=1)
+    most_common_game_types_excluding_neutral = dropdims(mapslices(x -> extract_most_common_game_types(x,
+                                                                                    B_to_c *
+                                                                                    cost,
+                                                                                    beta_to_B *
+                                                                                    B_to_c *
+                                                                                    cost,
+                                                                                    cost,
+                                                                                    symmetry_breaking,
+                                                                                    nb_phases,
+                                                                                    interaction_adj_matrix;
+                                                                                    exclude_neutral=true,
+                                                                                    ),
                                                 all_populations; dims=1); dims=1)
     strategy_parity = dropdims(mapslices(x -> check_all_same_strategy(x, nb_phases),
                                          all_populations; dims=1); dims=1)
@@ -517,7 +540,7 @@ function calc_timeseries_statistics(all_populations::AbstractMatrix{<:Integer}, 
                                           counts; dims=1); dims=1)
 
     # Package results
-    return @strdict(fraction_communicative, order_parameters, most_common_game_types, strategy_parity)
+    return @strdict(fraction_communicative, order_parameters, most_common_game_types, most_common_game_types_excluding_neutral, strategy_parity)
 end
 
 function extract_mutation_timesteps(; B_to_c::Real, selection_strength::Real,
@@ -565,6 +588,8 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
                               nb_players::Integer=20,
                               early_cutoff_fraction::Union{Nothing,Real}=nothing,
                               num_samples::Integer=1000,
+                              exclude_neutral::Bool=false,
+                              exclude_synchronized::Bool=false,
 			      )
 
     # Create config dict for saving filename
@@ -592,6 +617,12 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
     statistics = transform(df_all_asymm, [:all_populations, :nb_phases, :nb_players, :symmetry_breaking,
         :B_to_c, :beta_to_B, :cost, :interaction_adj_matrix] => ByRow(calc_timeseries_statistics) => AsTable)
 
+    if exclude_neutral
+      # Replace most_common_game_types with most_common_game_types_excluding_neutral
+      select!(statistics, Not(:most_common_game_types))
+      rename!(statistics, Dict(:most_common_game_types_excluding_neutral => :most_common_game_types))
+    end
+
     # Select subset of columns
     select!(statistics, [:strategy_parity, :most_common_game_types, :fraction_communicative, :order_parameters])
 
@@ -615,18 +646,24 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
     # Note: the populations include the initial statistics, so we need one more than time-steps
     statistics = statistics[1:downsample_ratio:end,:]
 
-    # Replace game type if all communicative/noncommunicative
-    transform!(statistics, [:strategy_parity, :most_common_game_types] => ByRow((strategy_parity, game_type) -> strategy_parity != mixed ? strategy_parity :
-      game_type) => :game_type_or_parity)
+    if !exclude_synchronized
+      # Replace game type if all communicative/noncommunicative
+      transform!(statistics, [:strategy_parity, :most_common_game_types] => ByRow((strategy_parity, game_type) -> strategy_parity != mixed ? strategy_parity :
+        game_type) => :most_common_game_types)
+    end
 
     # Select subset of columns and rename
     rename!(select!(statistics,
-      [:fraction_communicative, :order_parameters , :game_type_or_parity]),
-      Dict(:fraction_communicative => :communicative_fraction, :order_parameters => :order_parameter, :game_type_or_parity => :game_type))
+      [:fraction_communicative, :order_parameters , :most_common_game_types]),
+      Dict(:fraction_communicative => :communicative_fraction, :order_parameters => :order_parameter,
+      :most_common_game_types => :game_type))
 
     # Add time
     insertcols!(statistics, 1, :time => 1:nrow(statistics))
 
+    # Add additional parameters
+    config["exclude_neutral"] = exclude_neutral
+    config["exclude_synchronized"] = exclude_synchronized
     # Write out statistics
     mkpath(datadir("processed", "timeseries_statistics"))
     CSV.write(datadir("processed","timeseries_statistics", savename(config,"csv")), statistics)
@@ -724,6 +761,8 @@ function extract_game_types(; B_to_c::Real, selection_strength::Real,
                               beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
                               nb_players::Integer=20,
+                              exclude_neutral::Bool=false,
+                              exclude_synchronized::Bool=false,
 			      )
 
     # Generate configuration
@@ -752,13 +791,18 @@ function extract_game_types(; B_to_c::Real, selection_strength::Real,
     transform!(df_all_asymm, [:all_populations, :nb_phases, :nb_players, :symmetry_breaking,
         :B_to_c, :beta_to_B, :cost, :interaction_adj_matrix] => ByRow(calc_timeseries_statistics) => AsTable)
 
-    # Combine parity and game type
-    transform!(df_all_asymm,
-	       [:strategy_parity, :most_common_game_types] => ByRow((parity_col,game_col) ->
-								    [parity != mixed ? parity : game for
-								     (parity, game) in zip(parity_col, game_col)])
-	       => :parity_or_game_type)
-    game_types = proportionmap.(df_all_asymm.parity_or_game_type)
+    if exclude_neutral
+      # Replace most_common_game_types with most_common_game_types_excluding_neutral
+      select!(df_all_asymm, Not(:most_common_game_types))
+      rename!(df_all_asymm, Dict(:most_common_game_types_excluding_neutral => :most_common_game_types))
+    end
+
+    if !exclude_synchronized
+      # Replace game type if all communicative/noncommunicative
+      transform!(df_all_asymm, [:strategy_parity, :most_common_game_types] =>
+          ByRow((parity_col,game_col) -> [parity != mixed ? parity : game for (parity, game) in zip(parity_col, game_col)]) => :most_common_game_types)
+    end
+    game_types = proportionmap.(df_all_asymm.most_common_game_types)
 
     # Convert Dict keys from GameType to Symbol
     game_type_symbols = (dict -> Dict(Symbol(k) => v for (k,v) in pairs(dict))).(game_types)
@@ -775,6 +819,9 @@ function extract_game_types(; B_to_c::Real, selection_strength::Real,
     # Replace missing data (i.e. game types that do not appear for a particular asymmetry) with zero
     df = coalesce.(df_missing, 0.0)
 
+    # Add additional parameters
+    config["exclude_neutral"] = exclude_neutral
+    config["exclude_synchronized"] = exclude_synchronized
     # Write out data
     mkpath(datadir("processed", "gametype"))
     CSV.write(datadir("processed","gametype", savename(config,"csv")), df)
@@ -878,7 +925,8 @@ function create_netcdf(;data_type::String, adj_matrix_source::String, time_steps
     axes_timeseries_with_players = (Dim{:player_index}(1:nb_players), axes_timeseries...)
 
     # Combine into a YAXArray
-    transform!(df_timeseries, :most_common_game_types => ByRow(x -> Integer.(x)) => :most_common_game_types)
+    transform!(df_timeseries, :most_common_game_types => ByRow(x -> Integer.(x)) => :most_common_game_types,
+      :most_common_game_types_excluding_neutral => ByRow(x -> Integer.(x)) => :most_common_game_types_excluding_neutral)
     timeseries = YAXArray(axes_timeseries_with_players,
               stack(only(
                    begin
@@ -902,7 +950,19 @@ function create_netcdf(;data_type::String, adj_matrix_source::String, time_steps
                 delta in selection_strength_timeseries_vals), # Use *_vals instead elements of axes_timeseries because axes rounds maximum_joint_benefit
                 merge(properties_dict_timeseries, Dict("enum_lookup:" .* string.(Integer.(instances(GameType)))
                      .=> String.(Symbol.(instances(GameType))))),
-
+               )
+    most_common_game_types_excluding_neutral = YAXArray(
+                axes_timeseries,
+                stack(only(
+                     begin
+                       x = @rsubset(df_timeseries, :symmetry_breaking == alpha,  :selection_strength == delta, :maximum_joint_benefit == B_0)
+                       !isempty(x) ? x : DataFrame(most_common_game_types_excluding_neutral = [fill(missing, size(axes_timeseries[1]))])
+                     end
+                     ).most_common_game_types_excluding_neutral
+                for alpha in symmetry_breaking_timeseries_vals, B_0 in maximum_joint_benefit_timeseries_vals,
+                delta in selection_strength_timeseries_vals), # Use *_vals instead elements of axes_timeseries because axes rounds maximum_joint_benefit
+                merge(properties_dict_timeseries, Dict("enum_lookup:" .* string.(Integer.(instances(GameType)))
+                     .=> String.(Symbol.(instances(GameType))))),
                )
     order_parameters = YAXArray(
                 axes_timeseries,
@@ -943,6 +1003,7 @@ function create_netcdf(;data_type::String, adj_matrix_source::String, time_steps
                 properties_dict_timeseries,
                )
     timeseries_statistics = Dataset(; Dict(:most_common_game_types => most_common_game_types,
+                   :most_common_game_types_excluding_neutral => most_common_game_types_excluding_neutral,
                    :order_parameters => order_parameters,
                    :strategy_parity => strategy_parity,
                    :fraction_communicative => fraction_communicative,

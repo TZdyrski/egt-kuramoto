@@ -18,21 +18,27 @@
     enlarge y limits=0.05,
     xtick=data,
     ]
-    \nextgroupplot[xticklabel=\empty, ymin=0.99, ymax=1.0, height=3cm, blue,
-      yticklabel style={/pgf/number format/.cd,precision=3}
-    ]
+    \nextgroupplot
         % Note: this table names must appear in the `\tablename` loop below
-        \pgfplotstableread{../../../data/processed/gametype/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_time_steps=8000000.csv}{\loadtable}
+        \pgfplotstableread{../../../data/processed/gametype/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_exclude_neutral=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_time_steps=8000000.csv}{\loadtable}
         \pgfplotstableforeachcolumn\loadtable\as\col
         {
           \ifnum\pgfplotstablecol=0\else%
             \expandafter\addplot\expandafter[\col,ybar stacked,draw=none,xtick=none] table[x=asymmetry, y=\col] {\loadtable};
           \fi
         }
-    \nextgroupplot[hide axis, height=3cm]
     \nextgroupplot
         % Note: this table names must appear in the `\tablename` loop below
-        \pgfplotstableread{../../../data/processed/gametype/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_time_steps=8000000.csv}{\loadtable}
+        \pgfplotstableread{../../../data/processed/gametype/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_exclude_neutral=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_time_steps=8000000.csv}\loadtable
+        \pgfplotstableforeachcolumn\loadtable\as\col
+        {
+          \ifnum\pgfplotstablecol=0\else%
+            \expandafter\addplot\expandafter[\col,ybar stacked,draw=none] table[x=asymmetry, y=\col] {\loadtable};
+          \fi
+        }
+    \nextgroupplot
+        % Note: this table names must appear in the `\tablename` loop below
+        \pgfplotstableread{../../../data/processed/gametype/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_exclude_neutral=true_exclude_synchronized=true_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_time_steps=8000000.csv}{\loadtable}
         \pgfplotstableforeachcolumn\loadtable\as\col
         {
           \ifnum\pgfplotstablecol=0\else%
@@ -42,7 +48,7 @@
         \coordinate (plot-top_well-mixed) at (axis cs:0.5,0.998);
       \nextgroupplot
         % Note: this table names must appear in the `\tablename` loop below
-        \pgfplotstableread{../../../data/processed/gametype/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_time_steps=8000000.csv}\loadtable
+        \pgfplotstableread{../../../data/processed/gametype/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_exclude_neutral=true_exclude_synchronized=true_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_time_steps=8000000.csv}\loadtable
         \pgfplotstableforeachcolumn\loadtable\as\col
         {
           \ifnum\pgfplotstablecol=0\else%
@@ -65,7 +71,7 @@
       ]
       \def\colNames{}
       % Note: these table names must be the same as those in the groupplots
-      \pgfplotsforeachungrouped\tablename in {../../../data/processed/gametype/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_time_steps=8000000.csv,../../../data/processed/gametype/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_time_steps=8000000.csv} {
+      \pgfplotsforeachungrouped\tablename in {../../../data/processed/gametype/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_exclude_neutral=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_time_steps=8000000.csv,../../../data/processed/gametype/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_exclude_neutral=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_time_steps=8000000.csv,../../../data/processed/gametype/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_exclude_neutral=true_exclude_synchronized=true_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_time_steps=8000000.csv,../../../data/processed/gametype/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_exclude_neutral=true_exclude_synchronized=true_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_time_steps=8000000.csv} {
         % Read table
         \pgfplotstableread\tablename\loadtable
         % Loop over each column
@@ -106,7 +112,6 @@
           }
       }%
     \end{axis}
-    \draw[blue] (group c1r1.south) -- (group c1r2.north);
     \node[anchor=north] (title-x) at ($(group c1r2.south east)!0.5!(group c2r2.south west)-(0,0.5cm)$) {Asymmetry $\alpha$};
     \path (group c1r2.south west) -- node[below={1cm}]{\pgfplotslegendfromname{CommonLegend2}} (group c2r2.south east);
 \end{tikzpicture}

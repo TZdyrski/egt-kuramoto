@@ -202,8 +202,6 @@ function extract_most_common_game_types(strategies_per_player::AbstractVector{<:
                                               unilateral_benefit_synchronous, cost,
                                               symmetry_breaking, nb_phases)
 
-    # Remove neutral and/or synchronized game states
-
     # Count game types
     game_counts = Dict{GameType,Integer}(instances(GameType) .=> 0)
     for (cart_idx, value) in pairs(interaction_adj_matrix)

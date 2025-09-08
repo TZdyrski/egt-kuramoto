@@ -670,7 +670,7 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
     CSV.write(datadir("processed","timeseries_statistics", savename(config,"csv")), statistics)
 end
 
-function extract_chimera_indices(; community_algorithm::String,
+function extract_chimera_indices_all_asymm(; community_algorithm::String,
                               B_to_c::Real, selection_strength::Real,
                               adj_matrix_source::String="well-mixed",
                               time_steps::Integer=80_000,
@@ -693,26 +693,20 @@ function extract_chimera_indices(; community_algorithm::String,
 	    config["nb_players"] = nb_players
     end
 
-    df_all_asymm = DataFrame()
-    for symmetry_breaking in [0,0.25,0.5,0.75,1.0]
-      config_with_asymmetry = merge(config,Dict("symmetry_breaking" => symmetry_breaking))
-      # Get data and load into dataframe
-      data_dict = wload(datadir("raw", "timeseries",
-          savename(config_with_asymmetry, "jld2")))
-      # Add configuration
-      data_dict = merge(data_dict, config_with_asymmetry)
-      # Wrap all elements in a list to allow for matrices in individual
-      # DataFrame elements
-      data_dict = Dict(k => [v] for (k,v) in data_dict)
-      # Append to dataframe
-      append!(df_all_asymm, data_dict)
-    end
-
     # Get communities
     if community_algorithm == "covariance"
         # Choose asymmetry=0.75 for reference covariance
         symmetry_breaking_ref = 0.75
-        df_ref = @rsubset(df_all_asymm, :symmetry_breaking == symmetry_breaking_ref)
+
+        # Load reference data
+        reference_config = merge(config,Dict("symmetry_breaking" => symmetry_breaking_ref))
+        # Get data and load into dataframe
+        data_dict = wload(datadir("raw", "timeseries",
+            savename(reference_config, "jld2")))
+        # Wrap all elements in a list to allow for matrices in individual
+        # DataFrame elements
+        data_dict = Dict(k => [v] for (k,v) in data_dict)
+        df_ref = DataFrame(data_dict)
 
         if nrow(df_ref) < 1
             throw(ErrorException("Did not find any timeseries data with `symmetry_breaking`=$(symmetry_breaking_ref)"))
@@ -735,6 +729,63 @@ function extract_chimera_indices(; community_algorithm::String,
         communities = generate_communities(graph, community_algorithm)
     end
 
+    set_all_asymm = []
+    for symmetry_breaking in [0,0.25,0.5,0.75,1.0]
+      config_with_asymmetry = merge(config, Dict("communities" => communities,
+        "symmetry_breaking" => symmetry_breaking))
+      config_with_asymmetry = Dict(Symbol(elem.first) => elem.second
+          for elem in config_with_asymmetry)
+      df_asymm = extract_chimera_indices(; config_with_asymmetry...)
+      push!(set_all_asymm, df_asymm)
+    end
+
+    # Combine asymmetries into a single data frame
+    df = vcat(set_all_asymm...; cols=:union)
+
+    # Add community_algorithm to config dictionary
+    config["community_algorithm"] = community_algorithm
+
+    # Write out data
+    mkpath(datadir("processed", "chimeraindex"))
+    CSV.write(datadir("processed","chimeraindex",savename(config,"csv")), df)
+end
+
+function extract_chimera_indices(; communities::AbstractVector{<:Integer},
+                              symmetry_breaking::Real,
+                              B_to_c::Real, selection_strength::Real,
+                              adj_matrix_source::String="well-mixed",
+                              time_steps::Integer=80_000,
+                              nb_phases::Integer=20,
+                              cost::Real=0.1,
+                              beta_to_B::Real=0.95,
+                              mutation_rate::Real=0.0001,
+                              covariance_cutoff::Real,
+                              nb_players::Integer=20,
+			      )
+
+    # Generate graph
+    interaction_adj_matrix, _ = get_adj_matrices(; adj_matrix_source)
+    graph = SimpleWeightedDiGraph(interaction_adj_matrix)
+
+    # Generate configuration
+    config = @strdict(adj_matrix_source, time_steps, B_to_c, beta_to_B,
+                      selection_strength, nb_phases, cost, mutation_rate)
+    if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
+	    config["nb_players"] = nb_players
+    end
+
+    config_with_asymmetry = merge(config, Dict("symmetry_breaking" => symmetry_breaking))
+    # Get data and load into dataframe
+    data_dict = wload(datadir("raw", "timeseries",
+        savename(config_with_asymmetry, "jld2")))
+    # Add configuration
+    data_dict = merge(data_dict, config_with_asymmetry)
+    # Wrap all elements in a list to allow for matrices in individual
+    # DataFrame elements
+    data_dict = Dict(k => [v] for (k,v) in data_dict)
+    # Convert to dataframe
+    df_all_asymm = DataFrame(data_dict)
+
     # Convert to DimArray
     transform!(df_all_asymm,
                :all_populations => ByRow(array  -> DimArray(array, (:player_index, :time_step))) => :all_populations)
@@ -746,12 +797,7 @@ function extract_chimera_indices(; community_algorithm::String,
     df = select(df_all_asymm, :symmetry_breaking => :asymmetry,
                 :chimera_index, :metastability_index)
 
-    # Add community_algorithm to config dictionary
-    config["community_algorithm"] = community_algorithm
-
-    # Write out data
-    mkpath(datadir("processed", "chimeraindex"))
-    CSV.write(datadir("processed","chimeraindex",savename(config,"csv")), df)
+    return df
 end
 
 function extract_game_types_all_asymm(; B_to_c::Real, selection_strength::Real,
@@ -834,7 +880,7 @@ function extract_game_types(; B_to_c::Real, selection_strength::Real,
     # Wrap all elements in a list to allow for matrices in individual
     # DataFrame elements
     data_dict = Dict(k => [v] for (k,v) in data_dict)
-    # Append to dataframe
+    # Convert to dataframe
     df_all_asymm = DataFrame(data_dict)
 
     # Generate statistics

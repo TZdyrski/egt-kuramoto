@@ -10,4 +10,4 @@ include(scriptsdir("snakemake","snakemake_preamble.jl"))
 include(srcdir("julia", "postprocess.jl"))
 
 # Run code
-extract_chimera_indices(; wildcards...)
+extract_chimera_indices_all_asymm(; wildcards...)

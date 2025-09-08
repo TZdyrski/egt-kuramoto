@@ -751,7 +751,7 @@ function extract_chimera_indices(; community_algorithm::String,
     CSV.write(datadir("processed","chimeraindex",savename(config,"csv")), df)
 end
 
-function extract_game_types(; B_to_c::Real, selection_strength::Real,
+function extract_game_types_all_asymm(; B_to_c::Real, selection_strength::Real,
                               adj_matrix_source::String="well-mixed",
                               time_steps::Integer=80_000,
                               nb_phases::Integer=20,
@@ -770,20 +770,69 @@ function extract_game_types(; B_to_c::Real, selection_strength::Real,
 	    config["nb_players"] = nb_players
     end
 
-    df_all_asymm = DataFrame()
+    # Add additional parameters
+    config["exclude_neutral"] = exclude_neutral
+    config["exclude_synchronized"] = exclude_synchronized
+
+    set_all_asymm = []
     for symmetry_breaking in [0,0.25,0.5,0.75,1.0]
       config_with_asymmetry = merge(config,Dict("symmetry_breaking" => symmetry_breaking))
-      # Get data and load into dataframe
-      data_dict = wload(datadir("raw", "timeseries",
-          savename(config_with_asymmetry, "jld2")))
-      # Add configuration
-      data_dict = merge(data_dict, config_with_asymmetry)
-      # Wrap all elements in a list to allow for matrices in individual
-      # DataFrame elements
-      data_dict = Dict(k => [v] for (k,v) in data_dict)
-      # Append to dataframe
-      append!(df_all_asymm, data_dict)
+      config_with_asymmetry = Dict(Symbol(elem.first) => elem.second
+          for elem in config_with_asymmetry)
+      df_asymm = extract_game_types(; config_with_asymmetry...)
+      push!(set_all_asymm, df_asymm)
     end
+
+    # Combine asymmetries into a single data frame
+    df_missing = vcat(set_all_asymm...; cols=:union)
+
+    # Sort columns alphabetically, but ensure "asymmetry" is first
+    # column
+    column_names = names(df_missing)
+    filter!(col -> col != "asymmetry", column_names)
+    sort!(column_names)
+    prepend!(column_names, ["asymmetry"])
+    select!(df_missing, column_names)
+
+    # Replace missing data (i.e. game types that do not appear for a particular asymmetry) with zero
+    df = coalesce.(df_missing, 0.0)
+
+    # Write out data
+    mkpath(datadir("processed", "gametype"))
+    CSV.write(datadir("processed","gametype", savename(config,"csv")), df)
+end
+
+function extract_game_types(; B_to_c::Real, selection_strength::Real,
+                              symmetry_breaking::Real,
+                              adj_matrix_source::String="well-mixed",
+                              time_steps::Integer=80_000,
+                              nb_phases::Integer=20,
+                              cost::Real=0.1,
+                              beta_to_B::Real=0.95,
+                              mutation_rate::Real=0.0001,
+                              nb_players::Integer=20,
+                              exclude_neutral::Bool=false,
+                              exclude_synchronized::Bool=false,
+			      )
+
+    # Generate configuration
+    config = @strdict(adj_matrix_source, time_steps, B_to_c, beta_to_B, symmetry_breaking,
+                      selection_strength, nb_phases, cost, mutation_rate)
+    if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
+	    config["nb_players"] = nb_players
+    end
+
+    config_with_asymmetry = merge(config, Dict("symmetry_breaking" => symmetry_breaking))
+    # Get data and load into dataframe
+    data_dict = wload(datadir("raw", "timeseries",
+        savename(config_with_asymmetry, "jld2")))
+    # Add configuration
+    data_dict = merge(data_dict, config_with_asymmetry)
+    # Wrap all elements in a list to allow for matrices in individual
+    # DataFrame elements
+    data_dict = Dict(k => [v] for (k,v) in data_dict)
+    # Append to dataframe
+    df_all_asymm = DataFrame(data_dict)
 
     # Generate statistics
     transform!(df_all_asymm, [:all_populations, :nb_phases, :nb_players, :symmetry_breaking,
@@ -805,24 +854,13 @@ function extract_game_types(; B_to_c::Real, selection_strength::Real,
     # Convert Dict keys from GameType to Symbol
     game_type_symbols = (dict -> Dict(Symbol(k) => v for (k,v) in pairs(dict))).(game_types)
 
-    # Combine asymmetries into a single data frame
-    df_missing = vcat(DataFrame.(game_type_symbols)...; cols=:union)
-
-    # Sort columns alphabetically
-    select!(df_missing, sort(names(df_missing)))
+    # Convert to Dataframe
+    df = DataFrame(game_type_symbols)
 
     # Add asymmetry
-    insertcols!(df_missing, 1, :asymmetry => df_all_asymm.symmetry_breaking)
+    insertcols!(df, 1, :asymmetry => df_all_asymm.symmetry_breaking)
 
-    # Replace missing data (i.e. game types that do not appear for a particular asymmetry) with zero
-    df = coalesce.(df_missing, 0.0)
-
-    # Add additional parameters
-    config["exclude_neutral"] = exclude_neutral
-    config["exclude_synchronized"] = exclude_synchronized
-    # Write out data
-    mkpath(datadir("processed", "gametype"))
-    CSV.write(datadir("processed","gametype", savename(config,"csv")), df)
+    return df
 end
 
 function calc_number_unidirection_bidirectional_edges(; adj_matrix_source::String)

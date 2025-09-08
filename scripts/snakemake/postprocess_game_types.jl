@@ -10,4 +10,4 @@ include(scriptsdir("snakemake","snakemake_preamble.jl"))
 include(srcdir("julia", "postprocess.jl"))
 
 # Run code
-extract_game_types(; wildcards...)
+extract_game_types_all_asymm(; wildcards...)

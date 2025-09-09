@@ -113,11 +113,33 @@ wildcard_constraints:
     symmetry_breaking=r"[\d.]+",
     time_steps=r"\d*",
 
+def external_data_filename(wildcards):
+  if wildcards.adj_matrix_source in ["c-elegans",
+    "c-elegans-undirected", "c-elegans-unweighted",
+    "c-elegans-undirected-unweighted"]:
+    return "data/external/store/k12:33f530402e3f4ac495d8fafe8515269f.xlsx"
+  return []
+
+rule external_celegans:
+  params:
+    adj_matrix_source="c-elegans",
+  input:
+    "Project.toml",
+    "Manifest.toml",
+    "Data.toml",
+    "scripts/snakemake/cache_external_data.jl",
+  output:
+    protected("data/external/store/k12:33f530402e3f4ac495d8fafe8515269f.xlsx"),
+  script:
+    "scripts/snakemake/cache_external_data.jl"
+
 rule raw_cumulative_data:
   input:
     "Project.toml",
     "Manifest.toml",
     "Data.toml",
+    external_data_filename,
+    "scripts/snakemake/cache_external_data.jl",
     "src/julia/moran.jl",
     "src/julia/run_simulations.jl",
     "src/julia/utils.jl",
@@ -133,6 +155,8 @@ rule processed_cumulative_data:
     "Project.toml",
     "Manifest.toml",
     "Data.toml",
+    external_data_filename,
+    "scripts/snakemake/cache_external_data.jl",
     "src/julia/postprocess.jl",
     "src/julia/game_taxonomy.jl",
     "src/julia/utils.jl",
@@ -149,6 +173,8 @@ rule raw_timeseries_data:
     "Project.toml",
     "Manifest.toml",
     "Data.toml",
+    external_data_filename,
+    "scripts/snakemake/cache_external_data.jl",
     "src/julia/moran.jl",
     "src/julia/run_simulations.jl",
     "src/julia/utils.jl",
@@ -211,6 +237,8 @@ rule processed_graph_structure:
     "Project.toml",
     "Manifest.toml",
     "Data.toml",
+    external_data_filename,
+    "scripts/snakemake/cache_external_data.jl",
     "src/julia/postprocess.jl",
     "src/julia/game_taxonomy.jl",
     "src/julia/utils.jl",
@@ -227,6 +255,8 @@ rule processed_graph_structure_snapshot:
     "Project.toml",
     "Manifest.toml",
     "Data.toml",
+    external_data_filename,
+    "scripts/snakemake/cache_external_data.jl",
     "src/julia/postprocess.jl",
     "src/julia/game_taxonomy.jl",
     "src/julia/utils.jl",
@@ -243,6 +273,8 @@ rule processed_graph_loop_edge_number:
     "Project.toml",
     "Manifest.toml",
     "Data.toml",
+    external_data_filename,
+    "scripts/snakemake/cache_external_data.jl",
     "src/julia/postprocess.jl",
     "src/julia/game_taxonomy.jl",
     "src/julia/utils.jl",
@@ -273,6 +305,8 @@ rule processed_chimera_indices:
     "Project.toml",
     "Manifest.toml",
     "Data.toml",
+    external_data_filename,
+    "scripts/snakemake/cache_external_data.jl",
     "CondaPkg.toml",
     "src/julia/postprocess.jl",
     "src/julia/game_taxonomy.jl",

@@ -167,8 +167,11 @@ end
     for idx in eachindex(IndexCartesian(), game_types)
 	row_player_idx = idx[1]
 	col_player_idx = idx[2]
+        # Note: the indexing ensures we are in standard symmetric
+        # bimatrix representation (i.e. the main diagonal has the same
+        # payoffs for both players)
         game_types[idx] = game_type([
-			     [payoff[row_player_idx,col_player_idx], payoff[col_player_idx,col_player_idx]] [payoff[row_player_idx,row_player_idx], payoff[col_player_idx,row_player_idx]]
+			     [payoff[row_player_idx,row_player_idx], payoff[col_player_idx,row_player_idx]] [payoff[row_player_idx,col_player_idx], payoff[col_player_idx,col_player_idx]]
 			    ])
     end
     return game_types

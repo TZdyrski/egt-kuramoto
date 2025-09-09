@@ -627,6 +627,9 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
     # Flatten dataframe to convert the 1 row into time_steps+1 rows
     statistics = DataFrames.flatten(statistics, :)
 
+    # Add time
+    insertcols!(statistics, 1, :time => 1:nrow(statistics))
+
     # Restrict to initial data
     if !isnothing(early_cutoff_fraction)
       # Note: the populations include the initial statistics, so we need one more than time-steps
@@ -652,12 +655,9 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
 
     # Select subset of columns and rename
     rename!(select!(statistics,
-      [:fraction_communicative, :order_parameters , :most_common_game_types]),
+      [:time, :fraction_communicative, :order_parameters, :most_common_game_types]),
       Dict(:fraction_communicative => :communicative_fraction, :order_parameters => :order_parameter,
       :most_common_game_types => :game_type))
-
-    # Add time
-    insertcols!(statistics, 1, :time => 1:nrow(statistics))
 
     # Add additional parameters
     config["exclude_neutral"] = exclude_neutral

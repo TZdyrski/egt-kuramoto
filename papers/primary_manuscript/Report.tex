@@ -1205,14 +1205,13 @@ We then calculate the covariance matrix $K_{i,j}$ of the strategy indices,
 ensuring that communicative ($C$, $\phi_i$)
 and non-communicative ($N$, $\phi_i$) are treated distinctly.
 Next, we calculate the row-wise covariance-sums  $\sum_i K_{i,j}$.
-After finding the node with the maximum covariance-sum
-$\cov_{\text{max}} \coloneqq \max_j{\sum_i K_{i,j}}$,
-we form a community by collecting all nodes $j$ with covariance-sum
-at least \num{1500}, $\sum_i K_{i,j} \ge 1500$.
-Note that \num{1500} is approximately \SI{81}{\percent}
-of the maximum covariance-sum,
-so this ensure we only group nodes with high covariance-sum.
+Then, We form a community by collecting all nodes $j$ with covariance-sum
+at least \num{1}, \ie{} $\sum_i K_{i,j} \ge 1$.
+For reference, the maximum covariance is \num{184} and the mean is \num{0.03},
+so this cut-off ensures we only group nodes with high covariance-sum.
 Finally, we place all the remaining nodes in a second community.
+For these simulations, this produces a high-covariance-sum community
+of 54 nodes and a low-covariance-sum community of 246 nodes.
 
 With these disjoint communities $C_m$, we then calculate
 the time-dependent, community-wise order parameter $\rho_m(t)$

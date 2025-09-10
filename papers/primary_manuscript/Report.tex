@@ -261,9 +261,9 @@ while $NN$ interactions are always neutral games.
   \centering
   \begin{subcaptiongroup}
     \stackinset{l}{2.7in}{t}{0pt}%
-      {\phantomcaption\label{fig:phase-diagram-beta_alpha}\captiontext*{}}{%
+      {\phantomcaption\label{fig:phase-diagram-B_alpha}\captiontext*{}}{%
     \stackinset{l}{10pt}{t}{0pt}%
-      {\phantomcaption\label{fig:phase-diagram-beta_B}\captiontext*{}}{%
+      {\phantomcaption\label{fig:phase-diagram-B_beta}\captiontext*{}}{%
     {\includestandalone{tikz/phase-diagram}}%
   }}
   \end{subcaptiongroup}
@@ -277,29 +277,29 @@ while $NN$ interactions are always neutral games.
     }
     Slices of the three-parameter game-type phase diagram
     in the
-    \protect{\subref{fig:phase-diagram-beta_B}}
-    $\beta$-$B_0$ plane
+    \protect{\subref{fig:phase-diagram-B_beta}}
+    $B$-$\beta$ plane
     and
-    \protect{\subref{fig:phase-diagram-beta_alpha}}
-    $\beta$-$\alpha$ plane.
+    \protect{\subref{fig:phase-diagram-B_alpha}}
+    $B$-$\alpha$ plane.
     For two players with phase difference $\Delta \phi$,
-    $B_0$
+    $B = B_0 [1 + \cos(\Delta \phi)]/2$
     and
     $\beta = \beta_0 [1 + \cos(\Delta \phi)]/2$.
     The legend displays the game type corresponding to each color.
     The cost $c$ is \num{0.1};
     for
-    \protect{\subref{fig:phase-diagram-beta_B}}
+    \protect{\subref{fig:phase-diagram-B_beta}}
     $\alpha = 0.5$,
     and for
-    \protect{\subref{fig:phase-diagram-beta_alpha}}
-    $B_0/c = 1.5$.
+    \protect{\subref{fig:phase-diagram-B_alpha}}
+    $\beta_0 = \num{0.95} B_0$.
     The white dots represent the $m=20$ potential phase differences
     as well as the restriction
-    \protect{\subref{fig:phase-diagram-beta_B}}
+    \protect{\subref{fig:phase-diagram-B_beta}}
     $\beta_0 = \num{0.95} B_0$.
     or
-    \protect{\subref{fig:phase-diagram-beta_alpha}}
+    \protect{\subref{fig:phase-diagram-B_alpha}}
     $\alpha \in [0,0.25,0.5,0.75,1]$.
   }\label{fig:phase-diagram}
 \end{figure*}
@@ -323,10 +323,10 @@ for order graphs depicting the payoff structure of each game type.
 We can visualize these games by looking at two-dimensional slices
 of the three-dimension phase space
 characterized by $\alpha$, $\beta \coloneqq \beta_0 f(\Delta \phi)$,
-and $B_0$.
-\cref{fig:phase-diagram-beta_B} shows a $\beta$-$B_0$ slice of phase space
+and $B \coloneqq B_0 f(\Delta \phi)$.
+\cref{fig:phase-diagram-B_beta} shows a $B$-$\beta$ slice of phase space
 and generalizes figure 1 of a prior study~\citep{tripp2022evolutionary},
-while \cref{fig:phase-diagram-beta_alpha} shows a $\beta$-$\alpha$ slice.
+while \cref{fig:phase-diagram-B_alpha} shows a $B$-$\alpha$ slice.
 Each straight line of white dots represent permissible values of the $m = 20$ phases
 $\Delta \phi_i$ across our simulations
 and highlight which regions of parameter space are accessible.
@@ -839,7 +839,7 @@ chicken (denoted ``snowdrift'' therein)
 and staghunt (denoted ``coordination'',
 not to be confused with the coordination-type game) games.
 The presence of staghunt-type games is surprising,
-as \cref{fig:phase-diagram-beta_B}
+as \cref{fig:phase-diagram-B_beta}
 shows that the staghunt region should be inaccessible
 for the given parameter values (white dots).
 However, the chicken-type game is consistent with our
@@ -851,7 +851,7 @@ Recall that the most-frequent disordered games
 in \cref{fig:game-type_well-mixed}
 and \cref{fig:game-type_celegans-full} are identical,
 so this discussion applies to both setups.
-In the \cref{fig:phase-diagram-beta_alpha}
+In the \cref{fig:phase-diagram-B_alpha}
 $B-\alpha$ parameter plane,
 each of the five $\alpha$ values
 correspond to a horizontal line of white dots.
@@ -1043,7 +1043,7 @@ by the payoff matrix
 \begin{equation}
 \begin{bNiceMatrix}[first-col,first-row,hvlines]
   & C, \phi_i & N, \phi_j \\
-  C, \phi_i & B_0 f(0) - c & 2 \alpha \beta_0 f(\Delta \phi) - c \\
+  C, \phi_i & B_0 f(\Delta \phi) - c & 2 \alpha \beta_0 f(\Delta \phi) - c \\
   N, \phi_j & 2 (1 - \alpha) \beta_0 f(\Delta \phi) & 0
 \end{bNiceMatrix}
 \label{eq:payoff-matrix}
@@ -1136,7 +1136,7 @@ Using this taxonomy, we calculate the ordinal rank of the four entries
 in the \cref{eq:payoff-matrix} payoff matrix
 and assign a unique name (\eg{} dilemma, deadlock, chicken, \etc{})
 to each strict, symmetric game type.
-However, \cref{fig:phase-diagram-beta_alpha}
+However, \cref{fig:phase-diagram-B_alpha}
 shows that some games lie on the border between two game types,
 such as when $\alpha = 1$ or $B/c = 0$
 (bordering game types for $B/c > 0$ and $B/c < 0$, not shown).
@@ -1148,7 +1148,7 @@ to get a binomial nomenclature (\eg{} ``high harmony'', ``mid compromise'',
 ``double coordination'', \etc{}).
 We follow the same convention for choosing a neighboring game
 but drop the tie-indicator to keep our figure legends simple.
-Specifically, referring to \cref{fig:phase-diagram-beta_alpha},
+Specifically, referring to \cref{fig:phase-diagram-B_alpha},
 the $\alpha = 1$ tie between deadlock and compromise games
 formally corresponds to ``low [dead]lock'',
 but we label it as deadlock.

@@ -9,7 +9,7 @@ function check_formulas(nb_phases::Integer, nb_players::Integer)
     n = nb_players
 
     # Define functions
-    B(phi) = B_0
+    B(phi) = B_0 * (1 + cos(phi)) / 2
     beta(phi) = beta_0 * (1 + cos(phi)) / 2
 
     # Define fixation probabilities

@@ -40,7 +40,7 @@
       },
       ]
         \nextgroupplot[
-          ylabel={Joint benefit $B_0/c$},
+          ylabel={Mixed benefit $\beta/c$},
           ymax=2.5,
           ]
 
@@ -54,41 +54,37 @@
 
         % Add lines
         \addplot[name path=R_S] {x};
-        \addplot[name path=R_T] {x + 1};
-        \addplot[name path=R_P] {1};
+        \addplot[name path=R_T] {x - 1};
+        \addplot[name path=R_P] coordinates {(1,0) (1,2.5)};
 
-        \addplot[name path=S_P] coordinates {(1,0) (1,2.5)};
-        \addplot[draw=none,name path=T_P] coordinates {(0,0) (0,2.5)};
+        \addplot[name path=S_P] {1};
+        % Don't draw so the x-axis isn't thicker
+        \addplot[draw=none,name path=T_P0] {0};
 
         % Fill in regions
-        \addplot[staghunt] fill between[of=yleft and R_T,
-          reverse=false,
-          soft clip={domain y=1:2}];
-        \addplot[staghunt] fill between[of=yleft and S_P,
-          reverse=false,
-          soft clip={domain y=2:2.5}];
+        \addplot[staghunt] fill between[of=xlower and R_T,
+          soft clip={domain=1:2}];
+        \addplot[staghunt] fill between[of=xlower and S_P,
+          soft clip={domain=2:2.5}];
         \addplot[concord] fill between[of=R_T and S_P,
-          soft clip={domain y=2:2.5}];
+          soft clip={domain=2:2.5}];
         \addplot[chicken] fill between[of=R_T and R_S,
-          soft clip={domain=1:2.5}];
-        \addplot[battle] fill between[of=R_S and yright,
-          reverse=false,
           soft clip={domain y=1:2.5}];
+        \addplot[battle] fill between[of=R_S and xupper,
+          soft clip={domain=1:2.5}];
         \addplot[dilemma] fill between[of=R_T and S_P,
-          soft clip={domain y=1:2}];
-        \addplot[deadlock] fill between[of=R_S and yleft,
-          reverse=false,
-          soft clip={domain y=0:1}];
+          soft clip={domain=1:2}];
+        \addplot[deadlock] fill between[of=R_S and xlower,
+          soft clip={domain=0:1}];
         \addplot[compromise] fill between[of=R_S and S_P,
-          soft clip={domain y=0:1}];
-        \addplot[hero] fill between[of=S_P and yright,
-          reverse=false,
-          soft clip={domain y=0:1}];
+          soft clip={domain=0:1}];
+        \addplot[hero] fill between[of=S_P and xupper,
+          soft clip={domain=0:1}];
 
         % Add dots
         \addplot [only marks,mark=*,mark options={fill=white},
-          domain=0:2*pi, samples=\numPhases+1] ({\betaOnB*\BnaughtOnC*(1+cos(x))/2},
-          {\BnaughtOnC*(1+cos(x))/2});
+          domain=0:2*pi, samples=\numPhases+1] ({\BnaughtOnC*(1+cos(x))/2},
+          {\betaOnB*\BnaughtOnC*(1+cos(x))/2});
 
         \nextgroupplot[
           ylabel={$\alpha$},
@@ -104,62 +100,67 @@
         \path[name path=yright] (axis cs:2.5,0) -- (axis cs:2.5,1.25);
 
         % Add lines
-        \addplot[name path=R_S] {\BnaughtOnC/2/x};
-        \addplot[name path=R_T] {1 - (\BnaughtOnC-1)/2/x};
-        \addplot[name path=S_T] {(1+2*x)/4/x};
-        \addplot[name path=S_P] {1/2/x};
+        \addplot[name path=R_S] {1/2/\betaOnB};
+        \addplot[name path=R_T] {1 + 1/(2*x*\betaOnB) - 1/(2*\betaOnB)};
+        \addplot[name path=R_P] coordinates {(1,0) (1,1.25)};
+        \addplot[name path=S_T] {1/(4*x*\betaOnB) + 1/2};
+        \addplot[name path=S_P] {1/(2*x*\betaOnB)};
         \addplot[name path=T_Pa] coordinates {(0,0) (0,1.25)};
         \addplot[name path=T_Pb] {1};
 
         % Fill in regions
         % Using 0 as left limit in the right groupplot causes issues
         % Instead, use -0.1 as left limit
-        \addplot[assurance] fill between[of=yleft and S_T,
-          soft clip={domain y=1:1.25}];
-        \addplot[coordination] fill between[of=S_T and S_P,
-          soft clip={domain y=1:1.25}];
-        \addplot[peace] fill between[of=S_P and R_S,
-          soft clip={domain y=1:1.25}];
-        \addplot[deadlock] fill between[of=R_S and yright,
-          soft clip={domain y=1:1.25}];
-        \pgfmathsetmacro\RTSPy{1/\BnaughtOnC}
-        \addplot[staghunt] fill between[of=yleft and R_T,
-          soft clip={domain y=-0.1:\RTSPy}];
-        \addplot[staghunt] fill between[of=yleft and S_P,
-          soft clip={domain y=\RTSPy:1}];
-        \pgfmathsetmacro\RTSPx{\BnaughtOnC/2}
-        \pgfmathsetmacro\RTXAXISx{(\BnaughtOnC-1)/2}
-        \addplot[dilemma] fill between[of=xlower and R_T,
-          soft clip={domain=\RTXAXISx:\RTSPx}];
-        \addplot[dilemma] fill between[of=xlower and S_P,
-          soft clip={domain=\RTSPx:2.5}];
-        \addplot[chicken] fill between[of=S_P and R_T,
-          soft clip={domain=\RTSPx:1}];
-        \addplot[chicken] fill between[of=S_P and R_S,
-          soft clip={domain=1:2.5}];
-        \addplot[battle] fill between[of=R_S and S_T,
-          soft clip={domain=1:2.5}];
-        \addplot[hero] fill between[of=S_T and R_T,
-          soft clip={domain=1:2.5}];
-        \pgfmathsetmacro\RSTPx{\BnaughtOnC/2}
-        \addplot[compromise] fill between[of=R_S and T_Pb,
-          soft clip={domain=\RSTPx:1}];
-        \addplot[compromise] fill between[of=R_T and T_Pb,
-          soft clip={domain=1:2.5}];
-        \pgfmathsetmacro\RSSTy{\BnaughtOnC/2}
-        \addplot[harmony] fill between[of=R_S and S_T,
-          soft clip={domain y=\RSSTy:1}];
-        \addplot[concord] fill between[of=S_P and S_T,
-          soft clip={domain y=\RSSTy:1}];
-        \addplot[concord] fill between[of=S_P and R_T,
+        \addplot[deadlock] fill between[of=xlower and R_S,
+          soft clip={domain=-0.1:1}];
+        \addplot[compromise] fill between[of=yleft and S_P,
+          soft clip={domain y=1/2/\betaOnB:1}];
+        \addplot[harmony] fill between[of=yleft and S_T,
           reverse=false,
-          soft clip={domain y=\RTSPy:\RSSTy}];
+          soft clip={domain y=1:1.5}];
+        \addplot[concord] fill between[of=S_P and S_T,
+          soft clip={domain=-0.1:1/2/\betaOnB}];
+        \addplot[chicken] fill between[of=S_P and R_T,
+          soft clip={domain y=1:2}];
+        \addplot[dilemma] fill between[of=R_T and R_P,
+          reverse=false,
+          soft clip={domain y=1:2}];
+        \addplot[deadlock] fill between[of=T_Pb and xupper,
+          soft clip={domain=1:2.5}];
+        \addplot[hero] fill between[of=S_P and S_T,
+          soft clip={domain=1/2/\betaOnB:1}];
+        \addplot[battle] fill between[of=S_T and T_Pb,
+          soft clip={domain=1/2/\betaOnB:1}];
+        \pgfmathsetmacro\RTST{1/2/(1-\betaOnB)}
+        \addplot[compromise] fill between[of=R_T and T_Pb,
+          soft clip={domain=1:\RTST}];
+%        \addplot[compromise] fill between[of=R_S and xupper,
+%          soft clip={domain=\RTST:1}];
+        \addplot[hero] fill between[of=S_T and R_T,
+          soft clip={domain=1:\RTST}];
+        \addplot[battle] fill between[of=R_S and S_T,
+          soft clip={domain=1:\RTST}];
+% Note: following doesn't work for \betaOnB \ge 0.95
+% Instead, split into to regions with domain=
+%          \addplot[chicken] fill between[of=S_P and R_T,
+%            soft clip={domain y=0:1/2/\betaOnB}];
+        \addplot[chicken] fill between[of=S_P and R_S,
+          soft clip={domain=1:\RTST}];
+% These three are outside the plotted domain for \betaOnB > 0.8
+%        \addplot[chicken] fill between[of=S_P and R_T,
+%          soft clip={domain=\RTST:1}];
+%        \addplot[harmony] fill between[of=S_T and R_S,
+%          soft clip={domain=\RTST:1}];
+%        \addplot[concord] fill between[of=R_T and S_T,
+%          soft clip={domain=\RTST:1}];
+        \addplot[dilemma] fill between[of=xlower and S_P,
+          soft clip={domain=1:2.5}];
 
         % Add dots
         \foreach \alpha in {0, 0.25, 0.5, 0.75, 1}
         {
           \addplot [only marks,mark=*,mark options={fill=white},
-            domain=0:2*pi, samples=\numPhases+1] ({\betaOnB*\BnaughtOnC*(1+cos(x))/2}, \alpha);
+            domain=0:2*pi, samples=\numPhases+1] ({\BnaughtOnC*(1+cos(x))/2}, \alpha);
         }
     \end{groupplot}
     % Make an invisible axis to create a legend that is the union
@@ -186,7 +187,7 @@
         }%
       }
     \end{axis}
-    \node[anchor=north] (title-x) at ($(group c1r1.south east)!0.5!(group c2r1.south west)-(0,0.5cm)$) {Mixed benefit $\beta/c$};
+    \node[anchor=north] (title-x) at ($(group c1r1.south east)!0.5!(group c2r1.south west)-(0,0.5cm)$) {Joint benefit $B/c$};
     \path (group c1r1.south west) -- node[below={1cm}]{\pgfplotslegendfromname{CommonLegend4}} (group c2r1.south east);
 \end{tikzpicture}
 \end{document}

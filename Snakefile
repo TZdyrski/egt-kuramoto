@@ -120,7 +120,13 @@ def external_data_filename(wildcards):
     return "data/external/store/k12:33f530402e3f4ac495d8fafe8515269f.xlsx"
   return []
 
+safety_factor_memory = 2.5
+safety_factor_runtime = 2.0
+
 rule external_celegans:
+  resources:
+    mem_mb = 3000,
+    runtime = 10,
   params:
     adj_matrix_source="c-elegans",
   input:
@@ -133,7 +139,38 @@ rule external_celegans:
   script:
     "scripts/snakemake/cache_external_data.jl"
 
+def num_players(wildcards):
+  if wildcards.adj_matrix_source in ["c-elegans",
+    "c-elegans-undirected", "c-elegans-unweighted",
+    "c-elegans-undirected-unweighted"]:
+    return 300
+  elif wildcards.adj_matrix_source  == "well-mixed":
+    return int(wildcards.nb_players)
+  else:
+    raise("Unknown `adj_matrix_source`")
+
+def memory_mb_timeseries(wildcards):
+  nb_players = num_players(wildcards)
+  time_steps = int(wildcards.time_steps)
+  float_size_mb = 8/1E6
+  # mem_mb = 1300, # well-mixed
+  # mem_mb = 19500, # c-elegans
+  memory_mb = float_size_mb*nb_players*time_steps*safety_factor_memory
+  return memory_mb
+
+def runtime_min_cumulative(wildcards):
+  nb_players = num_players(wildcards)
+  time_steps = int(wildcards.time_steps)
+  # runtime = 23 # well-mixed time_steps=2E8
+  # runtime = 533 # c-elegans time_steps=2E8
+  runtime_min_per_player_per_timestep = 1.8/2E8
+  runtime_min = runtime_min_per_player_per_timestep*nb_players*time_steps*safety_factor_runtime
+  return runtime_min
+
 rule raw_cumulative_data:
+  resources:
+    mem_mb = 2500, # well-mixed and c-elegans
+    runtime = runtime_min_cumulative,
   input:
     "Project.toml",
     "Manifest.toml",
@@ -151,6 +188,9 @@ rule raw_cumulative_data:
     "scripts/snakemake/run_cumulative_simulations.jl"
 
 rule processed_cumulative_data:
+  resources:
+    mem_mb = 2500, # well-mixed and c-elegans
+    runtime = 10, # well-mixed and c-elegans
   input:
     "Project.toml",
     "Manifest.toml",
@@ -169,6 +209,10 @@ rule processed_cumulative_data:
     "scripts/snakemake/postprocess_cumulative.jl"
 
 rule raw_timeseries_data:
+  resources:
+    mem_mb = memory_mb_timeseries,
+    # runtime = 2, # well-mixed
+    runtime = 10, # c-elegans
   input:
     "Project.toml",
     "Manifest.toml",
@@ -185,7 +229,19 @@ rule raw_timeseries_data:
   script:
     "scripts/snakemake/run_timeseries_simulations.jl"
 
+def runtime_min_timeseries_statistics(wildcards):
+  nb_players = num_players(wildcards)
+  time_steps = int(wildcards.time_steps)
+  # runtime = 8 # well-mixed time_steps=8E6
+  # runtime = 110 # c-elegans time_steps=8E6
+  runtime_min_per_player_per_timestep = 0.4/8E6
+  runtime_min = runtime_min_per_player_per_timestep*nb_players*time_steps*safety_factor_runtime
+  return runtime_min
+
 rule processed_timeseries_statistics:
+  resources:
+    mem_mb = memory_mb_timeseries,
+    runtime = runtime_min_timeseries_statistics,
   params:
     num_samples=1000,
   input:
@@ -203,6 +259,10 @@ rule processed_timeseries_statistics:
     "scripts/snakemake/postprocess_timeseries_statistics.jl"
 
 rule processed_mutation_timesteps:
+  resources:
+    # mem_mb = 1500, # well-mixed
+    mem_mb = 10000, # c-elegans
+    runtime = 10, # well-mixed and c-elegans
   input:
     "Project.toml",
     "Manifest.toml",
@@ -233,6 +293,9 @@ rule processed_animations:
     "scripts/snakemake/plot_animations.jl"
 
 rule processed_graph_structure:
+  resources:
+    mem_mb = 4000, # well-mixed and c-elegans
+    runtime = 10, # well-mixed and c-elegans
   input:
     "Project.toml",
     "Manifest.toml",
@@ -251,6 +314,9 @@ rule processed_graph_structure:
     "scripts/snakemake/postprocess_graph_structure.jl"
 
 rule processed_graph_structure_snapshot:
+  resources:
+    mem_mb = 6000, # c-elegans
+    runtime = 10, # c-elegans
   input:
     "Project.toml",
     "Manifest.toml",
@@ -269,6 +335,9 @@ rule processed_graph_structure_snapshot:
     "scripts/snakemake/postprocess_graph_structure.jl"
 
 rule processed_graph_loop_edge_number:
+  resources:
+    mem_mb = 4000, # c-elgans
+    runtime = 10, # c-elgans
   input:
     "Project.toml",
     "Manifest.toml",
@@ -285,7 +354,29 @@ rule processed_graph_loop_edge_number:
   script:
     "scripts/snakemake/postprocess_graph_loop_edge_number.jl"
 
+def runtime_min_game_types(wildcards):
+  nb_players = num_players(wildcards)
+  time_steps = int(wildcards.time_steps)
+  # runtime = 30 # well-mixed time_steps=8E6
+  # runtime = 540 # c-elegans time_steps=8E6
+  runtime_min_per_player_per_timestep = 1.8/8E6
+  runtime_min = runtime_min_per_player_per_timestep*nb_players*time_steps*safety_factor_runtime
+  return runtime_min
+
+def memory_mb_game_types(wildcards):
+  nb_players = num_players(wildcards)
+  time_steps = int(wildcards.time_steps)
+  float_size_mb = 8/1E6
+  # mem_mb = 2300, # well-mixed
+  # mem_mb = 17000, # c-elegans
+  fudge_factor = 2
+  memory_mb = fudge_factor*float_size_mb*nb_players*time_steps*safety_factor_memory
+  return memory_mb
+
 rule processed_game_types:
+  resources:
+    mem_mb = memory_mb_game_types,
+    runtime = runtime_min_game_types,
   input:
     "Project.toml",
     "Manifest.toml",
@@ -301,6 +392,9 @@ rule processed_game_types:
     "scripts/snakemake/postprocess_game_types.jl"
 
 rule processed_chimera_indices:
+  resources:
+    mem_mb = 25000, # c-elegans
+    runtime = 20, # c-elegans
   input:
     "Project.toml",
     "Manifest.toml",
@@ -335,6 +429,9 @@ def inputs_dependent_on_adj_matrix_source(wildcards):
     )
 
 rule netcdf_dataset:
+  resources:
+    mem_mb = 20000, # Guess
+    runtime = 300, # Guess
   input:
     inputs_dependent_on_adj_matrix_source,
     "scripts/snakemake/snakemake_preamble.jl",

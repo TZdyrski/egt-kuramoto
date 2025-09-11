@@ -1,5 +1,5 @@
 time,communicative_fraction,order_parameter,game_type
-1,0.4,0.9429503443131093,hero
+1,0.4,0.9429503443131093,neutral
 801,0.0,1.0,all_noncommunicative
 1601,0.0,1.0,all_noncommunicative
 2401,0.0,1.0,all_noncommunicative
@@ -9,7 +9,7 @@ time,communicative_fraction,order_parameter,game_type
 5601,0.0,1.0,all_noncommunicative
 6401,0.0,1.0,all_noncommunicative
 7201,0.0,1.0,all_noncommunicative
-8001,0.35,0.8412214747707527,hero
+8001,0.35,0.8412214747707527,neutral
 8801,1.0,1.0,all_communicative
 9601,1.0,1.0,all_communicative
 10401,1.0,1.0,all_communicative
@@ -408,7 +408,7 @@ time,communicative_fraction,order_parameter,game_type
 324801,1.0,1.0,all_communicative
 325601,1.0,1.0,all_communicative
 326401,1.0,1.0,all_communicative
-327201,0.9,0.9809016994374946,hero
+327201,0.9,0.9809016994374946,neutral
 328001,1.0,1.0,all_communicative
 328801,1.0,1.0,all_communicative
 329601,1.0,1.0,all_communicative
@@ -581,7 +581,7 @@ time,communicative_fraction,order_parameter,game_type
 463201,1.0,1.0,all_communicative
 464001,1.0,1.0,all_communicative
 464801,1.0,1.0,all_communicative
-465601,0.95,0.9951056516295154,hero
+465601,0.95,0.9951056516295154,neutral
 466401,1.0,1.0,all_communicative
 467201,1.0,1.0,all_communicative
 468001,1.0,1.0,all_communicative
@@ -798,7 +798,7 @@ time,communicative_fraction,order_parameter,game_type
 636801,1.0,1.0,all_communicative
 637601,1.0,1.0,all_communicative
 638401,1.0,1.0,all_communicative
-639201,0.85,0.9587785252292473,hero
+639201,0.85,0.9587785252292473,neutral
 640001,1.0,1.0,all_communicative
 640801,1.0,1.0,all_communicative
 641601,1.0,1.0,all_communicative
@@ -985,7 +985,7 @@ time,communicative_fraction,order_parameter,game_type
 786401,1.0,1.0,all_communicative
 787201,1.0,1.0,all_communicative
 788001,1.0,1.0,all_communicative
-788801,0.95,0.9951056516295154,hero
+788801,0.95,0.9951056516295154,neutral
 789601,0.0,1.0,all_noncommunicative
 790401,0.0,1.0,all_noncommunicative
 791201,0.0,1.0,all_noncommunicative

@@ -44,7 +44,7 @@ rule manuscript:
     "data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_exclude_neutral=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv",
     # tikz/chimera-states.tex
     "papers/primary_manuscript/tikz/chimera-states.tex",
-    "data/processed/chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_community_algorithm=covariance_cost=0.1_covariance_cutoff=1_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_time_steps=8000000.csv",
+    "data/processed/chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_community_algorithm=covariance_cost=0.1_covariance_cutoff=1500_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_time_steps=8000000.csv",
     "data/processed/graph_structure/vertices_B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_symmetry_breaking=0.0_time_step=560000_time_steps=8000000.csv",
     "data/processed/graph_structure/vertices_B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_symmetry_breaking=1.0_time_step=560000_time_steps=8000000.csv",
     "data/processed/graph_structure/edges_adj_matrix_source=c-elegans.csv",

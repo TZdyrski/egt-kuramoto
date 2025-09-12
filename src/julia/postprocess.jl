@@ -513,43 +513,20 @@ function extract_cumulative(; type::String, selection_strength::Real,
 end
 
 function calc_timeseries_statistics(all_populations::AbstractMatrix{<:Integer}, nb_phases::Integer, nb_players::Integer,
-  symmetry_breaking::Real, B_to_c::Real, beta_to_B::Real, cost::Real, interaction_adj_matrix::AbstractMatrix{<:Integer})
+  symmetry_breaking::Real, B_to_c::Real, beta_to_B::Real, cost::Real, interaction_adj_matrix::AbstractMatrix{<:Integer},
+  exclude_CC_NN::Bool)
     # Extract results
-    most_common_game_types = dropdims(mapslices(x -> extract_most_common_game_types(x,
-                                                                                    B_to_c *
-                                                                                    cost,
-                                                                                    beta_to_B *
-                                                                                    B_to_c *
-                                                                                    cost,
-                                                                                    cost,
-                                                                                    symmetry_breaking,
-                                                                                    nb_phases,
-                                                                                    interaction_adj_matrix;
-                                                                                    exclude_CC_NN=false,
-                                                                                    ),
-                                                all_populations; dims=1); dims=1)
-    most_common_game_types_excluding_CC_NN = dropdims(mapslices(x -> extract_most_common_game_types(x,
-                                                                                    B_to_c *
-                                                                                    cost,
-                                                                                    beta_to_B *
-                                                                                    B_to_c *
-                                                                                    cost,
-                                                                                    cost,
-                                                                                    symmetry_breaking,
-                                                                                    nb_phases,
-                                                                                    interaction_adj_matrix;
-                                                                                    exclude_CC_NN=true,
-                                                                                    ),
-                                                all_populations; dims=1); dims=1)
-    counts = mapslices(x -> extract_counts(x, nb_phases), all_populations; dims=1)
-    nb_communicative = map(x -> extract_num_communicative(Vector(x)),
-                           eachslice(counts; dims=2))
+    strategies_per_timestep = eachslice(all_populations; dims=2)
+    most_common_game_types = map(x -> extract_most_common_game_types(x,
+      B_to_c * cost, beta_to_B * B_to_c * cost, cost, symmetry_breaking, nb_phases, interaction_adj_matrix; exclude_CC_NN),
+      strategies_per_timestep)
+    action_counts_per_timestep = map(x -> extract_counts(x, nb_phases), strategies_per_timestep)
+    nb_communicative = extract_num_communicative.(action_counts_per_timestep)
     fraction_communicative = nb_communicative / nb_players
-    order_parameters = dropdims(mapslices(x -> extract_order_parameters(x, nb_phases),
-                                          counts; dims=1); dims=1)
+    order_parameters = extract_order_parameters.(action_counts_per_timestep, nb_phases)
 
     # Package results
-    return @strdict(fraction_communicative, order_parameters, most_common_game_types, most_common_game_types_excluding_CC_NN)
+    return @strdict(fraction_communicative, order_parameters, most_common_game_types)
 end
 
 function extract_mutation_timesteps(; B_to_c::Real, selection_strength::Real,
@@ -613,6 +590,7 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
     if !isnothing(early_cutoff_fraction)
       config["early_cutoff_fraction"] = early_cutoff_fraction
     end
+    config["exclude_CC_NN"] = exclude_CC_NN
     # Add configuration
     data_dict = merge(data_dict, config)
     # Wrap all elements in a list to allow for matrices in individual
@@ -623,13 +601,7 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
 
     # Generate statistics
     statistics = transform(df_all_asymm, [:all_populations, :nb_phases, :nb_players, :symmetry_breaking,
-        :B_to_c, :beta_to_B, :cost, :interaction_adj_matrix] => ByRow(calc_timeseries_statistics) => AsTable)
-
-    if exclude_CC_NN
-      # Replace most_common_game_types with most_common_game_types_excluding_CC_NN
-      select!(statistics, Not(:most_common_game_types))
-      rename!(statistics, Dict(:most_common_game_types_excluding_CC_NN => :most_common_game_types))
-    end
+        :B_to_c, :beta_to_B, :cost, :interaction_adj_matrix, :exclude_CC_NN] => ByRow(calc_timeseries_statistics) => AsTable)
 
     # Select subset of columns
     select!(statistics, [:most_common_game_types, :fraction_communicative, :order_parameters])
@@ -663,8 +635,6 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
       Dict(:fraction_communicative => :communicative_fraction, :order_parameters => :order_parameter,
       :most_common_game_types => :game_type))
 
-    # Add additional parameters
-    config["exclude_CC_NN"] = exclude_CC_NN
     # Write out statistics
     mkpath(datadir("processed", "timeseries_statistics"))
     CSV.write(datadir("processed","timeseries_statistics", savename(config,"csv")), statistics)
@@ -812,13 +782,10 @@ function extract_game_types_all_asymm(; B_to_c::Real, selection_strength::Real,
 
     # Generate configuration
     config = @strdict(adj_matrix_source, time_steps, B_to_c, beta_to_B,
-                      selection_strength, nb_phases, cost, mutation_rate)
+                      selection_strength, nb_phases, cost, mutation_rate, exclude_CC_NN)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = nb_players
     end
-
-    # Add additional parameters
-    config["exclude_CC_NN"] = exclude_CC_NN
 
     set_all_asymm = []
     for symmetry_breaking in [0,0.25,0.5,0.75,1.0]
@@ -875,6 +842,8 @@ function extract_game_types(; B_to_c::Real, selection_strength::Real,
     # Get data and load into dataframe
     data_dict = wload(datadir("raw", "timeseries",
         savename(config, "jld2")))
+    # Add additional parameters
+    config["exclude_CC_NN"] = exclude_CC_NN
     # Add configuration
     data_dict = merge(data_dict, config)
     # Wrap all elements in a list to allow for matrices in individual
@@ -885,13 +854,7 @@ function extract_game_types(; B_to_c::Real, selection_strength::Real,
 
     # Generate statistics
     transform!(df_all_asymm, [:all_populations, :nb_phases, :nb_players, :symmetry_breaking,
-        :B_to_c, :beta_to_B, :cost, :interaction_adj_matrix] => ByRow(calc_timeseries_statistics) => AsTable)
-
-    if exclude_CC_NN
-      # Replace most_common_game_types with most_common_game_types_excluding_CC_NN
-      select!(df_all_asymm, Not(:most_common_game_types))
-      rename!(df_all_asymm, Dict(:most_common_game_types_excluding_CC_NN => :most_common_game_types))
-    end
+        :B_to_c, :beta_to_B, :cost, :interaction_adj_matrix, :exclude_CC_NN] => ByRow(calc_timeseries_statistics) => AsTable)
 
     game_types = proportionmap.(df_all_asymm.most_common_game_types)
 
@@ -985,8 +948,14 @@ function create_netcdf(;data_type::String, adj_matrix_source::String, time_steps
   elseif data_type == "timeseries-statistics"
     # Load data
     df_timeseries = @rsubset(load_all_timeseries(time_steps), :adj_matrix_source == adj_matrix_source)
+
+    exclude_CC_NN = false
     transform!(df_timeseries, [:all_populations, :nb_phases, :nb_players, :symmetry_breaking,
-          :to_c, :beta_to_B, :cost, :interaction_adj_matrix] => ByRow(calc_timeseries_statistics) => AsTable)
+      :to_c, :beta_to_B, :cost, :interaction_adj_matrix] => ByRow((x...) -> calc_timeseries_statistics(x...,exclude_CC_NN)) => AsTable)
+    exclude_CC_NN = true
+    transform!(df_timeseries, [:all_populations, :nb_phases, :nb_players, :symmetry_breaking,
+      :to_c, :beta_to_B, :cost, :interaction_adj_matrix] =>
+      ByRow((x...) -> Dict("most_common_game_types_only_mixed_games" => calc_timeseries_statistics(x...,exclude_CC_NN)["most_common_game_types"])) => AsTable)
 
     properties_dict_timeseries = get_properties(df_timeseries,adj_matrix_source; include_time_steps=false)
     transform!(df_timeseries, :to_c => ByRow(x -> x*properties_dict_timeseries["cost"]) => :maximum_joint_benefit)

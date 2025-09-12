@@ -17,4 +17,4 @@ const game_type_full_names = Dict(chicken => "Snowdrift", # Also called chicken
                                   neutral => "Neutral",
 				  )
 
-@enum StrategyParity all_communicative all_noncommunicative mixed
+@enum StrategyParity all_communicative all_noncommunicative disconnected_synchronized_populations mixed

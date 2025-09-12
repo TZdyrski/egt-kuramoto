@@ -232,6 +232,16 @@ function extract_most_common_game_types(strategies_per_player::AbstractVector{<:
         game_counts[game_type] += value
     end
 
+    if all(values(game_counts) .== 0)
+      # There were no mixed games;
+      # however, the early all-C/all-N check also shows the population is
+      # not entirely communicative or entirely non-communicative
+      # This means that the communicative and non-communicative
+      # subpopulations are not connected (and therefore do not play any
+      # games together)
+      return disconnected_synchronized_populations
+    end
+
     # Find most common game type
     most_common_game_type = findmax(game_counts)[2]
 

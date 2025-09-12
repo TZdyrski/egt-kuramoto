@@ -104,7 +104,8 @@
         peace={draw=Paired-L,fill=Paired-L},
         neutral={fill=gray,draw=gray},
         all_communicative={draw=lightgray,fill=lightgray},
-        all_noncommunicative={draw=darkgray,fill=darkgray}
+        all_noncommunicative={draw=darkgray,fill=darkgray},
+        disconnected_synchronized_populations={fill=black,draw=black}
       },
   ]
     \addplot table [y=communicative_fraction, meta=game_type] {../../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_only_mixed_games=false_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv};

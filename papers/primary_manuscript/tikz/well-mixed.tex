@@ -61,7 +61,7 @@
         line join=bevel,
       },
     ]
-    \addplot [magenta] table [y=order_parameter] {../../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_exclude_neutral=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.0_time_steps=8000000.csv};
+    \addplot [magenta] table [y=order_parameter] {../../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_exclude_CC_NN=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.0_time_steps=8000000.csv};
 
     \nextgroupplot[
       ymin=0,
@@ -75,7 +75,7 @@
         line join=bevel,
       },
     ]
-    \addplot [magenta] table [y=order_parameter] {../../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_exclude_neutral=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv};
+    \addplot [magenta] table [y=order_parameter] {../../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_exclude_CC_NN=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv};
 
     \nextgroupplot[
       ymin=0,
@@ -89,7 +89,7 @@
         line join=bevel,
       },
     ]
-    \addplot [magenta] table [y=order_parameter] {../../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_exclude_neutral=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=1.0_time_steps=8000000.csv};
+    \addplot [magenta] table [y=order_parameter] {../../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_exclude_CC_NN=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=1.0_time_steps=8000000.csv};
   \end{groupplot}
 
   \begin{groupplot}[
@@ -138,18 +138,18 @@
       xlabel={Time},
       grid,
     ]
-    \addplot table [y=communicative_fraction, meta=game_type] {../../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_exclude_neutral=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.0_time_steps=8000000.csv};
+    \addplot table [y=communicative_fraction, meta=game_type] {../../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_exclude_CC_NN=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.0_time_steps=8000000.csv};
     \nextgroupplot[
       xlabel={Time},
       grid,
     ]
-    \addplot table [y=communicative_fraction, meta=game_type] {../../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_exclude_neutral=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv};
+    \addplot table [y=communicative_fraction, meta=game_type] {../../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_exclude_CC_NN=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv};
 
     \nextgroupplot[
       xlabel={Time},
       grid,
     ]
-    \addplot table [y=communicative_fraction, meta=game_type] {../../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_exclude_neutral=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=1.0_time_steps=8000000.csv};
+    \addplot table [y=communicative_fraction, meta=game_type] {../../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_exclude_CC_NN=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=1.0_time_steps=8000000.csv};
 
 
   \end{groupplot}
@@ -170,7 +170,7 @@
     % Prevent underscore from counting as subscript
     \catcode`\_=12
     % Note: these table names must be the same as those in the groupplots
-    \pgfplotsforeachungrouped\tablename in {../../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_exclude_neutral=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.0_time_steps=8000000.csv,../../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_exclude_neutral=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv,../../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_exclude_neutral=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=1.0_time_steps=8000000.csv} {
+    \pgfplotsforeachungrouped\tablename in {../../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_exclude_CC_NN=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.0_time_steps=8000000.csv,../../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_exclude_CC_NN=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv,../../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_exclude_CC_NN=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=1.0_time_steps=8000000.csv} {
       % Read table
       \pgfplotstableread\tablename\loadtable
       % Loop over each column
@@ -216,7 +216,7 @@
     % Prevent underscore from counting as subscript
     \catcode`\_=12
     % Note: these table names must be the same as those in the groupplots
-    \pgfplotsforeachungrouped\tablename in {../../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_exclude_neutral=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.0_time_steps=8000000.csv,../../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_exclude_neutral=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv,../../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_exclude_neutral=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=1.0_time_steps=8000000.csv} {
+    \pgfplotsforeachungrouped\tablename in {../../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_exclude_CC_NN=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.0_time_steps=8000000.csv,../../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_exclude_CC_NN=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv,../../../data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_exclude_CC_NN=false_exclude_synchronized=false_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=1.0_time_steps=8000000.csv} {
       % Read table
       \pgfplotstableread\tablename\loadtable
       % Loop over each column

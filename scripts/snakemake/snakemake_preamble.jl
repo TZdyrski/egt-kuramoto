@@ -28,7 +28,7 @@ wildcards_dict = Dict((Symbol(k),parse_string(v)) for (k,v) in wildcards_dict)
 
 integer_params = [:time_steps, :nb_phases, :nb_players, :time_step, :covariance_cutoff, :decimation_factor]
 wildcards_dict = Dict((k, k in integer_params ? Integer(v) : v) for (k,v) in wildcards_dict)
-bool_params = [:exclude_CC_NN]
+bool_params = [:only_mixed_games]
 wildcards_dict = Dict((k, k in bool_params ? parse(Bool,v) : v) for (k,v) in wildcards_dict)
 
 wildcards = NamedTuple(wildcards_dict)

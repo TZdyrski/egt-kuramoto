@@ -834,11 +834,16 @@ function extract_game_types_all_asymm(; B_to_c::Real, selection_strength::Real,
     df_missing = vcat(set_all_asymm...; cols=:union)
 
     # Sort columns alphabetically, but ensure "asymmetry" is first
-    # column
+    # column and all_communicative/all_noncommunicative are last (if
+    # they exist)
     column_names = names(df_missing)
-    filter!(col -> col != "asymmetry", column_names)
+    synchronized_column_names = filter(col -> col in ["all_communicative", "all_noncommunicative"],
+      column_names)
+    sort!(synchronized_column_names)
+    filter!(col -> !(col in ["asymmetry", "all_communicative", "all_noncommunicative"]), column_names)
     sort!(column_names)
     prepend!(column_names, ["asymmetry"])
+    append!(column_names, synchronized_column_names)
     select!(df_missing, column_names)
 
     # Replace missing data (i.e. game types that do not appear for a particular asymmetry) with zero

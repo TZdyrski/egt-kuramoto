@@ -200,7 +200,7 @@ function extract_most_common_game_types(strategies_per_player::AbstractVector{<:
                                         interaction_adj_matrix::AbstractMatrix{<:Integer};
                                         exclude_neutral::Bool=false,
                                         )
-    # Get game type of each startegy interaction pair
+    # Get game type of each strategy interaction pair
     game_types = game_types_per_strategy_pair(mutual_benefit_synchronous,
                                               unilateral_benefit_synchronous, cost,
                                               symmetry_breaking, nb_phases)

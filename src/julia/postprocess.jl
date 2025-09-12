@@ -769,17 +769,16 @@ function extract_chimera_indices(; communities::AbstractVector{<:Integer},
 
     # Generate configuration
     config = @strdict(adj_matrix_source, time_steps, B_to_c, beta_to_B,
-                      selection_strength, nb_phases, cost, mutation_rate)
+                      selection_strength, nb_phases, cost, mutation_rate, symmetry_breaking)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = nb_players
     end
 
-    config_with_asymmetry = merge(config, Dict("symmetry_breaking" => symmetry_breaking))
     # Get data and load into dataframe
     data_dict = wload(datadir("raw", "timeseries",
-        savename(config_with_asymmetry, "jld2")))
+        savename(config, "jld2")))
     # Add configuration
-    data_dict = merge(data_dict, config_with_asymmetry)
+    data_dict = merge(data_dict, config)
     # Wrap all elements in a list to allow for matrices in individual
     # DataFrame elements
     data_dict = Dict(k => [v] for (k,v) in data_dict)
@@ -873,12 +872,11 @@ function extract_game_types(; B_to_c::Real, selection_strength::Real,
 	    config["nb_players"] = nb_players
     end
 
-    config_with_asymmetry = merge(config, Dict("symmetry_breaking" => symmetry_breaking))
     # Get data and load into dataframe
     data_dict = wload(datadir("raw", "timeseries",
-        savename(config_with_asymmetry, "jld2")))
+        savename(config, "jld2")))
     # Add configuration
-    data_dict = merge(data_dict, config_with_asymmetry)
+    data_dict = merge(data_dict, config)
     # Wrap all elements in a list to allow for matrices in individual
     # DataFrame elements
     data_dict = Dict(k => [v] for (k,v) in data_dict)

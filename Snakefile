@@ -277,6 +277,9 @@ rule processed_mutation_timesteps:
     "scripts/snakemake/postprocess_mutation_timesteps.jl"
 
 rule processed_animations:
+  resources:
+    mem_mb = memory_mb_timeseries,
+    runtime = 30, # Guess
   input:
     "Project.toml",
     "Manifest.toml",

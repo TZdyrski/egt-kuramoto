@@ -24,6 +24,12 @@
 % Import tikz options and preamble
 \input{tikz/preamble.tex}
 
+% Set data search path
+\pgfplotsset{
+    table/search path={../../data/processed},
+}
+\newcommand\dataSearchPath{../../data/processed}
+
 \begin{document}
 
 \title{Evolutionary Kuramoto Dynamics unravels origins of chimera states

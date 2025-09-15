@@ -7,6 +7,12 @@
 % Import tikz options and preamble
 \input{preamble}
 
+% Set data search path
+\pgfplotsset{
+    table/search path={../../../data/processed},
+}
+\newcommand\dataSearchPath{../../../data/processed}
+
 \begin{document}
 \begin{tikzpicture}
   \begin{groupplot}[
@@ -27,15 +33,15 @@
     \nextgroupplot[
     ylabel={Chimera-Like Index $\chi$},
     ]
-    \addplot table [y=chimera_index] {../../../data/processed/chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_community_algorithm=covariance_cost=0.1_covariance_cutoff=1500_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_time_steps=8000000.csv};
+    \addplot table [y=chimera_index] {chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_community_algorithm=covariance_cost=0.1_covariance_cutoff=1500_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_time_steps=8000000.csv};
     \nextgroupplot[
     ylabel={Metastability Index $\lambda$},
     ]
-    \addplot table [y=metastability_index] {../../../data/processed/chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_community_algorithm=covariance_cost=0.1_covariance_cutoff=1500_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_time_steps=8000000.csv};
+    \addplot table [y=metastability_index] {chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_community_algorithm=covariance_cost=0.1_covariance_cutoff=1500_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_time_steps=8000000.csv};
   \end{groupplot}
   \begin{scope}[shift={(2,-6)},rotate=90]
     % Read node coordinates and create nodes
-    \csvreader[head to column names]{../../../data/processed/graph_structure/vertices_B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_symmetry_breaking=0.0_time_step=560000_time_steps=8000000.csv}{}%
+    \csvreader[head to column names]{\dataSearchPath/graph_structure/vertices_B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_symmetry_breaking=0.0_time_step=560000_time_steps=8000000.csv}{}%
     {%
       \node[draw, circle, draw=none, index of colormap=\strategyIndex of strategycolors, fill=., inner sep=1.5] (\index) at (\x, \y) {};
     }
@@ -44,7 +50,7 @@
       % Decrease total opacity to prevent high opacity of overlapping edges
       \begin{scope}[transparency group,opacity=.75]
       % Read edges and draw connections between nodes
-      \csvreader[head to column names]{../../../data/processed/graph_structure/edges_adj_matrix_source=c-elegans.csv}{}%
+      \csvreader[head to column names]{\dataSearchPath/graph_structure/edges_adj_matrix_source=c-elegans.csv}{}%
       {%
         % Make individual opacity low; multiple overlapping edges can still have high opacity
         \ifthenelse{\equal{\src}{\dst}}
@@ -56,7 +62,7 @@
   \end{scope}
   \begin{scope}[shift={(8,-6)},rotate=90]
     % Read node coordinates and create nodes
-    \csvreader[head to column names]{../../../data/processed/graph_structure/vertices_B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_symmetry_breaking=1.0_time_step=560000_time_steps=8000000.csv}{}%
+    \csvreader[head to column names]{\dataSearchPath/graph_structure/vertices_B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_symmetry_breaking=1.0_time_step=560000_time_steps=8000000.csv}{}%
     {%
       \node[draw, circle, draw=none, index of colormap=\strategyIndex of strategycolors, fill=., inner sep=1.5] (\index) at (\x, \y) {};
     }
@@ -65,7 +71,7 @@
       % Decrease total opacity to prevent high opacity of overlapping edges
       \begin{scope}[transparency group,opacity=.75]
       % Read edges and draw connections between nodes
-      \csvreader[head to column names]{../../../data/processed/graph_structure/edges_adj_matrix_source=c-elegans.csv}{}%
+      \csvreader[head to column names]{\dataSearchPath/graph_structure/edges_adj_matrix_source=c-elegans.csv}{}%
       {%
         % Make individual opacity low; multiple overlapping edges can still have high opacity
         \ifthenelse{\equal{\src}{\dst}}

@@ -9,6 +9,11 @@
 % Import tikz options and preamble
 \input{preamble}
 
+% Set data search path
+\pgfplotsset{
+    table/search path={../../../data/processed},
+}
+
 \begin{document}
 \pgfplotstableread{
   concord,harmony,peace,coordination,assurance,staghunt,dilemma,deadlock,compromise,hero,battle,chicken

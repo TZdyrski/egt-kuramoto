@@ -7,6 +7,11 @@
 % Import tikz options and preamble
 \input{preamble}
 
+% Set data search path
+\pgfplotsset{
+    table/search path={../../../data/processed},
+}
+
 \begin{document}
 \begin{tikzpicture}
     \newcommand{\betaOnB}{0.95}

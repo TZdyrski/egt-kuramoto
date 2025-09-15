@@ -7,12 +7,18 @@
 % Import tikz options and preamble
 \input{preamble}
 
+% Set data search path
+\pgfplotsset{
+    table/search path={../../../data/processed},
+}
+\newcommand\dataSearchPath{../../../data/processed}
+
 \begin{document}
 \begin{tikzpicture}[x=0.3cm,y=0.3cm]
   \matrix{
     \begin{scope}[scale=10]
       % Read node coordinates and create nodes
-      \csvreader[head to column names]{../../../data/processed/graph_structure/vertices_adj_matrix_source=well-mixed.csv}{}%
+      \csvreader[head to column names]{\dataSearchPath/graph_structure/vertices_adj_matrix_source=well-mixed.csv}{}%
       {%
         \node[draw, fill=white, circle, inner sep=1.5] (\index) at (\x, \y) {};
       }
@@ -47,7 +53,7 @@
       % Decrease total opacity to prevent high opacity of overlapping edges
       \begin{scope}[transparency group,opacity=.75]
       % Read edges and draw connections between nodes
-        \csvreader[head to column names]{../../../data/processed/graph_structure/edges_adj_matrix_source=well-mixed.csv}{}%
+        \csvreader[head to column names]{\dataSearchPath/graph_structure/edges_adj_matrix_source=well-mixed.csv}{}%
       {%
         % Make individual opacity low; multiple overlapping edges can still have high opacity
         \path[arrows={- Latex[length=1pt]},line width=0.1,opacity=0.2] (\src) edge (\dst);

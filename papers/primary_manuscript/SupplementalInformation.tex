@@ -1,3 +1,22 @@
+%! TeX program = lualatex
+\documentclass[pdflatex,sn-nature,super]{sn-jnl}
+\pdfvariable objcompresslevel=0
+
+% Memoize tikz drawings
+\usepackage[extract=perl]{memoize}
+\mmzset{
+  padding=0pt, % Remove padding around figure for journal submission
+  context={fsize={\csname f@size\endcsname}}, % Add font size to context
+  verbatim,
+}
+
+% Import custom style file containing common packages and options
+\usepackage{preamble}
+
+% Import tikz options and preamble
+\input{tikz/preamble.tex}
+
+\begin{document}
 \section{Two-player game order graphs}\label{sec:order_graphs}
 \begin{center}
     \includestandalone{tikz/game-payoffs}
@@ -536,3 +555,4 @@ We used a Pluto.jl notebook to organize and visualize the data
 and have made these results available for public analysis.
 Additionally, this notebook includes time-evolution animations
 for all of the simulated parameter combinations.
+\end{document}

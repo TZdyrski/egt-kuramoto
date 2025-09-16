@@ -62,12 +62,10 @@ jobs:
                     Precompute_max_filesize_per_group=1e9,
                     # more parameters can go here
                   )'
-
-## Don't deploy yet because gh-pages are public, even for private repos
-#            - name: Deploy to gh-pages
-#              uses: JamesIves/github-pages-deploy-action@releases/v4
-#              with:
-#                  token: ${{ secrets.GITHUB_TOKEN }}
-#                  branch: gh-pages
-#                  folder: .
-#                  single-commit: true
+            - name: Deploy to gh-pages
+              uses: JamesIves/github-pages-deploy-action@releases/v4
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  branch: gh-pages
+                  folder: .
+                  single-commit: true

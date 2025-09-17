@@ -16,7 +16,7 @@
 \begin{tikzpicture}
   \begin{groupplot}[
     width=0.5\textwidth,
-    group style={group size=2 by 2, vertical sep=0.5cm},
+    group style={group size=2 by 3, vertical sep=0.5cm},
     ymin=0,
     ymax=1,
     enlarge x limits=0.2, % Make room for subcaption labels
@@ -60,7 +60,18 @@
             \expandafter\addplot\expandafter[\col,ybar stacked,draw=none] table[x=asymmetry, y=\col] {\loadtable};
           \fi
         }
-      \nextgroupplot
+      \nextgroupplot[xticklabel=\empty, ymin=0.0, ymax=0.007, height=4cm, blue,
+        yticklabel style={/pgf/number format/.cd,fixed,precision=3}, scaled y ticks=false,
+      ]
+          % Note: this table names must appear in the `\tablename` loop below
+          \pgfplotstableread{gametype/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=true_selection_strength=0.2_time_steps=8000000.csv}{\loadtable}
+          \pgfplotstableforeachcolumn\loadtable\as\col
+          {
+            \ifnum\pgfplotstablecol=0\else%
+              \expandafter\addplot\expandafter[\col,ybar stacked,draw=none,xtick=none] table[x=asymmetry, y=\col] {\loadtable};
+            \fi
+          }
+      \nextgroupplot[hide axis, height=4cm]
     \end{groupplot}
     % Make an invisible axis to create a legend that is the union
     % of all the data table's column names
@@ -117,7 +128,8 @@
           }
       }%
     \end{axis}
-    \node[anchor=north] (title-x) at ($(group c1r2.south east)!0.5!(group c2r2.south west)-(0,0.5cm)$) {Asymmetry $\alpha$};
-    \path (group c1r2.south west) -- node[below={1cm}]{\pgfplotslegendfromname{CommonLegend2}} (group c2r2.south east);
+    \draw[blue] (group c1r2.south) -- (group c1r3.north);
+    \node[anchor=north] (title-x) at ($(group c1r3.south east)!0.5!(group c2r3.south west)-(0,0.5cm)$) {Asymmetry $\alpha$};
+    \path (group c1r3.south west) -- node[below={1cm}]{\pgfplotslegendfromname{CommonLegend2}} (group c2r3.south east);
 \end{tikzpicture}
 \end{document}

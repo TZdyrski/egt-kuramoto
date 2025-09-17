@@ -21,26 +21,6 @@ include("moran.jl")
 include("game_taxonomy.jl")
 include("utils.jl")
 
-function load_all_cumulative(time_steps::Integer=200_000_000)
-    # Load dataframe
-    df_raw = collect_results(datadir("raw","cumulative"); rinclude = [Regex("time_steps=$time_steps[._]")])
-
-    # Add path
-    df = transform(df_raw, :path => (x-> DataFrame(map(y -> parse_savename(y)[2], x))) => AsTable)
-
-    return df
-end
-
-function load_all_timeseries(time_steps::Integer=80_000)
-    # Load dataframe
-    df_raw = collect_results(datadir("raw","timeseries"); rinclude = [Regex("time_steps=$time_steps[._]")])
-
-    # Add path
-    df = transform(df_raw, :path => (x-> DataFrame(map(y -> parse_savename(y)[2], x))) => AsTable)
-
-    return df
-end
-
 # Source: doi:10.3390/g6040495
 # In left-up convention (modified from right-up convention by swapping columns)
 # = means exactly the same payoff matrix, \approx means equivalent up to swap_strategies!
@@ -917,7 +897,7 @@ function calc_number_unidirection_bidirectional_edges(; adj_matrix_source::Strin
     CSV.write(datadir("processed", "graph_loop_edge_number", savename(config,"csv")), results)
 end
 
-function create_netcdf(;data_type::String, adj_matrix_source::String, time_steps::Integer, decimation_factor::Union{Nothing,Integer}=nothing)
+function create_netcdf(raw_data_filenames::Vector{String}; data_type::String, adj_matrix_source::String, time_steps::Integer, decimation_factor::Union{Nothing,Integer}=nothing)
 	function get_properties(df,adj_matrix_source; include_time_steps::Bool=true)
 		property_list = ["nb_phases", "adj_matrix_source", "cost", "mutation_rate"]
 		if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
@@ -935,8 +915,20 @@ function create_netcdf(;data_type::String, adj_matrix_source::String, time_steps
 	end
 
   if data_type == "cumulative"
-    # Load data
-    df_cumulative = @rsubset(load_all_cumulative(time_steps), :matrix_source == adj_matrix_source)
+    df_cumulative = DataFrame()
+    for filename in raw_data_filenames
+      # Get data and load into dataframe
+      data_dict = wload(filename)
+      # Add configuration
+      _, config, _ = parse_savename(filename)
+      data_dict = merge(data_dict, config)
+      # Wrap all elements in a list to allow for matrices in individual
+      # DataFrame elements
+      data_dict = Dict(k => [v] for (k,v) in data_dict)
+      # Convert to dataframe
+      df = DataFrame(data_dict)
+      append!(df_cumulative, df)
+    end
 
     # Ensure column name consistency
     rename!(df_cumulative, :matrix_source => :adj_matrix_source)
@@ -956,8 +948,27 @@ function create_netcdf(;data_type::String, adj_matrix_source::String, time_steps
               )
     savecube(cumulative, datadir("processed","netcdf","cumulative_matrixSource=$(adj_matrix_source)_timesteps=$time_steps.nc"), driver=:netcdf, overwrite=true)
   elseif data_type == "timeseries-statistics"
-    # Load data
-    df_timeseries = @rsubset(load_all_timeseries(time_steps), :adj_matrix_source == adj_matrix_source)
+    df_timeseries = DataFrame()
+    for filename in raw_data_filenames
+      # Get data and load into dataframe
+      data_dict = wload(filename)
+      # Add configuration
+      _, config, _ = parse_savename(filename)
+      data_dict = merge(data_dict, config)
+
+      # Decimate data
+      if !isnothing(decimation_factor)
+        data_dict["all_populations"] = data_dict["all_populations"][:,(0:decimation_factor:time_steps).+1]
+      end
+
+      # Wrap all elements in a list to allow for matrices in individual
+      # DataFrame elements
+      data_dict = Dict(k => [v] for (k,v) in data_dict)
+      # Convert to dataframe
+      df = DataFrame(data_dict)
+
+      append!(df_timeseries, df)
+    end
 
     only_mixed_games = false
     transform!(df_timeseries, [:all_populations, :nb_phases, :nb_players, :symmetry_breaking,
@@ -976,7 +987,7 @@ function create_netcdf(;data_type::String, adj_matrix_source::String, time_steps
     selection_strength_timeseries_vals = unique(df_timeseries.selection_strength)
     maximum_joint_benefit_timeseries_vals = unique(df_timeseries.maximum_joint_benefit)
     axes_timeseries = (
-      Dim{:time_step}(0:time_steps),
+      Dim{:time_step}(!isnothing(decimation_factor) ? (0:decimation_factor:time_steps) : (0:time_steps)),
       Dim{:symmetry_breaking}(symmetry_breaking_timeseries_vals, span=Regular(0.25)),
       Dim{:maximum_joint_benefit}(round.(maximum_joint_benefit_timeseries_vals; digits=5)),
       Dim{:selection_strength}(selection_strength_timeseries_vals, span=Regular(4.8)),
@@ -1053,13 +1064,13 @@ function create_netcdf(;data_type::String, adj_matrix_source::String, time_steps
                    :fraction_communicative => fraction_communicative,
                    :timeseries => timeseries,
                    )...)
+
     if isnothing(decimation_factor)
       savedataset(timeseries_statistics,
             path=datadir("processed","netcdf", "timeseries-statistics_matrixSource=$(adj_matrix_source)_timesteps=$time_steps.nc"),
             driver=:netcdf, overwrite=true, compress=9)
     else
-      timeseries_statistics_decimated = timeseries_statistics[time_step = 1:decimation_factor:time_steps]
-      savedataset(timeseries_statistics_decimated,
+      savedataset(timeseries_statistics,
             path=datadir("processed","netcdf", "timeseries-statistics_decimationFactor=$(decimation_factor)_matrixSource=$(adj_matrix_source)_timesteps=$time_steps.nc"),
             driver=:netcdf, overwrite=true)
     end

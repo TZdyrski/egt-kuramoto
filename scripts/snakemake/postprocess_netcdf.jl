@@ -10,4 +10,5 @@ include(scriptsdir("snakemake","snakemake_preamble.jl"))
 include(srcdir("julia", "postprocess.jl"))
 
 # Run code
-create_netcdf(; wildcards...)
+data_files = filter(startswith("data"), collect(values(snakemake.input)))
+create_netcdf(data_files; wildcards...)

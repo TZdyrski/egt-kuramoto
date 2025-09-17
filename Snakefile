@@ -433,8 +433,8 @@ def inputs_dependent_on_adj_matrix_source(wildcards):
 
 rule netcdf_dataset:
   resources:
-    mem_mb = 20000, # Guess
-    runtime = 300, # Guess
+    mem_mb = 2500, # cumulative well-mixed and c-elegans
+    runtime = 3, # cumulative well-mixed and c-elegans
   input:
     inputs_dependent_on_adj_matrix_source,
     "scripts/snakemake/snakemake_preamble.jl",
@@ -445,5 +445,12 @@ rule netcdf_dataset:
     "scripts/snakemake/postprocess_netcdf.jl"
 
 use rule netcdf_dataset as netcdf_dataset_decimated with:
+  resources:
+    runtime = 40,
+    # runtime = 3, # well-mixed time_steps=8E6
+    # runtime = 40, # c-elegans time_steps=8E6
+    mem_mb = 25000,
+    # mem_mb = 3200, # well-mixed
+    # mem_mb = 25000, # c-elegans
   output:
     "data/processed/netcdf/{data_type}_decimationFactor={decimation_factor}_matrixSource={adj_matrix_source}_timesteps={time_steps}.nc",

@@ -168,7 +168,7 @@ function check_all_same_strategy(strategies_per_player::AbstractVector{<:Integer
     elseif nb_communicative == nb_players
         return all_communicative
     end
-    return mixed
+    return nothing
 end
 
 function extract_most_common_game_types(strategies_per_player::AbstractVector{<:Integer},
@@ -181,9 +181,9 @@ function extract_most_common_game_types(strategies_per_player::AbstractVector{<:
                                         only_mixed_games::Bool=false,
                                         )
     # Check if all cooperative or all non-cooperative
-    strategy_parity = check_all_same_strategy(strategies_per_player, nb_phases)
-    if strategy_parity != mixed
-      return strategy_parity
+    all_same_strategy = check_all_same_strategy(strategies_per_player, nb_phases)
+    if !isnothing(all_same_strategy)
+      return all_same_strategy
     end
 
     # Get game type of each strategy interaction pair

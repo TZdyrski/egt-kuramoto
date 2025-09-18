@@ -1,4 +1,4 @@
-@enum GameType harmony chicken battle hero compromise concord staghunt dilemma deadlock assurance coordination peace neutral
+@enum GameType harmony chicken battle hero compromise concord staghunt dilemma deadlock assurance coordination peace neutral all_communicative all_noncommunicative disconnected_synchronized_populations
 
 @enum TieType low mid high double triple basic zero
 
@@ -16,5 +16,3 @@ const game_type_full_names = Dict(chicken => "Snowdrift", # Also called chicken
                                   concord => "Concord",
                                   neutral => "Neutral",
 				  )
-
-@enum StrategyParity all_communicative all_noncommunicative disconnected_synchronized_populations mixed

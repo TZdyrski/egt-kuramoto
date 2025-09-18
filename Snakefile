@@ -1,8 +1,8 @@
 adj_matrix_source_vals = ["well-mixed", "c-elegans", "c-elegans-undirected", "c-elegans-unweighted"]
 symmetry_breaking_vals = [0.0, 0.25, 0.5, 0.75, 1.0]
 selection_strength_vals = [0.005, 0.2, 5.0]
+B_to_c_vals = [1.5, 2.5]
 
-B_to_c_netcdf = 1.5,
 beta_to_B_netcdf = 0.95,
 cost_netcdf = 0.1,
 mutation_rate_netcdf = 0.0001,
@@ -420,7 +420,7 @@ def inputs_dependent_on_adj_matrix_source(wildcards):
   return expand(["data/raw/{data_type_input}/{B_to_c_flag}{B_to_c}{B_to_c_postunderscore}adj_matrix_source={{adj_matrix_source}}_beta_to_B={beta_to_B}_cost={cost}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={{time_steps}}.jld2"],
     selection_strength=selection_strength_vals, symmetry_breaking=symmetry_breaking_vals,
     B_to_c_flag=("B_to_c=" if wildcards.data_type!="cumulative" else ""),
-    B_to_c=(B_to_c_netcdf if wildcards.data_type!="cumulative" else ""),
+    B_to_c=(B_to_c_vals if wildcards.data_type!="cumulative" else ""),
     B_to_c_postunderscore=("_" if wildcards.data_type!="cumulative" else ""),
     beta_to_B=beta_to_B_netcdf, cost=cost_netcdf,
     mutation_rate=mutation_rate_netcdf, nb_phases=nb_phases_netcdf,

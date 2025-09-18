@@ -3,13 +3,13 @@ symmetry_breaking_vals = [0.0, 0.25, 0.5, 0.75, 1.0]
 selection_strength_vals = [0.005, 0.2, 5.0]
 B_to_c_vals = [1.5, 2.5]
 
-beta_to_B_netcdf = 0.95,
-cost_netcdf = 0.1,
-mutation_rate_netcdf = 0.0001,
-nb_phases_netcdf = 20,
-nb_players_netcdf = 20,
-time_steps_cumulative_netcdf = 200000000,
-time_steps_timeseries_netcdf = 8000000,
+beta_to_B_netcdf = 0.95
+cost_netcdf = 0.1
+mutation_rate_netcdf = 0.0001
+nb_phases_netcdf = 20
+nb_players_netcdf = 20
+time_steps_cumulative_netcdf = 200000000
+time_steps_timeseries_netcdf = 8000000
 
 rule all:
   input:

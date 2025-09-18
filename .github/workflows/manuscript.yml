@@ -15,7 +15,7 @@ jobs:
         run: test -z "$(guix --version 2>&1 >/dev/null)"
       - name: Set up Git repository
         uses: actions/checkout@v2
-      - name: Compile LaTeX document
+      - name: Compile manuscript
         working-directory: papers/primary_manuscript
         # Note: pass disable to memoize to create smaller PDF
         run: |
@@ -24,9 +24,17 @@ jobs:
           latexmk -auxdir=latex.aux -lualatex \
           -usepretex="\PassOptionsToPackage{disable}{memoize} \pdfvariable suppressoptionalinfo 512\relax" \
           Report.tex
+      - name: Compile supplementary info
+        working-directory: papers/primary_manuscript
+        run: |
+          SOURCE_DATE_EPOCH=0 TZ=Zulu guix time-machine -C channels.scm -- \
+          shell --pure -E SOURCE_DATE_EPOCH -E TZ -m manifest.scm -- \
+          latexmk -auxdir=latex.aux -lualatex \
+          -usepretex="\pdfvariable suppressoptionalinfo 512\relax" \
+          SupplementaryInformation.tex
       - name: Create Release
         id: create_release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: papers/primary_manuscript/Report.pdf
+          artifacts: papers/primary_manuscript/Report.pdf,papers/primary_manuscript/SupplementaryInformation.pdf
           artifactContentType: application/pdf

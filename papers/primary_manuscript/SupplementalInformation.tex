@@ -2,14 +2,6 @@
 \documentclass[pdflatex,sn-nature,super]{sn-jnl}
 \pdfvariable objcompresslevel=0
 
-% Memoize tikz drawings
-\usepackage[extract=perl]{memoize}
-\mmzset{
-  padding=0pt, % Remove padding around figure for journal submission
-  context={fsize={\csname f@size\endcsname}}, % Add font size to context
-  verbatim,
-}
-
 % Import custom style file containing common packages and options
 \usepackage{preamble}
 

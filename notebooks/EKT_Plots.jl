@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.13
+# v0.20.17
 
 using Markdown
 using InteractiveUtils
@@ -18,7 +18,7 @@ end
 
 # ╔═╡ 50ccf7ba-55f7-11f0-1752-a5d12fed803c
 # ╠═╡ show_logs = false
-using CairoMakie, Downloads, YAXArrays, NetCDF, PlutoUI, LaTeXStrings, Graphs, StatsBase, XLSX, MetaGraphsNext, SimpleWeightedGraphs, NetworkLayout, GraphMakie, Colors, ColorBrewer
+using CairoMakie, Downloads, YAXArrays, NetCDF, PlutoUI, LaTeXStrings, Graphs, StatsBase, XLSX, MetaGraphsNext, SimpleWeightedGraphs, NetworkLayout, GraphMakie, Colors, ColorBrewer, OrderedCollections
 
 # ╔═╡ 3bb479c9-6dc1-4abf-88ed-f95b7f555972
 md"# Graph Structure"
@@ -108,10 +108,10 @@ begin
 		"c-elegans-unweighted" => "https://zenodo.org/records/17135745/files/cumulative_matrixSource=c-elegans-unweighted_timesteps=200000000.nc?download=1&preview=1&token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6Ijk5NWM0NTNiLTQ4YzktNGJlYS1iNDUwLTQyMWViNGExYmU4ZCIsImRhdGEiOnt9LCJyYW5kb20iOiI0OWU5NGY4ZDg4YjkwY2Y1ODU1YzU1MTYyZjNiNzFiYiJ9.q2mPSuJEV_sjP0Hq9_1gsow9zpNUgBCRn34fLOSqkNigCUj4wsV6HCrF2YyXt_ia3MYHIAXsul94Di_5X3T2VA",
 	)
 	local cumulativeDataFilenames = Dict(
-		"well-mixed" => "cumulative_matrixSource=well-mixed_timesteps=200000000.nc",
-		"c-elegans" => "cumulative_matrixSource=c-elegans_timesteps=200000000.nc",
-		"c-elegans-undirected" => "cumulative_matrixSource=c-elegans-undirected_timesteps=200000000.nc",
-		"c-elegans-unweighted" => "cumulative_matrixSource=c-elegans-unweighted_timesteps=200000000.nc",
+		"well-mixed" => "cumulative_matrixSource=well-mixed_timesteps=20000.nc",
+		"c-elegans" => "cumulative_matrixSource=c-elegans_timesteps=20000.nc",
+		"c-elegans-undirected" => "cumulative_matrixSource=c-elegans-undirected_timesteps=20000.nc",
+		"c-elegans-unweighted" => "cumulative_matrixSource=c-elegans-unweighted_timesteps=20000.nc",
 	)
 	cumulativeDatasets = Dict(k => open_or_download(cumulativeDataFilenames[k],v) for (k,v) in cumulativeDataUrls)
 
@@ -122,10 +122,10 @@ begin
 		"c-elegans-unweighted" => "https://zenodo.org/records/17135745/files/timeseries-statistics_decimationFactor=1000_matrixSource=c-elegans-unweighted_timesteps=8000000.nc?download=1&preview=1&token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6Ijk5NWM0NTNiLTQ4YzktNGJlYS1iNDUwLTQyMWViNGExYmU4ZCIsImRhdGEiOnt9LCJyYW5kb20iOiI0OWU5NGY4ZDg4YjkwY2Y1ODU1YzU1MTYyZjNiNzFiYiJ9.q2mPSuJEV_sjP0Hq9_1gsow9zpNUgBCRn34fLOSqkNigCUj4wsV6HCrF2YyXt_ia3MYHIAXsul94Di_5X3T2VA",
 	)
 	local timeseriesDataFilenames = Dict(
-		"well-mixed" => "timeseries-statistics_decimationFactor=1000_matrixSource=well-mixed_timesteps=8000000.nc",
-		"c-elegans" => "timeseries-statistics_decimationFactor=1000_matrixSource=c-elegans_timesteps=8000000.nc",
-		"c-elegans-undirected" => "timeseries-statistics_decimationFactor=1000_matrixSource=c-elegans-undirected_timesteps=8000000.nc",
-		"c-elegans-unweighted" => "timeseries-statistics_decimationFactor=1000_matrixSource=c-elegans-unweighted_timesteps=8000000.nc",
+		"well-mixed" => "timeseries-statistics_decimationFactor=1000_matrixSource=well-mixed_timesteps=8000.nc",
+		"c-elegans" => "timeseries-statistics_decimationFactor=1000_matrixSource=c-elegans_timesteps=8000.nc",
+		"c-elegans-undirected" => "timeseries-statistics_decimationFactor=1000_matrixSource=c-elegans-undirected_timesteps=8000.nc",
+		"c-elegans-unweighted" => "timeseries-statistics_decimationFactor=1000_matrixSource=c-elegans-unweighted_timesteps=8000.nc",
 	)
 	timeseriesDatasets = Dict(k => open_or_download(timeseriesDataFilenames[k],v) for (k,v) in timeseriesDataUrls)
 end;
@@ -294,7 +294,7 @@ end
 
 # ╔═╡ eaa6bf62-daea-450c-85f4-b4dd7ad4048b
 begin
-	@enum GameType harmony chicken battle hero compromise concord staghunt dilemma deadlock assurance coordination peace
+	@enum GameType assurance battle chicken compromise concord coordination deadlock dilemma harmony hero peace staghunt neutral all_communicative all_noncommunicative disconnected_synchronized_populations
 	const paired_colors = ColorBrewer.palette("Paired", 12)
 	const game_type_colors = Dict(harmony => paired_colors[7],
 	                              chicken => paired_colors[6], # exponential fixation time
@@ -307,18 +307,14 @@ begin
 	                              deadlock => paired_colors[1],
 	                              assurance => paired_colors[10],
 	                              coordination => paired_colors[9],
-	                              peace => paired_colors[12]
+	                              peace => paired_colors[12],
+								  neutral => colorant"grey",
+								  all_communicative => colorant"lightgrey",
+								  all_noncommunicative => colorant"darkgrey",
+								  disconnected_synchronized_populations => colorant"black"
 	                             )
 	const enum_to_strategy = Dict(parse(Int,match(r"(?<=enum_lookup:)(\d+)",k).match)=> eval(Symbol(v)) for (k,v) in timeseries_ds.most_common_game_types.properties
 		if startswith(k,"enum_lookup"))
-
-	@enum StrategyParity all_communicative all_noncommunicative mixed
-    const strategy_parity_colors = Dict(all_communicative => :lightgrey,
-										all_noncommunicative => :darkgrey)
-	const enum_to_parity = Dict(parse(Int,match(r"(?<=enum_lookup:)(\d+)",k).match)=> eval(Symbol(v)) for (k,v) in timeseries_ds.strategy_parity.properties
-		if startswith(k,"enum_lookup"))
-
-	const game_type_or_parity_colors = merge(game_type_colors, strategy_parity_colors)
 end;
 
 # ╔═╡ 0b9e9e44-6c46-4481-bf89-07cd11c76adb
@@ -339,17 +335,15 @@ begin
 		symmetry_breaking = At(symmetry_breaking),
 	]
 
-	if ! any(ismissing.(ds.most_common_game_types))
-		game_parity_or_type = [enum_to_parity[strategy_parity] != mixed ? enum_to_parity[strategy_parity] : enum_to_strategy[game_type]
-				   for (strategy_parity, game_type) in
-				       zip(ds.strategy_parity,
-									   ds.most_common_game_types)]
-		colors = [game_type_or_parity_colors[key] for key in game_parity_or_type]
-	    local li1 = lines!(ax1,
+	if ! any(ismissing.(ds.most_common_game_types_only_mixed_games))
+	    local game_parity_or_type = [enum_to_strategy[game_type]
+				   for game_type in ds.most_common_game_types_only_mixed_games]
+		local colors = [game_type_colors[key] for key in game_parity_or_type]
+	    local li1 = scatter!(ax1,
 						   lookup(ds.fraction_communicative, :time_step),
 						   collect(ds.fraction_communicative);
 						   color=collect(colors),
-						   linewidth=5,
+						   markersize=5,
 						  )
 
 	    # Plot order parameter
@@ -368,7 +362,9 @@ begin
 
 	    # Add legend
 		local game_list = unique(game_parity_or_type)
-		local legend_items = [PolyElement(color=game_type_or_parity_colors[game]) for game in game_list]
+		# Sort by order in GameType definition
+		game_list = [v for v in instances(GameType) if v in game_list]
+		local legend_items = [PolyElement(color=game_type_colors[game]) for game in game_list]
 		local name_list = [String(Symbol(x)) for x in game_list]
 		replace!(name_list, "all_communicative" => "all-C",
 								"all_noncommunicative" => "all-N")
@@ -392,13 +388,13 @@ begin
 		symmetry_breaking = At(symmetry_breaking),
 	]
 
-	if !any(ismissing.(ds.most_common_game_types))
+	if !any(ismissing.(ds.most_common_game_types_only_mixed_games))
 		# Plot histogram of game types
-	    local game_parity_or_type = [enum_to_parity[strategy_parity] != mixed ? enum_to_parity[strategy_parity] : enum_to_strategy[game_type]
-				   for (strategy_parity, game_type) in
-				       zip(ds.strategy_parity,
-									   ds.most_common_game_types)]
+	    local game_parity_or_type = [enum_to_strategy[game_type]
+				   for game_type in ds.most_common_game_types_only_mixed_games]
 	    local hist_data = proportionmap(game_parity_or_type)
+		hist_data = OrderedDict(k => hist_data[k]
+										 for k in instances(GameType) if k in collect(keys(hist_data)))
 
 	    local fig = Figure()
 		local name_list = String.(Symbol.(collect(keys(hist_data))))
@@ -409,7 +405,7 @@ begin
 		       limits=(nothing, nothing, 0, nothing),
 		       xticks=(1:length(keys(hist_data)), name_list))
 	    barplot!(ax, collect(values(hist_data));
-				color = [game_type_or_parity_colors[game] for game in keys(hist_data)])
+				color = [game_type_colors[game] for game in keys(hist_data)])
 
 		# Return figure
 		fig
@@ -426,11 +422,12 @@ begin
 	]
 
 	if ! any(ismissing.(ds.most_common_game_types))
-		local game_parity_or_type = [enum_to_parity[strategy_parity] != mixed ? enum_to_parity[strategy_parity] : enum_to_strategy[game_type]
-				   for (strategy_parity, game_type) in
-				       zip(ds.strategy_parity,
-									   ds.most_common_game_types)]
-		local game_type_distribution = [proportionmap(slice) for slice in eachslice(game_parity_or_type, dims=timeseries_ds.symmetry_breaking)]
+	    local game_parity_or_type = [enum_to_strategy[game_type]
+				   for game_type in ds.most_common_game_types]
+		local game_type_distribution = [proportionmap(slice) for slice in eachslice(game_parity_or_type, dims=2)]
+		# Sort by order in GameType definition
+		game_type_distribution = map(x -> OrderedDict(k => x[k]
+										 for k in instances(GameType) if k in collect(keys(x))), game_type_distribution)
 
 	    # Generate plot
 	    local fig = Figure()
@@ -442,17 +439,65 @@ begin
 		barplot!(repeat([asymm],length(row)),
 					 collect(values(row)),
 					 stack = repeat([indx], length(row)),
-					 color = [game_type_or_parity_colors[game] for game in keys(row)],
+					 color = [game_type_colors[game] for game in keys(row)],
 					 width=0.2)
 	    end
 
 	    # Add legend
 		local game_list = unique(collect(Iterators.flatten(map(keys,game_type_distribution))))
-		local legend_items = [PolyElement(color=game_type_or_parity_colors[game]) for game in game_list]
+		# Sort by order in GameType definition
+		game_list = [v for v in instances(GameType) if v in game_list]
+		local legend_items = [PolyElement(color=game_type_colors[game]) for game in game_list]
 		local name_list = [String(Symbol(x)) for x in game_list]
 		replace!(name_list, "all_communicative" => "all-C",
 								"all_noncommunicative" => "all-N")
-		Legend(fig[2,1], legend_items,name_list, orientation=:horizontal)
+		Legend(fig[2,1], legend_items,name_list, nbanks = 5, tellheight = true)
+
+		# Return figure
+		fig
+	else
+		md"No game-type data for this set of parameters"
+	end
+end
+
+# ╔═╡ f0650eb4-3684-4ac9-8efa-791e74d5bc7c
+begin
+	local ds = timeseries_ds[
+		selection_strength = At(selection_strength),
+		maximum_joint_benefit = At(maximum_joint_benefit),
+	]
+
+	if ! any(ismissing.(ds.most_common_game_types_only_mixed_games))
+	    local game_parity_or_type = [enum_to_strategy[game_type]
+				   for game_type in ds.most_common_game_types_only_mixed_games]
+		local game_type_distribution = [proportionmap(slice) for slice in eachslice(game_parity_or_type, dims=2)]
+		# Sort by order in GameType definition
+		game_type_distribution = map(x -> OrderedDict(k => x[k]
+										 for k in instances(GameType) if k in collect(keys(x))), game_type_distribution)
+
+	    # Generate plot
+	    local fig = Figure()
+	    local ax = Axis(fig[1, 1];
+						xlabel = L"Asymmetry $\alpha$",
+						title = "Proportion of Game Types by Asymmetry: only mixed games")
+	    for (indx, row) in enumerate(game_type_distribution)
+		local asymm = ds.symmetry_breaking[indx]
+		barplot!(repeat([asymm],length(row)),
+					 collect(values(row)),
+					 stack = repeat([indx], length(row)),
+					 color = [game_type_colors[game] for game in keys(row)],
+					 width=0.2)
+	    end
+
+	    # Add legend
+		local game_list = unique(collect(Iterators.flatten(map(keys,game_type_distribution))))
+		# Sort by order in GameType definition
+		game_list = [v for v in instances(GameType) if v in game_list]
+		local legend_items = [PolyElement(color=game_type_colors[game]) for game in game_list]
+		local name_list = [String(Symbol(x)) for x in game_list]
+		replace!(name_list, "all_communicative" => "all-C",
+								"all_noncommunicative" => "all-N")
+		Legend(fig[2,1], legend_items,name_list, nbanks = 5, tellheight = true)
 
 		# Return figure
 		fig
@@ -533,6 +578,7 @@ LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
 MetaGraphsNext = "fa8bd995-216d-47f1-8a91-f3b68fbeb377"
 NetCDF = "30363a11-5582-574a-97bb-aa9a979735b9"
 NetworkLayout = "46757867-2c16-5918-afeb-47bfcb05e46a"
+OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 SimpleWeightedGraphs = "47aef6b3-ad0c-573a-a1e2-d07658019622"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
@@ -549,6 +595,7 @@ LaTeXStrings = "~1.4.0"
 MetaGraphsNext = "~0.7.3"
 NetCDF = "~0.12.2"
 NetworkLayout = "~0.4.10"
+OrderedCollections = "~1.8.1"
 PlutoUI = "~0.7.66"
 SimpleWeightedGraphs = "~1.5.0"
 StatsBase = "~0.34.5"
@@ -562,7 +609,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.5"
 manifest_format = "2.0"
-project_hash = "90711762a1a265054aacd28e794b8bc86b672553"
+project_hash = "63a9f75a1b5ba97969d2650e920a4e80ed81d2c6"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "be7ae030256b8ef14a441726c4c37766b90b93a3"
@@ -2651,6 +2698,7 @@ version = "3.6.0+0"
 # ╟─74c12270-0058-4c09-817a-ac46f799518f
 # ╟─b868b861-2962-4a8b-af81-bf85838b1ab9
 # ╟─0e599cc9-42a9-4c32-b441-4ef15346f24e
+# ╟─f0650eb4-3684-4ac9-8efa-791e74d5bc7c
 # ╟─14ded9ce-8568-4df9-8def-1ce144efedbf
 # ╟─54ba97a0-7da0-4227-8427-f54701df0c5c
 # ╟─50ccf7ba-55f7-11f0-1752-a5d12fed803c

@@ -11,7 +11,6 @@ using CSV
 using Statistics
 using PlotUtils
 using SplitApplyCombine
-using CondaPkg
 using PythonCall
 using JLD2
 using YAXArrays
@@ -266,18 +265,6 @@ function generate_communities(graph::AbstractSimpleWeightedGraph, community_algo
                 communities[idx] = community
             end
         end
-    elseif community_algorithm == "infomap"
-        # InfoMap
-        mkpath(datadir("processed", "InfoMapOutput"))
-        CSV.write(datadir("processed","InfoMapOutput","c-elegans-network.txt"), edges(graph); writeheader=false, delim=" ")
-        CondaPkg.add("infomap")
-        infomap = pyimport("infomap")
-        infomap.Infomap(infomap.Config("-d -2 --preferred-number-of-modules 2 --variable-markov-time $(datadir("processed","InfoMapOutput","c-elegans-network.txt")) $(datadir("processed","InfoMapOutput"))",true)).run()
-        df = DataFrame(CSV.File(datadir("processed","InfoMapOutput","c-elegans-network.tree");comment="#",delim=" ",header=["path","flow","name","node_id"]))
-        df[!,"community"] = parse.(Int64,(map(x -> x[1], split.(df[!,"path"],":"))))
-        df_new = df[!,["node_id","community"]]
-        sort!(df_new, "node_id")
-        communities = df_new[!, "community"]
     elseif community_algorithm == "covariance"
         # Covariance
         if covariance_cutoff == nothing
@@ -293,8 +280,7 @@ function generate_communities(graph::AbstractSimpleWeightedGraph, community_algo
         communities[map(x -> x[2], findall(sum(covariances,dims=1) .>= covariance_cutoff))] .= 1
     else
         throw(ArgumentError("community_algorithm must be a string in set [\"label-propagation\", "
-                            * "\"strongly-connected\", \"infomap\", "
-                            * "\"covariance\"]"))
+                            * "\"strongly-connected\", * "\"covariance\"]"))
     end
 
     return communities

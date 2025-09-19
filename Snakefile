@@ -14,6 +14,7 @@ time_steps_timeseries_netcdf = 8000000
 rule all:
   input:
     "papers/primary_manuscript/Report.pdf",
+    "papers/primary_manuscript/SupplementaryInformation.pdf",
     # Animations for supplemental information
     "plots/animations/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_symmetry_breaking=0.0_time_steps=8000000.mp4",
     "plots/animations/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.mp4",
@@ -32,7 +33,6 @@ rule manuscript:
     "papers/primary_manuscript/references.bib",
     "papers/primary_manuscript/sn-jnl.cls",
     "papers/primary_manuscript/sn-nature.bst",
-    "papers/primary_manuscript/sections/appendix.tex",
     "papers/primary_manuscript/tikz/preamble.tex",
     # tikz/c-elegans.tex
     "papers/primary_manuscript/tikz/c-elegans.tex",
@@ -86,6 +86,20 @@ rule manuscript:
     "papers/primary_manuscript/Report.pdf",
   shell:
     "cd papers/primary_manuscript && latexmk -lualatex -auxdir=latex.aux -interaction=nonstopmode Report.tex"
+
+rule supplementary_information:
+  priority: 50 # Increase priority relative to netcdf to it generates first
+  input:
+    # Manuscript
+    "papers/primary_manuscript/SupplementaryInformation.tex",
+    "papers/primary_manuscript/preamble.sty",
+    "papers/primary_manuscript/tikz/preamble.tex",
+    # tikz/game-payoffs.tex
+    "papers/primary_manuscript/tikz/game-payoffs.tex",
+  output:
+    "papers/primary_manuscript/SupplementaryInformation.pdf",
+  shell:
+    "cd papers/primary_manuscript && latexmk -lualatex -auxdir=latex.aux -interaction=nonstopmode SupplementaryInformation.tex"
 
 rule netcdf_datasets:
   input:

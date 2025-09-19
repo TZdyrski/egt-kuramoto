@@ -4,7 +4,7 @@ dirname(Base.active_project()) != pwd() && exit(run(`julia --project=@. $(@__FIL
 
 # Creates wildcards NamedTuple with snakemake wildcards
 using DrWatson
-@quickactivate "2024_EGT_Kuramoto"
+@quickactivate "Chimera_EGT_Kuramoto"
 include(scriptsdir("snakemake","snakemake_preamble.jl"))
 
 include(srcdir("julia", "plotting.jl"))

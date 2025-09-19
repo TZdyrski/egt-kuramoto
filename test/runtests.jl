@@ -1,5 +1,5 @@
 using DrWatson, Test
-@quickactivate "2024_EGT_Kuramoto"
+@quickactivate "Chimera_EGT_Kuramoto"
 
 # Here you include files using `srcdir`
 # include(srcdir("file.jl"))
@@ -8,7 +8,7 @@ using DrWatson, Test
 println("Starting tests")
 ti = time()
 
-@testset "2024_EGT_Kuramoto tests" begin
+@testset "Chimera_EGT_Kuramoto tests" begin
     @test 1 == 1
 end
 

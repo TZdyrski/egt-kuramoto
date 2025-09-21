@@ -1061,14 +1061,32 @@ The game's strategy space is the outer product of the $m$ phases
 ($m = 20$ for our simulations) and $2$ communicative choices,
 communicative $C$ and non-communicative $N$.
 For a given pair of phases, $\phi_i$ and $\phi_j$, the game is specified
-by the payoff matrix
+by the payoff matrix.
+If one player is communicative and the other is non-communicative
+(``mixed game'', $CN$ or $NC$), the payoff matrix is
 \begin{equation}
 \begin{bNiceMatrix}[first-col,first-row,hvlines]
   & C, \phi_i & N, \phi_j \\
   C, \phi_i & B_0 f(0) - c & 2 \alpha \beta_0 f(\Delta \phi) - c \\
   N, \phi_j & 2 (1 - \alpha) \beta_0 f(\Delta \phi) & 0
-\end{bNiceMatrix}
+\end{bNiceMatrix},
 \label{eq:payoff-matrix}
+\end{equation}
+if both players are communicative ($CC$), the matrix is
+\begin{equation}
+\begin{bNiceMatrix}[first-col,first-row,hvlines]
+  & C, \phi_i & C, \phi_j \\
+  C, \phi_i & B_0 f(0) - c & B_0 f(\Delta \phi) - c \\
+  C, \phi_j & B_0 f(\Delta \phi) - c & B_0 f(0) - c
+\end{bNiceMatrix},
+\end{equation}
+and if both are non-communicative ($NN$), the matrix is
+\begin{equation}
+\begin{bNiceMatrix}[first-col,first-row,hvlines]
+  & N, \phi_i & N, \phi_j \\
+  N, \phi_i & 0 & 0 \\
+  N, \phi_j & 0 & 0
+\end{bNiceMatrix},
 \end{equation}
 with $f(\Delta \phi) = [1+\cos(\phi_j - \phi_i)]/2$
 (\pcref{fig:payoff_matrix}).

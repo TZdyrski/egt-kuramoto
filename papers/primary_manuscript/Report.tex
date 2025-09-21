@@ -281,7 +281,7 @@ while $NN$ interactions are always neutral games.
       of game types that neural populations can engage in
       during evolutionary dynamics.
     }
-    Slices of the three-parameter game-type phase diagram
+    Slices of the three-parameter mixed $CN$ game-type phase diagram
     in the
     \protect{\subref{fig:phase-diagram-beta_B}}
     $\beta$-$B_0$ plane
@@ -326,7 +326,8 @@ or
 harmony (game with strong incentive alignment).
 See Section 2 of the supplementary material
 for order graphs depicting the payoff structure of each game type.
-We can visualize these games by looking at two-dimensional slices
+We can visualize these mixed games ($CN$ or $NC$)
+by looking at two-dimensional slices
 of the three-dimension phase space
 characterized by $\alpha$, $\beta \coloneqq \beta_0 f(\Delta \phi)$,
 and $B_0$.
@@ -375,7 +376,7 @@ and highlight which regions of parameter space are accessible.
     grey if all players are communicative (``all-C'') or
     black if all players are non-communicative (``all-N'');
     otherwise, they are colored according
-    to the plurality game type as indicated in the legend.
+    to the plurality mixed game type as indicated in the legend.
     The right vertical axis corresponds to the order parameter $\rho$
     (\pcref{eq:order_parameter}), in magenta, as a function of time.
     The asymmetry is
@@ -435,7 +436,7 @@ These time-series points are color-coded
 grey if all players are communicative or
 black if all players are non-communicative;
 otherwise, the points are colored according
-to the plurality game type, as indicated in the legend.
+to the plurality mixed game type, as indicated in the legend.
 On the right vertical axes,
 magenta line plots depict the order parameter
 $\rho \in [0,1]$
@@ -541,7 +542,8 @@ coexisting with disordered neighboring nodes.
     the simulations ran for \num{2E8} time steps.
     \protect{\subref{fig:time-series_celegans-full}}
     Scatter plot with the same axes and coloring
-    as \protect{\crefrange{fig:time-series_well-mixed_alpha-0}{fig:time-series_well-mixed_alpha-1}}.
+    as \protect{\crefrange{fig:time-series_well-mixed_alpha-0}{fig:time-series_well-mixed_alpha-1}}
+    showing the communicative frequency, plurality mixed game-types, and order parameter.
     The maximum joint benefit is $B_0 = 0.15$ and
     the simulation ran for \num{8E5} time steps.
     For all cases,
@@ -613,6 +615,10 @@ is similar to the expected $f_{\text{comm}} \approx \SI{70}{\percent}$
 from \cref{fig:comm-frac_celegans-full} with $B_0 = 0.15$;
 the discrepancy comes from the stochasticity
 in this small, \num{8E5} time-step sample.
+And while the \cref{fig:time-series_well-mixed_alpha-075} well-mixed setup
+displays hero, staghunt, and concord plurality mixed game-types,
+the \cref{fig:time-series_celegans-full} \gls{celegans} setup
+only displays hero and staghunt games.
 Finally, the \gls{celegans} case is less stable to mutations
 than the \cref{fig:time-series_well-mixed_alpha-075} well-mixed case:
 instead of stable synchronized states with transient impulses,
@@ -792,36 +798,38 @@ and
 \subref{fig:game-type_celegans-full}
 \gls{celegans} connectome
 network topologies.
-The \subref{fig:game-type_well-mixed-only-mixed-games} well-mixed case
-shows that system is fully synchronized
+The \subref{fig:game-type_well-mixed} well-mixed case
+fully-synchronized to all-communicative or all-noncommunicative
 for over \SI{99.6}{\percent} of the runtime
 across every asymmetry $\alpha$.
-For the $< \SI{1}{\percent}$ of the time when the well-mixed system is
-\emph{not} synchronized,
-the magnified inset (blue) below
-\cref{fig:game-type_well-mixed-only-mixed-games}
-shows that the other notable plurality game types are
-dilemma (\SI{0.1}{\percent} for $\alpha = 0, 0.25$)
-chicken (\SI{0.2}{\percent} for $\alpha = 0.5$),
-hero (\SI{0.2}{\percent} for $\alpha = 0.75$),
-and
-deadlock (\SI{0.1}{\percent} for $\alpha = 1$).
 In contrast, the
-\subref{fig:game-type_celegans-full} \gls{celegans} connectome system
-is essentially never synchronized.
-Instead, disordered game types (\ie{} states other than ``all-C'' or ``all-N'')
-dominate,
-with the dominant game type changing as the asymmetry varies:
+\subref{fig:game-type_celegans-full} \gls{celegans} system
+is never synchronized, but instead is virtually always dominated by
+coordination ($CC$) and neutral ($NN$) game types.
+
+In order to investigate the other game types involved,
+we can also consider the plurality mixed game type
+(\cf{} \cref{sec:plurality_game_type}).
+The \subref{fig:game-type_well-mixed-only-mixed-games} well-mixed case
+only changes for the $< \SI{1}{\percent}$ of the time when unsynchronized.
+In order to better observe these games types,
+a blue inset below \cref{fig:game-type_well-mixed-only-mixed-games}
+magnifies these small fractions.
+In contrast, the \subref{fig:game-type_celegans-full-only-mixed-games}
+shows a variety of disordered game types
+(\ie{} states other than ``all-C'' or ``all-N''),
+that vary based on the asymmetry:
 dilemma for $\alpha = 0, 0.25$, chicken for $\alpha = 0.5$,
 hero for $\alpha = 0.75$, and deadlock for $\alpha = 1$.
 We note that these dominant game types
-are the same as the most-frequent \emph{disordered} plurality games,
+are the same as the most-frequent \emph{disordered} plurality mixed games,
 for each $\alpha$, as those played in
-the \cref{fig:game-type_well-mixed} well-mixed setup (\cf{} blue inset).
+the \cref{fig:game-type_well-mixed-only-mixed-games}
+well-mixed setup (\cf{} blue inset).
 Additionally, the \gls{celegans} system displays
 some game-type heterogeneity, with
-a second game type (deadlock) being the plurality
-\SIrange{1}{14}{\percent} of the time
+a second game type (staghunt) being the plurality
+\SIrange{1}{18}{\percent} of the time
 for asymmetries $\alpha \le 0.5$.
 In line with \cref{fig:chimera-index}, the game types of chicken and hero,
 with bigger chimera-like index for $\alpha$ values at $0.5$ and $0.75$, respectively,
@@ -842,7 +850,8 @@ underpin the formation of chimera states.
 %\subsection{Game-type dynamics}
 The distribution of game types displayed in \cref{fig:game-type}
 deserves additional discussion.
-The \cref{fig:game-type_well-mixed} well-mixed case
+The \cref{fig:game-type_well-mixed},\subref{fig:game-type_well-mixed-only-mixed-games}
+well-mixed case
 is virtually always synchronized,
 as corroborated by the order parameter $\rho \approx 1$ in
 \crefrange{fig:time-series_well-mixed_alpha-0}{fig:time-series_well-mixed_alpha-1}.
@@ -852,7 +861,7 @@ communicative synchronization (``all-C'') fraction
 approximates the communicative frequency $f_{\text{comm}}$
 in \cref{fig:multi-comm-frac} for $B_0=0.15$.
 
-We can compare the \cref{fig:game-type_well-mixed}
+We can compare the \cref{fig:game-type_well-mixed-only-mixed-games}
 $\alpha = 0.5$ case
 to the time-series results
 in previous studies~\citep{tripp2022evolutionary}.
@@ -872,8 +881,8 @@ which is corroborated in the inset below
 Next, we consider the distribution of disordered games
 in \cref{fig:game-type} as functions of $\alpha$.
 Recall that the most-frequent disordered games
-in \cref{fig:game-type_well-mixed}
-and \cref{fig:game-type_celegans-full} are identical,
+in \cref{fig:game-type_well-mixed-only-mixed-games}
+and \cref{fig:game-type_celegans-full-only-mixed-games} are identical,
 so this discussion applies to both setups.
 In the \cref{fig:phase-diagram-beta_alpha}
 $\beta-\alpha$ parameter plane,

@@ -1255,14 +1255,13 @@ for the \gls{celegans} simulation with asymmetry $\alpha = \num{0.75}$.
 We then calculate the covariance matrix $K_{i,j}$ of the strategy indices,
 ensuring that communicative ($C$, $\phi_i$)
 and non-communicative ($N$, $\phi_i$) are treated distinctly.
-Next, we calculate the row-wise covariance-sums  $\sum_i K_{i,j}$.
-After finding the node with the maximum covariance-sum
-$\cov_{\text{max}} \coloneqq \max_j{\sum_i K_{i,j}}$,
-we form a community by collecting all nodes $j$ with covariance-sum
-at least \num{1500}, $\sum_i K_{i,j} \ge 1500$.
-Note that \num{1500} is approximately \SI{81}{\percent}
-of the maximum covariance-sum,
-so this ensure we only group nodes with high covariance-sum.
+Next, we calculate the row-wise covariance-sums  $\sum_i K_{i,j}$
+and form a community by collecting all nodes $j$ with covariance-sum
+at least \num{1500}, \ie{} $\sum_i K_{i,j} \ge 1500$.
+Note that \num{1500} is chosen as a high cutoff
+to ensure we only group nodes with high covariance-sum;
+for reference, \num{1500} is is approximately \SI{81}{\percent}
+of the maximum covariance-sum.
 Finally, we place all the remaining nodes in a second community.
 
 With these disjoint communities $C_m$, we then calculate

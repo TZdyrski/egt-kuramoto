@@ -878,30 +878,27 @@ We note that every $\alpha$ case is dominated
 by the game-type of the rightmost white dots
 representing nearly-synchronized $\Delta \phi \approx 0$ configurations
 (dilemma for $\alpha = 0, 0.25$, chicken for $\alpha = 0.5$, \etc{}).
-We can explain the prevalence of nearly-synchronous game types
-by considering game-plurality requirements.
-We easily obtain nearly-synchronized $\Delta \phi \approx 0$
-game-type pluralities whenever the graph is largely synchronized.
-Finding circumstances when $\Delta \phi \approx 0$ game types
-are \emph{not} the plurality is more challenging,
-but we identify two such scenarios in section 3 of the supplementary material:
-configurations with $p$ equal-sized groups
+In fact, finding circumstances when $\Delta \phi \approx 0$ game types
+are \emph{not} the plurality is quite challenging:
+we easily obtain nearly-synchronized $\Delta \phi \approx 0$
+game-type pluralities whenever the graph is largely synchronized,
+but only find two special-cases where $\Delta \phi \approx 0$ game types
+are \emph{not} the plurality.
+One special case is the configuration with $p$ equal-sized groups
 with phases that differ by $2 \pi/p$ (\cf{} supplementary material section 3.1);
-or when the population is almost evenly split between two groups
-with fractions between $0.5 \pm 1/(2 \sqrt{N})$
+given our low mutation rate, this setup is unlikely.
+The second special case is when the population is almost evenly split
+between two groups with fractions between $0.5 \pm 1/(2 \sqrt{N})$
 (\cf{} supplementary material section 3.2.1).
-Given the low mutation rate, it is unlikely to have
-multiple populations with roughly equal sizes,
-so the evenly-split scenario is more likely.
 For the $N = 20$ well-mixed case, this corresponds
-to \SIrange{39}{62}{\percent}, or \numrange{8}{12} players.
+to \SIrange{39}{62}{\percent}, or \numrange{8}{12} players in each group.
 But the magenta order parameter in \cref{fig:time-series_well-mixed_alpha-075}
 shows that the well-mixed system spends most of its time
 with fewer than the required \num{8} invaders.
 This explains why the well-mixed graph's disordered games
 are still nearly-synchronized.
 
-These graph-degree conditions also help explain the
+These special cases also help explain the
 game distributions for the
 \cref{fig:game-type_celegans-full} \gls{celegans} graph.
 Each $\alpha$-value is still dominated by the nearly-synchronized

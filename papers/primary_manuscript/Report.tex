@@ -241,22 +241,16 @@ We characterized each player (node) by its
 strategy $s_i$---either communicative $C$ or non-communicative $N$---
 and its phase $\phi_i$---taking one of $m = \num{20}$ evenly-spaced values
 between $0$ and $2 \pi$.
-Communicative players always pay a cost $c$.
-A game's benefit depends on whether the number of communicators is
-zero (\num{0} benefit), one ($\beta_0$ mixed benefit),
-or two ($B_0 > \beta_0$ joint benefit).
-We incorporate the relative phase difference $\Delta \phi$
-by modulating these benefits with a sinusoidal Kuramoto coupling
+When exactly one partner is communicative, the
+asymmetry $\alpha \in [0,1]$ biases the payoff toward (against)
+the communicator when $\alpha$ is greater (less) than $1/2$,
+while $\alpha = 0.5$ reproduces the symmetric case.
+\Cref{fig:payoff_matrix} shows the payoff matrix
+for these mixed $CN$ or $NC$ interactions
+and includes the maximum joint benefit $B_0 = 0.15$,
+maximum mixed benefit $\beta_0$, cost $c$,
+and sinusoidal Kuramoto coupling
 $f(\Delta \phi) = [1+\cos(\phi_j - \phi_i)]/2$.
-Our new contribution is an asymmetry $\alpha \in [0,1]$
-that biases the mixed benefit $\beta_0$ when exactly one of the players is communicative.
-We multiply the $C$ player's mixed benefit by $2\alpha$
-and the $N$ player's benefit by $2(1 - \alpha)$.
-Using $\alpha = 0.5$ reproduces the symmetric case,
-and increasing (decreasing) $\alpha$ allows us
-to promote (suppress) communicativeness.
-The payoff matrix in \cref{fig:payoff_matrix} summarizes these payoffs
-for mixed $CN$ or $NC$ interactions.
 
 Unless otherwise specified,
 each simulation uses

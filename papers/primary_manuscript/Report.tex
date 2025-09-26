@@ -470,16 +470,16 @@ coexisting with disordered neighboring nodes.
 \begin{figure*}
   \centering
   \begin{subcaptiongroup}
-    \stackinset{l}{0.65in}{t}{3.4in}%
+    \stackinset{l}{3in}{t}{3.3in}%
       {\phantomcaption\label{fig:time-series_celegans-full}\captiontext*{}}{%
-    \stackinset{l}{3in}{t}{4.2in}%
-      {\phantomcaption\label{fig:comm-frac_celegans-undirected}\captiontext*{}}{%
-    \stackinset{l}{3in}{t}{2.2in}%
-      {\phantomcaption\label{fig:comm-frac_celegans-unweighted}\captiontext*{}}{%
-    \stackinset{l}{3in}{t}{0.2in}%
-      {\phantomcaption\label{fig:comm-frac_celegans-full}\captiontext*{}}{%
-    \stackinset{l}{0.65in}{t}{0.5in}%
+    \stackinset{l}{3in}{t}{0.4in}%
       {\phantomcaption\label{fig:graph}\captiontext*{}}{%
+    \stackinset{l}{0.65in}{t}{4.1in}%
+      {\phantomcaption\label{fig:comm-frac_celegans-undirected}\captiontext*{}}{%
+    \stackinset{l}{0.65in}{t}{2.1in}%
+      {\phantomcaption\label{fig:comm-frac_celegans-unweighted}\captiontext*{}}{%
+    \stackinset{l}{0.65in}{t}{0.1in}%
+      {\phantomcaption\label{fig:comm-frac_celegans-full}\captiontext*{}}{%
     {\includestandalone{tikz/c-elegans}}%
   }}}}}
   \end{subcaptiongroup}
@@ -487,15 +487,6 @@ coexisting with disordered neighboring nodes.
     \textbf{
       Rise of chimera states in \gls{celegans} neural network.
     }
-    \protect{\subref{fig:graph}}
-    The network topology for the \gls{celegans}
-    $N=300$ weighted, directed connectome
-    with asymmetry $\alpha = 0.75$.
-    The colors represent the $2m = 40$ strategies
-    at a particular time step;
-    blue colors are communicative,
-    red colors are non-communicative,
-    and shades represent different phases $\phi$.
     \protect{\subref{fig:comm-frac_celegans-full}}--\protect{\subref{fig:comm-frac_celegans-undirected}}
     Time-averaged fraction of players that are communicative as a function
     of the maximum joint benefit $B_0$.
@@ -507,6 +498,15 @@ coexisting with disordered neighboring nodes.
     and
     \protect{\subref{fig:comm-frac_celegans-undirected}}
     weighted, undirected \gls{celegans} connectome.
+    \protect{\subref{fig:graph}}
+    The network topology for the \gls{celegans}
+    $N=300$ weighted, directed connectome
+    with asymmetry $\alpha = 0.75$.
+    The colors represent the $2m = 40$ strategies
+    at a particular time step;
+    blue colors are communicative,
+    red colors are non-communicative,
+    and shades represent different phases $\phi$.
     \protect{\subref{fig:time-series_celegans-full}}
     Scatter plot with the same axes and coloring
     as \protect{\crefrange{fig:time-series_well-mixed_alpha-0}{fig:time-series_well-mixed_alpha-1}}

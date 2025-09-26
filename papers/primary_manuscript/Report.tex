@@ -261,6 +261,17 @@ to promote (suppress) communicativeness.
 The payoff matrix in \cref{fig:payoff_matrix} summarizes these payoffs
 for mixed $CN$ or $NC$ interactions.
 
+Unless otherwise specified,
+each simulation uses
+$m = 20$ phases,
+selection strength of $\delta=0.2$,
+mutation rate of $\mu=\num{1E-4}$,
+cost $c$ of \num{0.1},
+maximum joint benefit $B_0 = 0.15$,
+maximum mixed benefit $\beta_0$ of $\num{0.95} B_0$,
+and runs for \num{8E6} time steps
+(even if only a smaller time series subset is shown).
+
 \subsection{Parameter space}
 \begin{figure*}
   \centering
@@ -351,14 +362,13 @@ and highlight which regions of parameter space are accessible.
       Impact of symmetry breaking on neural synchronization
       in well-mixed populations.
     }
+    Communication frequency $f_{\text{comm}}$ for the well-mixed topology.
     \protect{\subref{fig:multi-comm-frac}}
     Time-averaged fraction of players that are communicative as a function
     of the maximum joint benefit $B_0$
     for different values of the payoff asymmetry $\alpha$.
     The marks represent the simulation results
     and the lines represent the theory predictions.
-    The $B_0$ step size is \num{0.04},
-    and the simulations ran for \num{2E8} time steps.
     \protect{\subref{fig:time-series_well-mixed_alpha-0}}--\protect{\subref{fig:time-series_well-mixed_alpha-1}}
     Scatter plots where
     the left vertical axis of each subplot gives
@@ -378,19 +388,7 @@ and highlight which regions of parameter space are accessible.
     $\alpha = 0.75$,
     and
     \protect{\subref{fig:time-series_well-mixed_alpha-1}}
-    $\alpha = 1$,
-    maximum joint benefit is $B_0 = 0.15$,
-    and the simulations ran for \num{8E5} time steps.
-    For all four
-    \protect{\subref{fig:multi-comm-frac}}--\protect{\subref{fig:time-series_well-mixed_alpha-1}}
-    subplots,
-    the network topologies are the
-    $N=20$ well-mixed population,
-    the maximum mixed benefit $\beta_0$ is $\num{0.95} B_0$ at each step,
-    the selection strength is $\delta=0.2$,
-    the mutation rate is $\mu=\num{1E-4}$,
-    and
-    the cost $c$ is \num{0.1}.
+    $\alpha = 1$.
   }\label{fig:well-mixed}
 \end{figure*}
 
@@ -401,6 +399,8 @@ $f_{\text{comm}}$ to the maximum joint benefit $B_0$.
 The marks represent the simulation results
 and the lines represent the full analytic
 result (Eq.\ 10 in supplementary material) for a well-mixed population.
+The $B_0$ step size is \num{0.04},
+and the simulations ran for \num{2E8} time steps.
 In general, $f_{\text{comm}}$ is low for small $B_0$,
 rises to $f_{\text{comm}} = 0.5$ at some break-even $B_0$,
 and plateaus to $f_{\text{comm}} \approx 1$ for large $B_0$.
@@ -433,15 +433,6 @@ On the right vertical axes,
 magenta line plots depict the order parameter
 $\rho \in [0,1]$
 given by \cref{eq:order_parameter}.
-These plots shows the results
-for a well-mixed population of $N=20$ players,
-and the simulations ran
-for \num{8E5} time steps with
-selection strength $\delta = 0.2$,
-mutation rate $\mu=\num{1E-4}$,
-cost $c = \num{0.1}$,
-maximum joint benefit $B_0 = 0.15$,
-and maximum mixed benefit $\beta_0$ is $\num{0.95} B_0$.
 
 \Cref{fig:time-series_well-mixed_alpha-0} shows the time-variation
 when the system heavily favors non-communicative players
@@ -512,7 +503,8 @@ coexisting with disordered neighboring nodes.
     }
     \protect{\subref{fig:graph}}
     The network topology for the \gls{celegans}
-    $N=300$ weighted, directed connectome.
+    $N=300$ weighted, directed connectome
+    with asymmetry $\alpha = 0.75$.
     The colors represent the $2m = 40$ strategies
     at a particular time step;
     blue colors are communicative,
@@ -529,21 +521,10 @@ coexisting with disordered neighboring nodes.
     and
     \protect{\subref{fig:comm-frac_celegans-undirected}}
     weighted, undirected \gls{celegans} connectome.
-    The $B_0$ step size is \num{0.04} and
-    the simulations ran for \num{2E8} time steps.
     \protect{\subref{fig:time-series_celegans-full}}
     Scatter plot with the same axes and coloring
     as \protect{\crefrange{fig:time-series_well-mixed_alpha-0}{fig:time-series_well-mixed_alpha-1}}
     showing the communicative frequency, plurality mixed game-types, and order parameter.
-    The maximum joint benefit is $B_0 = 0.15$ and
-    the simulation ran for \num{8E5} time steps.
-    For all cases,
-    the selection strength is $\delta=0.2$,
-    the asymmetry is $\alpha=0.75$,
-    the mutation rate is $\mu=\num{1E-4}$,
-    the maximum mixed benefit $\beta_0$ is $\num{0.95} B_0$ at each step,
-    and
-    the cost $c$ is \num{0.1}.
   }\label{fig:c-elegans}
 \end{figure*}
 
@@ -551,10 +532,9 @@ Next, to quantify the observations of \cref{fig:graph},
 \cref{fig:comm-frac_celegans-full} shows the fraction of players
 using communicative strategies $f_{\text{comm}}$ averaged across
 the entire simulation of \num{2E8} time steps as a function
-of the maximum joint benefit $B_0$
+of the maximum joint benefit $B_0$ in \num{0.04} steps
 for the \gls{celegans} connectome network topologies.
-All subplots use a selection strength of $\delta=0.2$
-and an asymmetry of $\alpha=0.75$.
+All subplots use an asymmetry of $\alpha=0.75$.
 
 We note that the behaviour
 of the \subref{fig:comm-frac_celegans-full} \gls{celegans} case
@@ -645,7 +625,6 @@ the \gls{celegans} case depicts disordered states with discontinuous offsets.
     To calculate the indices,
     we split the graph into two communities according to the nodes'
     relative covariance (\cf{} \cref{sec:chimera-metastability-def}).
-    The simulations ran for \num{8E6} time steps.
     \protect{\subref{fig:graph_celegans_asymmetry0}}--\protect{\subref{fig:graph_celegans_asymmetry1}}
     A snapshot of the \gls{celegans} connectome where
     blue colors are communicative,
@@ -657,13 +636,6 @@ the \gls{celegans} case depicts disordered states with discontinuous offsets.
     or
     \protect{\subref{fig:graph_celegans_asymmetry1}}
     $\alpha = 1$.
-    For all cases,
-    the selection strength is $\delta=0.2$,
-    the mutation rate is $\mu=\num{1E-4}$,
-    the cost $c$ is \num{0.1},
-    the maximum joint benefit $B_0$ is \num{0.15},
-    and
-    the maximum mixed benefit $\beta_0$ is $\num{0.95} B_0$.
   }\label{fig:chimera-index}
 \end{figure*}
 
@@ -768,12 +740,6 @@ rather than an artifact of our $\alpha = \num{0.75}$ choice.
     A blue inset below the
     \protect{\subref{fig:game-type_well-mixed-only-mixed-games}}
     well-mixed panel shows the magnified lower region.
-    The selection strength is $\delta=0.2$,
-    the mutation rate is $\mu=\num{1E-4}$,
-    the cost $c$ is \num{0.1},
-    the maximum joint benefit $B_0$ is \num{0.15},
-    the maximum mixed benefit $\beta_0$ is $\num{0.95} B_0$,
-    and the simulations ran for \num{8E6} time steps.
   }\label{fig:game-type}
 \end{figure*}
 

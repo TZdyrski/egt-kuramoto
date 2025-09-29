@@ -790,44 +790,6 @@ would be the only game types accessible for $\alpha = 0.5$,
 which is corroborated in our simulations by the inset below
 \cref{fig:game-type_well-mixed-only-mixed-games}.
 
-Additionally, we can consider the distribution of disordered
-(\ie{} states other than ``all-C'' or ``all-N'')
-games in \cref{fig:game-type} as functions of $\alpha$.
-Recall that the most-frequent disordered games
-in \cref{fig:game-type_well-mixed-only-mixed-games} (blue inset)
-and \cref{fig:game-type_celegans-full-only-mixed-games} are identical,
-so this discussion applies to both setups.
-In the \cref{fig:phase-diagram-beta_alpha}
-$\beta-\alpha$ parameter plane,
-each of the five $\alpha$ values
-correspond to a horizontal line of white dots.
-We note that every $\alpha$ case is dominated
-by the game-type of the rightmost white dots
-representing nearly-synchronized $\Delta \phi \approx 0$ configurations
-(dilemma for $\alpha = 0, 0.25$, chicken for $\alpha = 0.5$, \etc{}).
-In fact, finding circumstances when $\Delta \phi \approx 0$ game types
-are \emph{not} the plurality is quite challenging:
-we easily obtain nearly-synchronized $\Delta \phi \approx 0$
-game-type pluralities whenever the graph is largely synchronized,
-but only find two special-cases where $\Delta \phi \approx 0$ game types
-are \emph{not} the plurality.
-One special case is the configuration with $p$ equal-sized groups
-with phases that differ by $2 \pi/p$ (\cf{} supplementary material section 3.1);
-given our low mutation rate, this setup is unlikely.
-The second special case is when the population is almost evenly split
-between two groups with fractions between $0.5 \pm \sqrt{(N-1)/(4N\overline{d})}$,
-with average degree $\overline{d}$ (\cf{} supplementary material section 3.2).
-This corresponds to
-\SIrange{39}{62}{\percent} (\numrange{8}{12} players in each group)
-for the $N = 20$ well-mixed case ($\overline{d} = N-1$)
-and
-\SIrange{36}{64}{\percent} for the \gls{celegans} case ($\overline{d} \approx \num{12.36}$).
-Indeed, this $\approx \SI{15}{\percent}$ range is visible
-in both \cref{fig:game-type_well-mixed-only-mixed-games}
-and \cref{fig:game-type_celegans-full-only-mixed-games}
-as the percentage of time spent in non-synchronized games (\ie{} staghunt and concord)
-as a fraction of all disordered (non ``all-C''/``all-N''), mixed games.
-
 %\subsection{Chimera states}
 Next, we will discuss the observed chimera states.
 While the chimera-like quality is inherently time-dependent
@@ -916,14 +878,7 @@ between the communicative fraction and graph properties
 such as edge degree, weight, and directionality.
 However, applying the model to parameterized families of graphs could allow
 for fine-tuning the parameters to extract these relations.
-Furthermore, the parameter-space analysis provided clues
-regarding the types of games the neurons played,
-but additional study is necessary to determine a causal relation.
-Studying the parameter space attractors
-could provide this connection
-by revealing the long-time game distributions
-and yielding important implications for the neurons' fitness landscape.
-Finally, since this study only considers a single species' connectome,
+Additionally, since this study only considers a single species' connectome,
 it is unclear if our findings regarding the dependence
 of chimeric activity on graph structure are generalizable.
 Therefore, it is of interest to investigate this connection further
@@ -1221,8 +1176,7 @@ $\lambda = 1/12 \approx \num{0.08}$~\citep{shanahan2010metastable}.
 Supplementary Figure 1 of two-player game order graphs.
 Section 1, two-player game order graphs;
 Section 2, derivation of well-mixed communicative fraction
-with symmetry breaking;
-Section 3, derivation of plurality game type criteria.
+with symmetry breaking.
 Supplementary videos 1-3,
 time-evolution of \gls{celegans} player strategies
 using the same color scheme as \cref{fig:graph}

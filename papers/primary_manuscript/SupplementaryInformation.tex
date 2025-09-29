@@ -9,6 +9,15 @@
 \input{tikz/preamble.tex}
 
 \begin{document}
+\title{Supplementary Information for\\ 
+``Evolutionary Kuramoto dynamics unravels origins of chimera states
+in neural populations''}
+\author{
+Thomas Zdyrski, Scott Pauls, Feng Fu}
+
+\maketitle
+
+\tableofcontents
 \section{Two-player game order graphs}\label{sec:order_graphs}
 \begin{center}
     \includestandalone{tikz/game-payoffs}
@@ -22,14 +31,14 @@ and row player.
 The letters correspond to the following payoff matrix
 \begin{equation*}
   \begin{bNiceMatrix}[first-col,first-row,hvlines]
-    & C & N \\
-    C & A & B \\
-    N & C & D
+    & \textcolor{blue}{C} & \textcolor{blue}{N} \\
+    \textcolor{red}{C} & A & B \\
+    \textcolor{red}{N} & C & D
   \end{bNiceMatrix}
 \end{equation*}
 The horizontal axis represents the order of row player payoffs,
 and the red lines represent row player options.
-The vertical axis represents the order of row player payoffs,
+The vertical axis represents the order of column player payoffs,
 and the blue lines represent column player options.
 The arrows show the direction of increasing
 payoff for the relevant player,

@@ -21,7 +21,6 @@ jobs:
           SOURCE_DATE_EPOCH=0 TZ=Zulu guix time-machine -C channels.scm -- \
           shell --pure -E SOURCE_DATE_EPOCH -E TZ -m manifest.scm -- \
           latexmk -auxdir=latex.aux -lualatex \
-          -usepretex="\pdfvariable suppressoptionalinfo 512\relax" \
           Report.tex
       - name: Compile supplementary info
         working-directory: papers/primary_manuscript
@@ -29,7 +28,6 @@ jobs:
           SOURCE_DATE_EPOCH=0 TZ=Zulu guix time-machine -C channels.scm -- \
           shell --pure -E SOURCE_DATE_EPOCH -E TZ -m manifest.scm -- \
           latexmk -auxdir=latex.aux -lualatex \
-          -usepretex="\pdfvariable suppressoptionalinfo 512\relax" \
           SupplementaryInformation.tex
       - name: Create Release
         id: create_release

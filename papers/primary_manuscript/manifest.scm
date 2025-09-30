@@ -57,4 +57,5 @@
         "texlive-collargs"
         "texlive-placeins"
         "texlive-bin"
+        "texlive-luatex85"
         ))

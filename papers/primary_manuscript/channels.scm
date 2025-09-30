@@ -1,3 +1,5 @@
+;; SPDX-License-Identifier: GPL-3.0-or-later
+
 (list (channel
         (name 'guix)
         (url "https://git.guix.gnu.org/guix.git")

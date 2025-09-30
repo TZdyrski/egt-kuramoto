@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 # This file is machine-generated - editing it directly is not advised
 
 julia_version = "1.11.5"

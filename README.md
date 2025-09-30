@@ -68,3 +68,7 @@ using DrWatson
 @quickactivate "Chimera_EGT_Kuramoto"
 ```
 which auto-activate the project and enable local path handling from DrWatson.
+
+## License
+This project, except the `papers` directory, is licensed under the terms of the GPL v3.0 or later license.
+The `papers` directory is licensed under the terms of the Creative Commons Attribution 4.0 International Public License.

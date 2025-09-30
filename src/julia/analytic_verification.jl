@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 using Symbolics
 
 function check_formulas(nb_phases::Integer, nb_players::Integer)

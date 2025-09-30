@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 adj_matrix_source_vals = ["well-mixed", "c-elegans", "c-elegans-undirected", "c-elegans-unweighted"]
 symmetry_breaking_vals = [0.0, 0.25, 0.5, 0.75, 1.0]
 selection_strength_vals = [0.005, 0.2, 5.0]

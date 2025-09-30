@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 data_config_version = 0
 uuid = "fb6b3653-b53d-4039-9a33-e92ca9f1d87b"
 name = "juliaGameTheory"

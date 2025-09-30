@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 function parse_string(string::String)::Union{String,Int64,Float64}
   value = tryparse(Float64,string)
   if isnothing(value)

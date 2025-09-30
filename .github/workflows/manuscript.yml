@@ -18,17 +18,13 @@ jobs:
       - name: Compile manuscript
         working-directory: papers/primary_manuscript
         run: |
-          SOURCE_DATE_EPOCH=0 TZ=Zulu guix time-machine -C channels.scm -- \
-          shell --pure -E SOURCE_DATE_EPOCH -E TZ -m manifest.scm -- \
-          latexmk -auxdir=latex.aux -lualatex \
-          Report.tex
+          guix time-machine -C channels.scm -- shell --pure -m manifest.scm -- \
+          latexmk Report.tex
       - name: Compile supplementary info
         working-directory: papers/primary_manuscript
         run: |
-          SOURCE_DATE_EPOCH=0 TZ=Zulu guix time-machine -C channels.scm -- \
-          shell --pure -E SOURCE_DATE_EPOCH -E TZ -m manifest.scm -- \
-          latexmk -auxdir=latex.aux -lualatex \
-          SupplementaryInformation.tex
+          guix time-machine -C channels.scm -- shell --pure -m manifest.scm -- \
+          latexmk SupplementaryInformation.tex
       - name: Create Release
         id: create_release
         uses: ncipollo/release-action@v1

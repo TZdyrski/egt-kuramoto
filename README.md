@@ -3,7 +3,7 @@
 The repository contains the source code, analysis workflow, and LaTeX manuscript
 for the
 "Evolutionary Kuramoto dynamics unravels origins of chimera states in neural populations"
-paper by Thomas Zdyrski, Scott Pausl, and Feng Fu>
+paper by Thomas Zdyrski, Scott Pausl, and Feng Fu.
 
 ## Layout
 - `src` Julia source code for running simulations and postprocessing data

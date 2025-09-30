@@ -14,7 +14,9 @@ The primary release assets are:
 - The manuscript `papers/primary_manuscript/Report.pdf`
 - Graph evolution animations `plots/animations`
 - NetCDF data files `data/processed/netcdf`
-These release assets are all available on Zenodo
+
+The manuscript is available under [releases](https://github.com/TZdyrski/egt-kuramoto/releases).
+The animations and data files are all available on Zenodo
 at [doi:10.5281/zenodo.17135745](https://doi.org/10.5281/zenodo.17135745).
 
 All generated assets are created using Snakemake.

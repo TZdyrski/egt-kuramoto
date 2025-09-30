@@ -17,12 +17,11 @@ jobs:
         uses: actions/checkout@v2
       - name: Compile manuscript
         working-directory: papers/primary_manuscript
-        # Note: pass disable to memoize to create smaller PDF
         run: |
           SOURCE_DATE_EPOCH=0 TZ=Zulu guix time-machine -C channels.scm -- \
           shell --pure -E SOURCE_DATE_EPOCH -E TZ -m manifest.scm -- \
           latexmk -auxdir=latex.aux -lualatex \
-          -usepretex="\PassOptionsToPackage{disable}{memoize} \pdfvariable suppressoptionalinfo 512\relax" \
+          -usepretex="\pdfvariable suppressoptionalinfo 512\relax" \
           Report.tex
       - name: Compile supplementary info
         working-directory: papers/primary_manuscript

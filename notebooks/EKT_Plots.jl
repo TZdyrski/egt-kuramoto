@@ -102,10 +102,10 @@ begin
 	end
 
 	local cumulativeDataUrls = Dict(
-		"well-mixed" => "https://zenodo.org/records/17135745/files/cumulative_matrixSource=well-mixed_timesteps=200000000.nc?download=1&preview=1&token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6Ijk5NWM0NTNiLTQ4YzktNGJlYS1iNDUwLTQyMWViNGExYmU4ZCIsImRhdGEiOnt9LCJyYW5kb20iOiI0OWU5NGY4ZDg4YjkwY2Y1ODU1YzU1MTYyZjNiNzFiYiJ9.q2mPSuJEV_sjP0Hq9_1gsow9zpNUgBCRn34fLOSqkNigCUj4wsV6HCrF2YyXt_ia3MYHIAXsul94Di_5X3T2VA",
-		"c-elegans" => "https://zenodo.org/records/17135745/files/cumulative_matrixSource=c-elegans_timesteps=200000000.nc?download=1&preview=1&token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6Ijk5NWM0NTNiLTQ4YzktNGJlYS1iNDUwLTQyMWViNGExYmU4ZCIsImRhdGEiOnt9LCJyYW5kb20iOiI0OWU5NGY4ZDg4YjkwY2Y1ODU1YzU1MTYyZjNiNzFiYiJ9.q2mPSuJEV_sjP0Hq9_1gsow9zpNUgBCRn34fLOSqkNigCUj4wsV6HCrF2YyXt_ia3MYHIAXsul94Di_5X3T2VA",
-		"c-elegans-undirected" => "https://zenodo.org/records/17135745/files/cumulative_matrixSource=c-elegans-undirected_timesteps=200000000.nc?download=1&preview=1&token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6Ijk5NWM0NTNiLTQ4YzktNGJlYS1iNDUwLTQyMWViNGExYmU4ZCIsImRhdGEiOnt9LCJyYW5kb20iOiI0OWU5NGY4ZDg4YjkwY2Y1ODU1YzU1MTYyZjNiNzFiYiJ9.q2mPSuJEV_sjP0Hq9_1gsow9zpNUgBCRn34fLOSqkNigCUj4wsV6HCrF2YyXt_ia3MYHIAXsul94Di_5X3T2VA",
-		"c-elegans-unweighted" => "https://zenodo.org/records/17135745/files/cumulative_matrixSource=c-elegans-unweighted_timesteps=200000000.nc?download=1&preview=1&token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6Ijk5NWM0NTNiLTQ4YzktNGJlYS1iNDUwLTQyMWViNGExYmU4ZCIsImRhdGEiOnt9LCJyYW5kb20iOiI0OWU5NGY4ZDg4YjkwY2Y1ODU1YzU1MTYyZjNiNzFiYiJ9.q2mPSuJEV_sjP0Hq9_1gsow9zpNUgBCRn34fLOSqkNigCUj4wsV6HCrF2YyXt_ia3MYHIAXsul94Di_5X3T2VA",
+		"well-mixed" => "https://zenodo.org/records/17135745/files/cumulative_matrixSource=well-mixed_timesteps=200000000.nc",
+		"c-elegans" => "https://zenodo.org/records/17135745/files/cumulative_matrixSource=c-elegans_timesteps=200000000.nc",
+		"c-elegans-undirected" => "https://zenodo.org/records/17135745/files/cumulative_matrixSource=c-elegans-undirected_timesteps=200000000.nc",
+		"c-elegans-unweighted" => "https://zenodo.org/records/17135745/files/cumulative_matrixSource=c-elegans-unweighted_timesteps=200000000.nc",
 	)
 	local cumulativeDataFilenames = Dict(
 		"well-mixed" => "cumulative_matrixSource=well-mixed_timesteps=20000.nc",
@@ -116,10 +116,10 @@ begin
 	cumulativeDatasets = Dict(k => open_or_download(cumulativeDataFilenames[k],v) for (k,v) in cumulativeDataUrls)
 
 	local timeseriesDataUrls = Dict(
-		"well-mixed" => "https://zenodo.org/records/17135745/files/timeseries-statistics_decimationFactor=1000_matrixSource=well-mixed_timesteps=8000000.nc?download=1&preview=1&token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6Ijk5NWM0NTNiLTQ4YzktNGJlYS1iNDUwLTQyMWViNGExYmU4ZCIsImRhdGEiOnt9LCJyYW5kb20iOiI0OWU5NGY4ZDg4YjkwY2Y1ODU1YzU1MTYyZjNiNzFiYiJ9.q2mPSuJEV_sjP0Hq9_1gsow9zpNUgBCRn34fLOSqkNigCUj4wsV6HCrF2YyXt_ia3MYHIAXsul94Di_5X3T2VA",
-		"c-elegans" => "https://zenodo.org/records/17135745/files/timeseries-statistics_decimationFactor=1000_matrixSource=c-elegans_timesteps=8000000.nc?download=1&preview=1&token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6Ijk5NWM0NTNiLTQ4YzktNGJlYS1iNDUwLTQyMWViNGExYmU4ZCIsImRhdGEiOnt9LCJyYW5kb20iOiI0OWU5NGY4ZDg4YjkwY2Y1ODU1YzU1MTYyZjNiNzFiYiJ9.q2mPSuJEV_sjP0Hq9_1gsow9zpNUgBCRn34fLOSqkNigCUj4wsV6HCrF2YyXt_ia3MYHIAXsul94Di_5X3T2VA",
-		"c-elegans-undirected" => "https://zenodo.org/records/17135745/files/timeseries-statistics_decimationFactor=1000_matrixSource=c-elegans-undirected_timesteps=8000000.nc?download=1&preview=1&token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6Ijk5NWM0NTNiLTQ4YzktNGJlYS1iNDUwLTQyMWViNGExYmU4ZCIsImRhdGEiOnt9LCJyYW5kb20iOiI0OWU5NGY4ZDg4YjkwY2Y1ODU1YzU1MTYyZjNiNzFiYiJ9.q2mPSuJEV_sjP0Hq9_1gsow9zpNUgBCRn34fLOSqkNigCUj4wsV6HCrF2YyXt_ia3MYHIAXsul94Di_5X3T2VA",
-		"c-elegans-unweighted" => "https://zenodo.org/records/17135745/files/timeseries-statistics_decimationFactor=1000_matrixSource=c-elegans-unweighted_timesteps=8000000.nc?download=1&preview=1&token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6Ijk5NWM0NTNiLTQ4YzktNGJlYS1iNDUwLTQyMWViNGExYmU4ZCIsImRhdGEiOnt9LCJyYW5kb20iOiI0OWU5NGY4ZDg4YjkwY2Y1ODU1YzU1MTYyZjNiNzFiYiJ9.q2mPSuJEV_sjP0Hq9_1gsow9zpNUgBCRn34fLOSqkNigCUj4wsV6HCrF2YyXt_ia3MYHIAXsul94Di_5X3T2VA",
+		"well-mixed" => "https://zenodo.org/records/17135745/files/timeseries-statistics_decimationFactor=1000_matrixSource=well-mixed_timesteps=8000000.nc",
+		"c-elegans" => "https://zenodo.org/records/17135745/files/timeseries-statistics_decimationFactor=1000_matrixSource=c-elegans_timesteps=8000000.nc",
+		"c-elegans-undirected" => "https://zenodo.org/records/17135745/files/timeseries-statistics_decimationFactor=1000_matrixSource=c-elegans-undirected_timesteps=8000000.nc",
+		"c-elegans-unweighted" => "https://zenodo.org/records/17135745/files/timeseries-statistics_decimationFactor=1000_matrixSource=c-elegans-unweighted_timesteps=8000000.nc",
 	)
 	local timeseriesDataFilenames = Dict(
 		"well-mixed" => "timeseries-statistics_decimationFactor=1000_matrixSource=well-mixed_timesteps=8000.nc",

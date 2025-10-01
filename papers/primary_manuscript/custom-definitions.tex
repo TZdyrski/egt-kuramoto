@@ -1,0 +1,26 @@
+% SPDX-License-Identifier: CC-BY-4.0
+
+% Define binomial nomenclatures
+\setabbreviationstyle[species]{long-em-short-em}
+\glssetcategoryattribute{species}{nohyper}{true}
+\newabbreviation[category={species}]{celegans}{C. elegans}{Caenorhabditis elegans}
+\newabbreviation[category={species}]{dmelanogaster}{D. melanogaster}{Drosophila melanogaster}
+
+% Define custom macros
+\newcommand{\im}{\mathrm{i}}
+\DeclareMathOperator{\cov}{cov}
+
+% Define custom caption separator
+\DeclareCaptionLabelSeparator{bar}{|}
+\captionsetup{labelsep=bar}
+
+% Prevent floats from leaving subsection
+%\pretocmd{\section}{\FloatBarrier}{}{}
+%\pretocmd{\subsection}{\FloatBarrier}{}{}
+%\pretocmd{\subsubsection}{\FloatBarrier}{}{}
+
+% Add comma separator for numbers
+\sisetup{group-minimum-digits=3}
+\sisetup{group-separator = {,}}
+
+\defasforeign[aka]{a.k.a.} % Define abbreviation of aka

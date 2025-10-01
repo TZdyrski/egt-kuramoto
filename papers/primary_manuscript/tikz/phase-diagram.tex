@@ -1,0 +1,199 @@
+%! TeX program = lualatex
+% SPDX-License-Identifier: CC-BY-4.0
+
+\documentclass[tikz]{standalone}
+
+% Import custom style file containing common packages and options
+\usepackage{../preamble}
+
+% Import tikz options and preamble
+\input{preamble}
+
+% Set data search path
+\pgfplotsset{
+    table/search path={../../../data/processed},
+}
+
+\begin{document}
+\begin{tikzpicture}
+    \newcommand{\betaOnB}{0.95}
+    \newcommand{\numPhases}{20}
+    \newcommand{\BnaughtOnC}{1.5}
+    \begin{groupplot}[
+      width=0.5\textwidth,
+      group style={
+        group size=2 by 1,
+        horizontal sep=1.5cm,
+      },
+      axis on top,
+      domain=0:2.5,
+      samples=100,
+      xmin=0,
+      xmax=2.5,
+      ymin=0,
+      ylabel={Game type frequency},
+      trig format plots=rad,
+      % Ensure scientific notation isn't used
+      yticklabel style={
+        /pgf/number format/precision=3,
+        /pgf/number format/fixed},
+      xticklabel style={
+        /pgf/number format/precision=3,
+        /pgf/number format/fixed},
+      every axis plot/.append style={
+        thick,
+        smooth,
+        no markers,
+      },
+      ]
+        \nextgroupplot[
+          ylabel={Joint benefit $B_0/c$},
+          ymax=2.5,
+          ]
+
+        % label the x axis
+        \path[name path=xlower] (axis cs:0,0) -- (axis cs:02.5,0);
+        \path[name path=xupper] (axis cs:0,2.5) -- (axis cs:2.5,2.5);
+
+        % label the y axis
+        \path[name path=yleft] (axis cs:0,0) -- (axis cs:0,2.5);
+        \path[name path=yright] (axis cs:2.5,0) -- (axis cs:2.5,2.5);
+
+        % Add lines
+        \addplot[name path=R_S] {x};
+        \addplot[name path=R_T] {x + 1};
+        \addplot[name path=R_P] {1};
+
+        \addplot[name path=S_P] coordinates {(1,0) (1,2.5)};
+        \addplot[draw=none,name path=T_P] coordinates {(0,0) (0,2.5)};
+
+        % Fill in regions
+        \addplot[staghunt] fill between[of=yleft and R_T,
+          reverse=false,
+          soft clip={domain y=1:2}];
+        \addplot[staghunt] fill between[of=yleft and S_P,
+          reverse=false,
+          soft clip={domain y=2:2.5}];
+        \addplot[concord] fill between[of=R_T and S_P,
+          soft clip={domain y=2:2.5}];
+        \addplot[chicken] fill between[of=R_T and R_S,
+          soft clip={domain=1:2.5}];
+        \addplot[battle] fill between[of=R_S and yright,
+          reverse=false,
+          soft clip={domain y=1:2.5}];
+        \addplot[dilemma] fill between[of=R_T and S_P,
+          soft clip={domain y=1:2}];
+        \addplot[deadlock] fill between[of=R_S and yleft,
+          reverse=false,
+          soft clip={domain y=0:1}];
+        \addplot[compromise] fill between[of=R_S and S_P,
+          soft clip={domain y=0:1}];
+        \addplot[hero] fill between[of=S_P and yright,
+          reverse=false,
+          soft clip={domain y=0:1}];
+
+        % Add dots
+        \addplot [only marks,mark=*,mark options={fill=white},
+          domain=0:2*pi, samples=\numPhases+1] ({\betaOnB*\BnaughtOnC*(1+cos(x))/2},
+          {\BnaughtOnC});
+
+        \nextgroupplot[
+          ylabel={$\alpha$},
+          ymax=1.25,
+          ]
+
+        % label the x axis
+        \path[name path=xlower] (axis cs:0,0) -- (axis cs:2.5,0);
+        \path[name path=xupper] (axis cs:0,1.25) -- (axis cs:2.5,1.25);
+
+        % label the y axis
+        \path[name path=yleft] (axis cs:0,0) -- (axis cs:0,1.25);
+        \path[name path=yright] (axis cs:2.5,0) -- (axis cs:2.5,1.25);
+
+        % Add lines
+        \addplot[name path=R_S] {\BnaughtOnC/2/x};
+        \addplot[name path=R_T] {1 - (\BnaughtOnC-1)/2/x};
+        \addplot[name path=S_T] {(1+2*x)/4/x};
+        \addplot[name path=S_P] {1/2/x};
+        \addplot[name path=T_Pa] coordinates {(0,0) (0,1.25)};
+        \addplot[name path=T_Pb] {1};
+
+        % Fill in regions
+        % Using 0 as left limit in the right groupplot causes issues
+        % Instead, use -0.1 as left limit
+        \addplot[assurance] fill between[of=yleft and S_T,
+          soft clip={domain y=1:1.25}];
+        \addplot[coordination] fill between[of=S_T and S_P,
+          soft clip={domain y=1:1.25}];
+        \addplot[peace] fill between[of=S_P and R_S,
+          soft clip={domain y=1:1.25}];
+        \addplot[deadlock] fill between[of=R_S and yright,
+          soft clip={domain y=1:1.25}];
+        \pgfmathsetmacro\RTSPy{1/\BnaughtOnC}
+        \addplot[staghunt] fill between[of=yleft and R_T,
+          soft clip={domain y=-0.1:\RTSPy}];
+        \addplot[staghunt] fill between[of=yleft and S_P,
+          soft clip={domain y=\RTSPy:1}];
+        \pgfmathsetmacro\RTSPx{\BnaughtOnC/2}
+        \pgfmathsetmacro\RTXAXISx{(\BnaughtOnC-1)/2}
+        \addplot[dilemma] fill between[of=xlower and R_T,
+          soft clip={domain=\RTXAXISx:\RTSPx}];
+        \addplot[dilemma] fill between[of=xlower and S_P,
+          soft clip={domain=\RTSPx:2.5}];
+        \addplot[chicken] fill between[of=S_P and R_T,
+          soft clip={domain=\RTSPx:1}];
+        \addplot[chicken] fill between[of=S_P and R_S,
+          soft clip={domain=1:2.5}];
+        \addplot[battle] fill between[of=R_S and S_T,
+          soft clip={domain=1:2.5}];
+        \addplot[hero] fill between[of=S_T and R_T,
+          soft clip={domain=1:2.5}];
+        \pgfmathsetmacro\RSTPx{\BnaughtOnC/2}
+        \addplot[compromise] fill between[of=R_S and T_Pb,
+          soft clip={domain=\RSTPx:1}];
+        \addplot[compromise] fill between[of=R_T and T_Pb,
+          soft clip={domain=1:2.5}];
+        \pgfmathsetmacro\RSSTy{\BnaughtOnC/2}
+        \addplot[harmony] fill between[of=R_S and S_T,
+          soft clip={domain y=\RSSTy:1}];
+        \addplot[concord] fill between[of=S_P and S_T,
+          soft clip={domain y=\RSSTy:1}];
+        \addplot[concord] fill between[of=S_P and R_T,
+          reverse=false,
+          soft clip={domain y=\RTSPy:\RSSTy}];
+
+        % Add dots
+        \foreach \alpha in {0, 0.25, 0.5, 0.75, 1}
+        {
+          \addplot [only marks,mark=*,mark options={fill=white},
+            domain=0:2*pi, samples=\numPhases+1] ({\betaOnB*\BnaughtOnC*(1+cos(x))/2}, \alpha);
+        }
+    \end{groupplot}
+    % Make an invisible axis to create a legend that is the union
+    % of all the data table's column names
+    \begin{axis}[
+      hide axis,
+      % Needs xmin/xmax/ymin/ymax to create legend entries
+      xmin=10,
+      xmax=50,
+      ymin=0,
+      ymax=0.4,
+      legend columns=4,
+      legend to name={CommonLegend4},
+      ]
+      \def\game{
+        staghunt, concord, chicken, battle, dilemma, deadlock, compromise, hero,
+        peace, harmony, coordination, assurance
+      }
+      {
+        % Add all entries to legend
+        \expandafter\pgfplotsinvokeforeach\expandafter{\game}{%
+          \addlegendimage{ybar, single ybar legend, #1, draw=black}%
+          \addlegendentry{#1}%
+        }%
+      }
+    \end{axis}
+    \node[anchor=north] (title-x) at ($(group c1r1.south east)!0.5!(group c2r1.south west)-(0,0.5cm)$) {Mixed benefit $\beta/c$};
+    \path (group c1r1.south west) -- node[below={1cm}]{\pgfplotslegendfromname{CommonLegend4}} (group c2r1.south east);
+\end{tikzpicture}
+\end{document}

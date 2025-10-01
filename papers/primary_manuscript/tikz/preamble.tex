@@ -1,0 +1,95 @@
+% SPDX-License-Identifier: CC-BY-4.0
+
+% Define pgfplots classes
+\pgfplotsset{simulation scatter/.style={only marks, blue}}
+\pgfplotsset{full theory line/.style={orange}}
+\pgfplotsset{approx theory line/.style={purple, dashed}}
+
+\pgfplotsset{fraction communicative chart/.style={
+        ymin={0},
+        ymax={1},
+        ytick={0.0,0.5,1.0},
+        grid,
+        table/x=B0,
+        table/y=communicative_fraction,
+        cycle list={
+          simulation scatter,
+          full theory line,
+          approx theory line,
+        },
+        enlarge y limits=0.05,
+    }
+}
+
+\pgfplotsset{
+  harmony/.style={fill=Paired-G,draw=Paired-G},
+  chicken/.style={fill=Paired-F,draw=Paired-F}, % exponential fixation time
+  battle/.style={fill=Paired-E,draw=Paired-E}, % exponential fixation time
+  hero/.style={fill=Paired-H,draw=Paired-H}, % exponential fixation time
+  compromise/.style={fill=Paired-C,draw=Paired-C},
+  concord/.style={fill=Paired-D,draw=Paired-D},
+  staghunt/.style={fill=Paired-B,draw=Paired-B},
+  dilemma/.style={fill=Paired-K,draw=Paired-K},
+  deadlock/.style={fill=Paired-A,draw=Paired-A},
+  assurance/.style={fill=Paired-J,draw=Paired-J},
+  coordination/.style={fill=Paired-I,draw=Paired-I},
+  peace/.style={fill=Paired-L,draw=Paired-L},
+  neutral/.style={fill=gray,draw=gray},
+  all_communicative/.style={fill=lightgray,draw=lightgray},
+  all_noncommunicative/.style={fill=darkgray,draw=darkgray},
+  disconnected_synchronized_populations/.style={fill=black,draw=black},
+}
+
+\pgfplotsset{colormap={strategycolors}%
+{[1cm] color (0cm) = (blue!100) color (19cm) = (blue!05)
+  color (20cm) = (red!100) color (39cm) = (red!05)}}
+
+\pgfplotsset{table/col sep=comma}
+
+% Define sorting function
+% Source: https://tex.stackexchange.com/a/333659
+\def\listterminator{;}
+\makeatletter
+\newcommand\alphabubblesort[1]{\def\presorted{}\def\sortedlist{}%
+  \sortlist#1,\listterminator,\relax}
+\def\sortlist#1#2,#3#4,#5\relax{%
+  \if\listterminator#3#4\relax%
+    \edef\sortedlist{\sortedlist#1#2}%
+  \else
+    \ifnum\the\lccode`#1<\the\lccode`#3\relax%
+      \edef\sortedlist{\sortedlist\presorted#1#2, }%
+      \expandafter\def\expandafter\svfirst\expandafter{\presorted#3#4}%
+      \def\presorted{}%
+      \expandafter\sortlist\svfirst,#5\relax%
+    \else%
+      \ifnum`#1=`#3\relax%
+        \ifx\relax#2\relax%
+          \edef\sortedlist{\sortedlist\presorted#1#2, }%
+          \expandafter\def\expandafter\svfirst\expandafter{\presorted#3#4}%
+          \def\presorted{}%
+          \expandafter\sortlist\svfirst,#5\relax%
+        \else%
+          \ifx\relax#4\relax%
+            \edef\sortedlist{\sortedlist\presorted#3#4, }%
+            \expandafter\def\expandafter\svfirst\expandafter{\presorted#1#2}%
+            \def\presorted{}%
+            \expandafter\sortlist\svfirst,#5\relax%
+          \else
+            \g@addto@macro\presorted{#1}%
+            \sortlist#2,#4,#5\relax%
+          \fi%
+        \fi%
+      \else%
+        \let\tmp\sortedlist%
+        \def\sortedlist{}%
+        \expandafter\def\expandafter\svfirst\expandafter{\presorted#3#4}%
+        \expandafter\def\expandafter\svsecond\expandafter{\presorted#1#2}%
+        \def\presorted{}%
+        \expandafter\expandafter\expandafter\expandafter\expandafter%
+        \expandafter\expandafter\sortlist\expandafter\expandafter%
+        \expandafter\tmp\expandafter\svfirst\expandafter,\svsecond,#5\relax%
+      \fi%
+    \fi%
+  \fi%
+}
+\makeatother

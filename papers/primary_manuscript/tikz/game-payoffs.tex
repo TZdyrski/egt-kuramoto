@@ -1,0 +1,115 @@
+%! TeX program = lualatex
+% SPDX-License-Identifier: CC-BY-4.0
+
+\documentclass[tikz]{standalone}
+
+% Import custom style file containing common packages and options
+\usepackage{../preamble}
+%\usepackage{ifthen}
+\usepackage{pgfplotstable}
+
+% Import tikz options and preamble
+\input{preamble}
+
+% Set data search path
+\pgfplotsset{
+    table/search path={../../../data/processed},
+}
+
+\begin{document}
+\pgfplotstableread{
+  concord,harmony,peace,coordination,assurance,staghunt,dilemma,deadlock,compromise,hero,battle,chicken
+  4,4,4,4,4,4,3,2,1,1,2,3
+  2,3,3,2,1,1,1,1,2,3,3,2
+  3,2,1,1,2,3,4,4,4,4,4,4
+  1,1,2,3,3,2,2,3,3,2,1,1
+}\gameData
+
+\begin{tikzpicture}[
+    myArrow/.style={thick},
+    rowplayer/.style={red,myArrow},
+    colplayer/.style={blue,myArrow},
+  ]
+  \begin{groupplot}[
+    width=0.4\textwidth,
+    group style={
+      group size=3 by 4,
+    },
+    % Make room for subcaption labels
+    xmin=0.5, xmax=5, ymin=0.5, ymax=4.5,
+    xtick={1,2,3,4},
+    ytick={1,2,3,4},
+    xlabel style={red},
+    x tick label style=red,
+    ylabel style={blue},
+    y tick label style=blue,
+    ]
+    \pgfplotstableforeachcolumn\gameData\as\game{%
+
+      % Load and save the four game elements
+      \pgfplotstablegetelem{0}\game\of\gameData
+      \edef\rowA{\pgfplotsretval}
+      \edef\colA{\pgfplotsretval}
+      \pgfplotstablegetelem{1}\game\of\gameData
+      \edef\rowB{\pgfplotsretval}
+      \edef\colC{\pgfplotsretval}
+      \pgfplotstablegetelem{2}\game\of\gameData
+      \edef\rowC{\pgfplotsretval}
+      \edef\colB{\pgfplotsretval}
+      \pgfplotstablegetelem{3}\game\of\gameData
+      \edef\rowD{\pgfplotsretval}
+      \edef\colD{\pgfplotsretval}
+
+      % Pgfplots axis evaluate arguments all at once at \end{axis};
+      % To force evaluation in each loop iteration, use this \edef and \noexpand trick
+      \edef\nextplot{%
+      % Make title upper case
+      \noexpand\nextgroupplot[title=\noexpand\MakeUppercase\game]
+
+      \noexpand\ifthenelse{\rowC < \rowA \noexpand\AND \colB < \colA}{
+        \noexpand\node[circle,draw=black,fill=black,label=right:A] (A) at (\rowA,\colA) {};
+      }{
+        \noexpand\node[circle,draw=black,fill=white,label=right:A] (A) at (\rowA,\colA) {};
+      }
+      \noexpand\ifthenelse{\rowD < \rowB \noexpand\AND \colA < \colB}{
+        \noexpand\node[circle,draw=black,fill=black,label=right:B] (B) at (\rowB,\colB) {};
+      }{
+        \noexpand\node[circle,draw=black,fill=white,label=right:B] (B) at (\rowB,\colB) {};
+      }
+      \noexpand\ifthenelse{\rowA < \rowC \noexpand\AND \colD < \colC}{
+        \noexpand\node[circle,draw=black,fill=black,label=right:C] (C) at (\rowC,\colC) {};
+      }{
+        \noexpand\node[circle,draw=black,fill=white,label=right:C] (C) at (\rowC,\colC) {};
+      }
+      \noexpand\ifthenelse{\rowB < \rowD \noexpand\AND \colC < \colD}{
+        \noexpand\node[circle,draw=black,fill=black,label=right:D] (D) at (\rowD,\colD) {};
+      }{
+        \noexpand\node[circle,draw=black,fill=white,label=right:D] (D) at (\rowD,\colD) {};
+      }
+
+      \noexpand\ifthenelse{\colA < \colB}{
+        \noexpand\draw[-Stealth,colplayer] (A) -- (B);
+      }{
+        \noexpand\draw[Stealth-,colplayer] (A) -- (B);
+      }
+      \noexpand\ifthenelse{\rowA < \rowC}{
+        \noexpand\draw[-Stealth,rowplayer] (A) -- (C);
+      }{
+        \noexpand\draw[Stealth-,rowplayer] (A) -- (C);
+      }
+      \noexpand\ifthenelse{\colC < \colD}{
+        \noexpand\draw[-Stealth,colplayer] (C) -- (D);
+      }{
+        \noexpand\draw[Stealth-,colplayer] (C) -- (D);
+      }
+      \noexpand\ifthenelse{\rowB < \rowD}{
+        \noexpand\draw[-Stealth,rowplayer] (B) -- (D);
+      }{
+        \noexpand\draw[Stealth-,rowplayer] (B) -- (D);
+      }
+      }
+      \nextplot
+    }
+  \end{groupplot}
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,273 @@
+%! TeX program = lualatex
+% SPDX-License-Identifier: CC-BY-4.0
+
+\documentclass[tikz]{standalone}
+
+% Import custom style file containing common packages and options
+\usepackage{../preamble}
+
+% Import tikz options and preamble
+\input{preamble}
+
+% Set data search path
+\pgfplotsset{
+    table/search path={../../../data/processed},
+}
+
+\begin{document}
+\begin{tikzpicture}
+  \begin{groupplot}[
+    width=0.35\textwidth,
+    group style={
+      group size=2 by 2,
+      horizontal sep=1.5cm,
+      vertical sep=2cm,
+    },
+    scale only axis, % ensure overlaid axes align
+    ]
+    \nextgroupplot[fraction communicative chart,
+    xlabel={Maximum joint benefit $B_0$},
+    legend style={at={(0.99,0.5)},anchor=east},
+    % Activate Brewer color cycle
+    cycle list/Greens-5,
+    % Combine color cycle with marker cycle
+    cycle multiindex* list={
+      {
+        every mark/.append style={solid,fill=\pgfplotsmarklistfill},mark=*\\
+        every mark/.append style={solid,fill=\pgfplotsmarklistfill},mark=square*\\
+        every mark/.append style={solid,fill=\pgfplotsmarklistfill},mark=triangle*\\
+        every mark/.append style={solid,fill=\pgfplotsmarklistfill},mark=halfsquare*\\
+        every mark/.append style={solid,fill=\pgfplotsmarklistfill},mark=pentagon*\\
+      }\nextlist
+      Greens-5\nextlist
+    },
+    ]
+
+    \addlegendimage{empty legend}
+    \addplot+[no marks] table {cumulative/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.0_time_steps=200000000_type=theory.csv};
+    \addplot+[no marks] table {cumulative/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.25_time_steps=200000000_type=theory.csv};
+    \addplot+[no marks] table {cumulative/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.5_time_steps=200000000_type=theory.csv};
+    \addplot+[no marks] table {cumulative/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=theory.csv};
+    \addplot+[no marks] table {cumulative/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=1.0_time_steps=200000000_type=theory.csv};
+    \addplot+[only marks,legend image post style={sharp plot}] table {cumulative/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.0_time_steps=200000000_type=simulation.csv};
+    \addplot+[only marks,legend image post style={sharp plot}] table {cumulative/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.25_time_steps=200000000_type=simulation.csv};
+    \addplot+[only marks,legend image post style={sharp plot}] table {cumulative/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.5_time_steps=200000000_type=simulation.csv};
+    \addplot+[only marks,legend image post style={sharp plot}] table {cumulative/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.csv};
+    \addplot+[only marks,legend image post style={sharp plot}] table {cumulative/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=1.0_time_steps=200000000_type=simulation.csv};
+    \legend{\hspace{-.6cm}\textbf{Asym.\ $\alpha$},,,,,,$0$,$1/4$,$1/2$,$3/4$,$1$}
+
+    \nextgroupplot[
+      ymin=0,
+      ymax=1,
+      enlarge y limits=0.05,
+      hide x axis,
+      axis  y  line*=right,
+      y tick label style=magenta,
+      every axis plot/.append style={
+        line width=1pt,
+        line join=bevel,
+      },
+    ]
+    \addplot [magenta] table [y=order_parameter] {timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.0_time_steps=8000000.csv};
+
+    \nextgroupplot[
+      ymin=0,
+      ymax=1,
+      enlarge y limits=0.05,
+      hide x axis,
+      axis  y  line*=right,
+      y tick label style=magenta,
+      every axis plot/.append style={
+        line width=1pt,
+        line join=bevel,
+      },
+    ]
+    \addplot [magenta] table [y=order_parameter] {timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv};
+
+    \nextgroupplot[
+      ymin=0,
+      ymax=1,
+      enlarge y limits=0.05,
+      hide x axis,
+      axis  y  line*=right,
+      y tick label style=magenta,
+      every axis plot/.append style={
+        line width=1pt,
+        line join=bevel,
+      },
+    ]
+    \addplot [magenta] table [y=order_parameter] {timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=1.0_time_steps=8000000.csv};
+  \end{groupplot}
+
+  \begin{groupplot}[
+    width=0.35\textwidth,
+    group style={
+      group size=2 by 2,
+      horizontal sep=1.5cm,
+      vertical sep=2cm,
+    },
+    ymin=0,
+    ymax=1,
+    enlarge y limits=0.05,
+    axis y line*=left,
+    scale only axis, % ensure overlaid axes align
+    every x tick scale label/.style={at={(xticklabel cs:1)},anchor=south west}, % Move xlabel exponent
+    shader=flat corner, %disable color mixing
+    every axis plot/.append style={
+      only marks,
+      mark size=0.75pt,
+    },
+    scatter,
+    scatter src=explicit symbolic,
+    scatter/classes={%
+      harmony={draw=Paired-G,fill=Paired-G},
+      chicken={draw=Paired-F,fill=Paired-F},
+      battle={draw=Paired-E,fill=Paired-E},
+      hero={draw=Paired-H,fill=Paired-H},
+      compromise={draw=Paired-C,fill=Paired-C},
+      concord={draw=Paired-D,fill=Paired-D},
+      staghunt={draw=Paired-B,fill=Paired-B},
+      dilemma={draw=Paired-K,fill=Paired-K},
+      deadlock={draw=Paired-A,fill=Paired-A},
+      assurance={draw=Paired-J,fill=Paired-J},
+      coordination={draw=Paired-I,fill=Paired-I},
+      peace={draw=Paired-L,fill=Paired-L},
+      neutral={fill=gray,draw=gray},
+      all_communicative={draw=lightgray,fill=lightgray},
+      all_noncommunicative={draw=darkgray,fill=darkgray},
+      disconnected_synchronized_populations={fill=black,draw=black}
+    },
+    ]
+    \nextgroupplot[
+      hide x axis,
+      hide y axis,
+      ]
+    \nextgroupplot[
+      xlabel={Time},
+      grid,
+    ]
+    \addplot table [y=communicative_fraction, meta=game_type] {timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.0_time_steps=8000000.csv};
+    \nextgroupplot[
+      xlabel={Time},
+      grid,
+    ]
+    \addplot table [y=communicative_fraction, meta=game_type] {timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv};
+
+    \nextgroupplot[
+      xlabel={Time},
+      grid,
+    ]
+    \addplot table [y=communicative_fraction, meta=game_type] {timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=1.0_time_steps=8000000.csv};
+
+
+  \end{groupplot}
+
+  % Make an invisible axis to create a legend that is the union
+  % of all the data table's column names
+  \begin{axis}[
+    hide axis,
+    % Needs xmin/xmax/ymin/ymax to create legend entries
+    xmin=10,
+    xmax=50,
+    ymin=0,
+    ymax=0.4,
+    legend columns=-1,
+    legend to name={CommonLegend3},
+    ]
+    \def\gameTypes{}
+    % Prevent underscore from counting as subscript
+    \catcode`\_=12
+    % Note: these table names must be the same as those in the groupplots
+    \pgfplotsforeachungrouped\tablename in {timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.0_time_steps=8000000.csv,timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv,timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=1.0_time_steps=8000000.csv} {
+      % Read table
+      \pgfplotstableread\tablename\loadtable
+      % Loop over each column
+      \pgfplotstableforeachcolumnelement{game_type}\of\loadtable\as\gameType
+      {
+        \ifnum\pgfplotstablerow=0\else%
+          \ifx\gameTypes\empty
+            % Add first game type to empty gameTypes
+            \edef\gameTypes{\gameType}
+          \else
+            % Add game type to gameTypes if not already there
+            \IfSubStr{\gameTypes}{\gameType}{}{\edef\gameTypes{\gameTypes,\gameType}}
+          \fi
+        \fi
+      }
+    }
+
+    % Add all entries to legend
+    \expandafter\pgfplotsinvokeforeach\expandafter{\gameTypes}{%
+      \addlegendimage{ybar, single ybar legend, #1, draw=black}%
+      \addlegendentry{#1}%
+    }%
+    % Also add order parameter
+    \addlegendimage{ybar, single ybar legend, fill=magenta, draw=black}%
+    \addlegendentry{order parameter}%
+  \end{axis}
+  \node[rotate=90,anchor=south] at ($(group c1r1.north west)!0.5!(group c1r2.south west)-(1cm,0)$) {Communicative frequency $f_{\text{comm}}$};
+  \node[rotate=90,anchor=north,magenta] at ($(group c2r1.north east)!0.5!(group c2r2.south east)+(1cm,0)$) {Order Parameter};
+
+  % Make an invisible axis to create a legend that is the union
+  % of all the data table's column names
+  \begin{axis}[
+    hide axis,
+    % Needs xmin/xmax/ymin/ymax to create legend entries
+    xmin=10,
+    xmax=50,
+    ymin=0,
+    ymax=0.4,
+    legend columns=-1,
+    legend to name={WellMixedLegend},
+    ]
+    \def\gameTypes{}
+    % Prevent underscore from counting as subscript
+    \catcode`\_=12
+    % Note: these table names must be the same as those in the groupplots
+    \pgfplotsforeachungrouped\tablename in {timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.0_time_steps=8000000.csv,timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv,timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=1.0_time_steps=8000000.csv} {
+      % Read table
+      \pgfplotstableread\tablename\loadtable
+      % Loop over each column
+      \pgfplotstableforeachcolumnelement{game_type}\of\loadtable\as\gameType
+      {
+        \ifnum\pgfplotstablerow=0\else%
+          \ifx\gameTypes\empty
+            % Add first game type to empty gameTypes
+            \edef\gameTypes{\gameType}
+          \else
+            % Add game type to gameTypes if not already there
+            \IfSubStr{\gameTypes}{\gameType}{}{\edef\gameTypes{\gameTypes,\gameType}}
+          \fi
+        \fi
+      }
+    }
+
+    % Sort legend entries alphanumerically
+    \expandafter\alphabubblesort\expandafter{\gameTypes}
+
+    % Add all entries to legend
+    \expandafter\pgfplotsinvokeforeach\expandafter{\sortedlist}{%
+      \ifthenelse{\equal{#1}{all_communicative}}
+        {
+          \addlegendimage{ybar, single ybar legend, all_communicative, draw=black}%
+          \addlegendentry{all-C}%
+        }
+        {
+          \ifthenelse{\equal{#1}{all_noncommunicative}}
+          {
+            \addlegendimage{ybar, single ybar legend, all_noncommunicative, draw=black}%
+            \addlegendentry{all-N}%
+          }
+          {
+            \addlegendimage{ybar, single ybar legend, #1, draw=black}%
+            \addlegendentry{#1}%
+          }
+        }
+    }%
+    % Also add order parameter
+    \addlegendimage{ybar, single ybar legend, fill=magenta, draw=black}%
+    \addlegendentry{order parameter}%
+  \end{axis}
+  \path (group c1r2.south west) -- node[below={1cm}]{\pgfplotslegendfromname{WellMixedLegend}} (group c2r2.south east);
+\end{tikzpicture}
+\end{document}

@@ -1,7 +1,7 @@
 %! TeX program = lualatex
 % SPDX-License-Identifier: CC-BY-4.0
 
-\documentclass[pdflatex,twocolumn,sn-nature,super]{sn-jnl}
+\documentclass[aps,prx,preprint,superscriptaddress,linenumbers]{revtex4-2}
 
 % Silence warning from caption about unknown document class
 \usepackage{silence}
@@ -27,22 +27,18 @@
 \title{Evolutionary Kuramoto dynamics unravels origins of chimera states
 in neural populations}
 
-\author{
-\href{https://orcid.org/0000-0003-3039-172X}{Thomas Zdyrski}$^{1}$,
-\href{https://orcid.org/0000-0002-0281-2868}{Scott Pauls}$^{1}$,
-and
-\href{https://orcid.org/0000-0001-8252-1990}{Feng Fu}$^{1,2}$
-}
+\author{\href{https://orcid.org/0000-0003-3039-172X}{Thomas Zdyrski}}
+\affiliation{Department of Mathematics, Dartmouth College, Hanover, NH 03755}
+\author{\href{https://orcid.org/0000-0002-0281-2868}{Scott Pauls}}
+\affiliation{Department of Mathematics, Dartmouth College, Hanover, NH 03755}
+\author{\href{https://orcid.org/0000-0001-8252-1990}{Feng Fu}}
+\affiliation{Department of Mathematics, Dartmouth College, Hanover, NH 03755}
+\affiliation{Department of Biomedical Data Science, Geisel School of Medicine at Dartmouth, Lebanon, NH 03756}
 
-\affil{$^{1}$Department of Mathematics, Dartmouth College, Hanover, NH 03755\\
-$^{2}$Department of Biomedical Data Science, Geisel School of Medicine at Dartmouth, Lebanon, NH 03756
-}
-
-%\keywords{neural synchronization, game theory, evolutionary graph theory}
-%\pw{}
+\keywords{neural synchronization, game theory, evolutionary graph theory}
 
 %TC:ignore
-\abstract{
+\begin{abstract}
 Neural synchronization is central to cognition~\citep{santos2017chimera,bansal2019cognitive}.
 However, incomplete synchronization often produces chimera
 states~\citep{majhi2019chimera,hizanidis2016chimera},
@@ -66,7 +62,7 @@ underpin the formation of chimera states.
 Our computational results demonstrate a promising neurogame-theoretic perspective,
 leveraging evolutionary graph theory to shed light on mechanisms
 of neuronal coordination beyond classical synchronization models.
-}
+\end{abstract}
 %TC:endignore
 
 \maketitle
@@ -1159,9 +1155,10 @@ where the variance of the uniform distribution gives
 $\lambda = 1/12 \approx \num{0.08}$~\citep{shanahan2010metastable}.
 %TC:endignore
 
-\backmatter{}
+%\begin{acknowledgments}
+%\end{acknowledgments}
 
-\bmhead{Supplementary information}
+\subsection{Supplementary information}
 Supplementary Figure 1 of two-player game order graphs.
 Section 1, two-player game order graphs;
 Section 2, derivation of well-mixed communicative fraction
@@ -1176,18 +1173,16 @@ supplementary video 2 shows $\alpha = 0.75$,
 and
 supplementary video 3 shows $\alpha = 1$.
 
-%\bmhead{Acknowledgements}
-
-\bmhead{Declarations}
+\subsection{Declarations}
 The authors declare no competing interests.
 
-\bmhead{Code availability}
+\subsection{Code availability}
 An interactive webpage for exploring the data set is available at
 \url{https://tzdyrski.github.io/egt-kuramoto/notebooks/EKT_Plots.html}.
 Additionally, all source code is available via GitHub
 at \url{https://github.com/TZdyrski/egt-kuramoto/tree/1.0.0}.
 
-\bmhead{Data availability}
+\subsection{Data availability}
 The processed data for all simulated parameter ranges
 is available on Zenodo at \url{https://doi.org/10.5281/zenodo.17135745}.
 

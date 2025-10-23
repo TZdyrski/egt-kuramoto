@@ -17,7 +17,6 @@
 \begin{document}
 \begin{tikzpicture}
   \begin{groupplot}[
-    width=0.5\textwidth,
     group style={group size=2 by 3, vertical sep=0.5cm},
     ymin=0,
     ymax=1,
@@ -62,7 +61,8 @@
             \expandafter\addplot\expandafter[\col,ybar stacked,draw=none] table[x=asymmetry, y=\col] {\loadtable};
           \fi
         }
-      \nextgroupplot[xticklabel=\empty, ymin=0.0, ymax=0.007, height=4cm, blue,
+      \nextgroupplot[xticklabel=\empty, ymin=0.0, ymax=0.007,
+        width=\width, height=4cm, blue,
         yticklabel style={/pgf/number format/.cd,fixed,precision=3}, scaled y ticks=false,
       ]
           % Note: this table names must appear in the `\tablename` loop below
@@ -73,7 +73,7 @@
               \expandafter\addplot\expandafter[\col,ybar stacked,draw=none,xtick=none] table[x=asymmetry, y=\col] {\loadtable};
             \fi
           }
-      \nextgroupplot[hide axis, height=4cm]
+      \nextgroupplot[hide axis, width=\width, height=4cm]
     \end{groupplot}
     % Make an invisible axis to create a legend that is the union
     % of all the data table's column names
@@ -84,7 +84,7 @@
       xmax=50,
       ymin=0,
       ymax=0.4,
-      legend columns=6,
+      legend columns=3,
       legend to name={CommonLegend2},
       ]
       \def\colNames{}

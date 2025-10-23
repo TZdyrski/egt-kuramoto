@@ -17,10 +17,10 @@
 
 \begin{document}
 \begin{tikzpicture}
+  \def\hsep{2cm}%
   \begin{groupplot}[
-    width=0.4\textwidth,
     group style={group size=2 by 1,
-    horizontal sep=2cm
+    horizontal sep=\hsep,
     },
     xlabel={Asymmetry $\alpha$},
     xtick=data,
@@ -42,7 +42,8 @@
     ]
     \addplot table [y=metastability_index] {chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_community_algorithm=covariance_cost=0.1_covariance_cutoff=1500_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_time_steps=8000000.csv};
   \end{groupplot}
-  \begin{scope}[shift={(2,-6)},rotate=90]
+  % Shift found by trial and error
+  \begin{scope}[shift={(2.5,-6)},rotate=90]
     % Read node coordinates and create nodes
     \csvreader[head to column names]{\dataSearchPath/graph_structure/vertices_B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_symmetry_breaking=0.0_time_step=560000_time_steps=8000000.csv}{}%
     {%
@@ -62,25 +63,27 @@
       }
       \end{scope}
     \end{scope}
-  \end{scope}
-  \begin{scope}[shift={(8,-6)},rotate=90]
-    % Read node coordinates and create nodes
-    \csvreader[head to column names]{\dataSearchPath/graph_structure/vertices_B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_symmetry_breaking=1.0_time_step=560000_time_steps=8000000.csv}{}%
-    {%
-      \node[draw, circle, draw=none, index of colormap=\strategyIndex of strategycolors, fill=., inner sep=1.5] (\index) at (\x, \y) {};
-    }
-
-    \begin{scope}[on background layer]
-      % Decrease total opacity to prevent high opacity of overlapping edges
-      \begin{scope}[transparency group,opacity=.75]
-      % Read edges and draw connections between nodes
-      \csvreader[head to column names]{\dataSearchPath/graph_structure/edges_adj_matrix_source=c-elegans.csv}{}%
+  % Default horizontal separation is width plus horizontal separation
+  % minus fixed 45pt for decorations
+  \begin{scope}[shift={(0,{-(\width-45pt+\hsep)})}]
+      % Read node coordinates and create nodes
+      \csvreader[head to column names]{\dataSearchPath/graph_structure/vertices_B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_symmetry_breaking=1.0_time_step=560000_time_steps=8000000.csv}{}%
       {%
-        % Make individual opacity low; multiple overlapping edges can still have high opacity
-        \ifthenelse{\equal{\src}{\dst}}
-        { \path[in=-45,out=45,loop,->,>=latex,line width=0.1,opacity=0.2] (\src) edge (\dst);}
-        { \path[->,>=latex,line width=0.1,opacity=0.2] (\src) edge (\dst);}
+        \node[draw, circle, draw=none, index of colormap=\strategyIndex of strategycolors, fill=., inner sep=1.5] (\index) at (\x, \y) {};
       }
+
+      \begin{scope}[on background layer]
+        % Decrease total opacity to prevent high opacity of overlapping edges
+        \begin{scope}[transparency group,opacity=.75]
+        % Read edges and draw connections between nodes
+        \csvreader[head to column names]{\dataSearchPath/graph_structure/edges_adj_matrix_source=c-elegans.csv}{}%
+        {%
+          % Make individual opacity low; multiple overlapping edges can still have high opacity
+          \ifthenelse{\equal{\src}{\dst}}
+          { \path[in=-45,out=45,loop,->,>=latex,line width=0.1,opacity=0.2] (\src) edge (\dst);}
+          { \path[->,>=latex,line width=0.1,opacity=0.2] (\src) edge (\dst);}
+        }
+        \end{scope}
       \end{scope}
     \end{scope}
   \end{scope}

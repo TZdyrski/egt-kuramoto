@@ -20,10 +20,9 @@
     \newcommand{\numPhases}{20}
     \newcommand{\BnaughtOnC}{1.5}
     \begin{groupplot}[
-      width=0.5\textwidth,
       group style={
         group size=2 by 1,
-        horizontal sep=1.5cm,
+        horizontal sep=2cm,
       },
       axis on top,
       domain=0:2.5,
@@ -68,12 +67,8 @@
         \addplot[draw=none,name path=T_P] coordinates {(0,0) (0,2.5)};
 
         % Fill in regions
-        \addplot[staghunt] fill between[of=yleft and R_T,
-          reverse=false,
-          soft clip={domain y=1:2}];
-        \addplot[staghunt] fill between[of=yleft and S_P,
-          reverse=false,
-          soft clip={domain y=2:2.5}];
+        \addplot[staghunt] fill between[of=R_T and xupper,
+          soft clip={domain=0:1}];
         \addplot[concord] fill between[of=R_T and S_P,
           soft clip={domain y=2:2.5}];
         \addplot[chicken] fill between[of=R_T and R_S,
@@ -81,8 +76,8 @@
         \addplot[battle] fill between[of=R_S and yright,
           reverse=false,
           soft clip={domain y=1:2.5}];
-        \addplot[dilemma] fill between[of=R_T and S_P,
-          soft clip={domain y=1:2}];
+        \addplot[dilemma] fill between[of=R_P and R_T,
+          soft clip={domain=0:1}];
         \addplot[deadlock] fill between[of=R_S and yleft,
           reverse=false,
           soft clip={domain y=0:1}];

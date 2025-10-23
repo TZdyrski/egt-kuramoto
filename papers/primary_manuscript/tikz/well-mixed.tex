@@ -17,13 +17,11 @@
 \begin{document}
 \begin{tikzpicture}
   \begin{groupplot}[
-    width=0.35\textwidth,
     group style={
       group size=2 by 2,
       horizontal sep=1.5cm,
-      vertical sep=2cm,
+      vertical sep=1.5cm,
     },
-    scale only axis, % ensure overlaid axes align
     ]
     \nextgroupplot[fraction communicative chart,
     xlabel={Maximum joint benefit $B_0$},
@@ -100,17 +98,15 @@
   \end{groupplot}
 
   \begin{groupplot}[
-    width=0.35\textwidth,
     group style={
       group size=2 by 2,
       horizontal sep=1.5cm,
-      vertical sep=2cm,
+      vertical sep=1.5cm,
     },
     ymin=0,
     ymax=1,
     enlarge y limits=0.05,
     axis y line*=left,
-    scale only axis, % ensure overlaid axes align
     every x tick scale label/.style={at={(xticklabel cs:1)},anchor=south west}, % Move xlabel exponent
     shader=flat corner, %disable color mixing
     every axis plot/.append style={

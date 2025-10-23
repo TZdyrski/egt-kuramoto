@@ -18,7 +18,6 @@
 \begin{document}
 \begin{tikzpicture}
   \begin{groupplot}[
-    width=0.5\textwidth,
     group style={group size=1 by 3},
     fraction communicative chart,
     ylabel style={blue},
@@ -34,7 +33,15 @@
         \addplot table{cumulative/adj_matrix_source=c-elegans-undirected_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.csv};
   \end{groupplot}
 
-  \begin{scope}[shift={(8,-1)}, rotate=90]
+  % See below for description of shift;
+  % The origin of this plot is near the (current, rotated) top center;
+  % Without the (1.4, -1/4) factors, this would be at top left of the (2,2) subplot
+  % position; with the (1.4, -1/4) factors, this is effectively the top
+  % left of the (2.4, 3/4) subplot position
+  % This was found (by trial-and-error) to be a good spot for the
+  % (current, rotated) top center of the plot
+  \begin{scope}[shift={({1.4*(\width-45pt+1cm)},{-1/4*(\width/\axisdefaultwidth*\axisdefaultheight-45pt+1cm)})},
+	  rotate=90]
     % Read node coordinates and create nodes
     \csvreader[head to column names]{\dataSearchPath/graph_structure/vertices_B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_symmetry_breaking=0.75_time_step=560000_time_steps=8000000.csv}{}%
     {%
@@ -56,15 +63,25 @@
     \end{scope}
   \end{scope}
 
-  \begin{scope}[shift={(6,-8)}]
+  % Default spacing between subplots is axis width (height) defaulting
+  % to \axisdefaultwidth (\axisdfaultheight) plus default horizontal
+  % (vertical) sep defaulting to 1cm
+  % We subtract 45pt because a fixed 45pt padding is added around the axis
+  % for decorations
+  % Since we change the width, the height is scaled to maintain the
+  % default aspect ratio
+  % So, (\width-45pt+1cm,{-(\width/\axisdefaultwidth*\axisdefaultheight-45pt+1cm)})
+  % with positive x displacement and negative y displacement, would
+  % place the axis where the (2,2) subplot should be.
+  % We want to actually place it lower, where a hypothetical (2, 2+2/3)
+  % subplot would be
+  \begin{scope}[shift={(\width-45pt+1cm,{-5/3*(\width/\axisdefaultwidth*\axisdefaultheight-45pt+1cm)})}]
     \begin{axis}[
-      width=0.35\textwidth,
       ymin=0,
       ymax=1,
       enlarge y limits=0.05,
       hide x axis,
       axis  y  line*=right,
-      scale only axis, % ensure overlaid axes align
       y tick label style=magenta,
       every axis plot/.append style={
         line width=1pt,
@@ -77,14 +94,12 @@
     \end{axis}
     \begin{axis}[
       name=timeseries,
-      width=0.35\textwidth,
       grid,
       ymin=0,
       ymax=1,
       enlarge y limits=0.05,
       axis y line*=left,
       ylabel style={align=center},
-      scale only axis, % ensure overlaid axes align
       every x tick scale label/.style={at={(xticklabel cs:1)},anchor=south west}, % Move xlabel exponent
       shader=flat corner, %disable color mixing
       every axis plot/.append style={

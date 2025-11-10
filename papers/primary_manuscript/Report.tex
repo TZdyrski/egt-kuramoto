@@ -1,7 +1,94 @@
 %! TeX program = lualatex
 % SPDX-License-Identifier: CC-BY-4.0
 
-\documentclass[pdflatex,twocolumn,sn-nature,super]{sn-jnl}
+%% START PLOS TEMPLATE
+\documentclass[10pt,letterpaper]{article}
+\usepackage[top=0.85in,left=2.75in,footskip=0.75in]{geometry}
+
+% amsmath and amssymb packages, useful for mathematical formulas and symbols
+\usepackage{amsmath,amssymb}
+
+% Use adjustwidth environment to exceed column width (see example table in text)
+\usepackage{changepage}
+
+% textcomp package and marvosym package for additional characters
+\usepackage{textcomp,marvosym}
+
+% cite package, to clean up citations in the main text. Do not remove.
+\usepackage{cite}
+
+% Use nameref to cite supporting information files (see Supporting Information section for more info)
+\usepackage{nameref,hyperref}
+
+% line numbers
+\usepackage[right]{lineno}
+
+% ligatures disabled
+\usepackage[nopatch=eqnum]{microtype}
+\DisableLigatures[f]{encoding = *, family = * }
+
+% color can be used to apply background shading to table cells only
+\usepackage[table]{xcolor}
+
+% array package and thick rules for tables
+\usepackage{array}
+
+% create "+" rule type for thick vertical lines
+\newcolumntype{+}{!{\vrule width 2pt}}
+
+% create \thickcline for thick horizontal lines of variable length
+\newlength\savedwidth
+\newcommand\thickcline[1]{%
+  \noalign{\global\savedwidth\arrayrulewidth\global\arrayrulewidth 2pt}%
+  \cline{#1}%
+  \noalign{\vskip\arrayrulewidth}%
+  \noalign{\global\arrayrulewidth\savedwidth}%
+}
+
+% \thickhline command for thick horizontal lines that span the table
+\newcommand\thickhline{\noalign{\global\savedwidth\arrayrulewidth\global\arrayrulewidth 2pt}%
+\hline
+\noalign{\global\arrayrulewidth\savedwidth}}
+
+
+% Remove comment for double spacing
+%\usepackage{setspace}
+%\doublespacing
+
+% Text layout
+\raggedright
+\setlength{\parindent}{0.5cm}
+\textwidth 5.25in
+\textheight 8.75in
+
+% Bold the 'Figure #' in the caption and separate it from the title/caption with a period
+% Captions will be left justified
+\usepackage[aboveskip=1pt,labelfont=bf,labelsep=period,justification=raggedright,singlelinecheck=off]{caption}
+\renewcommand{\figurename}{Fig}
+
+% Please use the included `plos2025.bst` as your BibTeX style
+\bibliographystyle{plos2025}
+
+% Remove brackets from numbering in List of References
+\makeatletter
+\renewcommand{\@biblabel}[1]{\quad#1.}
+\makeatother
+
+% Header and Footer with logo
+\usepackage{lastpage,fancyhdr,graphicx}
+\usepackage{epstopdf}
+%\pagestyle{myheadings}
+\pagestyle{fancy}
+\fancyhf{}
+%\setlength{\headheight}{27.023pt}
+%\lhead{\includegraphics[width=2.0in]{PLOS-submission.eps}}
+\rfoot{\thepage/\pageref{LastPage}}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrule}{\hrule height 2pt \vspace{2mm}}
+\fancyheadoffset[L]{2.25in}
+\fancyfootoffset[L]{2.25in}
+\lfoot{\today}
+%% END PLOS TEMPLATE
 
 % Silence warning from caption about unknown document class
 \usepackage{silence}
@@ -23,55 +110,84 @@
 \newcommand\dataSearchPath{../../data/processed}
 
 \begin{document}
+\vspace*{0.2in}
 
-\title{Evolutionary Kuramoto dynamics unravels origins of chimera states
+\begin{flushleft}
+{\Large
+\textbf{Evolutionary Kuramoto dynamics unravels origins of chimera states
 in neural populations}
-
-\author{
-\href{https://orcid.org/0000-0003-3039-172X}{Thomas Zdyrski}$^{1}$,
-\href{https://orcid.org/0000-0002-0281-2868}{Scott Pauls}$^{1}$,
-and
-\href{https://orcid.org/0000-0001-8252-1990}{Feng Fu}$^{1,2}$
 }
+\newline
+% Insert author names, affiliations and corresponding author email (do not include titles, positions, or degrees).
+\\
+Thomas Zdyrski\textsuperscript{1*},
+Scott Pauls\textsuperscript{1},
+Feng Fu\textsuperscript{1,2}
+\\
+\bigskip
+\textbf{1} Department of Mathematics, Dartmouth College, Hanover, NH, USA
+\\
+\textbf{2} Department of Biomedical Data Science, Geisel School of Medicine at Dartmouth, Hanover, NH, USA
+\\
+\bigskip
 
-\affil{$^{1}$Department of Mathematics, Dartmouth College, Hanover, NH 03755\\
-$^{2}$Department of Biomedical Data Science, Geisel School of Medicine at Dartmouth, Lebanon, NH 03756
-}
+% Use the asterisk to denote corresponding authorship and provide email address in note below.
+* thomas.zdyrski@dartmouth.edu
 
-%\keywords{neural synchronization, game theory, evolutionary graph theory}
-%\pw{}
+\end{flushleft}
+% Please keep the abstract below 300 words
 
 %TC:ignore
-\abstract{
-Neural synchronization is central to cognition~\citep{santos2017chimera,bansal2019cognitive}.
+\section*{Abstract}
+Neural synchronization is central to cognition~\cite{santos2017chimera,bansal2019cognitive}.
 However, incomplete synchronization often produces chimera
-states~\citep{majhi2019chimera,hizanidis2016chimera},
+states~\cite{majhi2019chimera,hizanidis2016chimera},
 where coherent and incoherent dynamics coexist.
-While previous studies~\citep{abrams2004chimera}
+While previous studies~\cite{abrams2004chimera}
 have explored such patterns
 using networks of coupled oscillators,
 it remains unclear why neurons commit to communication
 or how chimera states persist.
 Here, we investigate the coevolution of neuronal phases
 and communication strategies on directed, weighted networks,
-where interaction payoffs depend on phase alignment~\citep{tripp2022evolutionary}
+where interaction payoffs depend on phase alignment~\cite{tripp2022evolutionary}
 and may be asymmetric due to unilateral communication.
 We find that both connection weights and directionality influence the stability
 of communicative strategies---and, consequently,
 full synchronization---as well as the strategic nature of neuronal interactions.
 Applying our framework to the \glsfmtshort{celegans}
-connectome~\citep{cook2019whole,towlson2013rich,yan2017network},
+connectome~\cite{cook2019whole,towlson2013rich,yan2017network},
 we show that emergent payoff structures, such as the snowdrift game,
 underpin the formation of chimera states.
 Our computational results demonstrate a promising neurogame-theoretic perspective,
 leveraging evolutionary graph theory to shed light on mechanisms
 of neuronal coordination beyond classical synchronization models.
-}
 %TC:endignore
 
-\maketitle
+\section*{Author summary}
+Brain neurons fire together in synchronized patterns,
+and these synchronization waves are thought to be important
+for understanding human cognition~\cite{santos2017chimera,bansal2019cognitive}.
+Given the miniscule scale and immense number of neurons,
+it is challenging to perform experimental, in-vivo studies
+connecting individual neuron behavior
+to brain-scale synchronization patterns.
+Evolutionary game theory (EGT) is a useful tool for analyzing
+how the properties of individual players affect the large-scale dynamics.
+In this study, we analyze the 302-neuron brain
+of the \glsfmtshort{celegans} nematode using EGT
+by treating the neurons as players and synapse connections as games.
+Numerical simulations show that the structure of the \glsfmtshort{celegans} brain
+enhances brain states known as chimeras.
+These chimera states display both synchronization and disorder,
+and they are known to be crucial indicators
+of brain function~\cite{majhi2019chimera,hizanidis2016chimera}.
+Therefore, this model offers a novel framework for studying
+these chimera states in other brain systems by connecting
+small-scale neuron properties to large-scale synchronization dynamics.
+
+\linenumbers
 \glsresetall
-%\tableofcontents
 
 \section{Introduction}
 %\subsection{Impact of structure on game evolution}
@@ -79,10 +195,10 @@ Evolutionary game theory (EGT) is the application
 of game theory to evolving populations
 of individuals with behavioral strategies.
 This tool is useful for studying how local interaction rules
-yield large-scale patterns such as cooperation~\citep{sigmund1999evolutionary}
+yield large-scale patterns such as cooperation~\cite{sigmund1999evolutionary}
 and has found use in fields including international politics, ecology,
-and protein folding~\citep{traulsen2023future}.
-Studies~\citep{cohen2009evolutionary,antonioni2017coevolution,tripp2022evolutionary}
+and protein folding~\cite{traulsen2023future}.
+Studies~\cite{cohen2009evolutionary,antonioni2017coevolution,tripp2022evolutionary}
 have even applied EGT to non-reproducing neurons
 by viewing neuron plasticity as an evolutionary process
 where firing patterns change and are ``learned'' over time.
@@ -91,9 +207,9 @@ on graphs to investigate the role of structure in population evolution.
 Prior studies have found that structure
 qualitatively changes game evolution.
 For instance, cooperation is enhanced by
-small-degree nodes~\citep{ohtsuki2006simple}
-or unidirectional edges~\citep{su2022evolution}
-and suppressed by weighted edges~\citep{bhaumik2024constant}.
+small-degree nodes~\cite{ohtsuki2006simple}
+or unidirectional edges~\cite{su2022evolution}
+and suppressed by weighted edges~\cite{bhaumik2024constant}.
 Thus, the study of evolving, structured populations
 should account for the effects of
 incompleteness, directedness, and weightedness.
@@ -103,13 +219,13 @@ Kuramoto networks are groups of coupled oscillators
 where the coupling strength depends sinusoidally
 on the oscillators' phase difference.
 These networks are popular
-models for neuron behaviour~\citep{cabral2011role,deng2024chimera}
+models for neuron behaviour~\cite{cabral2011role,deng2024chimera}
 because they exhibit tunable synchronization.
-Prior studies~\citep{antonioni2017coevolution}
+Prior studies~\cite{antonioni2017coevolution}
 have modelled interneuron communication
 with Kuramoto oscillators and EGT
 using the prisoner's dilemma game type.
-Other studies~\citep{tripp2022evolutionary}
+Other studies~\cite{tripp2022evolutionary}
 generalized this approach to include dynamically changing game types
 by introducing an evolutionary Kuramoto (EK) model
 to show how the relationship between communication benefit and cost
@@ -118,14 +234,14 @@ or non-communication regimes.
 
 %\subsection{Chimera states}
 One intriguing aspect of neuron oscillations
-is the observation of chimera states~\citep{majhi2019chimera}.
+is the observation of chimera states~\cite{majhi2019chimera}.
 These states exhibit the simultaneous existence
-of coherent and disordered phases~\citep{abrams2004chimera}.
+of coherent and disordered phases~\cite{abrams2004chimera}.
 Previous studies have proposed
 chimera states as
-a key component of human cognitive organization~\citep{bansal2019cognitive},
-a facilitator of spiking and bursting phases~\citep{santos2017chimera},
-and an outcome of modular networks~\citep{hizanidis2016chimera}.
+a key component of human cognitive organization~\cite{bansal2019cognitive},
+a facilitator of spiking and bursting phases~\cite{santos2017chimera},
+and an outcome of modular networks~\cite{hizanidis2016chimera}.
 Despite the observed importance of these chimera states,
 the factors that give rise to coherent/disordered coexistence
 remain incompletely characterized.
@@ -133,14 +249,14 @@ remain incompletely characterized.
 %\subsection{\glsfmtshort{celegans} connectome}
 The nematode \gls{celegans}
 is a model organism in neuroscience due to
-its simple brain connectome~\citep{cook2019whole}
+its simple brain connectome~\cite{cook2019whole}
 of only \num{302} neurons.
 Despite their simplicity, models of the \gls{celegans} brain
 still display a wide array of complex phenomena including
 topologically-central rich clubs
-crucial to motor neurons~\citep{towlson2013rich},
-phenomenological connections to control theory~\citep{yan2017network},
-and chimera states~\citep{hizanidis2016chimera}.
+crucial to motor neurons~\cite{towlson2013rich},
+phenomenological connections to control theory~\cite{yan2017network},
+and chimera states~\cite{hizanidis2016chimera}.
 
 %\subsection{Outline}
 In this paper,
@@ -159,6 +275,7 @@ beyond classical synchronization models.
 
 \subsection{Model}
 \begin{figure*}
+\begin{adjustwidth}{-2.25in}{0in}
   \centering
   \begin{subcaptiongroup}
     \stackinset{l}{10pt}{t}{6.8cm}%
@@ -188,6 +305,7 @@ beyond classical synchronization models.
     receives after playing a game with the column-player $(N, \phi_j)$
     assuming either player can switch strategy and phase to the other's.
   }\label{fig:connectivity}
+\end{adjustwidth}
 \end{figure*}
 
 We extend the EK model in two ways:
@@ -239,6 +357,7 @@ and runs for \num{8E6} time steps
 
 \subsection{Parameter space}
 \begin{figure*}
+\begin{adjustwidth}{-2.25in}{0in}
   \centering
   \begin{subcaptiongroup}
     \stackinset{l}{10pt+\width-45pt+2cm}{t}{0pt}%
@@ -275,12 +394,13 @@ and runs for \num{8E6} time steps
     \protect{\subref{fig:phase-diagram-beta_alpha}}
     $\alpha \in [0,0.25,0.5,0.75,1]$.
   }\label{fig:phase-diagram}
+\end{adjustwidth}
 \end{figure*}
 
 One of the key aspects of the EK model
 is that multiple $2 \times 2$ game types can emerge
 among the players during the population's evolution.
-These game types~\citep{bruns2015names} include
+These game types~\cite{bruns2015names} include
 dilemma (\aka{} ``prisoner's dilemma''),
 deadlock (``anti-prisoner's dilemma''),
 chicken (``hawk-dove'' or ``snowdrift''),
@@ -300,7 +420,7 @@ of the three-dimension phase space
 characterized by $\alpha$, $\beta \coloneqq \beta_0 f(\Delta \phi)$,
 and $B_0$.
 \cref{fig:phase-diagram-beta_B} shows a $\beta$-$B_0$ slice of phase space
-and generalizes figure 1 of a prior study~\citep{tripp2022evolutionary},
+and generalizes figure 1 of a prior study~\cite{tripp2022evolutionary},
 while \cref{fig:phase-diagram-beta_alpha} shows a $\beta$-$\alpha$ slice.
 Each straight line of white dots represent permissible values of the $m = 20$ phases
 $\Delta \phi_i$ across our simulations
@@ -309,6 +429,7 @@ and highlight which regions of parameter space are accessible.
 \subsection{Complete graphs}\label{sec:complete_graph}
 
 \begin{figure*}
+\begin{adjustwidth}{-2.25in}{0in}
   \centering
   \begin{subcaptiongroup}
     \stackinset{l}{20pt+\width-45pt+1.5cm}{t}{\width/240*207-45pt+1.5cm}%
@@ -350,6 +471,7 @@ and highlight which regions of parameter space are accessible.
     \protect{\subref{fig:time-series_well-mixed_alpha-1}}
     $\alpha = 1$.
   }\label{fig:well-mixed}
+\end{adjustwidth}
 \end{figure*}
 
 First, we will explore the influence of the newly introduced asymmetry
@@ -365,7 +487,7 @@ In general, $f_{\text{comm}}$ is low for small $B_0$,
 rises to $f_{\text{comm}} = 0.5$ at some break-even $B_0$,
 and plateaus to $f_{\text{comm}} \approx 1$ for large $B_0$.
 We can validate our model by comparing our
-$\alpha = 0.5$ case with a previous study~\citep{tripp2022evolutionary}
+$\alpha = 0.5$ case with a previous study~\cite{tripp2022evolutionary}
 to observe qualitatively similar results,
 with our break-even $B_0 \approx 0.21$
 corresponding to their $B_0 = 2 (N-1) c/(N-2) = 0.21$ break-even condition.
@@ -430,7 +552,7 @@ which occur, on average, every $1/\mu = \num{1E4}$ time steps.
 \subsection{\glsfmtshort{celegans} graphs}\label{sec:elegans_graph}
 
 Here, we consider the weighted, directed hermaphroditic \gls{celegans}
-chemical connectome~\citep{cook2019whole}.
+chemical connectome~\cite{cook2019whole}.
 For reference, \cref{fig:graph} shows the $N = 300$ nodes and the directed edges
 (we exclude the two unconnected neurons CANL/CANR).
 The nodes are colored according to their strategy at a particular time step,
@@ -442,6 +564,7 @@ of the large, synchronized group of red nodes
 coexisting with disordered neighboring nodes.
 
 \begin{figure*}
+\begin{adjustwidth}{-2.25in}{0in}
   \centering
   \begin{subcaptiongroup}
     \stackinset{l}{50pt+\width-45pt+1cm}{t}{(\width/240*207-45pt+1cm)*5/3}%
@@ -486,6 +609,7 @@ coexisting with disordered neighboring nodes.
     as \protect{\crefrange{fig:time-series_well-mixed_alpha-0}{fig:time-series_well-mixed_alpha-1}}
     showing the communicative frequency, plurality mixed game-types, and order parameter.
   }\label{fig:c-elegans}
+\end{adjustwidth}
 \end{figure*}
 
 Next, to quantify the observations of \cref{fig:graph},
@@ -557,6 +681,7 @@ the \gls{celegans} case depicts disordered states with discontinuous offsets.
 
 \subsection{Chimera-like index}
 \begin{figure*}
+\begin{adjustwidth}{-2.25in}{0in}
   \centering
   \begin{subcaptiongroup}
     \stackinset{l}{50pt+\width-45pt+2cm}{t}{6cm}%
@@ -597,6 +722,7 @@ the \gls{celegans} case depicts disordered states with discontinuous offsets.
     \protect{\subref{fig:graph_celegans_asymmetry1}}
     $\alpha = 1$.
   }\label{fig:chimera-index}
+\end{adjustwidth}
 \end{figure*}
 
 Time-lapse animations of the system's time evolution
@@ -614,13 +740,13 @@ the chimera-like index
 measures the coherence difference between communities of players,
 is equal to the time-averaged community covariance,
 and has a theoretical maximum value
-of $M/[4(M-1)] = \num{0.5}$~\citep{shanahan2010metastable}
+of $M/[4(M-1)] = \num{0.5}$~\cite{shanahan2010metastable}
 for our $M=2$ communities.
 Conversely, the metastability index
 represents how often the system transitions
 between synchronicity and disorder,
 is equal to the community-average of the temporal covariance,
-and has a practical maximum of \num{0.08}~\citep{shanahan2010metastable}.
+and has a practical maximum of \num{0.08}~\cite{shanahan2010metastable}.
 \Cref{fig:chimera-index} shows the
 \subref{fig:chimera_index} chimera-like index $\chi$
 and
@@ -658,6 +784,7 @@ rather than an artifact of our $\alpha = \num{0.75}$ choice.
 
 \subsection{Game types}
 \begin{figure*}
+\begin{adjustwidth}{-2.25in}{0in}
   \centering
   \begin{subcaptiongroup}
     \stackinset{l}{10pt+\width-45pt+1cm}{t}{\width/240*207-45pt+0.5cm}%
@@ -701,6 +828,7 @@ rather than an artifact of our $\alpha = \num{0.75}$ choice.
     \protect{\subref{fig:game-type_well-mixed-only-mixed-games}}
     well-mixed panel shows the magnified lower region.
   }\label{fig:game-type}
+\end{adjustwidth}
 \end{figure*}
 
 Next, we seek to understand the types of games
@@ -765,7 +893,7 @@ underpin the formation of chimera states.
 %\subsection{Game-type dynamics}
 We can validate our \cref{fig:game-type_well-mixed-only-mixed-games} well-mixed
 time-series results by comparing the $\alpha = 0.5$ case
-to previous studies~\citep{tripp2022evolutionary}.
+to previous studies~\cite{tripp2022evolutionary}.
 Their weak-selection $\delta = 0.2$
 results also show the system spending
 virtually all of its time in a synchronized state.
@@ -812,7 +940,7 @@ We also note that \cref{fig:game-type} shows that
 the high chimera-like index setups ($\alpha = 0.5, 0.75$)
 are dominated by game types (chicken, hero, and battle),
 shown in warm colors (red, orange, and pink, respectively),
-with exponentially slow fixation times~\citep{antal2006fixation}.
+with exponentially slow fixation times~\cite{antal2006fixation}.
 In contrast, the lower chimera-like index setup ($\alpha = 0,0.25,1$)
 is dominated by non-exponentially-slow dilemma and deadlock type games.
 This connection between exponentially-slow fixation time games and high chimera index
@@ -820,7 +948,7 @@ seems suggestive and requires further investigation.
 
 Another study of the \gls{celegans} connectome also found
 chimera-like states using an entirely non-game-theory tool,
-modular neural networks~\citep{hizanidis2016chimera}.
+modular neural networks~\cite{hizanidis2016chimera}.
 That study found a maximum chimera-like index of \num{0.12},
 in agreement with our value of \num{0.13}, despite the different network models
 of the \gls{celegans} connectome considered.
@@ -833,12 +961,12 @@ Chimera states of networked oscillators
 exhibit coexisting
 synchronized and disordered populations,
 are present
-in brains~\citep{santos2017chimera,bansal2019cognitive},
-and may be pivotal in human cognition~\citep{bansal2019cognitive}.
-Prior studies~\citep{deng2024chimera} investigated
+in brains~\cite{santos2017chimera,bansal2019cognitive},
+and may be pivotal in human cognition~\cite{bansal2019cognitive}.
+Prior studies~\cite{deng2024chimera} investigated
 chimera-like brain states in \gls{dmelanogaster}
 using sinusoidally-coupled Kuramoto oscillators,
-a frequent model for neuron dynamics~\citep{cabral2011role}.
+a frequent model for neuron dynamics~\cite{cabral2011role}.
 However, the small-scale evolutionary factors
 leading to chimera-like states remains poorly understood.
 In this paper, we extended the evolutionary Kuramoto model
@@ -860,7 +988,7 @@ the \gls{celegans} population remains far more heterogenous
 with a stable, chimeric mix of disordered game types.
 
 Future work will focus on applying the EK model
-to families of generative brain network models~\citep{betzel2016generative}.
+to families of generative brain network models~\cite{betzel2016generative}.
 The limited number of empirical graphs analyzed in this study
 hinders the identification of exact relationships
 between the communicative fraction and graph properties
@@ -873,7 +1001,7 @@ of chimeric activity on graph structure are generalizable.
 Therefore, it is of interest to investigate this connection further
 by applying our EK setup to other model organisms,
 such as that of
-\glsxtrlong{dmelanogaster}~\citep{schlegel2024whole}.
+\glsxtrlong{dmelanogaster}~\cite{schlegel2024whole}.
 
 A key takeaway from this study was the importance
 of edge weight on communicativity;
@@ -960,7 +1088,7 @@ as required by the Moran process described in the next section.
 % this dB is more favorable for cooperation
 % Try this instead?
 The population is updated according to a birth-death Moran process
-with exponential fitness~\citep{lieberman2005evolutionary}.
+with exponential fitness~\cite{lieberman2005evolutionary}.
 On each turn, the following steps are performed.
 First, each edge in the interaction graph corresponds to a game
 between head node $i$ and tail node $j$,
@@ -1010,7 +1138,7 @@ Using their relative phase difference $\Delta \phi$,
 we can calculate the payoff matrix.
 By comparing the order of each of the four entries,
 we determine the game type using
-a topological taxonomy~\citep{bruns2015names}.
+a topological taxonomy~\cite{bruns2015names}.
 Using this taxonomy, we calculate the ordinal rank of the four entries
 in the \cref{eq:payoff-matrix} payoff matrix
 and assign a unique name (\eg{} dilemma, deadlock, chicken, \etc{})
@@ -1019,7 +1147,7 @@ However, \cref{fig:phase-diagram-beta_alpha}
 shows that some mixed $CN$ games lie on the border between two game types,
 such as when $\alpha = 1$ or $B/c = 0$
 (bordering game types for $B/c > 0$ and $B/c < 0$, not shown).
-The taxonomy~\citep{bruns2015names} classifies these non-strict games
+The taxonomy~\cite{bruns2015names} classifies these non-strict games
 according the number and location of ties (``high tie'', ``middle tie'',
 ``double tie'', \etc{}).
 It also defines a convention for choosing one of the neighboring game types
@@ -1089,10 +1217,10 @@ and represents how coherent the population is,
 with $\rho = 1$ for fully coherent and $\rho = 0$ fully disordered.
 
 \subsection{Chimera-like index and metastability index}\label{sec:chimera-metastability-def}
-To compare with a previous analysis~\citep{hizanidis2016chimera} of
+To compare with a previous analysis~\cite{hizanidis2016chimera} of
 chimera-like states \gls{celegans} models,
 we define a pair of indices related to
-chimera-like quality and metastability~\citep{shanahan2010metastable}.
+chimera-like quality and metastability~\cite{shanahan2010metastable}.
 First, we organize the game's nodes
 into $M$ disjoint communities.
 We split the nodes into $M=2$ communities $C_m$
@@ -1150,45 +1278,60 @@ while having $M$ communities
 with half fully synchronized ($\rho_m = 1$)
 and the other half fully disordered ($\rho_m = 0$)
 for all times yields a maximum $\chi = M/[4(M-1)]
-= 1/2$ for our $M=2$~\citep{shanahan2010metastable}.
+= 1/2$ for our $M=2$~\cite{shanahan2010metastable}.
 Likewise, the metastability index $\lambda$ measures how metastable
 the system is (\ie{} transiting between synchronicity and disorder).
 A system that is fully synchronized or disordered gives $\lambda = 0$;
 $\lambda$ is maximized for a system spending equal times in each state,
 where the variance of the uniform distribution gives
-$\lambda = 1/12 \approx \num{0.08}$~\citep{shanahan2010metastable}.
+$\lambda = 1/12 \approx \num{0.08}$~\cite{shanahan2010metastable}.
 %TC:endignore
 
-\backmatter{}
+%\section*{Acknowledgments}
 
-\bmhead{Supplementary information}
-Supplementary Figure 1 of two-player game order graphs.
-Section 1, two-player game order graphs;
-Section 2, derivation of well-mixed communicative fraction
-with symmetry breaking.
-Supplementary videos 1-3,
-time-evolution of \gls{celegans} player strategies
+\section*{Supporting information}
+
+\paragraph*{S1 Appendix.}
+\textbf{Appendix with game graphs and derivations.}
+Appendix with two-player game order graphs (section 1),
+and derivation of well-mixed communicative fraction
+with symmetry breaking (section 2).
+
+\paragraph{S1 Video.}
+\textbf{\Gls{celegans} $\alpha = 0$ time evolution.}
+Time-evolution of \gls{celegans} player strategies
 using the same color scheme as \cref{fig:graph}
 with $B_0/c = 1.5$, $\beta_0/B_0 = 0.95$, $c = 0.1$,
-$\mu = 0.0001$, $m = 20$, $\delta = 0.2$, and \num{8E6} time steps;
-supplementary video 1 shows $\alpha = 0$,
-supplementary video 2 shows $\alpha = 0.75$,
-and
-supplementary video 3 shows $\alpha = 1$.
+$\mu = 0.0001$, $m = 20$, $\delta = 0.2$, \num{8E6} time steps,
+and $\alpha = 0$.
 
-%\bmhead{Acknowledgements}
+\paragraph{S2 Video.}
+\textbf{\Gls{celegans} $\alpha = 0.75$ time evolution.}
+Time-evolution of \gls{celegans} player strategies
+using the same color scheme as \cref{fig:graph}
+with $B_0/c = 1.5$, $\beta_0/B_0 = 0.95$, $c = 0.1$,
+$\mu = 0.0001$, $m = 20$, $\delta = 0.2$, \num{8E6} time steps,
+and $\alpha = 0.75$.
 
-\bmhead{Declarations}
+\paragraph{S3 Video.}
+\textbf{\Gls{celegans} $\alpha = 1$ time evolution.}
+Time-evolution of \gls{celegans} player strategies
+using the same color scheme as \cref{fig:graph}
+with $B_0/c = 1.5$, $\beta_0/B_0 = 0.95$, $c = 0.1$,
+$\mu = 0.0001$, $m = 20$, $\delta = 0.2$, \num{8E6} time steps,
+and $\alpha = 1$.
+
+\section*{Declarations}
 The authors declare no competing interests.
 
-\bmhead{Code availability}
+\section*{Code availability}
 An interactive webpage for exploring the data set is available at
 \url{https://tzdyrski.github.io/egt-kuramoto/notebooks/EKT_Plots.html}.
 Additionally, all source code is available via GitHub
 at \url{https://github.com/TZdyrski/egt-kuramoto/tree/1.0.0}
 or Zenodo at \url{https://doi.org/10.5281/zenodo.17239375}.
 
-\bmhead{Data availability}
+\section*{Data availability}
 The processed data for all simulated parameter ranges
 is available on Zenodo at \url{https://doi.org/10.5281/zenodo.17135745}.
 

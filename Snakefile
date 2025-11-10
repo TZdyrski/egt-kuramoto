@@ -33,8 +33,7 @@ rule manuscript:
     "papers/primary_manuscript/preamble.sty",
     "papers/primary_manuscript/custom-definitions.tex",
     "papers/primary_manuscript/references.bib",
-    "papers/primary_manuscript/sn-jnl.cls",
-    "papers/primary_manuscript/sn-nature.bst",
+    "papers/primary_manuscript/plos2025.bst",
     "papers/primary_manuscript/tikz/preamble.tex",
     # tikz/c-elegans.tex
     "papers/primary_manuscript/tikz/c-elegans.tex",

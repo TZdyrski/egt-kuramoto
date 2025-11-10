@@ -1,7 +1,94 @@
 %! TeX program = lualatex
 % SPDX-License-Identifier: CC-BY-4.0
 
-\documentclass[pdflatex,sn-nature,super]{sn-jnl}
+%% START PLOS TEMPLATE
+\documentclass[10pt,letterpaper]{article}
+\usepackage[top=0.85in,left=2.75in,footskip=0.75in]{geometry}
+
+% amsmath and amssymb packages, useful for mathematical formulas and symbols
+\usepackage{amsmath,amssymb}
+
+% Use adjustwidth environment to exceed column width (see example table in text)
+\usepackage{changepage}
+
+% textcomp package and marvosym package for additional characters
+\usepackage{textcomp,marvosym}
+
+% cite package, to clean up citations in the main text. Do not remove.
+\usepackage{cite}
+
+% Use nameref to cite supporting information files (see Supporting Information section for more info)
+\usepackage{nameref,hyperref}
+
+% line numbers
+\usepackage[right]{lineno}
+
+% ligatures disabled
+\usepackage[nopatch=eqnum]{microtype}
+\DisableLigatures[f]{encoding = *, family = * }
+
+% color can be used to apply background shading to table cells only
+\usepackage[table]{xcolor}
+
+% array package and thick rules for tables
+\usepackage{array}
+
+% create "+" rule type for thick vertical lines
+\newcolumntype{+}{!{\vrule width 2pt}}
+
+% create \thickcline for thick horizontal lines of variable length
+\newlength\savedwidth
+\newcommand\thickcline[1]{%
+  \noalign{\global\savedwidth\arrayrulewidth\global\arrayrulewidth 2pt}%
+  \cline{#1}%
+  \noalign{\vskip\arrayrulewidth}%
+  \noalign{\global\arrayrulewidth\savedwidth}%
+}
+
+% \thickhline command for thick horizontal lines that span the table
+\newcommand\thickhline{\noalign{\global\savedwidth\arrayrulewidth\global\arrayrulewidth 2pt}%
+\hline
+\noalign{\global\arrayrulewidth\savedwidth}}
+
+
+% Remove comment for double spacing
+%\usepackage{setspace}
+%\doublespacing
+
+% Text layout
+\raggedright
+\setlength{\parindent}{0.5cm}
+\textwidth 5.25in
+\textheight 8.75in
+
+% Bold the 'Figure #' in the caption and separate it from the title/caption with a period
+% Captions will be left justified
+\usepackage[aboveskip=1pt,labelfont=bf,labelsep=period,justification=raggedright,singlelinecheck=off]{caption}
+\renewcommand{\figurename}{Fig}
+
+% Please use the included `plos2025.bst` as your BibTeX style
+\bibliographystyle{plos2025}
+
+% Remove brackets from numbering in List of References
+\makeatletter
+\renewcommand{\@biblabel}[1]{\quad#1.}
+\makeatother
+
+% Header and Footer with logo
+\usepackage{lastpage,fancyhdr,graphicx}
+\usepackage{epstopdf}
+%\pagestyle{myheadings}
+\pagestyle{fancy}
+\fancyhf{}
+%\setlength{\headheight}{27.023pt}
+%\lhead{\includegraphics[width=2.0in]{PLOS-submission.eps}}
+\rfoot{\thepage/\pageref{LastPage}}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrule}{\hrule height 2pt \vspace{2mm}}
+\fancyheadoffset[L]{2.25in}
+\fancyfootoffset[L]{2.25in}
+\lfoot{\today}
+%% END PLOS TEMPLATE
 
 % Import custom style file containing common packages and options
 \usepackage{preamble}
@@ -10,20 +97,29 @@
 \input{tikz/preamble.tex}
 
 \begin{document}
-\title{Supplementary Information for\\ 
+\vspace*{0.2in}
+
+\begin{flushleft}
+{\Large
+\textbf{Supplementary Information for\\
 ``Evolutionary Kuramoto dynamics unravels origins of chimera states
 in neural populations''}
-\author{
-Thomas Zdyrski, Scott Pauls, Feng Fu}
-
-\maketitle
+}
+\newline
+\\
+Thomas Zdyrski,
+Scott Pauls,
+Feng Fu
+\end{flushleft}
 
 \tableofcontents
 \section{Two-player game order graphs}\label{sec:order_graphs}
+\begin{adjustwidth}{-2.25in}{0in}
 \begin{center}
     \includestandalone{tikz/game-payoffs}
     \captionof{figure}{}\label{fig:order_graphs}
 \end{center}
+\end{adjustwidth}
 
 \Cref{fig:order_graphs} shows the
 order graphs for the 16 symmetric, ordinal two-player games.
@@ -45,11 +141,11 @@ The arrows show the direction of increasing
 payoff for the relevant player,
 and solid black dots represent Nash equilibria.
 This figure is adapted from the topological taxonomy
-order graphs~\citep{bruns2015names}.
+order graphs~\cite{bruns2015names}.
 
 \section{Well-mixed communicative fraction with symmetry breaking}\label{sec:analytic_comm_frac}
 Here, we follow the steady-state communicative fraction derivation
-in the previous EK study~\citep{tripp2022evolutionary}
+in the previous EK study~\cite{tripp2022evolutionary}
 and extend it to include a payoff asymmetry $\alpha$.
 To keep the derivation tractable,
 we only consider the well-mixed case.
@@ -92,7 +188,7 @@ depending on its strategy,
 with selection strength $\delta$.
 
 In this paragraph, we summarize the relevant steps;
-see the prior work~\citep{tripp2022evolutionary}
+see the prior work~\cite{tripp2022evolutionary}
 for more detailed derivations.
 We now model the Moran process
 as a Markov chain where each state $i \in \Bab{0,1,\ldots,n}$
@@ -205,7 +301,7 @@ Additionally, we note that substituting
 \cref{eq:gamma_prod} into \cref{eq:fixation_prob_ratio}
 with $j=n-1$ shows that $\rho_F/\rho_E$
 depends of $\Delta \phi_{qr}$.
-This is in contrast to the $\alpha=0.5$ case~\citep{tripp2022evolutionary}
+This is in contrast to the $\alpha=0.5$ case~\cite{tripp2022evolutionary}
 where $\rho_F/\rho_E$ simplifies to the $\Delta \phi_{qr}$-independent form
 $\rho_F/\rho_E = \exp \ab(\delta \ab[(n-1)c - B_0 (n-2)/2])$.
 
@@ -276,7 +372,7 @@ by incorporating the fixation probabilities against all other $\phi_r$ phases:
 \end{align}
 The first equality used \cref{eq:fixation_prob_ratio}
 and the second equality used \cref{eq:comm_fixation_prob}.
-Unlike in the $\alpha = 0.5$ symmetric case~\citep{tripp2022evolutionary},
+Unlike in the $\alpha = 0.5$ symmetric case~\cite{tripp2022evolutionary},
 the ratio $\rho_F/\rho_E$ depends on $\Delta \phi_{qr}$,
 so we cannot factor the exponential component out of the sum
 and cancel the $\rho_{CN,\Delta \phi_{qr}}$ terms.

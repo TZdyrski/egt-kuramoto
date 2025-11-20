@@ -25,12 +25,12 @@ include(srcdir("julia", "moran.jl"))
     aux = WorkParams(lmi, actions)
     rng = Xoshiro(1)
     for i = 1:time_steps
-      play!(actions,rng,lmi,aux)
+      play!(rng,lmi,aux)
     end
 
     # After enough turns, the single defect (strategy==2)
     # invader should take over
-    @test actions == [2,2,2,2]
+    @test aux.interaction_graph.ndata.strategy == [2,2,2,2]
 end
 
 @testset "Directed, prisoner's dilemma, spreader graph" begin
@@ -50,28 +50,13 @@ end
     actions = [1,2,2,2,2]
     aux = WorkParams(lmi, actions)
 
-    # Check the payoff (payoffs_colplayer_per_strategy[i,alpha])
-    # that player i gives to a row player wish strategy alpha
-    # If row player cooperates (strategy==1), player 1 gives reward (3)
-    # and everyone else gives sucker (1); if row player defects (strategy==2),
-    # then player 1 gives temptation (4) and everyone else give punishment (2)
-    @test aux.payoffs_colplayer_per_strategy == [[3,1,1,1,1] [4,2,2,2,2]]
-    # Check the payoff (payoffs_rowplayer_per_strategy[i,alpha])
-    # that player i receives from a row player wish strategy alpha
-    # If row player cooperates (strategy==1), player 1 gets reward (3)
-    # and everyone else gets temptation (4); if row player defects (strategy==2),
-    # then player 1 gets sucker (1) and everyone else gets punishment (2)
-    @test aux.payoffs_rowplayer_per_strategy == [[3,4,4,4,4] [1,2,2,2,2]]
-    # Check actual payoffs between each player (respecting interaction
-    # graph); the only actual payoffs are from player 1 to the other
-    # players (temptation, 4)
-    @test transpose(aux.payoffs_player_pairwise_transpose) ==
-    [0 0 0 0 0;4 0 0 0 0;4 0 0 0 0;4 0 0 0 0;4 0 0 0 0]
+    # Check each edge's payoff; every edge connects player 1 (cooperate)
+    # to a defector, giving each edge the temptation (4) reward
+    @test aux.interaction_graph.edata.payoffs == [4,4,4,4]
     # Check each player's total payoff; player 1 has no in-neighbors,
     # and every other player gets the temptation (4) reward from the
     # player 1
-    calc_payoffs!(aux,actions,lmi)
-    @test aux.payoffs == [0,4,4,4,4]
+    @test aux.interaction_graph.ndata.payoffs == [0,4,4,4,4]
 
     # After enough turns, the single cooperator (strategy==1)
     # in the center node should spread to all the other nodes
@@ -80,9 +65,9 @@ end
     aux = WorkParams(lmi, actions)
     rng = Xoshiro(1)
     for i = 1:time_steps
-      play!(actions,rng,lmi,aux)
+      play!(rng,lmi,aux)
     end
-    @test actions == [1,1,1,1,1]
+    @test aux.interaction_graph.ndata.strategy == [1,1,1,1,1]
 end
 
 @testset "Directed, prisoner's dilemma, random graph" begin
@@ -101,18 +86,17 @@ end
     actions = [1,2,3]
     aux = WorkParams(lmi, actions)
 
+    # Check edge order
+    @test [src(e) => dst(e) for e in edges(aux.interaction_graph)] ==
+	    [2 => 1, 3 => 1, 1 => 2, 2 => 3]
+
     # Check initial payoffs
-    @test transpose(aux.payoffs_player_pairwise_transpose) ==
-    [0 2 3;4 0 0;0 8 0]
-    @test aux.payoffs_colplayer_per_strategy == [1 4 7;2 5 8;3 6 9]
-    @test aux.payoffs_rowplayer_per_strategy == [1 2 3;4 5 6;7 8 9]
+    @test aux.interaction_graph.edata.payoffs == [2,3,4,8]
 
     # Update node 2 to strategy 3
-    update_aux!(aux, 3, 2, lmi)
-    @test transpose(aux.payoffs_player_pairwise_transpose) ==
-    [0 3 3;7 0 0;0 9 0]
-    @test aux.payoffs_colplayer_per_strategy == [1 4 7;3 6 9;3 6 9]
-    @test aux.payoffs_rowplayer_per_strategy == [1 2 3;7 8 9;7 8 9]
+    aux.interaction_graph.ndata.strategy[2] = 3
+    update_aux!(aux, 2, lmi)
+    @test aux.interaction_graph.edata.payoffs == [3,3,7,9]
 end
 
 @testset "Weighted, undirected prisoner's dilemma" begin
@@ -133,12 +117,15 @@ end
     actions = [1,2,3]
     aux = WorkParams(lmi, actions)
 
+    # Check edge order
+    @test [src(e) => dst(e) for e in edges(aux.interaction_graph)] ==
+	    [2 => 1, 3=> 1, 1 => 2, 3 => 2, 1 => 3, 2 => 3]
+
     # Check initial payoffs
-    @test transpose(aux.payoffs_player_pairwise_transpose) ==
-    [0 20 21;40 0 6;49 8 0]
+    @test aux.interaction_graph.edata.payoffs == [20,21,40,6,49,8]
 
     # Update node 1 to strategy 2
-    update_aux!(aux, 2, 1, lmi)
-    @test transpose(aux.payoffs_player_pairwise_transpose) ==
-    [0 50 42;50 0 6;56 8 0]
+    aux.interaction_graph.ndata.strategy[1] = 2
+    update_aux!(aux, 1, lmi)
+    @test aux.interaction_graph.edata.payoffs == [50,42,50,6,56,8]
 end

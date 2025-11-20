@@ -4,6 +4,8 @@ using GameTheory
 using Random
 using StatsBase
 using Graphs
+using GNNGraphs
+using DataFrames
 
 struct Moran{N,T1<:Real,S<:Integer,S2<:Integer,T2<:Real,T3<:Real,
                              AT1<:AbstractMatrix{<:T1},AT2<:AbstractMatrix{<:T1},
@@ -62,74 +64,90 @@ function update_weights!(w::Weights{S,TA,V}, new_wts::V) where {S,TA,V}
     return w.sum = sum(w.values)
 end
 
-struct WorkParams{AS1<:AbstractVector,AT1<:AbstractVector,AT2<:AbstractVector,
+struct WorkParams{AS1<:AbstractVector,AT2<:AbstractVector,
                               AT3<:AbstractWeights,AS2<:AbstractWeights,
-                              AT4<:AbstractMatrix,AT5<:AbstractMatrix,AT6<:AbstractMatrix,
-                              AT7<:AbstractMatrix}
+                              AT4<:AbstractGraph,
+                              }
     neighbor_idxs::AS1
-    payoffs::AT1
-    payoffs_transpose::AT7
     fitnesses::AT2
     weights_float::AT3
     weights_int::AS2
-    payoffs_rowplayer_per_strategy::AT4
-    payoffs_colplayer_per_strategy::AT5
-    payoffs_player_pairwise_transpose::AT6
+    interaction_graph::AT4
+end
+
+function calculate_node_payoff(graph::GNNGraph, node::Integer)
+    payoff = 0.0
+    for game in graph.ndata.in_edges[node]
+       payoff += graph.edata.payoffs[game]
+    end
+    return payoff
 end
 
 function WorkParams(lmi::Moran{N},
                                 initial_actions::AbstractVector) where {N}
     neighbor_idxs = Vector{Int64}(undef, N)
-    payoffs = Vector{Float64}(undef, N)
-    payoffs_transpose = Matrix{Float64}(undef, 1, N)
     fitnesses = Vector{Float64}(undef, N)
     weights_float = Weights(ones(Float64, N))
     weights_int = Weights(ones(Int64, N))
-    payoffs_rowplayer_per_strategy = lmi.payoff_matrix[initial_actions, :]
-    payoffs_colplayer_per_strategy = lmi.payoff_matrix_transpose[initial_actions, :]
-    payoffs_player_pairwise_transpose = payoffs_colplayer_per_strategy[:,
-                                                                       initial_actions] .*
-                                        lmi.interaction_adj_matrix
-    return WorkParams(neighbor_idxs, payoffs, payoffs_transpose, fitnesses,
-                                  weights_float, weights_int,
-                                  payoffs_rowplayer_per_strategy,
-                                  payoffs_colplayer_per_strategy,
-                                  payoffs_player_pairwise_transpose)
-end
 
-function calc_payoffs!(aux::WorkParams,
-                       actions::AbstractVector,
-                       lmi::Moran{N}) where {N}
-    # Calculate payoffs
-    sum!(aux.payoffs_transpose, aux.payoffs_player_pairwise_transpose)
-    return transpose!(aux.payoffs, aux.payoffs_transpose)
+    interaction_graph = GNNGraph(lmi.interaction_adj_matrix)
+    interaction_graph.ndata.strategy = initial_actions
+    nidx = 1:nv(interaction_graph)
+
+    edges_graph = edges(interaction_graph)
+    df = DataFrame(:src => src.(edges_graph), :dst => dst.(edges_graph),
+		   :edge_num => 1:ne(interaction_graph))
+    interaction_graph.ndata.in_edges = coalesce.(leftjoin(DataFrame(dst=1:nv(interaction_graph)),
+		       combine(groupby(df,:dst),:edge_num => (x -> [x]) => :edges);
+		       on=:dst,order=:left),[Int[]])[:,:edges]
+    interaction_graph.ndata.out_edges = coalesce.(leftjoin(DataFrame(src=1:nv(interaction_graph)),
+		       combine(groupby(df,:src),:edge_num => (x -> [x]) => :edges);
+		       on=:src,order=:left),[Int[]])[:,:edges]
+
+    interaction_graph.edata.payoffs = Vector{Float64}(undef,ne(interaction_graph))
+    for (edge_idx, edge) in enumerate(edges(interaction_graph))
+      src_strategy = interaction_graph.ndata.strategy[src(edge)]
+      dst_strategy = interaction_graph.ndata.strategy[dst(edge)]
+      payoff = lmi.payoff_matrix[dst_strategy, src_strategy]*get_edge_weight(interaction_graph)[edge_idx]
+      interaction_graph.edata.payoffs[edge_idx] = payoff
+    end
+
+    interaction_graph.ndata.payoffs = Vector{Float64}(undef,nv(interaction_graph))
+    for node in vertices(interaction_graph)
+      interaction_graph.ndata.payoffs[node] = calculate_node_payoff(interaction_graph, node)
+    end
+
+    return WorkParams(neighbor_idxs, fitnesses,
+                                  weights_float, weights_int,
+                                  interaction_graph,
+				  )
 end
 
 function update_aux!(aux::WorkParams,
-                     new_strategy::Integer,
                      death_idx::Integer,
                      lmi::Moran{N}) where {N}
-    # Update various matrices
-    @. aux.payoffs_rowplayer_per_strategy[death_idx, :] = @view lmi.payoff_matrix_transpose[:,
-                                                                                            new_strategy]
-    @. aux.payoffs_colplayer_per_strategy[death_idx, :] = @view lmi.payoff_matrix[:,
-                                                                                  new_strategy]
-    @. aux.payoffs_player_pairwise_transpose[:, death_idx] = @view aux.payoffs_colplayer_per_strategy[:,
-                                                                                                      new_strategy]
-    for idx in 1:N
-        aux.payoffs_player_pairwise_transpose[idx, death_idx] *= lmi.interaction_adj_matrix[idx,
-                                                                                            death_idx]
+    # Update focal player's payoffs
+    in_neighbors = inneighbors(aux.interaction_graph, death_idx)
+    death_strategy = aux.interaction_graph.ndata.strategy[death_idx]
+    edge_list = edges(aux.interaction_graph)
+    for edge_idx in aux.interaction_graph.ndata.in_edges[death_idx]
+      neighbor = src(edge_list[edge_idx])
+      neighbor_strategy = aux.interaction_graph.ndata.strategy[neighbor]
+      payoff = lmi.payoff_matrix[death_strategy,neighbor_strategy]*get_edge_weight(aux.interaction_graph)[edge_idx]
+      aux.interaction_graph.edata.payoffs[edge_idx] = payoff
     end
-    @. aux.payoffs_player_pairwise_transpose[death_idx, :] = @view aux.payoffs_rowplayer_per_strategy[:,
-                                                                                                      new_strategy]
-    for idx in 1:N
-        aux.payoffs_player_pairwise_transpose[death_idx, idx] *= lmi.interaction_adj_matrix[death_idx,
-                                                                                            idx]
+    aux.interaction_graph.ndata.payoffs[death_idx] = calculate_node_payoff(aux.interaction_graph, death_idx)
+
+    # Update payoffs of focal player's neighbors
+    for edge_idx in aux.interaction_graph.ndata.out_edges[death_idx]
+      neighbor = dst(edge_list[edge_idx])
+      neighbor_strategy = aux.interaction_graph.ndata.strategy[neighbor]
+      aux.interaction_graph.edata.payoffs[edge_idx] = lmi.payoff_matrix[neighbor_strategy,death_strategy]*get_edge_weight(aux.interaction_graph)[edge_idx]
+      aux.interaction_graph.ndata.payoffs[neighbor] = calculate_node_payoff(aux.interaction_graph, neighbor)
     end
 end
 
-function play!(actions::AbstractVector,
-               rng::AbstractRNG,
+function play!(rng::AbstractRNG,
                lmi::Moran{N},
                aux::WorkParams) where {N}
     # Payoff flows along and is weighted by interaction_adj_matrix
@@ -138,40 +156,6 @@ function play!(actions::AbstractVector,
     # Note: each node on reproduction graph must have out-degree greater than
     #   zero, otherwise there is no way to choose node for replacement
 
-    # Calculate all payoffs
-    # Note: we use auxiliary variables to save intermediate calculations that get reused
-    # In particular, for n players and m strategies, we have
-    # payoffs[i] {payoffs[i] is payoff of player i, nx1 dim}
-    # = sum_j=1^n payoffs_pairwise[i,j] {payoffs_pairwise[i,j] is payoff from player j to i, possibly zero; called "payoffs_player_pairwise"}
-    # = sum_j=1^n (payoffs_connected[i,j] .* adj_matrix[i.j]) {payoffs_connected[i,j] is payoff from player j to i assuming they were connected,
-    #     and adj_matrix[i,j] is weight of connection from player j to player i; called interaction_graph)
-    # = sum_j=1^n (strat_payoffs[strategy[i],strategy[j]] .* adj_matrix[i.j]) {strat_payoffs[alpha,beta] is mxm payoff matrix from strategy alpha to strategy beta,
-    #     and strategy[i] is player i's strategy}
-    # = sum_j=1^n sum_alpha=1^m sum_beta=1^m ((e_j[alpha] * strat_payoffs[alpha,beta] * e_i[beta]) .* adj_matrix[i.j])
-    #     {e[i] is m x 1 basis vector with 1 at index of player i's strategy,
-    #     sum_alpha e_j[alpha] * strat_payoffs[alpha,beta] is denoted payoffs_rowplayer_per_strategy[j,beta],
-    #     and
-    #     sum_beta strat_payoffs[alpha,beta] * e_i[beta]  is denoted payoffs_colplayer_per_strategy[i,alpha]}
-    # Or, converting to vector notation
-    # payoffs = ((e^T * strat_payoffs * e) .* adj_matrix) * ones {e is mxn matrix with ith column the mx1 basis vector with 1 at index of player i's strategy,
-    #     ones is nx1 vector of ones, and .* the Hadamard product}
-    #
-    # However, since at most the death player's strategy changes each round, only a single column of e changes each round;
-    # therefore, after initially calculating the matrix payoffs_player_pairwise,
-    # updates to it can be accomplished in three pairs of steps (pairs since both e and e^T need updates):
-    # First, update strat_payoff*e and e^T*strat_payoff:
-    #   one col of e^T * strat_payoffs {"payoffs_rowplayer_per_strategy"} as (e^T*strat_payoffs)[alpha,death_idx] -> payoff_matrix[new_strat,alpha] for alpha=1:m
-    #   one row of strat_payoffs*e {"payoffs_colplayer_per_strategy"} as (strat_payoffs*e)[death_idx,alpha] -> payoff_matrix[alpha,new_strat] for alpha=1:m
-    # Next, copy the new row/column into payoffs_pairwise (notice the reversed indexing of e^T*strat_payoffs and strat_payoffs*e compared to prior step)
-    #   one col of payoffs_pairwise[i,death_idx] -> (e^T*strat_payoffs)[new_strat,i]
-    #   one row of payoffs_pairwise[death_idx,j] -> (strat_payoffs*e)[i,new_strat]
-    # Finally, multiply payoffs_pairwise by adj_matrix
-    #   one col of payoffs_pairwise[i,death_idx] -> payoffs_pairwise[i,death_idx] .* adj_matrix[i,death_idx]
-    #   one row of payoffs_pairwise[death_idx,i] -> payoffs_pairwise[death_idx,i] .* adj_matrix[death_idx,i]
-    # Then, the * one[j] sum must be recomputed each round
-    # Note: some steps are transposed in implementation to better align with Julia's column-major ordering
-    calc_payoffs!(aux, actions, lmi)
-
     # Calculate all fitnesses
     # Note: normally, the fitness is exp(beta*(payoffs - mean(payoffs)))
     # However, if some payoffs are much larger than the mean
@@ -179,7 +163,8 @@ function play!(actions::AbstractVector,
     # Therefore, change (payoffs - mean(payoffs)) to (payoffs - maximum(payoffs));
     # this will ensure all fitnesses are less than one,
     # but the relative ratio of each fitness is unchanged, so the weighted sampling is unchanged
-    aux.fitnesses .= exp.(lmi.beta .* (aux.payoffs .- maximum(aux.payoffs)))
+    payoffs = aux.interaction_graph.ndata.payoffs
+    aux.fitnesses .= exp.(lmi.beta .* (payoffs .- maximum(payoffs)))
 
     # Choose focal (birth) node
     update_weights!(aux.weights_float, aux.fitnesses)
@@ -197,14 +182,19 @@ function play!(actions::AbstractVector,
         new_strategy = rand(rng, 1:(lmi.num_actions))
 	mutation = true
     else
-        new_strategy = actions[focal_idx]
+        new_strategy = aux.interaction_graph.ndata.strategy[focal_idx]
+    end
+
+    # Check if updates are necessary
+    if aux.interaction_graph.ndata.strategy[death_idx] == new_strategy
+	    return mutation
     end
 
     # Apply spatial Moran process
-    actions[death_idx] = new_strategy
+    aux.interaction_graph.ndata.strategy[death_idx] = new_strategy
 
     # Update aux variables
-    update_aux!(aux, new_strategy, death_idx, lmi)
+    update_aux!(aux, death_idx, lmi)
 
     return mutation
 end
@@ -219,16 +209,16 @@ end
 function time_series(lmi::Moran{N}, ts_length::Integer,
                      seed::Integer=12345) where {N}
     rng = Xoshiro(seed)
-    actions = rand(rng, 1:(lmi.num_actions), N)
-    aux = WorkParams(lmi, actions)
+    initial_actions = rand(rng, 1:(lmi.num_actions), N)
+    aux = WorkParams(lmi, initial_actions)
     out = Matrix{Int}(undef, N, ts_length + 1)
     steps_following_mutation = Integer[]
     for i in 1:N
-        out[i, 1] = actions[i]
+        out[i, 1] = initial_actions[i]
     end
     for t in 1:ts_length
-        mutation = play!(actions, rng, lmi, aux)
-        out[:, t + 1] = actions
+        mutation = play!(rng, lmi, aux)
+        out[:, t + 1] = aux.interaction_graph.ndata.strategy
 	if mutation
 		push!(steps_following_mutation, t+1)
 	end
@@ -239,13 +229,13 @@ end
 function cumulative(lmi::Moran{N}, ts_length::Integer,
                     seed::Integer=12345) where {N}
     rng = Xoshiro(seed)
-    actions = rand(rng, 1:(lmi.num_actions), N)
+    initial_actions = rand(rng, 1:(lmi.num_actions), N)
     cumulative = zeros(Int, lmi.num_actions)
-    count_actions!(cumulative, actions)
-    aux = WorkParams(lmi, actions)
+    count_actions!(cumulative, initial_actions)
+    aux = WorkParams(lmi, initial_actions)
     for t in 2:ts_length
-        play!(actions, rng, lmi, aux)
-        count_actions!(cumulative, actions)
+        play!(rng, lmi, aux)
+        count_actions!(cumulative, aux.interaction_graph.ndata.strategy)
     end
     return cumulative
 end

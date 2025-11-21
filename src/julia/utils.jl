@@ -19,7 +19,7 @@ function payoff_matrix(nb_phases::Integer,
                        mutual_benefit_synchronous::Real,
                        unilateral_benefit_synchronous::Real, cost::Real;
                        symmetry_breaking::Real=1 / 2)
-    benefit_scaling = [(1 + cos(2 * pi * (phi_j - phi_i))) / 2
+    benefit_scaling = [(1 + cospi(2 * (phi_j - phi_i))) / 2
                        for phi_i in (0:(nb_phases - 1)) / nb_phases,
                            phi_j in (0:(nb_phases - 1)) / nb_phases]
     payoff_matrix = Matrix(mortar([[mutual_benefit_synchronous * benefit_scaling .- cost,

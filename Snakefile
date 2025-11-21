@@ -150,7 +150,6 @@ rule external_celegans:
     "scripts/snakemake/cache_external_data.jl",
   output:
     protected("data/external/store/k12:33f530402e3f4ac495d8fafe8515269f.xlsx"),
-    protected("data/external/Inventory.toml"),
   script:
     "scripts/snakemake/cache_external_data.jl"
 

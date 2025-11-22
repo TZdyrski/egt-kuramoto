@@ -419,7 +419,6 @@ rule processed_chimera_indices:
     "Data.toml",
     external_data_filename,
     "scripts/snakemake/cache_external_data.jl",
-    "CondaPkg.toml",
     "src/julia/postprocess.jl",
     "src/julia/game_taxonomy.jl",
     "src/julia/utils.jl",

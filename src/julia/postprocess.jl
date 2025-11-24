@@ -626,7 +626,7 @@ function extract_chimera_indices_all_asymm(; community_algorithm::String,
                               cost::Real=0.1,
                               beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
-                              covariance_cutoff::Real,
+			      covariance_cutoff::Union{Nothing,Real}=nothing,
                               nb_players::Integer=20,
 			      )
 
@@ -707,7 +707,7 @@ function extract_chimera_indices(; communities::AbstractVector{<:Integer},
                               cost::Real=0.1,
                               beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
-                              covariance_cutoff::Real,
+			      covariance_cutoff::Union{Nothing,Real}=nothing,
                               nb_players::Integer=20,
 			      )
 

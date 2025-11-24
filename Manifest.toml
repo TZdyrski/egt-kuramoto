@@ -2,7 +2,7 @@
 
 julia_version = "1.11.5"
 manifest_format = "2.0"
-project_hash = "ece90e7f2a3f753ba6a0ae680967579d3a3c8235"
+project_hash = "59a3e47b49826f4ede3799efebc091b14335e533"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "60665b326b75db6517939d0e1875850bc4a54368"
@@ -118,6 +118,12 @@ deps = ["LinearAlgebra", "Random", "StaticArrays"]
 git-tree-sha1 = "d57bd3762d308bded22c3b82d033bff85f6195c6"
 uuid = "ec485272-7323-5ecc-a04f-4719b315124d"
 version = "0.4.0"
+
+[[deps.Arpack_jll]]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "libblastrampoline_jll"]
+git-tree-sha1 = "29e0db2b70b1878c23dd9787e343bc40a642f873"
+uuid = "68821587-b530-5797-8361-c406ea357684"
+version = "3.9.1+2"
 
 [[deps.ArrayInterface]]
 deps = ["Adapt", "LinearAlgebra"]
@@ -1003,6 +1009,12 @@ git-tree-sha1 = "fcb0584ff34e25155876418979d4c8971243bb89"
 uuid = "0656b61e-2033-5cc2-a64a-77c0f6c09b89"
 version = "3.4.0+2"
 
+[[deps.GLPK_jll]]
+deps = ["Artifacts", "GMP_jll", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "6aa6294ba949ccfc380463bf50ff988b46de5bc7"
+uuid = "e8aa6df9-e6ca-548a-97ff-1f85fc5b8b98"
+version = "5.0.1+1"
+
 [[deps.GMP_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "781609d7-10c4-51f6-84f2-b8444358ff6d"
@@ -1196,6 +1208,12 @@ deps = ["Tricks"]
 git-tree-sha1 = "7134810b1afce04bbc1045ca1985fbe81ce17653"
 uuid = "ac1192a8-f4b3-4bfe-ba22-af5b92cd3ab2"
 version = "0.9.5"
+
+[[deps.IGraphs]]
+deps = ["CEnum", "Graphs", "igraph_jll"]
+git-tree-sha1 = "e7caa5c35d88d31338972d167a1155fd67e78677"
+uuid = "647e90d3-2106-487c-adb4-c91fc07b96ea"
+version = "1.0.0"
 
 [[deps.IOCapture]]
 deps = ["Logging", "Random"]
@@ -3315,6 +3333,12 @@ deps = ["Artifacts", "JLLWrappers", "Libdl"]
 git-tree-sha1 = "b6a34e0e0960190ac2a4363a1bd003504772d631"
 uuid = "214eeab7-80f7-51ab-84ad-2988db7cef09"
 version = "0.61.1+0"
+
+[[deps.igraph_jll]]
+deps = ["Arpack_jll", "Artifacts", "CompilerSupportLibraries_jll", "GLPK_jll", "GMP_jll", "JLLWrappers", "LLVMOpenMP_jll", "Libdl", "XML2_jll", "libblastrampoline_jll"]
+git-tree-sha1 = "37850eefa92860e782abe0476fdd45648941c504"
+uuid = "4d841945-e0c2-5143-9479-18e4f0102556"
+version = "1.0.0+0"
 
 [[deps.isoband_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]

@@ -17,6 +17,7 @@ using PythonCall
 using JLD2
 using YAXArrays
 using NetCDF
+using IGraphs
 
 include("moran.jl")
 include("game_taxonomy.jl")
@@ -254,7 +255,9 @@ end
 
 function generate_communities(graph::AbstractSimpleWeightedGraph, community_algorithm::String;
         covariance_cutoff::Union{Real,Nothing}=nothing,
-        covariance_data::Union{DimArray,Nothing}=nothing)
+        covariance_data::Union{DimArray,Nothing}=nothing,
+        walktrap_steps::Union{Integer,Nothing}=nothing,
+        )
     if community_algorithm == "label-propagation"
         # Label propagation
         communities = label_propagation(graph; rng=Xoshiro(12345))[1]
@@ -283,9 +286,24 @@ function generate_communities(graph::AbstractSimpleWeightedGraph, community_algo
 
         communities = 2*ones(Int64,nv(graph))
         communities[map(x -> x[2], findall(sum(covariances,dims=1) .>= covariance_cutoff))] .= 1
+    elseif community_algorithm == "walktrap"
+        if walktrap_steps == nothing
+            throw(ArgumentError("walktrap_steps must be set if 'community_algorithm' == 'walktrap'"))
+        end
+
+        communities_igraph = IGVectorInt(zeros(nv(graph)))
+	LibIGraph.community_walktrap(
+	    IGraph(SimpleDiGraph(graph)),
+	    IGVectorFloat(weight.(edges(graph))),
+	    walktrap_steps,
+	    IGNull(),
+	    IGNull(),
+	    communities_igraph,
+	)
+	communities = Integer.(communities_igraph) .+ 1
     else
         throw(ArgumentError("community_algorithm must be a string in set [\"label-propagation\", "
-                            * "\"strongly-connected\", * "\"covariance\"]"))
+                            * "\"strongly-connected\", \"covariance\", \"walktrap\"]"))
     end
 
     return communities
@@ -630,6 +648,7 @@ function extract_chimera_indices_all_asymm(; community_algorithm::String,
                               beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
 			      covariance_cutoff::Union{Nothing,Real}=nothing,
+			      walktrap_steps::Union{Integer,Nothing}=nothing,
                               nb_players::Integer=20,
 			      )
 
@@ -676,6 +695,11 @@ function extract_chimera_indices_all_asymm(; community_algorithm::String,
 
         # Add covariance_cutoff to config dictionary
         config["covariance_cutoff"] = covariance_cutoff
+    elseif community_algorithm == "walktrap"
+        communities = generate_communities(graph, community_algorithm; walktrap_steps)
+
+        # Add walktrap_steps to config dictionary
+        config["walktrap_steps"] = walktrap_steps
     else
         communities = generate_communities(graph, community_algorithm)
     end
@@ -710,8 +734,8 @@ function extract_chimera_indices(; communities::AbstractVector{<:Integer},
                               cost::Real=0.1,
                               beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
-			      covariance_cutoff::Union{Nothing,Real}=nothing,
                               nb_players::Integer=20,
+                              kwargs...
 			      )
 
     # Generate graph

@@ -6,6 +6,7 @@ using BlockArrays
 using Random
 using Graphs
 
+"Add together the elements from the first half of a list with an even number of elements."
 function extract_num_communicative(players_per_strategy::AbstractVector{<:Integer})
     @assert iseven(length(players_per_strategy))
     # Define matrix that extracts number of communicative players
@@ -16,6 +17,16 @@ function extract_num_communicative(players_per_strategy::AbstractVector{<:Intege
     return num_communicative
 end
 
+"""
+    payoff_matrix(nb_phases, mutual_benefit_synchronous, unilateral_benefit_synchronous,
+      cost; symmetry_breaking=1/2)
+
+Create a square payoff matrix for the symmetric Evolutionary Kuramoto game.
+
+The returned matrix has size `(2*nb_phases, 2*nb_phases)`
+to represent `nb_phases` for both the communicative and non-communicative strategies.
+Note: The cost is added to each cell to prevent negative entries.
+"""
 function payoff_matrix(nb_phases::Integer,
                        mutual_benefit_synchronous::Real,
                        unilateral_benefit_synchronous::Real, cost::Real;
@@ -33,6 +44,7 @@ function payoff_matrix(nb_phases::Integer,
     return payoff_matrix
 end
 
+# Note: C-elegans removes the 2 disconnected neurons
 function get_adj_matrices(; adj_matrix_source::String, nb_players::Integer = 20, regular_degree::Integer = 10, rng::AbstractRNG=Xoshiro(1))
     # Define interaction graph without loops
     # Define reproduction graph with loops

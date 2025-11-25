@@ -4,6 +4,7 @@ using DataToolkit
 using LinearAlgebra
 using BlockArrays
 using Random
+using Graphs
 
 function extract_num_communicative(players_per_strategy::AbstractVector{<:Integer})
     @assert iseven(length(players_per_strategy))

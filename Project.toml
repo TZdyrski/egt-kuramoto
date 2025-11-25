@@ -22,6 +22,7 @@ JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
 JuliaFormatter = "98e50ef6-434e-11e9-1051-2b60c6c9e899"
 KangarooTwelve = "2a5dabf5-6a39-42aa-818d-ce8a58d1b312"
 LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 MD5 = "6ac74813-4b46-53a4-afec-0b5dc9d7885c"
 Memoize = "c03570c3-d221-55d1-a50c-7939bbd78826"
 NetCDF = "30363a11-5582-574a-97bb-aa9a979735b9"
@@ -45,4 +46,5 @@ YAXArrays = "c21b50f5-aa40-41ea-b809-c0f5e47bfa5c"
 
 [compat]
 DrWatson = "2.18.0"
+LinearAlgebra = "1.11.0"
 julia = "1.11.0"

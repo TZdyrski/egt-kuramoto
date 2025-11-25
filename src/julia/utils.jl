@@ -11,7 +11,7 @@ function extract_num_communicative(players_per_strategy::AbstractVector{<:Intege
     # Define matrix that extracts number of communicative players
     N = div(length(players_per_strategy), 2)
     communicative_matrix = [ones(Int, N); zeros(Int, N)]
-    # communicatative have value < nb_phases
+    # Communicative have value < nb_phases
     num_communicative = dot(players_per_strategy, communicative_matrix)
     return num_communicative
 end

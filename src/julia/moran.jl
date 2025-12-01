@@ -6,6 +6,7 @@ using StatsBase
 using Graphs
 using GNNGraphs
 using DataFrames
+using SparseArrays
 
 struct Moran{N,T1<:Real,S<:Integer,S2<:Integer,T2<:Real,T3<:Real,
                              AT1<:AbstractMatrix{<:T1},AT2<:AbstractMatrix{<:T1},
@@ -178,6 +179,7 @@ function play!(rng::AbstractRNG,
 
     # Check for mutation
     mutation = false
+    old_strategy = aux.interaction_graph.ndata.strategy[death_idx]
     if rand(rng) <= lmi.epsilon
         new_strategy = rand(rng, 1:(lmi.num_actions))
 	mutation = true
@@ -186,17 +188,17 @@ function play!(rng::AbstractRNG,
     end
 
     # Check if updates are necessary
-    if aux.interaction_graph.ndata.strategy[death_idx] == new_strategy
-	    return mutation
+    if aux.interaction_graph.ndata.strategy[death_idx] != new_strategy
+        # Apply spatial Moran process
+        aux.interaction_graph.ndata.strategy[death_idx] = new_strategy
+
+        # Update aux variables
+        update_aux!(aux, death_idx, lmi)
     end
 
-    # Apply spatial Moran process
-    aux.interaction_graph.ndata.strategy[death_idx] = new_strategy
+    delta = SparseVector(N, [death_idx], [new_strategy - old_strategy])
 
-    # Update aux variables
-    update_aux!(aux, death_idx, lmi)
-
-    return mutation
+    return mutation, delta
 end
 
 function count_actions!(counts::AbstractVector{N}, new_values::AbstractVector{N}) where {N}
@@ -210,20 +212,18 @@ function time_series(lmi::Moran{N}, ts_length::Integer,
                      seed::Integer=12345) where {N}
     rng = Xoshiro(seed)
     initial_actions = rand(rng, 1:(lmi.num_actions), N)
-    aux = WorkParams(lmi, initial_actions)
-    out = Matrix{Int}(undef, N, ts_length + 1)
+    aux = WorkParams(lmi, deepcopy(initial_actions))
+    deltas = SparseVector[]
     steps_following_mutation = Integer[]
-    for i in 1:N
-        out[i, 1] = initial_actions[i]
-    end
     for t in 1:ts_length
-        mutation = play!(rng, lmi, aux)
-        out[:, t + 1] = aux.interaction_graph.ndata.strategy
+        mutation, delta  = play!(rng, lmi, aux)
+	push!(deltas, delta)
+
 	if mutation
 		push!(steps_following_mutation, t+1)
 	end
     end
-    return out, steps_following_mutation
+    return initial_actions, stack(deltas), steps_following_mutation
 end
 
 function cumulative(lmi::Moran{N}, ts_length::Integer,

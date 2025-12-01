@@ -26,6 +26,7 @@ function plot_graph_evolution(;B_to_c::Real, selection_strength::Real,
 	    config["nb_players"] = nb_players
     end
     data = wload(datadir("raw", "timeseries", savename(config,"jld2")))
+    data["all_populations"] = decode_delta_encoded_all(data["initial_actions"], data["deltas"], time_steps)
 
     # Generate graph
     interaction_adj_matrix, _ = get_adj_matrices(; adj_matrix_source)

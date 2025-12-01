@@ -22,7 +22,7 @@ rule all:
     "plots/animations/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.mp4",
     "plots/animations/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_selection_strength=0.2_symmetry_breaking=1.0_time_steps=8000000.mp4",
     expand(["data/processed/netcdf/cumulative_matrixSource={adj_matrix_source}_timesteps={time_steps_cumulative}.nc",
-      "data/processed/netcdf/timeseries-statistics_decimationFactor=1000_matrixSource={adj_matrix_source}_timesteps={time_steps_timeseries}.nc"], adj_matrix_source=adj_matrix_source_vals,
+      "data/processed/netcdf/timeseries-statistics_matrixSource={adj_matrix_source}_timesteps={time_steps_timeseries}.nc"], adj_matrix_source=adj_matrix_source_vals,
       time_steps_cumulative=time_steps_cumulative_netcdf,time_steps_timeseries=time_steps_timeseries_netcdf,),
 
 rule manuscript:
@@ -105,7 +105,7 @@ rule supplementary_information:
 rule netcdf_datasets:
   input:
     expand(["data/processed/netcdf/cumulative_matrixSource={adj_matrix_source}_timesteps={time_steps_cumulative}.nc",
-      "data/processed/netcdf/timeseries-statistics_decimationFactor=1000_matrixSource={adj_matrix_source}_timesteps={time_steps_timeseries}.nc"], adj_matrix_source=adj_matrix_source_vals,
+      "data/processed/netcdf/timeseries-statistics_matrixSource={adj_matrix_source}_timesteps={time_steps_timeseries}.nc"], adj_matrix_source=adj_matrix_source_vals,
       time_steps_cumulative=time_steps_cumulative_netcdf,time_steps_timeseries=time_steps_timeseries_netcdf,),
 
 wildcard_constraints:
@@ -171,7 +171,7 @@ def memory_mb_timeseries(wildcards):
   float_size_mb = 8/1E6
   # mem_mb = 1300, # well-mixed
   # mem_mb = 19500, # c-elegans
-  memory_mb = float_size_mb*nb_players*time_steps*safety_factor_memory
+  memory_mb = (time_steps + nb_players)*float_size_mb*safety_factor_memory
   return memory_mb
 
 def runtime_min_cumulative(wildcards):
@@ -458,14 +458,3 @@ rule netcdf_dataset:
     "data/processed/netcdf/{data_type}_matrixSource={adj_matrix_source}_timesteps={time_steps}.nc",
   script:
     "scripts/snakemake/postprocess_netcdf.jl"
-
-use rule netcdf_dataset as netcdf_dataset_decimated with:
-  resources:
-    runtime = 40,
-    # runtime = 3, # well-mixed time_steps=8E6
-    # runtime = 40, # c-elegans time_steps=8E6
-    mem_mb = 25000,
-    # mem_mb = 3200, # well-mixed
-    # mem_mb = 25000, # c-elegans
-  output:
-    "data/processed/netcdf/{data_type}_decimationFactor={decimation_factor}_matrixSource={adj_matrix_source}_timesteps={time_steps}.nc",

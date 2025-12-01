@@ -94,7 +94,7 @@ function calc_timeseries(config::Dict)
     nb_players = size(interaction_adj_matrix)[1]
 
     # Run the model for weak selection strength
-    all_populations, steps_following_mutation = time_series(Moran(NormalFormGame(payoff_matrix(nb_phases,
+    initial_actions, deltas, steps_following_mutation = time_series(Moran(NormalFormGame(payoff_matrix(nb_phases,
                                                                                      B,
                                                                                      beta_to_B *
                                                                                      B,
@@ -106,5 +106,5 @@ function calc_timeseries(config::Dict)
                                   time_steps)
 
     # Package results
-    return @strdict(all_populations, steps_following_mutation, nb_phases, nb_players, interaction_adj_matrix)
+    return @strdict(initial_actions, deltas, steps_following_mutation, nb_phases, nb_players, interaction_adj_matrix)
 end

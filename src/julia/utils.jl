@@ -102,3 +102,28 @@ function get_celegans_connectome_labelled()
                    "col_labels" => col_labels)
     return results
 end
+
+function encode_delta_encoded(data::AbstractMatrix)
+	starting_data = data[:,1]
+	deltas = diff(data; dims=2)
+	return starting_data, deltas
+end
+
+function decode_delta_encoded(starting_data::AbstractVector,deltas::AbstractMatrix,time_step::Integer)
+  # Note: starting_data corresponds to time_step = 0
+  # starting_data should be a n-vector
+  # and deltas should be an nxm matrix of differences
+  # between successive time steps
+  state = starting_data
+  for i = 1:time_step
+	  state .+= deltas[:,i]
+  end
+  return state
+end
+
+function decode_delta_encoded_all(starting_data::AbstractVector,deltas::AbstractMatrix,final_time_step::Integer)
+  trimmed_deltas = deltas[:,1:final_time_step]
+  state = Matrix{eltype(trimmed_deltas)}(undef, length(starting_data), final_time_step+1)
+  cumsum!(state, hcat(starting_data, trimmed_deltas); dims=2)
+  return state
+end

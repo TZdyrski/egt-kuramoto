@@ -309,11 +309,41 @@ function generate_communities(graph::AbstractSimpleWeightedGraph, community_algo
     return communities
 end
 
-function get_chimera_indices(data::DimArray,communities::AbstractVector{<:Integer},nb_phases::Integer)
-   strategies_grouped = groupby(data, Dim{:player_index}=>(x -> communities[x]))
-   phase_parameters = map(x -> extract_order_parameters.(extract_counts.(eachslice(x,dims=:time_step),nb_phases),nb_phases), strategies_grouped)
-   metastability = mean(var.(phase_parameters))
-   chimera_index = mean(var.(invert(phase_parameters)))
+function get_chimera_indices(initial_actions::AbstractVector{<:Integer},deltas::AbstractMatrix{<:Integer},communities::AbstractVector{<:Integer},nb_phases::Integer)
+
+   num_communities = length(unique(communities))
+   num_times = size(deltas,2)
+   phase_parameters = Matrix{Float64}(undef,num_times+1,num_communities)
+
+   current_actions = initial_actions
+
+   player_indices_by_community = [communities .== community_idx
+     for community_idx in 1:num_communities]
+
+   # Populate initial phase parameters for each community
+   for community_idx = 1:num_communities
+	   phase_parameters[0+1, community_idx] = extract_order_parameters(
+	     extract_counts(current_actions[player_indices_by_community[community_idx]],
+	       nb_phases),nb_phases)
+   end
+
+   # Only update phase parameter for affected community
+   for time_idx = 1:num_times
+	   phase_parameters[time_idx+1,:] = phase_parameters[time_idx,:]
+	   current_actions += deltas[:,time_idx]
+
+	   changed_idxs = findall(deltas[:,time_idx] .!= 0)
+	   changed_community_idxs = unique(communities[changed_idxs])
+
+	   for changed_community_idx in changed_community_idxs
+		   phase_parameters[time_idx+1, changed_community_idx] = extract_order_parameters(
+		     extract_counts(current_actions[player_indices_by_community[changed_community_idx]],
+		       nb_phases),nb_phases)
+	   end
+   end
+
+   metastability = mean(var(phase_parameters;dims=1))
+   chimera_index = mean(var(phase_parameters;dims=2))
 
    results = Dict("metastability_index"=>metastability, "chimera_index"=>chimera_index)
    return results
@@ -423,8 +453,9 @@ function generate_nodes_edges(graph::AbstractGraph;
             # Put into DataFrame
             df = DataFrame(x=xs, y=ys)
     else
-            # Get vertex labels
-            vertex_labels = data["all_populations"][:,time_step]
+	    # Decode data to get vertex labels
+	    vertex_labels = decode_delta_encoded(data["initial_actions"],
+	      data["deltas"],time_step)
 
             # Put into DataFrame
             df = DataFrame(x=xs, y=ys, strategyIndex=vertex_labels)
@@ -511,18 +542,30 @@ function extract_cumulative(; type::String, selection_strength::Real,
     CSV.write(datadir("processed","cumulative", savename(config,"csv")), df)
 end
 
-function calc_timeseries_statistics(all_populations::AbstractMatrix{<:Integer}, nb_phases::Integer, nb_players::Integer,
+function calc_timeseries_statistics(initial_actions::AbstractVector{<:Integer}, deltas::AbstractMatrix{<:Integer}, nb_phases::Integer, nb_players::Integer,
   symmetry_breaking::Real, B_to_c::Real, beta_to_B::Real, cost::Real, interaction_adj_matrix::AbstractMatrix{<:Integer},
   only_mixed_games::Bool)
     # Extract results
-    strategies_per_timestep = eachslice(all_populations; dims=2)
-    most_common_game_types = map(x -> extract_most_common_game_types(x,
-      B_to_c * cost, beta_to_B * B_to_c * cost, cost, symmetry_breaking, nb_phases, interaction_adj_matrix; only_mixed_games),
-      strategies_per_timestep)
-    action_counts_per_timestep = map(x -> extract_counts(x, nb_phases), strategies_per_timestep)
-    nb_communicative = extract_num_communicative.(action_counts_per_timestep)
-    fraction_communicative = nb_communicative / nb_players
-    order_parameters = extract_order_parameters.(action_counts_per_timestep, nb_phases)
+    time_steps = size(deltas,2)
+    fraction_communicative = Vector{Float64}(undef,time_steps+1)
+    order_parameters = Vector{Float64}(undef,time_steps+1)
+    most_common_game_types = Vector{GameType}(undef,time_steps+1)
+
+    current_actions = initial_actions
+
+    for time_idx in 0:time_steps
+	    most_common_game_types[time_idx+1] = extract_most_common_game_types(current_actions,
+	      B_to_c * cost, beta_to_B * B_to_c * cost, cost, symmetry_breaking, nb_phases, interaction_adj_matrix; only_mixed_games)
+	    action_counts_per_timestep = extract_counts(current_actions, nb_phases)
+	    nb_communicative = extract_num_communicative(action_counts_per_timestep)
+	    fraction_communicative[time_idx+1] = nb_communicative / nb_players
+	    order_parameters[time_idx+1] = extract_order_parameters(action_counts_per_timestep, nb_phases)
+
+      if time_idx == time_steps
+	      break
+      end
+      current_actions += deltas[:,time_idx+1]
+    end
 
     # Package results
     return @strdict(fraction_communicative, order_parameters, most_common_game_types)
@@ -599,7 +642,7 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
     df_all_asymm = DataFrame(data_dict)
 
     # Generate statistics
-    statistics = transform(df_all_asymm, [:all_populations, :nb_phases, :nb_players, :symmetry_breaking,
+    statistics = transform(df_all_asymm, [:initial_actions, :deltas, :nb_phases, :nb_players, :symmetry_breaking,
         :B_to_c, :beta_to_B, :cost, :interaction_adj_matrix, :only_mixed_games] => ByRow(calc_timeseries_statistics) => AsTable)
 
     # Select subset of columns
@@ -684,11 +727,11 @@ function extract_chimera_indices_all_asymm(; community_algorithm::String,
             throw(ErrorException("Found multiple timeseries data with `symmetry_breaking`=$(symmetry_breaking_ref)"))
         end
 
-        # Convert to DimArray
-        data_ref = DimArray(df_ref.all_populations[1], (:player_index, :time_step))
+	# Decode a subset 1% of data to calculate communities
+	data = decode_delta_encoded_all(df_ref.initial_actions[1], df_ref.deltas[1], Integer(ceil(time_steps*0.01)))
 
-        # Only use subset 1% of data to calculate communities
-        data_ref = data_ref[time_step = At(1:ceil(time_steps*0.01))]
+        # Convert to DimArray
+        data_ref = DimArray(data, (:player_index, :time_step))
 
         communities = generate_communities(graph, community_algorithm;
                                            covariance_cutoff=covariance_cutoff, covariance_data = data_ref)
@@ -760,12 +803,8 @@ function extract_chimera_indices(; communities::AbstractVector{<:Integer},
     # Convert to dataframe
     df_all_asymm = DataFrame(data_dict)
 
-    # Convert to DimArray
-    transform!(df_all_asymm,
-               :all_populations => ByRow(array  -> DimArray(array, (:player_index, :time_step))) => :all_populations)
-
     # Get chimera indices
-    transform!(df_all_asymm, :all_populations => ByRow(pop -> get_chimera_indices(pop, communities, nb_phases)) => AsTable)
+    transform!(df_all_asymm, [:initial_actions, :deltas] => ByRow((init,deltas) -> get_chimera_indices(init, deltas, communities, nb_phases)) => AsTable)
 
     # Only keep columns we're interested in
     df = select(df_all_asymm, :symmetry_breaking => :asymmetry,
@@ -858,7 +897,7 @@ function extract_game_types(; B_to_c::Real, selection_strength::Real,
     df_all_asymm = DataFrame(data_dict)
 
     # Generate statistics
-    transform!(df_all_asymm, [:all_populations, :nb_phases, :nb_players, :symmetry_breaking,
+    transform!(df_all_asymm, [:initial_actions, :deltas, :nb_phases, :nb_players, :symmetry_breaking,
         :B_to_c, :beta_to_B, :cost, :interaction_adj_matrix, :only_mixed_games] => ByRow(calc_timeseries_statistics) => AsTable)
 
     game_types = proportionmap.(df_all_asymm.most_common_game_types)
@@ -912,7 +951,7 @@ function calc_number_unidirection_bidirectional_edges(; adj_matrix_source::Strin
     CSV.write(datadir("processed", "graph_loop_edge_number", savename(config,"csv")), results)
 end
 
-function create_netcdf(raw_data_filenames::Vector{String}; data_type::String, adj_matrix_source::String, time_steps::Integer, decimation_factor::Union{Nothing,Integer}=nothing)
+function create_netcdf(raw_data_filenames::Vector{String}; data_type::String, adj_matrix_source::String, time_steps::Integer)
 	function get_properties(df,adj_matrix_source; include_time_steps::Bool=true)
 		property_list = ["nb_phases", "adj_matrix_source", "cost", "mutation_rate"]
 		if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
@@ -971,11 +1010,6 @@ function create_netcdf(raw_data_filenames::Vector{String}; data_type::String, ad
       _, config, _ = parse_savename(filename)
       data_dict = merge(data_dict, config)
 
-      # Decimate data
-      if !isnothing(decimation_factor)
-        data_dict["all_populations"] = data_dict["all_populations"][:,(0:decimation_factor:time_steps).+1]
-      end
-
       # Wrap all elements in a list to allow for matrices in individual
       # DataFrame elements
       data_dict = Dict(k => [v] for (k,v) in data_dict)
@@ -986,39 +1020,51 @@ function create_netcdf(raw_data_filenames::Vector{String}; data_type::String, ad
     end
 
     only_mixed_games = false
-    transform!(df_timeseries, [:all_populations, :nb_phases, :nb_players, :symmetry_breaking,
+    transform!(df_timeseries, [:initial_actions, :deltas, :nb_phases, :nb_players, :symmetry_breaking,
       :to_c, :beta_to_B, :cost, :interaction_adj_matrix] => ByRow((x...) -> calc_timeseries_statistics(x..., only_mixed_games)) => AsTable)
     only_mixed_games = true
-    transform!(df_timeseries, [:all_populations, :nb_phases, :nb_players, :symmetry_breaking,
+    transform!(df_timeseries, [:initial_actions, :deltas, :nb_phases, :nb_players, :symmetry_breaking,
       :to_c, :beta_to_B, :cost, :interaction_adj_matrix] =>
       ByRow((x...) -> Dict("most_common_game_types_only_mixed_games" => calc_timeseries_statistics(x..., only_mixed_games)["most_common_game_types"])) => AsTable)
 
     properties_dict_timeseries = get_properties(df_timeseries,adj_matrix_source; include_time_steps=false)
     transform!(df_timeseries, :to_c => ByRow(x -> x*properties_dict_timeseries["cost"]) => :maximum_joint_benefit)
 
-    nb_players = size(df_timeseries.all_populations[1])[1]
+    nb_players = length(df_timeseries.initial_actions)
 
     symmetry_breaking_timeseries_vals = unique(df_timeseries.symmetry_breaking)
     selection_strength_timeseries_vals = unique(df_timeseries.selection_strength)
     maximum_joint_benefit_timeseries_vals = unique(df_timeseries.maximum_joint_benefit)
     axes_timeseries = (
-      Dim{:time_step}(!isnothing(decimation_factor) ? (0:decimation_factor:time_steps) : (0:time_steps)),
+      Dim{:time_step}(0:time_steps),
       Dim{:symmetry_breaking}(symmetry_breaking_timeseries_vals, span=Regular(0.25)),
       Dim{:maximum_joint_benefit}(round.(maximum_joint_benefit_timeseries_vals; digits=5)),
       Dim{:selection_strength}(selection_strength_timeseries_vals, span=Regular(4.8)),
       )
-    axes_timeseries_with_players = (Dim{:player_index}(1:nb_players), axes_timeseries...)
+    axes_players = (Dim{:player_index}(1:nb_players))
+    axes_timeseries_with_players = (axes_players..., axes_timeseries...)
 
     # Combine into a YAXArray
     transform!(df_timeseries, :most_common_game_types => ByRow(x -> Integer.(x)) => :most_common_game_types,
       :most_common_game_types_only_mixed_games => ByRow(x -> Integer.(x)) => :most_common_game_types_only_mixed_games)
-    timeseries = YAXArray(axes_timeseries_with_players,
+    initial_actions = YAXArray(axes_players,
               stack(only(
                    begin
                      x = @rsubset(df_timeseries, :symmetry_breaking == alpha,  :selection_strength == delta, :maximum_joint_benefit == B_0)
                      !isempty(x) ? x : DataFrame(all_populations = [fill(missing, size(axes_timeseries[[1,2]]))])
                    end
-             ).all_populations
+             ).initial_actions
+              for alpha in symmetry_breaking_timeseries_vals, B_0 in maximum_joint_benefit_timeseries_vals,
+              delta in selection_strength_timeseries_vals), # Use *_vals instead elements of axes_timeseries because axes rounds maximum_joint_benefit
+              properties_dict_timeseries,
+              )
+    deltas = YAXArray(axes_timeseries_with_players,
+              stack(only(
+                   begin
+                     x = @rsubset(df_timeseries, :symmetry_breaking == alpha,  :selection_strength == delta, :maximum_joint_benefit == B_0)
+                     !isempty(x) ? x : DataFrame(all_populations = [fill(missing, size(axes_timeseries[[1,2]]))])
+                   end
+	   ).deltas
               for alpha in symmetry_breaking_timeseries_vals, B_0 in maximum_joint_benefit_timeseries_vals,
               delta in selection_strength_timeseries_vals), # Use *_vals instead elements of axes_timeseries because axes rounds maximum_joint_benefit
               properties_dict_timeseries,
@@ -1077,18 +1123,13 @@ function create_netcdf(raw_data_filenames::Vector{String}; data_type::String, ad
                    :most_common_game_types_only_mixed_games => most_common_game_types_only_mixed_games,
                    :order_parameters => order_parameters,
                    :fraction_communicative => fraction_communicative,
-                   :timeseries => timeseries,
+                   :initial_actions => initial_actions,
+                   :deltas => deltas,
                    )...)
 
-    if isnothing(decimation_factor)
-      savedataset(timeseries_statistics,
-            path=datadir("processed","netcdf", "timeseries-statistics_matrixSource=$(adj_matrix_source)_timesteps=$time_steps.nc"),
-            driver=:netcdf, overwrite=true, compress=9)
-    else
-      savedataset(timeseries_statistics,
-            path=datadir("processed","netcdf", "timeseries-statistics_decimationFactor=$(decimation_factor)_matrixSource=$(adj_matrix_source)_timesteps=$time_steps.nc"),
-            driver=:netcdf, overwrite=true)
-    end
+    savedataset(timeseries_statistics,
+          path=datadir("processed","netcdf", "timeseries-statistics_matrixSource=$(adj_matrix_source)_timesteps=$time_steps.nc"),
+          driver=:netcdf, overwrite=true, compress=9)
   else
         throw(ArgumentError("data_type must be a string in set [\"cumulative\", \"timeseries-statistics\"]"))
   end

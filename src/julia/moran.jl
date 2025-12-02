@@ -143,21 +143,25 @@ function play!(actions::AbstractVector,
     # In particular, for n players and m strategies, we have
     # payoffs[i] {payoffs[i] is payoff of player i, nx1 dim}
     # = sum_j=1^n payoffs_pairwise[i,j] {payoffs_pairwise[i,j] is payoff from player j to i, possibly zero; called "payoffs_player_pairwise"}
-    # = sum_j=1^n payoffs_pairwise[i,j] * ones[j] {ones is nx1 vector of ones}
-    # = sum_j=1^n (payoffs_connected[i,j] * adj_matrix[i.j]) * ones[j] {payoffs_connected[i,j] is payoff from player j to i assuming they were connected; called "payoffs_colplayer_per_strategy"}
-    # = sum_j=1^n (strat_payoffs[strategy[i],strategy[j]] * adj_matrix[i.j]) * ones[j] {adj_matrix[i,j] is weight of connection from player j to player i,
-    # 	  strat_payoffs[alpha,beta] is mxm payoff matrix from strategy alpha to strategy beta, strategy[i] player i's strategy}
-    # = sum_j=1^n sum_alpha=1^m sum_beta=1^m ((e_j[alpha] * strat_payoffs[alpha,beta] * e_i[beta]) .* adj_matrix[i.j]) * ones[j]
-    # 	  e[i] is m x 1 basis vector with 1 at index of player i's strategy}
+    # = sum_j=1^n (payoffs_connected[i,j] .* adj_matrix[i.j]) {payoffs_connected[i,j] is payoff from player j to i assuming they were connected,
+    #     and adj_matrix[i,j] is weight of connection from player j to player i; called interaction_graph)
+    # = sum_j=1^n (strat_payoffs[strategy[i],strategy[j]] .* adj_matrix[i.j]) {strat_payoffs[alpha,beta] is mxm payoff matrix from strategy alpha to strategy beta,
+    #     and strategy[i] is player i's strategy}
+    # = sum_j=1^n sum_alpha=1^m sum_beta=1^m ((e_j[alpha] * strat_payoffs[alpha,beta] * e_i[beta]) .* adj_matrix[i.j])
+    #     {e[i] is m x 1 basis vector with 1 at index of player i's strategy,
+    #     sum_alpha e_j[alpha] * strat_payoffs[alpha,beta] is denoted payoffs_rowplayer_per_strategy[j,beta],
+    #     and
+    #     sum_beta strat_payoffs[alpha,beta] * e_i[beta]  is denoted payoffs_colplayer_per_strategy[i,alpha]}
     # Or, converting to vector notation
-    # payoffs = ((e^T * strat_payoffs * e) .* adj_matrix) * ones {e is mxn matrix with ith column the mx1 basis vector with 1 at index of player i's strategy, and .* the Hadamard product}
+    # payoffs = ((e^T * strat_payoffs * e) .* adj_matrix) * ones {e is mxn matrix with ith column the mx1 basis vector with 1 at index of player i's strategy,
+    #     ones is nx1 vector of ones, and .* the Hadamard product}
     #
     # However, since at most the death player's strategy changes each round, only a single column of e changes each round;
     # therefore, after initially calculating the matrix payoffs_player_pairwise,
     # updates to it can be accomplished in three pairs of steps (pairs since both e and e^T need updates):
-    # First, update strat_payoff*e and e^Tstrat_payoff:
-    #   one col of e^T * strat_payoffs {denoted "payoffs_rowplayer_per_strategy"} as (e^T*strat_payoffs)[alpha,death_idx] -> payoff_matrix[new_strat,alpha] for alpha=1:m
-    #   one row of strat_payoffs*e {denoted "payoffs_colplayer_per_strategy"} as (strat_payoffs*e)[death_idx,alpha] -> payoff_matrix[alpha,new_strat] for alpha=1:m
+    # First, update strat_payoff*e and e^T*strat_payoff:
+    #   one col of e^T * strat_payoffs {"payoffs_rowplayer_per_strategy"} as (e^T*strat_payoffs)[alpha,death_idx] -> payoff_matrix[new_strat,alpha] for alpha=1:m
+    #   one row of strat_payoffs*e {"payoffs_colplayer_per_strategy"} as (strat_payoffs*e)[death_idx,alpha] -> payoff_matrix[alpha,new_strat] for alpha=1:m
     # Next, copy the new row/column into payoffs_pairwise (notice the reversed indexing of e^T*strat_payoffs and strat_payoffs*e compared to prior step)
     #   one col of payoffs_pairwise[i,death_idx] -> (e^T*strat_payoffs)[new_strat,i]
     #   one row of payoffs_pairwise[death_idx,j] -> (strat_payoffs*e)[i,new_strat]
@@ -181,7 +185,7 @@ function play!(actions::AbstractVector,
     update_weights!(aux.weights_float, aux.fitnesses)
     focal_idx = sample(rng, 1:N, aux.weights_float)
 
-    # Get list of neighbors
+    # Get list of out neighbors
     @. aux.neighbor_idxs = @view lmi.reproduction_adj_matrix_transpose[:, focal_idx]
     # Choose death node
     update_weights!(aux.weights_int, aux.neighbor_idxs)

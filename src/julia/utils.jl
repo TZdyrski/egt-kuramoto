@@ -83,6 +83,7 @@ function get_celegans_connectome_labelled()
     if row_labels != col_labels
       throw(ErrorException("Rows and columns in c-elegans adjacency table do not match up"))
     end
+    # Note: Cook uses the convention row => src node
     connectome = connectome_with_labels[2:end, 2:end]
     results = Dict("connectome" => connectome, "row_labels" => row_labels,
                    "col_labels" => col_labels)

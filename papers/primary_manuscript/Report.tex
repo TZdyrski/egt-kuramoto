@@ -747,8 +747,11 @@ for our $M=2$ communities.
 Conversely, the metastability index
 represents how often the system transitions
 between synchronicity and disorder,
-is equal to the community-average of the temporal covariance,
-and has a practical maximum of \num{0.08}~\cite{shanahan2010metastable}.
+is equal to the community-average of the temporal covariance;
+it is \num{0} for a system that is always synchronized
+or always disordered,
+and increases to \num{0.25} for a system spending
+equal time fully synchronized and fully disordered.
 \Cref{fig:chimera-index} shows the
 \subref{fig:chimera_index} chimera-like index $\chi$
 and
@@ -760,7 +763,7 @@ These simulations ran with the same parameters as the
 
 The metastability displayed in \cref{fig:chimera-index}
 is less than \num{0.01}, much smaller
-than the practical maximum of \num{0.08}.
+than the maximum of \num{0.25}.
 This implies that the system has low metastability
 and spends most of its time at a nearly constant
 synchronicity $\rho_m(t)$.
@@ -1289,13 +1292,7 @@ $\lambda$ is maximized for a system spending equal times synchronized
 and disordered
 where the variance of the discrete uniform distribution
 between $\rho_m = 0$ and $\rho_m = 1$ gives
-$\lambda = 1/4 = \num{0.25}$~\cite{shanahan2010metastable}.
-A slightly more realistic upper bound
-occurs when the system exhibits each possible $\rho_m \in [0,1]$
-uniformly at random;
-then, the upper bound becomes the variance of the continuous uniform
-distribution,
-$\lambda = 1/12 \approx \num{0.08}$~\cite{shanahan2010metastable}.
+$\lambda = 1/4 = \num{0.25}$.
 %TC:endignore
 
 \section*{Acknowledgments}

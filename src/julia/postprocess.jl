@@ -238,10 +238,10 @@ end
 function extract_order_parameters(players_per_strategy::AbstractVector{<:Integer},
                                   nb_phases::Integer)
     # Combine communicative and noncommunicative
-    phase_indxs = combine_communicative_noncommunicative(players_per_strategy, nb_phases)
-    # Convert strategy idxs to phases
-    phases = extract_phases(phase_indxs, nb_phases)
-    order_parameters = abs(mean(exp.(im * phases)))
+    phase_counts = combine_communicative_noncommunicative(players_per_strategy, nb_phases)
+    # Generate phase for each index
+    phases = extract_phases(1:nb_phases, nb_phases)
+    order_parameters = abs(sum(phase_counts .* exp.(im * phases)))/sum(phase_counts)
     return order_parameters
 end
 

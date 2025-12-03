@@ -664,13 +664,15 @@ the \subref{fig:time-series_celegans-full} \gls{celegans} case
 depicts a far more heterogeneous population.
 Here, the population never stabilizes
 to a fully communicative or non-communicative state.
-Instead, both its communicative frequency and order parameter
-stay between \SIrange{40}{70}{\percent}.
-The mean communicative frequency $f_{\text{comm}} \approx \SI{60}{\percent}$
+Instead, its communicative frequency stays between
+\SIrange{40}{70}{\percent},
+and ts mean $f_{\text{comm}} \approx \SI{60}{\percent}$
 is similar to the expected $f_{\text{comm}} \approx \SI{70}{\percent}$
 from \cref{fig:comm-frac_celegans-full} with $B_0 = 0.15$;
 the discrepancy likely comes from the stochasticity
 in this small, \num{8E5} time-step subset.
+Similarity, the order parameter's smaller value of \SIrange{20}{45}{\percent}
+indicates far less synchronization than the well-mixed case.
 And while the \cref{fig:time-series_well-mixed_alpha-075} well-mixed setup
 displays hero, staghunt, and concord plurality mixed game-types,
 the \cref{fig:time-series_celegans-full} \gls{celegans} setup
@@ -762,28 +764,26 @@ These simulations ran with the same parameters as the
 \gls{celegans} time-series data.
 
 The metastability displayed in \cref{fig:chimera-index}
-is less than \num{0.01}, much smaller
+is less than \num{0.02}, much smaller
 than the maximum of \num{0.25}.
 This implies that the system has low metastability
 and spends most of its time at a nearly constant
 synchronicity $\rho_m(t)$.
 Furthermore, while the metastability is higher (more stability variations)
-at $\lambda \approx \num{0.01}$ for the $\alpha = 0$ case,
-the metastability drops precipitously for larger $\alpha$,
-always staying below \num{0.004} implying that
-higher asymmetry $\alpha$ makes the system more stable.
+at $\lambda \approx \num{0.02}$ for the $\alpha = 0.5, 1$ case,
+the metastability drops precipitously for other $\alpha$,
+always staying below \num{0.008}.
 Conversely, the chimera-like index $\chi$
 indicates a high chimeric quality
-with values (\numrange{0.06}{0.13})
-nearly a quarter of the theoretical maximum (\num{0.5}).
+with values (\numrange{0.14}{0.23})
+nearly half the theoretical maximum (\num{0.5}).
 Given that we average the chimera-like index over time,
 the system's deviation from a complete chimera state
 arises from both imperfect separation of the coherent/disordered populations
 as well as time fluctuations in the chimeric quality.
-While we observe that $\chi$ has a maximum at $\alpha = \num{0.75}$,
-we caution that this is likely the result of calculating the communities
-based on the $\alpha = \num{0.75}$ covariances.
-Nevertheless, the high $\chi$ value for all asymmetries $\alpha$
+While we did calculate the communities
+based on the $\alpha = \num{0.75}$ covariances,
+the high $\chi$ value for all asymmetries $\alpha$
 implies that the strong chimeric character is intrinsic
 rather than an artifact of our $\alpha = \num{0.75}$ choice.
 
@@ -925,39 +925,28 @@ a synchronized group of non-communicators,
 as well as a mix of disordered neighbors.
 This coexistence of strong synchronization and disorder
 is consistent with the high
-chimera-like index $\chi$ observed in \cref{fig:chimera-index} for $\alpha = 0$.
-Likewise, the $\alpha = 0.75$ case depicted in \cref{fig:graph}
-has an even higher $\chi = \num{0.13}$,
-consistent with the coexistence of a large,
-synchronized non-communicative group (red)
-and disordered neighbors (varying phases/colors).
-In contrast,
+chimera-like index $\chi = \num{0.23}$ observed in \cref{fig:chimera-index} for $\alpha = 0$.
+In comparison, the $\alpha = 0.75$ case depicted in \cref{fig:graph}
+has an slightly lower $\chi = \num{0.21}$,
+consistent with the smaller synchronized
+non-communicative group (red).
+Finally,
 \cref{fig:graph_celegans_asymmetry1} shows a snapshot for $\alpha = 1$,
-for which we expect a lower chimera-like index of $\chi = \num{0.06}$.
-Indeed, we see that the large communicative (red) group
+for which we expect a slightly lower chimera-like index of $\chi = \num{0.20}$.
+Indeed, we see that the medium-sized communicative (red) group
 in \cref{fig:graph_celegans_asymmetry1}
 or \cref{fig:graph} has fractured into two
 communicative (blue) groups with different phases (color shade),
-lowering the chimeric quality.
+slightly lowering the chimeric quality.
 Therefore, these snapshots give a glimpse of the chimera-like quality
 in the \gls{celegans} populations.
-
-We also note that \cref{fig:game-type} shows that
-the high chimera-like index setups ($\alpha = 0.5, 0.75$)
-are dominated by game types (chicken, hero, and battle),
-shown in warm colors (red, orange, and pink, respectively),
-with exponentially slow fixation times~\cite{antal2006fixation}.
-In contrast, the lower chimera-like index setup ($\alpha = 0,0.25,1$)
-is dominated by non-exponentially-slow dilemma and deadlock type games.
-This connection between exponentially-slow fixation time games and high chimera index
-seems suggestive and requires further investigation.
 
 Another study of the \gls{celegans} connectome also found
 chimera-like states using an entirely non-game-theory tool,
 modular neural networks~\cite{hizanidis2016chimera}.
 That study found a maximum chimera-like index of \num{0.12},
-in agreement with our value of \num{0.13}, despite the different network models
-of the \gls{celegans} connectome considered.
+in agreement with our value of \num{0.14} for $\alpha = 0.5$,
+despite the different network models of the \gls{celegans} connectome considered.
 This agreement between two different models of neurons
 reveals that the emergence of chimera states
 is most likely primarily driven by the connectivity structure itself.
@@ -1239,12 +1228,12 @@ ensuring that communicative ($C$, $\phi_i$)
 and non-communicative ($N$, $\phi_i$) are treated distinctly.
 Next, we calculate the row-wise covariance-sums  $\sum_i K_{i,j}$
 and form a community by collecting all nodes $j$ with covariance-sum
-at least \num{1500}, \ie{} $\sum_i K_{i,j} \ge 1500$.
-Note that \num{1500} is chosen as a high cutoff
+at least \num{155}, \ie{} $\sum_i K_{i,j} \ge 155$.
+Note that \num{155} is chosen as a high cutoff
 to ensure we only group nodes with high covariance-sum;
-for reference, \num{1500} is is approximately \SI{81}{\percent}
+for reference, \num{155} is is approximately \SI{80}{\percent}
 of the maximum covariance-sum and splits the population into
-communities of size \num{56} and \num{244}.
+communities of size \num{81} and \num{219}.
 Finally, we place all the remaining nodes in a second community.
 
 With these disjoint communities $C_m$, we then calculate

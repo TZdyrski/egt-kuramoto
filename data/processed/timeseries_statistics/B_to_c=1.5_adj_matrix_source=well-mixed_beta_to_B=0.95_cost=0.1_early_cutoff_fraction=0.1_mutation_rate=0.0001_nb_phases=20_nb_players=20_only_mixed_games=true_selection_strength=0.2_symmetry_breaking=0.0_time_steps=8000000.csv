@@ -1,5 +1,5 @@
 time,communicative_fraction,order_parameter,game_type
-1,0.4,0.9429503443131093,dilemma
+1,0.4,0.3496289033599413,dilemma
 801,0.0,1.0,all_noncommunicative
 1601,0.0,1.0,all_noncommunicative
 2401,0.0,1.0,all_noncommunicative
@@ -253,7 +253,7 @@ time,communicative_fraction,order_parameter,game_type
 200801,0.0,1.0,all_noncommunicative
 201601,0.0,1.0,all_noncommunicative
 202401,0.0,1.0,all_noncommunicative
-203201,0.0,0.8048943483704847,all_noncommunicative
+203201,0.0,0.3233211836307682,all_noncommunicative
 204001,0.0,1.0,all_noncommunicative
 204801,0.0,1.0,all_noncommunicative
 205601,0.0,1.0,all_noncommunicative
@@ -408,7 +408,7 @@ time,communicative_fraction,order_parameter,game_type
 324801,0.0,1.0,all_noncommunicative
 325601,0.0,1.0,all_noncommunicative
 326401,0.0,1.0,all_noncommunicative
-327201,0.0,0.9809016994374946,all_noncommunicative
+327201,0.0,0.9826612127216026,all_noncommunicative
 328001,0.0,1.0,all_noncommunicative
 328801,0.0,1.0,all_noncommunicative
 329601,0.0,1.0,all_noncommunicative
@@ -581,7 +581,7 @@ time,communicative_fraction,order_parameter,game_type
 463201,0.0,1.0,all_noncommunicative
 464001,0.0,1.0,all_noncommunicative
 464801,0.0,1.0,all_noncommunicative
-465601,0.0,0.9951056516295154,all_noncommunicative
+465601,0.0,0.9,all_noncommunicative
 466401,0.0,1.0,all_noncommunicative
 467201,0.0,1.0,all_noncommunicative
 468001,0.0,1.0,all_noncommunicative
@@ -743,7 +743,7 @@ time,communicative_fraction,order_parameter,game_type
 592801,0.0,1.0,all_noncommunicative
 593601,0.0,1.0,all_noncommunicative
 594401,0.0,1.0,all_noncommunicative
-595201,0.15,0.9587785252292473,dilemma
+595201,0.15,0.8162111653453341,dilemma
 596001,0.0,1.0,all_noncommunicative
 596801,0.0,1.0,all_noncommunicative
 597601,0.0,1.0,all_noncommunicative
@@ -798,7 +798,7 @@ time,communicative_fraction,order_parameter,game_type
 636801,0.0,1.0,all_noncommunicative
 637601,0.0,1.0,all_noncommunicative
 638401,0.0,1.0,all_noncommunicative
-639201,0.0,0.9587785252292473,all_noncommunicative
+639201,0.0,0.8162111653453341,all_noncommunicative
 640001,0.0,1.0,all_noncommunicative
 640801,0.0,1.0,all_noncommunicative
 641601,0.0,1.0,all_noncommunicative
@@ -985,7 +985,7 @@ time,communicative_fraction,order_parameter,game_type
 786401,0.0,1.0,all_noncommunicative
 787201,0.0,1.0,all_noncommunicative
 788001,0.0,1.0,all_noncommunicative
-788801,0.0,0.9951056516295154,all_noncommunicative
+788801,0.0,0.9,all_noncommunicative
 789601,0.0,1.0,all_noncommunicative
 790401,0.0,1.0,all_noncommunicative
 791201,0.0,1.0,all_noncommunicative

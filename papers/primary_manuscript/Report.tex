@@ -748,9 +748,9 @@ Conversely, the metastability index
 represents how often the system transitions
 between synchronicity and disorder,
 is equal to the community-average of the temporal covariance;
-it is \num{0} for a system that is always synchronized
+it is \num{0} for communities that are always synchronized
 or always disordered,
-and increases to \num{0.25} for a system spending
+and increases to \num{0.25} for communities spending
 equal time fully synchronized and fully disordered.
 \Cref{fig:chimera-index} shows the
 \subref{fig:chimera_index} chimera-like index $\chi$
@@ -1243,7 +1243,8 @@ at least \num{1500}, \ie{} $\sum_i K_{i,j} \ge 1500$.
 Note that \num{1500} is chosen as a high cutoff
 to ensure we only group nodes with high covariance-sum;
 for reference, \num{1500} is is approximately \SI{81}{\percent}
-of the maximum covariance-sum.
+of the maximum covariance-sum and splits the population into
+communities of size \num{56} and \num{244}.
 Finally, we place all the remaining nodes in a second community.
 
 With these disjoint communities $C_m$, we then calculate

@@ -294,8 +294,8 @@ end
 function get_chimera_indices(data::DimArray,communities::AbstractVector{<:Integer},nb_phases::Integer)
    strategies_grouped = groupby(data, Dim{:player_index}=>(x -> communities[x]))
    phase_parameters = map(x -> extract_order_parameters.(extract_counts.(eachslice(x,dims=:time_step),nb_phases),nb_phases), strategies_grouped)
-   metastability = mean(cov.(phase_parameters))
-   chimera_index = mean(cov.(invert(phase_parameters)))
+   metastability = mean(var.(phase_parameters))
+   chimera_index = mean(var.(invert(phase_parameters)))
 
    results = Dict("metastability_index"=>metastability, "chimera_index"=>chimera_index)
    return results

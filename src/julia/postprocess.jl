@@ -277,6 +277,9 @@ function generate_communities(graph::AbstractSimpleWeightedGraph, community_algo
         end
 
         covariances = cov(covariance_data, dims=:time_step)
+	if maximum(covariances) < covariance_cutoff
+		throw(ArgumentError("covariance_cutoff is higher than the maximum covariance $(maximum(covariances)); covariance_cutoff must be lowered"))
+        end
 
         communities = 2*ones(Int64,nv(graph))
         communities[map(x -> x[2], findall(sum(covariances,dims=1) .>= covariance_cutoff))] .= 1

@@ -192,13 +192,14 @@ function extract_most_common_game_types(strategies_per_player::AbstractVector{<:
                                               unilateral_benefit_synchronous, cost,
                                               symmetry_breaking, nb_phases)
 
+    nonzero_indices = findall(!iszero, interaction_adj_matrix)
+    row_all = map(x -> x[1], nonzero_indices)
+    col_all = map(x -> x[2], nonzero_indices)
+
     # Count game types
     game_counts = Dict{GameType,Integer}(instances(GameType) .=> 0)
-    for (cart_idx, value) in pairs(interaction_adj_matrix)
-        if value == 0
-            continue
-        end
-        (row, col) = Tuple(cart_idx)
+    for cart_idx in nonzero_indices
+        (row, col, value) = (cart_idx[1], cart_idx[2], interaction_adj_matrix[cart_idx])
         row_phase = strategies_per_player[row]
         col_phase = strategies_per_player[col]
         if only_mixed_games

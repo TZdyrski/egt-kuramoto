@@ -39,41 +39,41 @@ const game_taxonomy = Dict(
 			 [1 3;4 2] => (missing, hero),
 			 [2 3;4 1] => (missing, battle),
 			 [3 2;4 1] => (missing, chicken),
-			 [2 3;4 2] => (low, battle),
-			 [2 2;4 3] => (low, deadlock),
-			 [3 2;4 2] => (low, dilemma),
-			 [4 2;2 3] => (low, coordination),
-			 [4 3;2 2] => (low, harmony),
-			 [4 2;3 2] => (low, concord),
-			 [3 3;4 1] => (mid, battle),
-			 [1 3;4 3] => (mid, compromise),
-			 [3 1;4 3] => (mid, deadlock),
-			 [4 1;3 3] => (mid, staghunt),
-			 [4 3;1 3] => (mid, peace),
-			 [4 3;3 1] => (mid, harmony),
-			 [1 4;4 2] => (high, hero),
-			 [2 4;4 1] => (high, hero), # high battle \approx high hero
-			 [4 2;4 1] => (high, concord), # = high chicken
-			 [4 1;4 2] => (high, staghunt), # = high dilemma
-			 [4 2;1 4] => (high, coordination),
-			 [4 1;2 4] => (high, coordination), # high assurance \approx high coord
-			 [4 4;1 2] => (high, peace),
-			 [2 1;4 4] => (high, peace), # high deadlock \approx high peace
-			 [4 4;2 1] => (high, harmony),
-			 [1 2;4 4] => (high, harmony), # high compromise \approx high harmony
-			 [4 2;4 2] => (double, staghunt), # = double dilemma; note: bruns2015 claims double dilemma = double dilemma, which is tautologically true, but (correctly) states double dilemma = double staghunt elsewhere
-			 [4 2;2 4] => (double, coordination),
-			 [2 4;4 2] => (double, coordination), # double hero \approx double coordination; note: this is the only equivalent pair that is not related by swap_strategies!;
+			 [2 3;4 2] => (lowTie, battle),
+			 [2 2;4 3] => (lowTie, deadlock),
+			 [3 2;4 2] => (lowTie, dilemma),
+			 [4 2;2 3] => (lowTie, coordination),
+			 [4 3;2 2] => (lowTie, harmony),
+			 [4 2;3 2] => (lowTie, concord),
+			 [3 3;4 1] => (midTie, battle),
+			 [1 3;4 3] => (midTie, compromise),
+			 [3 1;4 3] => (midTie, deadlock),
+			 [4 1;3 3] => (midTie, staghunt),
+			 [4 3;1 3] => (midTie, peace),
+			 [4 3;3 1] => (midTie, harmony),
+			 [1 4;4 2] => (highTie, hero),
+			 [2 4;4 1] => (highTie, hero), # high battle \approx high hero
+			 [4 2;4 1] => (highTie, concord), # = high chicken
+			 [4 1;4 2] => (highTie, staghunt), # = high dilemma
+			 [4 2;1 4] => (highTie, coordination),
+			 [4 1;2 4] => (highTie, coordination), # high assurance \approx high coord
+			 [4 4;1 2] => (highTie, peace),
+			 [2 1;4 4] => (highTie, peace), # high deadlock \approx high peace
+			 [4 4;2 1] => (highTie, harmony),
+			 [1 2;4 4] => (highTie, harmony), # high compromise \approx high harmony
+			 [4 2;4 2] => (doubleTie, staghunt), # = double dilemma; note: bruns2015 claims double dilemma = double dilemma, which is tautologically true, but (correctly) states double dilemma = double staghunt elsewhere
+			 [4 2;2 4] => (doubleTie, coordination),
+			 [2 4;4 2] => (doubleTie, coordination), # double hero \approx double coordination; note: this is the only equivalent pair that is not related by swap_strategies!;
 			 # Instead, they are related by swapping only the columns or rows, but not both. Usually, doing this produces a non-symmetric game, but it this case, it is still symmetric
-			 [4 4;2 2] => (double, harmony),
-			 [2 2;4 4] => (double, harmony), # double compromise \approx double harmony
-			 [4 4;1 4] => (triple, deadlock),
-			 [4 1;4 4] => (triple, deadlock), # note: not explicitly given in bruns2015, but equivalent under swap_strategies!
-			 [4 4;4 1] => (triple, harmony),
-			 [1 4;4 4] => (triple, harmony), # note: not explicitly given in bruns2015, but equivalent under swap_strategies!
-			 [3 3;4 3] => (basic, dilemma),
-			 [4 3;3 3] => (basic, harmony),
-			 [4 4;4 4] => (zero, neutral),
+			 [4 4;2 2] => (doubleTie, harmony),
+			 [2 2;4 4] => (doubleTie, harmony), # double compromise \approx double harmony
+			 [4 4;1 4] => (tripleTie, deadlock),
+			 [4 1;4 4] => (tripleTie, deadlock), # note: not explicitly given in bruns2015, but equivalent under swap_strategies!
+			 [4 4;4 1] => (tripleTie, harmony),
+			 [1 4;4 4] => (tripleTie, harmony), # note: not explicitly given in bruns2015, but equivalent under swap_strategies!
+			 [3 3;4 3] => (basicTie, dilemma),
+			 [4 3;3 3] => (basicTie, harmony),
+			 [4 4;4 4] => (zeroTie, neutral),
 			 )
 
 function combine_communicative_noncommunicative(players_per_strategy::AbstractVector{<:Integer},

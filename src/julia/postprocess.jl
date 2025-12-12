@@ -13,7 +13,6 @@ using CSV
 using Statistics
 using PlotUtils
 using SplitApplyCombine
-using PythonCall
 using JLD2
 using YAXArrays
 using NetCDF

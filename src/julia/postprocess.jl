@@ -136,7 +136,9 @@ end
                                                unilateral_benefit_synchronous::Real,
                                                cost::Real,
                                                symmetry_breaking::Real,
-                                               nb_phases::Integer)
+                                               nb_phases::Integer;
+                                               only_mixed_games::Bool=false,
+					       )
     # Choose game type by assuming either player can switch (strategy,phase) to the other player, giving a 2x2 payoff matrix
 
     # Define payoff response submatrices
@@ -155,6 +157,11 @@ end
 			     [payoff[row_player_idx,row_player_idx], payoff[col_player_idx,row_player_idx]] [payoff[row_player_idx,col_player_idx], payoff[col_player_idx,col_player_idx]]
 			    ])
     end
+
+    if only_mixed_games
+	    game_types[1:nb_phases,1:nb_phases] .= all_communicative
+	    game_types[nb_phases+1:end,nb_phases+1:end] .= all_noncommunicative
+    end
     return game_types
 end
 
@@ -172,62 +179,112 @@ function check_all_same_strategy(strategies_per_player::AbstractVector{<:Integer
     return nothing
 end
 
-function extract_most_common_game_types(strategies_per_player::AbstractVector{<:Integer},
-                                        mutual_benefit_synchronous::Real,
-                                        unilateral_benefit_synchronous::Real,
-                                        cost::Real,
-                                        symmetry_breaking::Real,
+# Declare zero type for sparse matrices
+Base.zero(::Union{Missing,Type{GameType}}) = missing
+
+function extract_most_common_game_types(strategies_per_player::AbstractVector{<:Integer};
+                                        game_types::AbstractMatrix{GameType},
                                         nb_phases::Integer,
-                                        interaction_adj_matrix::AbstractMatrix{<:Integer};
+                                        interaction_adj_matrix::AbstractMatrix{<:Integer},
+                                        interaction_adj_matrix_transpose::AbstractMatrix{<:Integer}=transpose(interaction_adj_matrix),
                                         only_mixed_games::Bool=false,
                                         )
-    # Check if all cooperative or all non-cooperative
-    all_same_strategy = check_all_same_strategy(strategies_per_player, nb_phases)
-    if !isnothing(all_same_strategy)
-      return all_same_strategy
-    end
+    # Initial run with no pre-calculated games
 
-    # Get game type of each strategy interaction pair
-    game_types = game_types_per_strategy_pair(mutual_benefit_synchronous,
-                                              unilateral_benefit_synchronous, cost,
-                                              symmetry_breaking, nb_phases)
+    # All entries are changed
+    changes = fill(true, size(strategies_per_player))
 
-    nonzero_indices = findall(!iszero, interaction_adj_matrix)
-    row_all = map(x -> x[1], nonzero_indices)
-    col_all = map(x -> x[2], nonzero_indices)
+    # Create an initial games matrix filled with neutral as a placeholder;
+    # this will be replaced with the actual value
+    games = sparse([],[],Union{Missing,GameType}[],size(interaction_adj_matrix)...)
+    num_games = sum(interaction_adj_matrix)
+    game_counts = Dict{Union{GameType,Missing},Integer}(instances(GameType) .=> 0)
+    game_counts[zero(Union{Missing,GameType})] = num_games
+
+    # Now actually run the extraction
+    return extract_most_common_game_types(strategies_per_player, games, game_counts, changes;
+					  game_types, nb_phases, interaction_adj_matrix, interaction_adj_matrix_transpose, only_mixed_games)
+end
+
+function extract_most_common_game_types(strategies_per_player::AbstractVector{<:Integer},
+                                        games::AbstractMatrix{Union{GameType,Missing}},
+					game_counts::Dict{Union{GameType,Missing},Integer},
+                                        changes::AbstractVector,
+					;
+                                        game_types::AbstractMatrix{GameType},
+                                        nb_phases::Integer,
+                                        interaction_adj_matrix::AbstractMatrix{<:Integer},
+                                        interaction_adj_matrix_transpose::AbstractMatrix{<:Integer}=transpose(interaction_adj_matrix),
+                                        only_mixed_games::Bool=false,
+                                        )
+
+    changed_idxs = findall(!iszero, changes .!== 0)
 
     # Count game types
-    game_counts = Dict{GameType,Integer}(instances(GameType) .=> 0)
-    for cart_idx in nonzero_indices
-        (row, col, value) = (cart_idx[1], cart_idx[2], interaction_adj_matrix[cart_idx])
+    function update_counts(row, col, value, games, game_counts)
         row_phase = strategies_per_player[row]
         col_phase = strategies_per_player[col]
-        if only_mixed_games
-          if (row_phase <= nb_phases) && (col_phase <= nb_phases) ||
-            (row_phase > nb_phases) && (col_phase > nb_phases)
-            # This is CC or NN
-            continue
-          end
-        end
-        # This is CN or NC
         game_type = game_types[row_phase, col_phase]
+        old_game_type = games[row, col]
+        game_counts[old_game_type] -= value
+        games[row, col] = game_type
         game_counts[game_type] += value
+	return games, game_counts
     end
 
-    if all(values(game_counts) .== 0)
+    # Changed nodes are destination nodes
+    for col in changed_idxs
+      for row = findall(!iszero, interaction_adj_matrix[:, col])
+	  value = interaction_adj_matrix[row, col]
+	  games, game_counts = update_counts(row, col, value, games, game_counts)
+      end
+    end
+
+    # Changed nodes are source nodes
+    for row in changed_idxs
+      for col = findall(!iszero, interaction_adj_matrix_transpose[:, row])
+          value = interaction_adj_matrix_transpose[col, row]
+	  games, game_counts = update_counts(row, col, value, games, game_counts)
+      end
+    end
+
+    # Check if all cooperative or all non-cooperative
+    # Do this after the loop so games and game_counts are updated
+    all_same_strategy = check_all_same_strategy(strategies_per_player, nb_phases)
+    if !isnothing(all_same_strategy)
+      return all_same_strategy, games, game_counts
+    end
+
+    return get_most_common_game(games, game_counts; only_mixed_games)
+end
+
+function get_most_common_game(games::AbstractMatrix{Union{Missing,GameType}},
+		game_counts::Dict{Union{Missing,GameType},Integer};
+		only_mixed_games::Bool=false)
+    total_games = sum(values(game_counts))
+    if game_counts[all_communicative] + game_counts[all_noncommunicative] == total_games
       # There were no mixed games;
-      # however, the early all-C/all-N check also shows the population is
+      # however, the all-C/all-N check also shows the population is
       # not entirely communicative or entirely non-communicative
       # This means that the communicative and non-communicative
       # subpopulations are not connected (and therefore do not play any
       # games together)
-      return disconnected_synchronized_populations
+      return disconnected_synchronized_populations, games, game_counts
     end
 
-    # Find most common game type
-    most_common_game_type = findmax(game_counts)[2]
+    if only_mixed_games
+	# Create game count dictionary without CC or NN
+	mixed_game_counts = copy(game_counts)
+	delete!(mixed_game_counts, all_communicative)
+	delete!(mixed_game_counts, all_noncommunicative)
+        # Find most common mixed game type
+        most_common_game_type = findmax(mixed_game_counts)[2]
+    else
+        # Find most common game type
+        most_common_game_type = findmax(game_counts)[2]
+    end
 
-    return most_common_game_type
+    return most_common_game_type, games, game_counts
 end
 
 function extract_phases(players_per_phase::AbstractVector{<:Integer}, nb_phases::Integer)
@@ -552,19 +609,28 @@ function calc_timeseries_statistics(initial_actions::AbstractVector{<:Integer}, 
     most_common_game_types = Vector{GameType}(undef,time_steps+1)
 
     current_actions = initial_actions
+    interaction_adj_matrix_transpose = copy(transpose(interaction_adj_matrix))
 
-    for time_idx in 0:time_steps
-	    most_common_game_types[time_idx+1] = extract_most_common_game_types(current_actions,
-	      B_to_c * cost, beta_to_B * B_to_c * cost, cost, symmetry_breaking, nb_phases, interaction_adj_matrix; only_mixed_games)
+    # Initial statistics
+    time_idx = 0
+    game_types = game_types_per_strategy_pair(B_to_c*cost,
+                                              beta_to_B*B_to_c*cost, cost,
+                                              symmetry_breaking, nb_phases; only_mixed_games)
+    most_common_game_types[time_idx+1], games, game_counts = extract_most_common_game_types(current_actions;
+      game_types, nb_phases, interaction_adj_matrix, interaction_adj_matrix_transpose, only_mixed_games)
+    action_counts_per_timestep = extract_counts(current_actions, nb_phases)
+    nb_communicative = extract_num_communicative(action_counts_per_timestep)
+    fraction_communicative[time_idx+1] = nb_communicative / nb_players
+    order_parameters[time_idx+1] = extract_order_parameters(action_counts_per_timestep, nb_phases)
+
+    for time_idx in 1:time_steps
+            current_actions += deltas[:,time_idx]
+	    most_common_game_types[time_idx+1], games, game_counts = extract_most_common_game_types(current_actions,
+	    games, game_counts, deltas[:,time_idx]; nb_phases, game_types, interaction_adj_matrix, interaction_adj_matrix_transpose, only_mixed_games)
 	    action_counts_per_timestep = extract_counts(current_actions, nb_phases)
 	    nb_communicative = extract_num_communicative(action_counts_per_timestep)
 	    fraction_communicative[time_idx+1] = nb_communicative / nb_players
 	    order_parameters[time_idx+1] = extract_order_parameters(action_counts_per_timestep, nb_phases)
-
-      if time_idx == time_steps
-	      break
-      end
-      current_actions += deltas[:,time_idx+1]
     end
 
     # Package results

@@ -66,7 +66,10 @@ function generate_graph_evolution(data, graph::Graphs.SimpleGraphs.AbstractSimpl
     # Create plot
     layout = Stress()
     color_observable = @lift(colors[:, $time])
-    fig, _ = graphplot(graph; node_color=color_observable, layout=layout,
+		titleStr = @lift("Time step = "*string($time))
+    fig = Figure()
+    ax = Axis(fig[1,1]; title=titleStr)
+    graphplot!(ax, graph; node_color=color_observable, layout=layout,
                                     arrow_show=false, edge_color=(:black, 0.05),
                                     edge_plottype=:linesegments)
 

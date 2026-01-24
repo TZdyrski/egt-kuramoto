@@ -17,11 +17,12 @@ function plot_graph_evolution(;B_to_c::Real, selection_strength::Real,
                               cost::Real=0.1,
                               beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
+			      seed::Integer=12345,
                               nb_players::Integer=20,
 			      )
     # Load results
     config = @strdict(adj_matrix_source, time_steps, B_to_c, beta_to_B,
-                      selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate)
+                      selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate, seed)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = nb_players
     end

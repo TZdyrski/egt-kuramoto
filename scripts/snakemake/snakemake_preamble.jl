@@ -23,6 +23,9 @@ end
 if haskey(wildcards_dict, "early_cutoff_fraction_flag") && pop!(wildcards_dict, "early_cutoff_fraction_flag") == ""
   delete!(wildcards_dict, "early_cutoff_fraction")
 end
+if haskey(wildcards_dict, "seed_flag") && pop!(wildcards_dict, "seed_flag") == ""
+  delete!(wildcards_dict, "seed")
+end
 
 # snakemake.wildcards doubles the wildcards: each wildcard has a key
 # with the (string) name of the wildcard as well as a key with the (integer) position
@@ -31,7 +34,7 @@ filter!(x -> isa(x.first, String), wildcards_dict)
 
 wildcards_dict = Dict((Symbol(k),parse_string(v)) for (k,v) in wildcards_dict)
 
-integer_params = [:time_steps, :nb_phases, :nb_players, :time_step, :covariance_cutoff, :decimation_factor, :walktrap_steps]
+integer_params = [:time_steps, :nb_phases, :nb_players, :time_step, :covariance_cutoff, :decimation_factor, :seed, :walktrap_steps]
 wildcards_dict = Dict((k, k in integer_params ? Integer(v) : v) for (k,v) in wildcards_dict)
 bool_params = [:only_mixed_games]
 wildcards_dict = Dict((k, k in bool_params ? parse(Bool,v) : v) for (k,v) in wildcards_dict)

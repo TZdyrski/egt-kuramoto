@@ -26,7 +26,7 @@
     ]
     \nextgroupplot
         % Note: this table names must appear in the `\tablename` loop below
-        \pgfplotstableread{gametype/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=false_selection_strength=0.2_time_steps=8000000.csv}{\loadtable}
+        \pgfplotstableread{gametype/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=false_seed=12345_selection_strength=0.2_time_steps=8000000.csv}{\loadtable}
         \pgfplotstableforeachcolumn\loadtable\as\col
         {
           \ifnum\pgfplotstablecol=0\else%
@@ -35,7 +35,7 @@
         }
     \nextgroupplot
         % Note: this table names must appear in the `\tablename` loop below
-        \pgfplotstableread{gametype/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_only_mixed_games=false_selection_strength=0.2_time_steps=8000000.csv}\loadtable
+        \pgfplotstableread{gametype/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_only_mixed_games=false_seed=12345_selection_strength=0.2_time_steps=8000000.csv}\loadtable
         \pgfplotstableforeachcolumn\loadtable\as\col
         {
           \ifnum\pgfplotstablecol=0\else%
@@ -44,7 +44,7 @@
         }
     \nextgroupplot
         % Note: this table names must appear in the `\tablename` loop below
-        \pgfplotstableread{gametype/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=true_selection_strength=0.2_time_steps=8000000.csv}{\loadtable}
+        \pgfplotstableread{gametype/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=true_seed=12345_selection_strength=0.2_time_steps=8000000.csv}{\loadtable}
         \pgfplotstableforeachcolumn\loadtable\as\col
         {
           \ifnum\pgfplotstablecol=0\else%
@@ -54,7 +54,7 @@
         \coordinate (plot-top_well-mixed) at (axis cs:0.5,0.998);
       \nextgroupplot
         % Note: this table names must appear in the `\tablename` loop below
-        \pgfplotstableread{gametype/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_only_mixed_games=true_selection_strength=0.2_time_steps=8000000.csv}\loadtable
+        \pgfplotstableread{gametype/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_only_mixed_games=true_seed=12345_selection_strength=0.2_time_steps=8000000.csv}\loadtable
         \pgfplotstableforeachcolumn\loadtable\as\col
         {
           \ifnum\pgfplotstablecol=0\else%
@@ -66,7 +66,7 @@
         yticklabel style={/pgf/number format/.cd,fixed,precision=3}, scaled y ticks=false,
       ]
           % Note: this table names must appear in the `\tablename` loop below
-          \pgfplotstableread{gametype/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=true_selection_strength=0.2_time_steps=8000000.csv}{\loadtable}
+          \pgfplotstableread{gametype/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=true_seed=12345_selection_strength=0.2_time_steps=8000000.csv}{\loadtable}
           \pgfplotstableforeachcolumn\loadtable\as\col
           {
             \ifnum\pgfplotstablecol=0\else%
@@ -89,7 +89,7 @@
       ]
       \def\colNames{}
       % Note: these table names must be the same as those in the groupplots
-      \pgfplotsforeachungrouped\tablename in {gametype/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=false_selection_strength=0.2_time_steps=8000000.csv,gametype/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_only_mixed_games=false_selection_strength=0.2_time_steps=8000000.csv,gametype/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=true_selection_strength=0.2_time_steps=8000000.csv,gametype/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_only_mixed_games=true_selection_strength=0.2_time_steps=8000000.csv} {
+      \pgfplotsforeachungrouped\tablename in {gametype/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=false_seed=12345_selection_strength=0.2_time_steps=8000000.csv,gametype/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_only_mixed_games=false_seed=12345_selection_strength=0.2_time_steps=8000000.csv,gametype/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=true_seed=12345_selection_strength=0.2_time_steps=8000000.csv,gametype/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_only_mixed_games=true_seed=12345_selection_strength=0.2_time_steps=8000000.csv} {
         % Read table
         \pgfplotstableread\tablename\loadtable
         % Loop over each column

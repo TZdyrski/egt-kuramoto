@@ -452,6 +452,7 @@ function export_graph_nodes_edges(; time_step::Union{Real,Nothing}=nothing,
                               cost::Real=0.1,
                               beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
+			      seed::Integer=12345,
                               nb_players::Integer=20,
 			      )
     # Generate graph
@@ -467,7 +468,7 @@ function export_graph_nodes_edges(; time_step::Union{Real,Nothing}=nothing,
     else
             # Generate configuration
             config = @strdict(adj_matrix_source, time_steps, B_to_c, beta_to_B,
-                              selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate)
+                              selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate, seed)
             if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
                 config["nb_players"] = nb_players
             end
@@ -549,12 +550,13 @@ function extract_cumulative(; type::String, selection_strength::Real,
                               cost::Real=0.1,
                               beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
+			      seed::Integer=12345,
                               nb_players::Integer=20,
 			      )
 
     # Generate configuration
     config = @strdict(adj_matrix_source, time_steps, beta_to_B,
-                      selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate)
+                      selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate, seed)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = nb_players
     end
@@ -645,12 +647,13 @@ function extract_mutation_timesteps(; B_to_c::Real, selection_strength::Real,
                               cost::Real=0.1,
                               beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
+			      seed::Integer=12345,
                               nb_players::Integer=20,
 			      )
 
     # Create config dict for saving filename
     config = @strdict(adj_matrix_source, time_steps, B_to_c, beta_to_B,
-                      selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate)
+                      selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate, seed)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
       config["nb_players"] = nb_players
     end
@@ -679,6 +682,7 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
                               cost::Real=0.1,
                               beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
+			      seed::Integer=12345,
                               nb_players::Integer=20,
                               early_cutoff_fraction::Union{Nothing,Real}=nothing,
                               num_samples::Integer=1000,
@@ -687,7 +691,7 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
 
     # Create config dict for saving filename
     config = @strdict(adj_matrix_source, time_steps, B_to_c, beta_to_B,
-                      selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate)
+                      selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate, seed)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
       config["nb_players"] = nb_players
     end
@@ -756,6 +760,7 @@ function extract_chimera_indices_all_asymm(; community_algorithm::String,
                               cost::Real=0.1,
                               beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
+			      seed::Integer=12345,
 			      covariance_cutoff::Union{Nothing,Real}=nothing,
 			      walktrap_steps::Union{Integer,Nothing}=nothing,
                               nb_players::Integer=20,
@@ -767,7 +772,7 @@ function extract_chimera_indices_all_asymm(; community_algorithm::String,
 
     # Generate configuration
     config = @strdict(adj_matrix_source, time_steps, B_to_c, beta_to_B,
-                      selection_strength, nb_phases, cost, mutation_rate)
+                      selection_strength, nb_phases, cost, mutation_rate, seed)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = nb_players
     end
@@ -843,6 +848,7 @@ function extract_chimera_indices(; communities::AbstractVector{<:Integer},
                               cost::Real=0.1,
                               beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
+			      seed::Integer=12345,
                               nb_players::Integer=20,
                               kwargs...
 			      )
@@ -853,7 +859,7 @@ function extract_chimera_indices(; communities::AbstractVector{<:Integer},
 
     # Generate configuration
     config = @strdict(adj_matrix_source, time_steps, B_to_c, beta_to_B,
-                      selection_strength, nb_phases, cost, mutation_rate, symmetry_breaking)
+                      selection_strength, nb_phases, cost, mutation_rate, seed, symmetry_breaking)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = nb_players
     end
@@ -886,13 +892,14 @@ function extract_game_types_all_asymm(; B_to_c::Real, selection_strength::Real,
                               cost::Real=0.1,
                               beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
+			      seed::Integer=12345,
                               nb_players::Integer=20,
                               only_mixed_games::Bool=false,
 			      )
 
     # Generate configuration
     config = @strdict(adj_matrix_source, time_steps, B_to_c, beta_to_B,
-                      selection_strength, nb_phases, cost, mutation_rate, only_mixed_games)
+                      selection_strength, nb_phases, cost, mutation_rate, only_mixed_games, seed)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = nb_players
     end
@@ -938,13 +945,14 @@ function extract_game_types(; B_to_c::Real, selection_strength::Real,
                               cost::Real=0.1,
                               beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
+			      seed::Integer=12345,
                               nb_players::Integer=20,
                               only_mixed_games::Bool=false,
 			      )
 
     # Generate configuration
     config = @strdict(adj_matrix_source, time_steps, B_to_c, beta_to_B, symmetry_breaking,
-                      selection_strength, nb_phases, cost, mutation_rate)
+                      selection_strength, nb_phases, cost, mutation_rate, seed)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = nb_players
     end
@@ -1019,7 +1027,7 @@ end
 
 function create_netcdf(raw_data_filenames::Vector{String}; data_type::String, adj_matrix_source::String, time_steps::Integer)
 	function get_properties(df,adj_matrix_source; include_time_steps::Bool=true)
-		property_list = ["nb_phases", "adj_matrix_source", "cost", "mutation_rate"]
+		property_list = ["nb_phases", "adj_matrix_source", "cost", "mutation_rate", "seed"]
 		if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 			append!(property_list, ["nb_players"])
 		end

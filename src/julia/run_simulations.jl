@@ -13,11 +13,12 @@ function calc_and_save_cumulative(;selection_strength::Real, symmetry_breaking::
 			 beta_to_B::Real=0.95,
 			 mutation_rate::Real=0.0001,
 			 nb_players::Integer=20,
+			 seed::Integer=12345,
 			 )
 
     # Load results
     config = @strdict(adj_matrix_source, time_steps,
-                      selection_strength, symmetry_breaking, nb_phases, cost, beta_to_B, mutation_rate)
+                      selection_strength, symmetry_breaking, nb_phases, cost, beta_to_B, mutation_rate, seed)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = nb_players
     end
@@ -26,7 +27,7 @@ end
 
 function calc_cumulative(config::Dict)
     # Unpack values
-    @unpack selection_strength, symmetry_breaking, adj_matrix_source, time_steps, nb_phases, cost, beta_to_B, mutation_rate = config
+    @unpack selection_strength, symmetry_breaking, adj_matrix_source, time_steps, nb_phases, cost, beta_to_B, mutation_rate, seed = config
 
     # Define interaction graph and reproduction graphs
     interaction_adj_matrix, reproduction_adj_matrix = get_adj_matrices(; adj_matrix_source)
@@ -50,7 +51,7 @@ function calc_cumulative(config::Dict)
                                                                      reproduction_adj_matrix,
                                                                      selection_strength,
                                                                      mutation_rate),
-                                               time_steps)
+                                               time_steps, seed)
                                     for B in Bs]
 
     # Plot fraction communcative
@@ -70,10 +71,11 @@ function calc_and_save_timeseries(;B_to_c::Real, selection_strength::Real, symme
 			 beta_to_B::Real=0.95,
 			 mutation_rate::Real=0.0001,
 			 nb_players::Integer=20,
+			 seed::Integer=12345,
 			 )
     # Load results
     config = @strdict(adj_matrix_source, time_steps, B_to_c, beta_to_B,
-                      symmetry_breaking, selection_strength, nb_phases, cost, mutation_rate)
+                      symmetry_breaking, selection_strength, nb_phases, cost, mutation_rate, seed)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = nb_players
     end
@@ -83,7 +85,7 @@ end
 
 function calc_timeseries(config::Dict)
     # Unpack variables
-    @unpack B_to_c, selection_strength, symmetry_breaking, adj_matrix_source, time_steps, nb_phases, cost, beta_to_B, mutation_rate = config
+    @unpack B_to_c, selection_strength, symmetry_breaking, adj_matrix_source, time_steps, nb_phases, cost, beta_to_B, mutation_rate, seed = config
 
     # Define system
     B = cost * B_to_c
@@ -103,7 +105,7 @@ function calc_timeseries(config::Dict)
                                                         interaction_adj_matrix,
                                                         reproduction_adj_matrix,
                                                         selection_strength, mutation_rate),
-                                  time_steps)
+                                  time_steps, seed)
 
     # Package results
     return @strdict(initial_actions, deltas, steps_following_mutation, nb_phases, nb_players, interaction_adj_matrix)

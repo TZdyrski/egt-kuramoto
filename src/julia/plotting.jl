@@ -36,6 +36,7 @@ function plot_graph_evolution(;B_to_c::Real, selection_strength::Real,
 
     # Save animation
     filename = plotsdir("animations", savename(config, "mp4"))
+    mkpath(plotsdir("animations"))
     save(filename, animation)
 
 end

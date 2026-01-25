@@ -32,15 +32,16 @@
     },
     enlarge y limits={value=0.15,upper},
     grid,
+    error bars/y dir=both,error bars/y explicit,
     ]
     \nextgroupplot[
     ylabel={Chimera-Like Index $\chi$},
     ]
-    \addplot table [y=chimera_index] {chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_community_algorithm=leiden_community_beta=0.01_community_n_iter=2_community_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_seed=12345_selection_strength=0.2_time_steps=8000000.csv};
+    \addplot table [y=chimera_index_mean,y error=chimera_index_std] {chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_community_algorithm=leiden_community_beta=0.01_community_n_iter=2_community_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv};
     \nextgroupplot[
     ylabel={Metastability Index $\lambda$},
     ]
-    \addplot table [y=metastability_index] {chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_community_algorithm=leiden_community_beta=0.01_community_n_iter=2_community_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_seed=12345_selection_strength=0.2_time_steps=8000000.csv};
+    \addplot table [y=metastability_index_mean,y error=metastability_index_std] {chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_community_algorithm=leiden_community_beta=0.01_community_n_iter=2_community_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv};
   \end{groupplot}
   % Shift found by trial and error
   \begin{scope}[shift={(2.5,-6)},rotate=90]

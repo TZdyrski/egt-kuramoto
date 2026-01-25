@@ -454,8 +454,10 @@ and highlight which regions of parameter space are accessible.
     Time-averaged $f_{\text{comm}}$ as a function
     of the maximum joint benefit $B_0$
     for different values of the payoff asymmetry $\alpha$.
-    The marks represent the simulation results
-    and the lines represent the theory predictions.
+    The lines represent the theory predictions,
+		the marks represent the simulation results averaged across 10 seeds,
+		and the vertical error bars denote the standard-deviation across the
+		10 runs.
     \protect{\subref{fig:time-series_well-mixed_alpha-0}}--\protect{\subref{fig:time-series_well-mixed_alpha-1}}
     Scatter plots where
     the left vertical axes show the instantaneous $f_{\text{comm}}$
@@ -463,6 +465,8 @@ and highlight which regions of parameter space are accessible.
     to the plurality mixed game type as indicated in the legend.
     The right vertical axes give the order parameter $\rho$
     (\pcref{eq:order_parameter}), in magenta, as a function of time.
+		Both the communicative frequency and order parameter
+		are averaged across 10 seeds.
     The asymmetry is
     \protect{\subref{fig:time-series_well-mixed_alpha-0}}
     $\alpha = 0$,
@@ -484,6 +488,8 @@ and the lines represent the full analytic
 result (Eq.\ 10 in supplementary material) for a well-mixed population.
 The $B_0$ step size is \num{0.04},
 and the simulations ran for \num{2E8} time steps.
+The results are averaged over 10 seeds
+and the vertical error bars show the standard deviations.
 In general, $f_{\text{comm}}$ is low for small $B_0$,
 rises to $f_{\text{comm}} = 0.5$ at some break-even $B_0$,
 and plateaus to $f_{\text{comm}} \approx 1$ for large $B_0$.
@@ -512,15 +518,23 @@ grey if all players are communicative or
 black if all players are non-communicative;
 otherwise, the points are colored according
 to the plurality mixed game type, as indicated in the legend.
+On the right vertical axes,
+magenta line plots depict the order parameter
+$\rho \in [0,1]$
+given by \cref{eq:order_parameter}.
+The order parameter and communicative frequency
+are averaged over 10 seeds.
 Since these results were averaged over 10 seeds,
 the game type shown is the most-frequent among the seeds;
 ties go towards the game type appearing later
 (left-to-right and top-to-bottom reading order)
 in figure 1 of the supplementary materials.
-On the right vertical axes,
-magenta line plots depict the order parameter
-$\rho \in [0,1]$
-given by \cref{eq:order_parameter}.
+The horizontal stretches of all-communicative at frequencies
+$f_{\text{comm}} < 1$ represent the average of many seeds
+with $f_{\text{comm}}=1$ and a few seeds
+with $f_{\text{comm}}=0$
+and are colored grey because the majority of seeds at that time step
+are all-communicative.
 
 \Cref{fig:time-series_well-mixed_alpha-0} shows the time-variation
 when the system heavily favors non-communicative players
@@ -601,6 +615,8 @@ coexisting with disordered neighboring nodes.
     and
     \protect{\subref{fig:comm-frac_celegans-undirected}}
     weighted, undirected \gls{celegans} connectome.
+		The results are averaged over 10 seeds
+		and the error bars depict the standard deviations.
     \protect{\subref{fig:graph}}
     The network topology for the \gls{celegans}
     $N=300$ weighted, directed connectome
@@ -614,6 +630,8 @@ coexisting with disordered neighboring nodes.
     Scatter plot with the same axes and coloring
     as \protect{\crefrange{fig:time-series_well-mixed_alpha-0}{fig:time-series_well-mixed_alpha-1}}
     showing the communicative frequency, plurality mixed game-types, and order parameter.
+		The communicative frequency and order parameter
+		are both averaged over 10 seeds.
   }\label{fig:c-elegans}
 \end{adjustwidth}
 \end{figure*}
@@ -625,6 +643,9 @@ the entire simulation of \num{2E8} time steps as a function
 of the maximum joint benefit $B_0$ in \num{0.04} steps
 for the \gls{celegans} connectome network topologies.
 All subplots use an asymmetry of $\alpha=0.75$.
+Additionally, all results (except the snapshot \cref{fig:graph})
+show are the average across 10 seeds;
+error bars represent the standard deviation.
 
 We note that the behaviour
 of the \subref{fig:comm-frac_celegans-full} \gls{celegans} case
@@ -719,12 +740,16 @@ the \gls{celegans} case depicts disordered states with discontinuous offsets.
     To calculate the indices,
     we split the graph into two communities using the constant Potts
     model (\cf{} \cref{sec:chimera-metastability-def}).
+		Results were averaged over 10 seeds,
+		and error bars depict the standard deviation.
     \protect{\subref{fig:graph_celegans_asymmetry0}}--\protect{\subref{fig:graph_celegans_asymmetry1}}
     A snapshot of the \gls{celegans} connectome where
     blue colors are communicative,
     red colors are non-communicative,
     and shades represent different phases $\phi$.
-    The asymmetry is
+		The snapshots show a particular seed
+		and time step with
+    asymmetry
     \protect{\subref{fig:graph_celegans_asymmetry0}}
     $\alpha = 0$
     or
@@ -766,7 +791,9 @@ and
 as functions of the asymmetry $\alpha$.
 These simulations ran with the same parameters as the
 \crefrange{fig:comm-frac_celegans-full}{fig:comm-frac_celegans-undirected}
-\gls{celegans} time-series data.
+\gls{celegans} time-series data
+averaged over 10 seeds
+with the error bars depicting the standard deviations.
 
 The metastability displayed in \cref{fig:chimera-index}
 is less than \num{0.04}, much smaller
@@ -832,6 +859,7 @@ as well as time fluctuations in the chimeric quality.
     A blue inset below the
     \protect{\subref{fig:game-type_well-mixed-only-mixed-games}}
     well-mixed panel shows the magnified lower region.
+		All fractions were averaged across 10 seeds.
   }\label{fig:game-type}
 \end{adjustwidth}
 \end{figure*}
@@ -849,6 +877,7 @@ and
 \subref{fig:game-type_celegans-full}
 \gls{celegans} connectome
 network topologies.
+The fractions are averaged over 10 seeds.
 The \subref{fig:game-type_well-mixed} well-mixed case
 fully-synchronized to all-communicative or all-noncommunicative
 for over \SI{99.6}{\percent} of the runtime

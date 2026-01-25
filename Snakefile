@@ -12,7 +12,8 @@ nb_phases_netcdf = 20
 nb_players_netcdf = 20
 time_steps_cumulative_netcdf = 200000000
 time_steps_timeseries_netcdf = 8000000
-seed_netcdf = 12345
+num_seed_vals_netcdf=2
+seed_vals_netcdf = range(1,num_seed_vals_netcdf+1)
 
 rule all:
   input:
@@ -40,13 +41,13 @@ rule manuscript:
     "papers/primary_manuscript/tikz/c-elegans.tex",
     "data/processed/graph_structure/vertices_B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_seed=12345_selection_strength=0.2_symmetry_breaking=0.75_time_step=560000_time_steps=8000000.csv",
     "data/processed/graph_structure/edges_adj_matrix_source=c-elegans.csv",
-    "data/processed/cumulative/adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_seed=12345_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.csv",
-    "data/processed/cumulative/adj_matrix_source=c-elegans-unweighted_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_seed=12345_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.csv",
-    "data/processed/cumulative/adj_matrix_source=c-elegans-undirected_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_seed=12345_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.csv",
-    "data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_only_mixed_games=true_seed=12345_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv",
+    "data/processed/cumulative/adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.csv",
+    "data/processed/cumulative/adj_matrix_source=c-elegans-unweighted_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.csv",
+    "data/processed/cumulative/adj_matrix_source=c-elegans-undirected_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.csv",
+    "data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv",
     # tikz/chimera-states.tex
     "papers/primary_manuscript/tikz/chimera-states.tex",
-    "data/processed/chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_community_algorithm=leiden_community_beta=0.01_community_n_iter=2_community_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_seed=12345_selection_strength=0.2_time_steps=8000000.csv",
+    "data/processed/chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_community_algorithm=leiden_community_beta=0.01_community_n_iter=2_community_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv",
     "data/processed/graph_structure/vertices_B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_seed=12345_selection_strength=0.2_symmetry_breaking=0.0_time_step=560000_time_steps=8000000.csv",
     "data/processed/graph_structure/vertices_B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_seed=12345_selection_strength=0.2_symmetry_breaking=1.0_time_step=560000_time_steps=8000000.csv",
     "data/processed/graph_structure/edges_adj_matrix_source=c-elegans.csv",
@@ -54,10 +55,10 @@ rule manuscript:
     "papers/primary_manuscript/tikz/game-payoffs.tex",
     # tikz/game-types.tex
     "papers/primary_manuscript/tikz/game-types.tex",
-    "data/processed/gametype/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=false_seed=12345_selection_strength=0.2_time_steps=8000000.csv",
-    "data/processed/gametype/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=true_seed=12345_selection_strength=0.2_time_steps=8000000.csv",
-    "data/processed/gametype/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_only_mixed_games=false_seed=12345_selection_strength=0.2_time_steps=8000000.csv",
-    "data/processed/gametype/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_only_mixed_games=true_seed=12345_selection_strength=0.2_time_steps=8000000.csv",
+    "data/processed/gametype/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_num_seeds=10_only_mixed_games=false_selection_strength=0.2_time_steps=8000000.csv",
+    "data/processed/gametype/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_num_seeds=10_only_mixed_games=true_selection_strength=0.2_time_steps=8000000.csv",
+    "data/processed/gametype/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_only_mixed_games=false_selection_strength=0.2_time_steps=8000000.csv",
+    "data/processed/gametype/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_only_mixed_games=true_selection_strength=0.2_time_steps=8000000.csv",
     # tikz/model-setup.tex
     "papers/primary_manuscript/tikz/model-setup.tex",
     "data/processed/graph_structure/vertices_adj_matrix_source=well-mixed.csv",
@@ -71,14 +72,14 @@ rule manuscript:
     "data/processed/cumulative/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.5_time_steps=200000000_type=theory.csv",
     "data/processed/cumulative/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=theory.csv",
     "data/processed/cumulative/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_selection_strength=0.2_symmetry_breaking=1.0_time_steps=200000000_type=theory.csv",
-    "data/processed/cumulative/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_seed=12345_selection_strength=0.2_symmetry_breaking=0.0_time_steps=200000000_type=simulation.csv",
-    "data/processed/cumulative/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_seed=12345_selection_strength=0.2_symmetry_breaking=0.25_time_steps=200000000_type=simulation.csv",
-    "data/processed/cumulative/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_seed=12345_selection_strength=0.2_symmetry_breaking=0.5_time_steps=200000000_type=simulation.csv",
-    "data/processed/cumulative/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_seed=12345_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.csv",
-    "data/processed/cumulative/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_seed=12345_selection_strength=0.2_symmetry_breaking=1.0_time_steps=200000000_type=simulation.csv",
-    "data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=true_seed=12345_selection_strength=0.2_symmetry_breaking=0.0_time_steps=8000000.csv",
-    "data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=true_seed=12345_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv",
-    "data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_only_mixed_games=true_seed=12345_selection_strength=0.2_symmetry_breaking=1.0_time_steps=8000000.csv",
+    "data/processed/cumulative/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.0_time_steps=200000000_type=simulation.csv",
+    "data/processed/cumulative/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.25_time_steps=200000000_type=simulation.csv",
+    "data/processed/cumulative/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.5_time_steps=200000000_type=simulation.csv",
+    "data/processed/cumulative/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.csv",
+    "data/processed/cumulative/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=1.0_time_steps=200000000_type=simulation.csv",
+    "data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_num_seeds=10_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.0_time_steps=8000000.csv",
+    "data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_num_seeds=10_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv",
+    "data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_num_seeds=10_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=1.0_time_steps=8000000.csv",
     # Info on number of edges and self loops
     "data/processed/graph_loop_edge_number/adj_matrix_source=c-elegans.csv",
     # Info on mutation times
@@ -132,8 +133,9 @@ wildcard_constraints:
     nb_phases=r"\d+",
     nb_players_flag=r"_nb_players=|",
     nb_players=r"\d*", # use * instead of + because this will be empty for non "well-mixed" datasets
-    seed_flag=r"_seed=|",
-    seed=r"\d*", # use * instead of + because this will be empty for theory cumulative processing
+    num_seeds_flag=r"_num_seeds=|",
+    num_seeds=r"\d*", # use * instead of + because this will be empty for theory cumulative processing
+    seed=r"\d+",
     selection_strength=r"[\d.]+",
     symmetry_breaking=r"[\d.]+",
     time_steps=r"\d*",
@@ -212,6 +214,12 @@ rule raw_cumulative_data:
   script:
     "scripts/snakemake/run_cumulative_simulations.jl"
 
+def raw_cumulative_filename(wildcards):
+  if wildcards.type == "simulation":
+    return expand(["data/raw/cumulative/adj_matrix_source={{adj_matrix_source}}_beta_to_B={{beta_to_B}}_cost={{cost}}_mutation_rate={{mutation_rate}}_nb_phases={{nb_phases}}{{nb_players_flag}}{{nb_players}}_seed={seed}_selection_strength={{selection_strength}}_symmetry_breaking={{symmetry_breaking}}_time_steps={{time_steps}}.jld2"], seed = range(1,int(wildcards.num_seeds)+1))
+  else:
+    return []
+
 rule processed_cumulative_data:
   resources:
     mem_mb = 2500, # well-mixed and c-elegans
@@ -227,9 +235,9 @@ rule processed_cumulative_data:
     "src/julia/utils.jl",
     "scripts/snakemake/snakemake_preamble.jl",
     "scripts/snakemake/postprocess_cumulative.jl",
-    "data/raw/cumulative/adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_seed={seed}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={time_steps}.jld2",
+    raw_cumulative_filename,
   output:
-    "data/processed/cumulative/adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}{seed_flag}{seed}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={time_steps}_type={type}.csv",
+    "data/processed/cumulative/adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}{num_seeds_flag}{num_seeds}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={time_steps}_type={type}.csv",
   script:
     "scripts/snakemake/postprocess_cumulative.jl"
 
@@ -263,6 +271,10 @@ def runtime_min_timeseries_statistics(wildcards):
   runtime_min = runtime_min_per_player_per_timestep*nb_players*time_steps*safety_factor_runtime
   return runtime_min
 
+def raw_timeseries_filename(wildcards):
+  return expand(["data/raw/timeseries/B_to_c={{B_to_c}}_adj_matrix_source={{adj_matrix_source}}_beta_to_B={{beta_to_B}}_cost={{cost}}_mutation_rate={{mutation_rate}}_nb_phases={{nb_phases}}{{nb_players_flag}}{{nb_players}}_seed={seed}_selection_strength={{selection_strength}}_symmetry_breaking={symmetry_breaking}_time_steps={{time_steps}}.jld2"], seed = range(1,int(wildcards.num_seeds)+1),
+	symmetry_breaking = wildcards.symmetry_breaking if hasattr(wildcards, "symmetry_breaking") else symmetry_breaking_vals)
+
 rule processed_timeseries_statistics:
   resources:
     mem_mb = memory_mb_timeseries,
@@ -277,9 +289,9 @@ rule processed_timeseries_statistics:
     "src/julia/utils.jl",
     "scripts/snakemake/snakemake_preamble.jl",
     "scripts/snakemake/postprocess_timeseries_statistics.jl",
-    "data/raw/timeseries/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_seed={seed}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={time_steps}.jld2",
+    raw_timeseries_filename,
   output:
-    "data/processed/timeseries_statistics/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}{early_cutoff_fraction_flag}{early_cutoff_fraction}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_only_mixed_games={only_mixed_games}_seed={seed}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={time_steps}.csv",
+    "data/processed/timeseries_statistics/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}{early_cutoff_fraction_flag}{early_cutoff_fraction}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_num_seeds={num_seeds}_only_mixed_games={only_mixed_games}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={time_steps}.csv",
   script:
     "scripts/snakemake/postprocess_timeseries_statistics.jl"
 
@@ -413,9 +425,9 @@ rule processed_game_types:
     "src/julia/utils.jl",
     "scripts/snakemake/snakemake_preamble.jl",
     "scripts/snakemake/postprocess_game_types.jl",
-    expand(["data/raw/timeseries/B_to_c={{B_to_c}}_adj_matrix_source={{adj_matrix_source}}_beta_to_B={{beta_to_B}}_cost={{cost}}_mutation_rate={{mutation_rate}}_nb_phases={{nb_phases}}{{nb_players_flag}}{{nb_players}}_seed={{seed}}_selection_strength={{selection_strength}}_symmetry_breaking={symmetry_breaking}_time_steps={{time_steps}}.jld2"], symmetry_breaking=symmetry_breaking_vals),
+    raw_timeseries_filename,
   output:
-    "data/processed/gametype/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_only_mixed_games={only_mixed_games}_seed={seed}_selection_strength={selection_strength}_time_steps={time_steps}.csv",
+    "data/processed/gametype/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_num_seeds={num_seeds}_only_mixed_games={only_mixed_games}_selection_strength={selection_strength}_time_steps={time_steps}.csv",
   script:
     "scripts/snakemake/postprocess_game_types.jl"
 
@@ -434,16 +446,16 @@ rule processed_chimera_indices:
     "src/julia/utils.jl",
     "scripts/snakemake/snakemake_preamble.jl",
     "scripts/snakemake/postprocess_chimera_indices.jl",
-    expand(["data/raw/timeseries/B_to_c={{B_to_c}}_adj_matrix_source={{adj_matrix_source}}_beta_to_B={{beta_to_B}}_cost={{cost}}_mutation_rate={{mutation_rate}}_nb_phases={{nb_phases}}{{nb_players_flag}}{{nb_players}}_seed={{seed}}_selection_strength={{selection_strength}}_symmetry_breaking={symmetry_breaking}_time_steps={{time_steps}}.jld2"], symmetry_breaking=symmetry_breaking_vals),
+    raw_timeseries_filename,
   output:
-    "data/processed/chimeraindex/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_community_algorithm={community_algorithm}{community_beta_flag}{community_beta}{community_n_iter_flag}{community_n_iter}{community_resolution_flag}{community_resolution}_cost={cost}{covariance_cutoff_fraction_flag}{covariance_cutoff_fraction}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_seed={seed}_selection_strength={selection_strength}_time_steps={time_steps}{walktrap_steps_flag}{walktrap_steps}.csv",
+    "data/processed/chimeraindex/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_community_algorithm={community_algorithm}{community_beta_flag}{community_beta}{community_n_iter_flag}{community_n_iter}{community_resolution_flag}{community_resolution}_cost={cost}{covariance_cutoff_fraction_flag}{covariance_cutoff_fraction}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_num_seeds={num_seeds}_selection_strength={selection_strength}_time_steps={time_steps}{walktrap_steps_flag}{walktrap_steps}.csv",
   script:
     "scripts/snakemake/postprocess_chimera_indices.jl"
 
 def inputs_dependent_on_adj_matrix_source(wildcards):
   return expand(["data/raw/{data_type_input}/{B_to_c_flag}{B_to_c}{B_to_c_postunderscore}adj_matrix_source={{adj_matrix_source}}_beta_to_B={beta_to_B}_cost={cost}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_seed={seed}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={{time_steps}}.jld2"],
     selection_strength=selection_strength_vals, symmetry_breaking=symmetry_breaking_vals,
-    seed=seed_netcdf,
+    seed=seed_vals_netcdf,
     B_to_c_flag=("B_to_c=" if wildcards.data_type!="cumulative" else ""),
     B_to_c=(B_to_c_vals if wildcards.data_type!="cumulative" else ""),
     B_to_c_postunderscore=("_" if wildcards.data_type!="cumulative" else ""),

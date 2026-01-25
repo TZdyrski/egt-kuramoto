@@ -96,3 +96,16 @@
   \fi%
 }
 \makeatother
+
+% Define function to split strings
+% Source: https://tex.stackexchange.com/a/699653
+\ExplSyntaxOn
+\NewExpandableDocumentCommand{\getNth}{mmmm}
+  {
+    % #1 string, #2 separator, #3 index
+		\seq_set_split:Nne \l_tmpa_seq { #3 } { #2 }
+		\edef #1 {\seq_item:Nn \l_tmpa_seq { #4 }}
+  }
+
+\cs_new_eq:NN \strcompare \str_if_eq:eeTF
+\ExplSyntaxOff

@@ -570,23 +570,36 @@ function extract_cumulative(; type::String, selection_strength::Real,
                               cost::Real=0.1,
                               beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
-			      seed::Integer=12345,
+			      num_seeds::Integer=10,
                               nb_players::Integer=20,
 			      )
 
     # Generate configuration
     config = @strdict(adj_matrix_source, time_steps, beta_to_B,
-                      selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate, seed)
+                      selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = nb_players
     end
 
-    # Get data
-    data = wload(datadir("raw","cumulative",savename(config,"jld2")))
-
     if type == "simulation"
-        df = DataFrame(B0=data["Bs"],
-                       communicative_fraction=data["fraction_communicative"])
+        df = DataFrame()
+	for seed in 1:num_seeds
+		# Get data
+		config_seed = merge(config,Dict("seed" => seed))
+		data = wload(datadir("raw","cumulative",savename(config_seed,"jld2")))
+		# Merge into complete dataframe
+		append!(df, DataFrame(B0=data["Bs"],
+				      communicative_fraction=data["fraction_communicative"],
+				      seed=seed))
+	end
+	# Add additional parameters
+	config["num_seeds"] = num_seeds
+
+	# Average across seed and calculate confidence intervals
+	df = combine(groupby(df, :B0),
+		     Not([:B0,:seed]) .=> mean,
+		     Not([:B0,:seed]) .=> std,
+		     )
     elseif type == "theory" || type == "approx"
         # Generate graph
         interaction_adj_matrix, _ = get_adj_matrices(; adj_matrix_source)
@@ -606,7 +619,14 @@ function extract_cumulative(; type::String, selection_strength::Real,
                               - (nb_effective - 2) / 2 * B0)))
         end
 
-        Bs, frac = PlotUtils.adapted_grid(func, (minimum(data["Bs"]), maximum(data["Bs"])))
+	# Determine B range
+        B_crit = 2 * cost * (nb_players - 1) / (nb_players - 2)
+        nb_Bs = 11
+        step_size_Bs = 0.04
+	B_max = B_crit + (nb_Bs - 1)/2 * step_size_Bs
+	B_min = B_crit - (nb_Bs - 1)/2 * step_size_Bs
+
+	Bs, frac = PlotUtils.adapted_grid(func, (B_min, B_max))
         df = DataFrame(B0 = Bs, communicative_fraction=frac)
     else
         throw(ArgumentError("type must be a string in set [\"simulation\", "
@@ -702,7 +722,7 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
                               cost::Real=0.1,
                               beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
-			      seed::Integer=12345,
+			      num_seeds::Integer=10,
                               nb_players::Integer=20,
                               early_cutoff_fraction::Union{Nothing,Real}=nothing,
                               num_samples::Integer=1000,
@@ -711,38 +731,61 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
 
     # Create config dict for saving filename
     config = @strdict(adj_matrix_source, time_steps, B_to_c, beta_to_B,
-                      selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate, seed)
+                      selection_strength, symmetry_breaking, nb_phases, cost, mutation_rate)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
       config["nb_players"] = nb_players
     end
 
-    # Get data and load into dataframe
-    data_dict = wload(datadir("raw", "timeseries", savename(config, "jld2")))
+    df_all = DataFrame()
+    for seed in 1:num_seeds
+      # Get data and load into dataframe
+      config_seed = merge(config,Dict("seed" => seed))
+      data_dict = wload(datadir("raw", "timeseries", savename(config_seed, "jld2")))
+      # Add additional parameters
+      config_seed["only_mixed_games"] = only_mixed_games
+      # Add configuration
+      data_dict = merge(data_dict, config_seed)
+      # Wrap all elements in a list to allow for matrices in individual
+      # DataFrame elements
+      data_dict = Dict(k => [v] for (k,v) in data_dict)
+      # Convert to dataframe
+      df = DataFrame(data_dict)
+      # Add to dataframe
+      append!(df_all, df)
+    end
     # Add additional parameters
     if !isnothing(early_cutoff_fraction)
       config["early_cutoff_fraction"] = early_cutoff_fraction
     end
+    config["num_seeds"] = num_seeds
     config["only_mixed_games"] = only_mixed_games
-    # Add configuration
-    data_dict = merge(data_dict, config)
-    # Wrap all elements in a list to allow for matrices in individual
-    # DataFrame elements
-    data_dict = Dict(k => [v] for (k,v) in data_dict)
-    # Convert to dataframe
-    df_all_asymm = DataFrame(data_dict)
 
     # Generate statistics
-    statistics = transform(df_all_asymm, [:initial_actions, :deltas, :nb_phases, :nb_players, :symmetry_breaking,
+    statistics = transform(df_all, [:initial_actions, :deltas, :nb_phases, :nb_players, :symmetry_breaking,
         :B_to_c, :beta_to_B, :cost, :interaction_adj_matrix, :only_mixed_games] => ByRow(calc_timeseries_statistics) => AsTable)
 
     # Select subset of columns
-    select!(statistics, [:most_common_game_types, :fraction_communicative, :order_parameters])
+    select!(statistics, [:fraction_communicative, :order_parameters, :most_common_game_types, :seed])
 
-    # Flatten dataframe to convert the 1 row into time_steps+1 rows
-    statistics = DataFrames.flatten(statistics, :)
+    # Rename columns
+    rename!(statistics,
+      Dict(:fraction_communicative => :communicative_fraction, :order_parameters => :order_parameter,
+      :most_common_game_types => :game_type))
 
     # Add time
-    insertcols!(statistics, 1, :time => 1:nrow(statistics))
+    insertcols!(statistics, 1, :time => Ref(collect(0:time_steps)))
+
+    # Flatten dataframe to convert the each (seed) row into time_steps+1 rows
+    statistics = DataFrames.flatten(statistics, Not(:seed))
+
+    # Average across seed and calculate confidence intervals
+    statistics = combine(groupby(statistics, :time),
+			 :game_type => (x -> mode(sort(x))) => :game_type,
+			 :communicative_fraction => mean => :communicative_fraction,
+			 :communicative_fraction => std => :communicative_fraction_std,
+			 :order_parameter => mean => :order_parameter,
+			 :order_parameter => std => :order_parameter_std,
+			 )
 
     # Restrict to initial data
     if !isnothing(early_cutoff_fraction)
@@ -761,12 +804,6 @@ function extract_timeseries_statistics(; B_to_c::Real, selection_strength::Real,
     # Note: the populations include the initial statistics, so we need one more than time-steps
     statistics = statistics[1:downsample_ratio:end,:]
 
-    # Select subset of columns and rename
-    rename!(select!(statistics,
-      [:time, :fraction_communicative, :order_parameters, :most_common_game_types]),
-      Dict(:fraction_communicative => :communicative_fraction, :order_parameters => :order_parameter,
-      :most_common_game_types => :game_type))
-
     # Write out statistics
     mkpath(datadir("processed", "timeseries_statistics"))
     CSV.write(datadir("processed","timeseries_statistics", savename(config,"csv")), statistics)
@@ -780,7 +817,7 @@ function extract_chimera_indices_all_asymm(; community_algorithm::String,
                               cost::Real=0.1,
                               beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
-			      seed::Integer=12345,
+			      num_seeds::Integer=10,
 			      covariance_cutoff_fraction::Union{Nothing,Real}=nothing,
 			      community_beta::Union{Nothing,Real}=nothing,
 			      community_n_iter::Union{Nothing,Integer}=nothing,
@@ -795,7 +832,7 @@ function extract_chimera_indices_all_asymm(; community_algorithm::String,
 
     # Generate configuration
     config = @strdict(adj_matrix_source, time_steps, B_to_c, beta_to_B,
-                      selection_strength, nb_phases, cost, mutation_rate, seed)
+                      selection_strength, nb_phases, cost, mutation_rate)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = nb_players
     end
@@ -804,9 +841,10 @@ function extract_chimera_indices_all_asymm(; community_algorithm::String,
     if community_algorithm == "covariance"
         # Choose asymmetry=0.75 for reference covariance
         symmetry_breaking_ref = 0.75
+        seed_ref = 1
 
         # Load reference data
-        reference_config = merge(config,Dict("symmetry_breaking" => symmetry_breaking_ref))
+        reference_config = merge(config,Dict("symmetry_breaking" => symmetry_breaking_ref, "seed" => seed_ref))
         # Get data and load into dataframe
         data_dict = wload(datadir("raw", "timeseries",
             savename(reference_config, "jld2")))
@@ -849,25 +887,39 @@ function extract_chimera_indices_all_asymm(; community_algorithm::String,
         communities = generate_communities(graph, community_algorithm)
     end
 
-    set_all_asymm = []
-    for symmetry_breaking in [0,0.25,0.5,0.75,1.0]
-      config_with_asymmetry = merge(config, Dict("communities" => communities,
-        "symmetry_breaking" => symmetry_breaking))
-      config_with_asymmetry = Dict(Symbol(elem.first) => elem.second
-          for elem in config_with_asymmetry)
-      df_asymm = extract_chimera_indices(; config_with_asymmetry...)
-      push!(set_all_asymm, df_asymm)
+    df_all = DataFrame()
+    for seed in 1:num_seeds
+      # Get data and load into dataframe
+      config_seed = merge(config,Dict("seed" => seed))
+
+      set_all_asymm = []
+      for symmetry_breaking in [0,0.25,0.5,0.75,1.0]
+        config_with_asymmetry = merge(config_seed, Dict("communities" => communities,
+          "symmetry_breaking" => symmetry_breaking))
+        config_with_asymmetry = Dict(Symbol(elem.first) => elem.second
+            for elem in config_with_asymmetry)
+        df_asymm = extract_chimera_indices(; config_with_asymmetry...)
+        insertcols!(df_asymm, 1, :seed => seed)
+        push!(set_all_asymm, df_asymm)
+      end
+      # Combine asymmetries into a single data frame
+      df_missing = vcat(set_all_asymm...; cols=:union)
+      # Add to main dataframe
+      append!(df_all, df_missing; cols=:union)
     end
-
-    # Combine asymmetries into a single data frame
-    df = vcat(set_all_asymm...; cols=:union)
-
-    # Add community_algorithm to config dictionary
+    # Add additional parameters
+    config["num_seeds"] = num_seeds
     config["community_algorithm"] = community_algorithm
+
+    # Average across seed and calculate confidence intervals
+    df_all = combine(groupby(df_all, :asymmetry),
+		     Not([:asymmetry,:seed]) .=> mean,
+		     Not([:asymmetry,:seed]) .=> std,
+		     )
 
     # Write out data
     mkpath(datadir("processed", "chimeraindex"))
-    CSV.write(datadir("processed","chimeraindex",savename(config,"csv")), df)
+    CSV.write(datadir("processed","chimeraindex",savename(config,"csv")), df_all)
 end
 
 function extract_chimera_indices(; communities::AbstractVector{<:Integer},
@@ -890,27 +942,26 @@ function extract_chimera_indices(; communities::AbstractVector{<:Integer},
 
     # Generate configuration
     config = @strdict(adj_matrix_source, time_steps, B_to_c, beta_to_B,
-                      selection_strength, nb_phases, cost, mutation_rate, seed, symmetry_breaking)
+                      selection_strength, nb_phases, cost, mutation_rate, symmetry_breaking, seed)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = nb_players
     end
 
     # Get data and load into dataframe
-    data_dict = wload(datadir("raw", "timeseries",
-        savename(config, "jld2")))
+    data_dict = wload(datadir("raw", "timeseries", savename(config, "jld2")))
     # Add configuration
     data_dict = merge(data_dict, config)
     # Wrap all elements in a list to allow for matrices in individual
     # DataFrame elements
     data_dict = Dict(k => [v] for (k,v) in data_dict)
     # Convert to dataframe
-    df_all_asymm = DataFrame(data_dict)
+    df = DataFrame(data_dict)
 
     # Get chimera indices
-    transform!(df_all_asymm, [:initial_actions, :deltas] => ByRow((init,deltas) -> get_chimera_indices(init, deltas, communities, nb_phases)) => AsTable)
+    transform!(df, [:initial_actions, :deltas] => ByRow((init,deltas) -> get_chimera_indices(init, deltas, communities, nb_phases)) => AsTable)
 
     # Only keep columns we're interested in
-    df = select(df_all_asymm, :symmetry_breaking => :asymmetry,
+    df = select(df, :symmetry_breaking => :asymmetry,
                 :chimera_index, :metastability_index)
 
     return df
@@ -923,34 +974,44 @@ function extract_game_types_all_asymm(; B_to_c::Real, selection_strength::Real,
                               cost::Real=0.1,
                               beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
-			      seed::Integer=12345,
+			      num_seeds::Integer=10,
                               nb_players::Integer=20,
                               only_mixed_games::Bool=false,
 			      )
 
     # Generate configuration
     config = @strdict(adj_matrix_source, time_steps, B_to_c, beta_to_B,
-                      selection_strength, nb_phases, cost, mutation_rate, only_mixed_games, seed)
+                      selection_strength, nb_phases, cost, mutation_rate, only_mixed_games)
     if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
 	    config["nb_players"] = nb_players
     end
 
-    set_all_asymm = []
-    for symmetry_breaking in [0,0.25,0.5,0.75,1.0]
-      config_with_asymmetry = merge(config,Dict("symmetry_breaking" => symmetry_breaking))
-      config_with_asymmetry = Dict(Symbol(elem.first) => elem.second
-          for elem in config_with_asymmetry)
-      df_asymm = extract_game_types(; config_with_asymmetry...)
-      push!(set_all_asymm, df_asymm)
-    end
+    df_all = DataFrame()
+    for seed in 1:num_seeds
+      # Get data and load into dataframe
+      config_seed = merge(config,Dict("seed" => seed))
 
-    # Combine asymmetries into a single data frame
-    df_missing = vcat(set_all_asymm...; cols=:union)
+      set_all_asymm = []
+      for symmetry_breaking in [0,0.25,0.5,0.75,1.0]
+        config_with_asymmetry = merge(config_seed,Dict("symmetry_breaking" => symmetry_breaking))
+        config_with_asymmetry = Dict(Symbol(elem.first) => elem.second
+            for elem in config_with_asymmetry)
+        df_asymm = extract_game_types(; config_with_asymmetry...)
+        insertcols!(df_asymm, 1, :seed => seed)
+        push!(set_all_asymm, df_asymm)
+      end
+      # Combine asymmetries into a single data frame
+      df_missing = vcat(set_all_asymm...; cols=:union)
+      # Add to main dataframe
+      append!(df_all, df_missing; cols=:union)
+    end
+    # Add additional parameters
+    config["num_seeds"] = num_seeds
 
     # Sort columns alphabetically, but ensure "asymmetry" is first
     # column and all_communicative/all_noncommunicative are last (if
     # they exist)
-    column_names = names(df_missing)
+    column_names = names(df_all)
     synchronized_column_names = filter(col -> col in ["all_communicative", "all_noncommunicative"],
       column_names)
     sort!(synchronized_column_names)
@@ -958,14 +1019,20 @@ function extract_game_types_all_asymm(; B_to_c::Real, selection_strength::Real,
     sort!(column_names)
     prepend!(column_names, ["asymmetry"])
     append!(column_names, synchronized_column_names)
-    select!(df_missing, column_names)
+    select!(df_all, column_names)
 
     # Replace missing data (i.e. game types that do not appear for a particular asymmetry) with zero
-    df = coalesce.(df_missing, 0.0)
+    df_all = coalesce.(df_all, 0.0)
+
+    # Average across seed and calculate confidence intervals
+    df_all = combine(groupby(df_all, :asymmetry),
+		     Not([:asymmetry,:seed]) .=> mean,
+		     Not([:asymmetry,:seed]) .=> std,
+		     )
 
     # Write out data
     mkpath(datadir("processed", "gametype"))
-    CSV.write(datadir("processed","gametype", savename(config,"csv")), df)
+    CSV.write(datadir("processed","gametype", savename(config,"csv")), df_all)
 end
 
 function extract_game_types(; B_to_c::Real, selection_strength::Real,

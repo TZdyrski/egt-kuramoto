@@ -311,7 +311,7 @@ function extract_counts(strategies_per_player::AbstractVector{<:Integer}, nb_pha
 end
 
 function generate_communities(graph::AbstractSimpleWeightedGraph, community_algorithm::String;
-        covariance_cutoff::Union{Real,Nothing}=nothing,
+        covariance_cutoff_fraction::Union{Real,Nothing}=nothing,
         covariance_data::Union{DimArray,Nothing}=nothing,
         walktrap_steps::Union{Integer,Nothing}=nothing,
         )
@@ -329,20 +329,17 @@ function generate_communities(graph::AbstractSimpleWeightedGraph, community_algo
         end
     elseif community_algorithm == "covariance"
         # Covariance
-        if covariance_cutoff == nothing
-            throw(ArgumentError("covariance_cutoff must be set if 'community_algorithm' == 'covariance'"))
+        if covariance_cutoff_fraction == nothing
+            throw(ArgumentError("covariance_cutoff_fraction must be set if 'community_algorithm' == 'covariance'"))
         end
         if covariance_data == nothing
             throw(ArgumentError("covariance_data must be set if 'community_algorithm' == 'covariance'"))
         end
 
         covariances = cov(covariance_data, dims=:time_step)
-	if maximum(covariances) < covariance_cutoff
-		throw(ArgumentError("covariance_cutoff is higher than the maximum covariance $(maximum(covariances)); covariance_cutoff must be lowered"))
-        end
 
         communities = 2*ones(Int64,nv(graph))
-        communities[map(x -> x[2], findall(sum(covariances,dims=1) .>= covariance_cutoff))] .= 1
+        communities[map(x -> x[2], findall(sum(covariances,dims=1) .>= covariance_cutoff_fraction*maximum(covariances)))] .= 1
     elseif community_algorithm == "walktrap"
         if walktrap_steps == nothing
             throw(ArgumentError("walktrap_steps must be set if 'community_algorithm' == 'walktrap'"))
@@ -761,7 +758,7 @@ function extract_chimera_indices_all_asymm(; community_algorithm::String,
                               beta_to_B::Real=0.95,
                               mutation_rate::Real=0.0001,
 			      seed::Integer=12345,
-			      covariance_cutoff::Union{Nothing,Real}=nothing,
+			      covariance_cutoff_fraction::Union{Nothing,Real}=nothing,
 			      walktrap_steps::Union{Integer,Nothing}=nothing,
                               nb_players::Integer=20,
 			      )
@@ -805,10 +802,10 @@ function extract_chimera_indices_all_asymm(; community_algorithm::String,
         data_ref = DimArray(data, (:player_index, :time_step))
 
         communities = generate_communities(graph, community_algorithm;
-                                           covariance_cutoff=covariance_cutoff, covariance_data = data_ref)
+                                           covariance_cutoff_fraction=covariance_cutoff_fraction, covariance_data = data_ref)
 
         # Add covariance_cutoff to config dictionary
-        config["covariance_cutoff"] = covariance_cutoff
+        config["covariance_cutoff_fraction"] = covariance_cutoff_fraction
     elseif community_algorithm == "walktrap"
         communities = generate_communities(graph, community_algorithm; walktrap_steps)
 

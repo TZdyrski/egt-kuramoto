@@ -46,7 +46,7 @@ rule manuscript:
     "data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_only_mixed_games=true_seed=12345_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv",
     # tikz/chimera-states.tex
     "papers/primary_manuscript/tikz/chimera-states.tex",
-    "data/processed/chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_community_algorithm=covariance_cost=0.1_covariance_cutoff=155_mutation_rate=0.0001_nb_phases=20_seed=12345_selection_strength=0.2_time_steps=8000000.csv",
+    "data/processed/chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_community_algorithm=covariance_cost=0.1_covariance_cutoff_fraction=0.8_mutation_rate=0.0001_nb_phases=20_seed=12345_selection_strength=0.2_time_steps=8000000.csv",
     "data/processed/graph_structure/vertices_B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_seed=12345_selection_strength=0.2_symmetry_breaking=0.0_time_step=560000_time_steps=8000000.csv",
     "data/processed/graph_structure/vertices_B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_seed=12345_selection_strength=0.2_symmetry_breaking=1.0_time_step=560000_time_steps=8000000.csv",
     "data/processed/graph_structure/edges_adj_matrix_source=c-elegans.csv",
@@ -118,8 +118,8 @@ wildcard_constraints:
     early_cutoff_fraction_flag=r"_early_cutoff_fraction=|",
     early_cutoff_fraction=r"[\d.]*", # use * instead of + because this is an optional parameter
     only_mixed_games=r"[a-z]+",
-    covariance_cutoff_flag=r"_covariance_cutoff=|",
-    covariance_cutoff=r"\d*", # use * instead of + because some algorithms don't use covariance
+    covariance_cutoff_fraction_flag=r"_covariance_cutoff_fraction=|",
+    covariance_cutoff_fraction=r"[\d.]*", # use * instead of + because some algorithms don't use covariance
     walktrap_steps_flag=r"_walktrap_steps=|",
     walktrap_steps=r"\d*", # use * instead of + because some algorithms don't use walktrap steps
     mutation_rate=r"[\d.]+",
@@ -430,7 +430,7 @@ rule processed_chimera_indices:
     "scripts/snakemake/postprocess_chimera_indices.jl",
     expand(["data/raw/timeseries/B_to_c={{B_to_c}}_adj_matrix_source={{adj_matrix_source}}_beta_to_B={{beta_to_B}}_cost={{cost}}_mutation_rate={{mutation_rate}}_nb_phases={{nb_phases}}{{nb_players_flag}}{{nb_players}}_seed={{seed}}_selection_strength={{selection_strength}}_symmetry_breaking={symmetry_breaking}_time_steps={{time_steps}}.jld2"], symmetry_breaking=symmetry_breaking_vals),
   output:
-    "data/processed/chimeraindex/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_community_algorithm={community_algorithm}_cost={cost}{covariance_cutoff_flag}{covariance_cutoff}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_seed={seed}_selection_strength={selection_strength}_time_steps={time_steps}{walktrap_steps_flag}{walktrap_steps}.csv",
+    "data/processed/chimeraindex/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_community_algorithm={community_algorithm}_cost={cost}{covariance_cutoff_fraction_flag}{covariance_cutoff_fraction}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_seed={seed}_selection_strength={selection_strength}_time_steps={time_steps}{walktrap_steps_flag}{walktrap_steps}.csv",
   script:
     "scripts/snakemake/postprocess_chimera_indices.jl"
 

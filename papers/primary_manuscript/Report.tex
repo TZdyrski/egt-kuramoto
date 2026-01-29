@@ -1233,11 +1233,11 @@ ensuring that communicative ($C$, $\phi_i$)
 and non-communicative ($N$, $\phi_i$) are treated distinctly.
 Next, we calculate the row-wise covariance-sums  $\sum_i K_{i,j}$
 and form a community by collecting all nodes $j$ with covariance-sum
-at least \num{155}, \ie{} $\sum_i K_{i,j} \ge 155$.
-Note that \num{155} is chosen as a high cutoff
+at least \SI{80}{\percent} of the maximum covariance-sum,
+\ie{} $\sum_i K_{i,j} \ge 0.8 \max_j\pab{\sum_i K_{i,j}}$.
+Note that \SI{80}{\percent} is chosen as a high cutoff
 to ensure we only group nodes with high covariance-sum;
-for reference, \num{155} is is approximately \SI{80}{\percent}
-of the maximum covariance-sum and splits the population into
+for reference, this splits the population into
 communities of size \num{81} and \num{219}.
 Finally, we place all the remaining nodes in a second community.
 

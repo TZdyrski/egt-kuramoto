@@ -17,6 +17,15 @@ end
 if haskey(wildcards_dict, "covariance_cutoff_fraction_flag") && pop!(wildcards_dict, "covariance_cutoff_fraction_flag") == ""
   delete!(wildcards_dict, "covariance_cutoff_fraction")
 end
+if haskey(wildcards_dict, "community_resolution_flag") && pop!(wildcards_dict, "community_resolution_flag") == ""
+  delete!(wildcards_dict, "community_resolution")
+end
+if haskey(wildcards_dict, "community_beta_flag") && pop!(wildcards_dict, "community_beta_flag") == ""
+  delete!(wildcards_dict, "community_beta")
+end
+if haskey(wildcards_dict, "community_n_iter_flag") && pop!(wildcards_dict, "community_n_iter_flag") == ""
+  delete!(wildcards_dict, "community_n_iter")
+end
 if haskey(wildcards_dict, "walktrap_steps_flag") && pop!(wildcards_dict, "walktrap_steps_flag") == ""
   delete!(wildcards_dict, "walktrap_steps")
 end
@@ -34,7 +43,7 @@ filter!(x -> isa(x.first, String), wildcards_dict)
 
 wildcards_dict = Dict((Symbol(k),parse_string(v)) for (k,v) in wildcards_dict)
 
-integer_params = [:time_steps, :nb_phases, :nb_players, :time_step, :decimation_factor, :seed, :walktrap_steps]
+integer_params = [:time_steps, :nb_phases, :nb_players, :time_step, :decimation_factor, :community_n_iter, :seed, :walktrap_steps]
 wildcards_dict = Dict((k, k in integer_params ? Integer(v) : v) for (k,v) in wildcards_dict)
 bool_params = [:only_mixed_games]
 wildcards_dict = Dict((k, k in bool_params ? parse(Bool,v) : v) for (k,v) in wildcards_dict)

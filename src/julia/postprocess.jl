@@ -314,6 +314,9 @@ function generate_communities(graph::AbstractSimpleWeightedGraph, community_algo
         covariance_cutoff_fraction::Union{Real,Nothing}=nothing,
         covariance_data::Union{DimArray,Nothing}=nothing,
         walktrap_steps::Union{Integer,Nothing}=nothing,
+        community_resolution::Union{Real,Nothing}=nothing,
+        community_beta::Union{Real,Nothing}=nothing,
+        community_n_iter::Union{Integer,Nothing}=nothing,
         )
     if community_algorithm == "label-propagation"
         # Label propagation
@@ -355,9 +358,29 @@ function generate_communities(graph::AbstractSimpleWeightedGraph, community_algo
 	    communities_igraph,
 	)
 	communities = Integer.(communities_igraph) .+ 1
+	communities = Integer.(communities_igraph)
+    elseif community_algorithm == "leiden"
+        if community_resolution == nothing
+            throw(ArgumentError("community_resolution must be set if 'community_algorithm' == 'leiden'"))
+        end
+        if community_beta == nothing
+            throw(ArgumentError("community_beta must be set if 'community_algorithm' == 'leiden'"))
+        end
+        if community_n_iter == nothing
+            throw(ArgumentError("community_n_iter must be set if 'community_algorithm' == 'leiden'"))
+        end
+
+        communities_igraph = IGVectorInt(zeros(nv(graph)))
+        LibIGraph.community_leiden_simple(
+				    IGraph(SimpleDiGraph(graph)),
+						IGVectorFloat(weight.(edges(graph))),
+						LibIGraph.IGRAPH_LEIDEN_OBJECTIVE_CPM,
+						community_resolution, community_beta, false, community_n_iter,
+						communities_igraph)
+        communities = Integer.(communities_igraph) .+ 1
     else
         throw(ArgumentError("community_algorithm must be a string in set [\"label-propagation\", "
-                            * "\"strongly-connected\", \"covariance\", \"walktrap\"]"))
+                            * "\"strongly-connected\", \"covariance\", \"walktrap\", \"leiden\"]"))
     end
 
     return communities
@@ -759,6 +782,9 @@ function extract_chimera_indices_all_asymm(; community_algorithm::String,
                               mutation_rate::Real=0.0001,
 			      seed::Integer=12345,
 			      covariance_cutoff_fraction::Union{Nothing,Real}=nothing,
+			      community_beta::Union{Nothing,Real}=nothing,
+			      community_n_iter::Union{Nothing,Integer}=nothing,
+			      community_resolution::Union{Nothing,Real}=nothing,
 			      walktrap_steps::Union{Integer,Nothing}=nothing,
                               nb_players::Integer=20,
 			      )
@@ -811,6 +837,14 @@ function extract_chimera_indices_all_asymm(; community_algorithm::String,
 
         # Add walktrap_steps to config dictionary
         config["walktrap_steps"] = walktrap_steps
+    elseif community_algorithm == "leiden"
+        communities = generate_communities(graph, community_algorithm; community_beta,
+					   community_n_iter, community_resolution)
+
+        # Add walktrap_steps to config dictionary
+        config["community_beta"] = community_beta
+        config["community_n_iter"] = community_n_iter
+        config["community_resolution"] = community_resolution
     else
         communities = generate_communities(graph, community_algorithm)
     end

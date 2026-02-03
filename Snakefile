@@ -119,9 +119,15 @@ wildcard_constraints:
     early_cutoff_fraction=r"[\d.]*", # use * instead of + because this is an optional parameter
     only_mixed_games=r"[a-z]+",
     covariance_cutoff_fraction_flag=r"_covariance_cutoff_fraction=|",
-    covariance_cutoff_fraction=r"[\d.]*", # use * instead of + because some algorithms don't use covariance
+    covariance_cutoff_fraction=r"[\d.]*", # use * instead of + because some algorithms don't use this
     walktrap_steps_flag=r"_walktrap_steps=|",
-    walktrap_steps=r"\d*", # use * instead of + because some algorithms don't use walktrap steps
+    walktrap_steps=r"\d*", # use * instead of + because some algorithms don't use this
+    community_resolution_flag=r"_community_resolution=|",
+    community_resolution=r"[\d.]*", # use * instead of + because some algorithms don't use this
+    community_beta_flag=r"_community_beta=|",
+    community_beta=r"[\d.]*", # use * instead of + because some algorithms don't use this
+    community_n_iter_flag=r"_community_n_iter=|",
+    community_n_iter=r"\d*", # use * instead of + because some algorithms don't use this
     mutation_rate=r"[\d.]+",
     nb_phases=r"\d+",
     nb_players_flag=r"_nb_players=|",
@@ -430,7 +436,7 @@ rule processed_chimera_indices:
     "scripts/snakemake/postprocess_chimera_indices.jl",
     expand(["data/raw/timeseries/B_to_c={{B_to_c}}_adj_matrix_source={{adj_matrix_source}}_beta_to_B={{beta_to_B}}_cost={{cost}}_mutation_rate={{mutation_rate}}_nb_phases={{nb_phases}}{{nb_players_flag}}{{nb_players}}_seed={{seed}}_selection_strength={{selection_strength}}_symmetry_breaking={symmetry_breaking}_time_steps={{time_steps}}.jld2"], symmetry_breaking=symmetry_breaking_vals),
   output:
-    "data/processed/chimeraindex/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_community_algorithm={community_algorithm}_cost={cost}{covariance_cutoff_fraction_flag}{covariance_cutoff_fraction}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_seed={seed}_selection_strength={selection_strength}_time_steps={time_steps}{walktrap_steps_flag}{walktrap_steps}.csv",
+    "data/processed/chimeraindex/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_community_algorithm={community_algorithm}{community_beta_flag}{community_beta}{community_n_iter_flag}{community_n_iter}{community_resolution_flag}{community_resolution}_cost={cost}{covariance_cutoff_fraction_flag}{covariance_cutoff_fraction}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_seed={seed}_selection_strength={selection_strength}_time_steps={time_steps}{walktrap_steps_flag}{walktrap_steps}.csv",
   script:
     "scripts/snakemake/postprocess_chimera_indices.jl"
 

@@ -717,8 +717,8 @@ the \gls{celegans} case depicts disordered states with discontinuous offsets.
     for the
     weighted, directed \gls{celegans} connectome.
     To calculate the indices,
-    we split the graph into two communities according to the nodes'
-    relative covariance (\cf{} \cref{sec:chimera-metastability-def}).
+    we split the graph into two communities using the constant Potts
+    model (\cf{} \cref{sec:chimera-metastability-def}).
     \protect{\subref{fig:graph_celegans_asymmetry0}}--\protect{\subref{fig:graph_celegans_asymmetry1}}
     A snapshot of the \gls{celegans} connectome where
     blue colors are communicative,
@@ -749,8 +749,8 @@ the chimera-like index
 measures the coherence difference between communities of players,
 is equal to the time-averaged community variance,
 and has a theoretical maximum value
-of $M/[4(M-1)] = \num{0.5}$~\cite{shanahan2010metastable}
-for our $M=2$ communities.
+of $M/[4(M-1)] = \num{0.3}$~\cite{shanahan2010metastable}
+for our $M=6$ communities.
 Conversely, the metastability index
 represents how often the system transitions
 between synchronicity and disorder,
@@ -769,28 +769,23 @@ These simulations ran with the same parameters as the
 \gls{celegans} time-series data.
 
 The metastability displayed in \cref{fig:chimera-index}
-is less than \num{0.02}, much smaller
+is less than \num{0.04}, much smaller
 than the maximum of \num{0.25}.
 This implies that the system has low metastability
 and spends most of its time at a nearly constant
 synchronicity $\rho_m(t)$.
 Furthermore, while the metastability is higher (more stability variations)
-at $\lambda \approx \num{0.02}$ for the $\alpha = 0.5, 1$ case,
-the metastability drops precipitously for other $\alpha$,
-always staying below \num{0.008}.
+at $\lambda \approx \num{0.03}$ for the $\alpha \le 0.5$ case,
+the metastability drops precipitously for larger $\alpha$,
+always staying below \num{0.003}.
 Conversely, the chimera-like index $\chi$
 indicates a high chimeric quality
-with values (\numrange{0.14}{0.23})
-nearly half the theoretical maximum (\num{0.5}).
+with values ($\chi \approx \num{0.07}$)
+nearly a quarter of the theoretical maximum (\num{0.3}).
 Given that we average the chimera-like index over time,
 the system's deviation from a complete chimera state
 arises from both imperfect separation of the coherent/disordered populations
 as well as time fluctuations in the chimeric quality.
-While we did calculate the communities
-based on the $\alpha = \num{0.75}$ covariances,
-the high $\chi$ value for all asymmetries $\alpha$
-implies that the strong chimeric character is intrinsic
-rather than an artifact of our $\alpha = \num{0.75}$ choice.
 
 \subsection{Game types}
 \begin{figure*}
@@ -920,37 +915,11 @@ which is corroborated in our simulations by the inset below
 
 %\subsection{Chimera states}
 Next, we will discuss the observed chimera states.
-While the chimera-like quality is inherently time-dependent
-(\cf{} \pcref{eq:chimera_index})
-carefully chosen snapshots can still convey some of the chimera-like aspects.
-\Cref{fig:graph_celegans_asymmetry0} shows a snapshot of the communication strategies
-for asymmetry $\alpha = 0$ using the same color scheme as \cref{fig:graph}.
-We notice a large region of light red representing
-a synchronized group of non-communicators,
-as well as a mix of disordered neighbors.
-This coexistence of strong synchronization and disorder
-is consistent with the high
-chimera-like index $\chi = \num{0.23}$ observed in \cref{fig:chimera-index} for $\alpha = 0$.
-In comparison, the $\alpha = 0.75$ case depicted in \cref{fig:graph}
-has an slightly lower $\chi = \num{0.21}$,
-consistent with the smaller synchronized
-non-communicative group (red).
-Finally,
-\cref{fig:graph_celegans_asymmetry1} shows a snapshot for $\alpha = 1$,
-for which we expect a slightly lower chimera-like index of $\chi = \num{0.20}$.
-Indeed, we see that the medium-sized communicative (red) group
-in \cref{fig:graph_celegans_asymmetry1}
-or \cref{fig:graph} has fractured into two
-communicative (blue) groups with different phases (color shade),
-slightly lowering the chimeric quality.
-Therefore, these snapshots give a glimpse of the chimera-like quality
-in the \gls{celegans} populations.
-
 Another study of the \gls{celegans} connectome also found
 chimera-like states using an entirely non-game-theory tool,
 modular neural networks~\cite{hizanidis2016chimera}.
 That study found a maximum chimera-like index of \num{0.12},
-in agreement with our value of \num{0.14} for $\alpha = 0.5$,
+close to our value of \num{0.07} for $\alpha = 0.5$,
 despite the different network models of the \gls{celegans} connectome considered.
 This agreement between two different models of neurons
 reveals that the emergence of chimera states
@@ -1223,23 +1192,14 @@ we define a pair of indices related to
 chimera-like quality and metastability~\cite{shanahan2010metastable}.
 First, we organize the game's nodes
 into $M$ disjoint communities.
-We split the nodes into $M=2$ communities $C_m$
-by taking a subset
-(the first \num{8E4} steps for computational ease)
-of the simulation results
-for the \gls{celegans} simulation with asymmetry $\alpha = \num{0.75}$.
-We then calculate the covariance matrix $K_{i,j}$ of the strategy indices,
-ensuring that communicative ($C$, $\phi_i$)
-and non-communicative ($N$, $\phi_i$) are treated distinctly.
-Next, we calculate the row-wise covariance-sums  $\sum_i K_{i,j}$
-and form a community by collecting all nodes $j$ with covariance-sum
-at least \SI{80}{\percent} of the maximum covariance-sum,
-\ie{} $\sum_i K_{i,j} \ge 0.8 \max_j\pab{\sum_i K_{i,j}}$.
-Note that \SI{80}{\percent} is chosen as a high cutoff
-to ensure we only group nodes with high covariance-sum;
-for reference, this splits the population into
-communities of size \num{81} and \num{219}.
-Finally, we place all the remaining nodes in a second community.
+We split the nodes into communities
+using the constant Potts model with a Leiden algorithm
+implemented via the igraph library~\cite{csardi2006igraph}.
+In particular, we used a constant Potts model
+with resolution \num{0.1},
+refinement-randomness $\beta = \num{0.01}$,
+and \num{2} iterations of the Leiden algorithm.
+This resulted in $M=6$ communities $C_m$.
 
 With these disjoint communities $C_m$, we then calculate
 the time-dependent, community-wise order parameter $\rho_m(t)$
@@ -1279,7 +1239,7 @@ while having $M$ communities
 with half fully synchronized ($\rho_m = 1$)
 and the other half fully disordered ($\rho_m = 0$)
 for all times yields a maximum $\chi = M/[4(M-1)]
-= 1/2$ for our $M=2$~\cite{shanahan2010metastable}.
+= 3/10$ for our $M=6$~\cite{shanahan2010metastable}.
 Likewise, the metastability index $\lambda$ measures how metastable
 the system is (\ie{} transiting between synchronicity and disorder).
 A system that is fully synchronized or disordered gives $\lambda = 0$;

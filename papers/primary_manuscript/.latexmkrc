@@ -7,3 +7,5 @@ $postscript_mode = $dvi_mode = 0;
 &alt_tex_cmds;
 $pre_tex_code = '\pdfvariable suppressoptionalinfo \numexpr32+64+512\relax \
                  \pdfvariable objcompresslevel=0\relax';
+# cd to source directory
+$do_cd = 1;

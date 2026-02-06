@@ -9,15 +9,15 @@ and run `latexmk Report.tex`.
 # Compiling figures
 To compile the figures reproducibly, install Gnu Guix and run
 ```bash
-guix time-machine -C channels.scm -- shell --pure -m manifest.scm -- latexmk -cd tikz/<figure name>.tex
+guix time-machine -C channels.scm -- shell --pure -m manifest.scm -- latexmk tikz/<figure name>.tex
 ```
 Alternatively, to compile the paper without Guix, ensure the `texlive` packages listed in `manifest.scm` are installed
-and run `latexmk -cd tikz/<figure name>.tex`.
+and run `latexmk tikz/<figure name>.tex`.
 
 # Arxiv submission
 To generate an arxiv submission, compile all the figures
 ```bash
-guix time-machine -C channels.scm -- shell --pure -m manifest.scm -- latexmk -cd tikz/c-elegans.tex tikz/chimera-states.tex tikz/game-payoffs.tex tikz/game-types.tex tikz/model-setup.tex tikz/phase-diagram.tex tikz/well-mixed.tex
+guix time-machine -C channels.scm -- shell --pure -m manifest.scm -- latexmk tikz/c-elegans.tex tikz/chimera-states.tex tikz/game-payoffs.tex tikz/game-types.tex tikz/model-setup.tex tikz/phase-diagram.tex tikz/well-mixed.tex
 ```
 Change the standalone package mode to `image` to use the generated figure pdfs:
 ```bash

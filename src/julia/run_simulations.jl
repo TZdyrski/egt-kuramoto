@@ -14,6 +14,7 @@ function calc_cumulative(;selection_strength::Real, symmetry_breaking::Real,
 			 mutation_rate::Real=0.0001,
 			 nb_players::Integer=20,
 			 seed::Integer=12345,
+			 fixed_aspect::Union{String,Nothing}=nothing,
 			 )
 
     # Define interaction graph and reproduction graphs
@@ -29,7 +30,7 @@ function calc_cumulative(;selection_strength::Real, symmetry_breaking::Real,
 
 		# Generate model
 		nfgames = [NormalFormGame(payoff_matrix(nb_phases, B, beta_to_B * B, cost; symmetry_breaking)) for B in Bs]
-		models = [Moran(nfgame, interaction_adj_matrix, reproduction_adj_matrix, selection_strength, mutation_rate) for nfgame in nfgames]
+		models = [Moran(nfgame, interaction_adj_matrix, reproduction_adj_matrix, selection_strength, mutation_rate, fixed_aspect) for nfgame in nfgames]
 
     # Run the model for weak selection strength
 		cumulative_populations = [cumulative(model, time_steps, seed) for model in models]
@@ -52,6 +53,7 @@ function calc_timeseries(;B_to_c::Real, selection_strength::Real, symmetry_break
 			 mutation_rate::Real=0.0001,
 			 nb_players::Integer=20,
 			 seed::Integer=12345,
+			 fixed_aspect::Union{String,Nothing}=nothing,
 			 )
 
     # Define system
@@ -64,7 +66,7 @@ function calc_timeseries(;B_to_c::Real, selection_strength::Real, symmetry_break
 
 		# Generate model
 		nfgame = NormalFormGame(payoff_matrix(nb_phases, B, beta_to_B * B, cost; symmetry_breaking))
-		model = Moran(nfgame, interaction_adj_matrix, reproduction_adj_matrix, selection_strength, mutation_rate)
+		model = Moran(nfgame, interaction_adj_matrix, reproduction_adj_matrix, selection_strength, mutation_rate, fixed_aspect)
 
     # Run the model for weak selection strength
     initial_actions, deltas, steps_following_mutation = time_series(model, time_steps, seed)

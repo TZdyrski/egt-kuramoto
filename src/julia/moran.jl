@@ -11,7 +11,8 @@ using SparseArrays
 struct Moran{N,T1<:Real,S<:Integer,S2<:Integer,T2<:Real,T3<:Real,
                              AT1<:AbstractMatrix{<:T1},AT2<:AbstractMatrix{<:T1},
                              AS1<:AbstractMatrix{S2},AS2<:AbstractMatrix{S2},
-                             AS3<:AbstractMatrix{S2},AS4<:AbstractMatrix{S2}}
+                             AS3<:AbstractMatrix{S2},AS4<:AbstractMatrix{S2},
+														 U<:Union{String,Nothing}}
     players::NTuple{N,Player{2,T1}}
     num_actions::S
     payoff_matrix::AT1
@@ -22,13 +23,15 @@ struct Moran{N,T1<:Real,S<:Integer,S2<:Integer,T2<:Real,T3<:Real,
     reproduction_adj_matrix_transpose::AS4
     beta::T2
     epsilon::T3
+		fixed_aspect::U
 end
 
 function Moran(g::NormalFormGame,
                                interaction_adj_matrix::AbstractMatrix,
                                reproduction_adj_matrix::AbstractMatrix,
                                selection_strength::Real,
-                               mutation_rate::Real)
+                               mutation_rate::Real,
+															 fixed_aspect::Union{String,Nothing}=nothing)
     if size(interaction_adj_matrix, 1) != size(interaction_adj_matrix, 2)
         throw(ArgumentError("Interaction adjacency matrix must be square"))
     end
@@ -57,7 +60,7 @@ function Moran(g::NormalFormGame,
                                  interaction_adj_matrix, transpose(interaction_adj_matrix),
                                  reproduction_adj_matrix,
                                  transpose(reproduction_adj_matrix), selection_strength,
-                                 mutation_rate)
+                                 mutation_rate, fixed_aspect)
 end
 
 function update_weights!(w::Weights{S,TA,V}, new_wts::V) where {S,TA,V}
@@ -187,8 +190,22 @@ function play!(rng::AbstractRNG,
         new_strategy = aux.interaction_graph.ndata.strategy[focal_idx]
     end
 
+		if lmi.fixed_aspect == "strategy"
+			# Keep strategy (i.e. whether idx greater or less than num_phases)
+			num_phases = div(lmi.num_actions, 2) # num_actions = two strategies (C/N) times num_phases
+			old_CN = fld1(old_strategy, num_phases)-1
+			new_phi = mod1(new_strategy, num_phases)
+			new_strategy = old_CN*num_phases + new_phi
+		elseif lmi.fixed_aspect == "phase"
+			# Keep phase (i.e. idx mod phases)
+			num_phases = div(lmi.num_actions, 2) # num_actions = two strategies (C/N) times num_phases
+			old_phi = mod1(old_strategy, num_phases)
+			new_CN = fld1(new_strategy, num_phases)-1
+			new_strategy = new_CN*num_phases + old_phi
+		end
+
     # Check if updates are necessary
-    if aux.interaction_graph.ndata.strategy[death_idx] != new_strategy
+    if old_strategy != new_strategy
         # Apply spatial Moran process
         aux.interaction_graph.ndata.strategy[death_idx] = new_strategy
 

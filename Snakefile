@@ -46,6 +46,10 @@ rule manuscript:
     "data/processed/cumulative/adj_matrix_source=c-elegans-unweighted_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv",
     "data/processed/cumulative/adj_matrix_source=c-elegans-undirected_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv",
     "data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv",
+    # tikz/c-elegans-fixed-aspect.tex
+    "papers/primary_manuscript/tikz/c-elegans-fixed-aspect.tex",
+    "data/processed/cumulative/adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_fixed_aspect=phase_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv",
+    "data/processed/cumulative/adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_fixed_aspect=strategy_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv",
     # tikz/chimera-states.tex
     "papers/primary_manuscript/tikz/chimera-states.tex",
     "data/processed/chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_community_algorithm=leiden_community_beta=0.01_community_n_iter=2_community_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv",
@@ -114,6 +118,8 @@ wildcard_constraints:
     early_cutoff_fraction_flag=r"_early_cutoff_fraction=|",
     early_cutoff_fraction=r"[\d.]*", # use * instead of + because this is an optional parameter
     only_mixed_games=r"[a-z]+",
+    fixed_aspect_flag=r"_fixed_aspect=|",
+    fixed_aspect=r"[a-z]*", # use * instead of + because this is an optional parameter
     covariance_cutoff_fraction_flag=r"_covariance_cutoff_fraction=|",
     covariance_cutoff_fraction=r"[\d.]*", # use * instead of + because some algorithms don't use this
     walktrap_steps_flag=r"_walktrap_steps=|",
@@ -205,12 +211,12 @@ rule raw_cumulative_data:
     "scripts/snakemake/snakemake_preamble.jl",
     "scripts/snakemake/run_cumulative_simulations.jl",
   output:
-    "data/raw/cumulative/adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_seed={seed}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={time_steps}.jld2",
+    "data/raw/cumulative/adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}{fixed_aspect_flag}{fixed_aspect}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_seed={seed}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={time_steps}.jld2",
   script:
     "scripts/snakemake/run_cumulative_simulations.jl"
 
 def raw_cumulative_filename(wildcards):
-	return expand(["data/raw/cumulative/adj_matrix_source={{adj_matrix_source}}_beta_to_B={{beta_to_B}}_cost={{cost}}_mutation_rate={{mutation_rate}}_nb_phases={{nb_phases}}{{nb_players_flag}}{{nb_players}}_seed={seed}_selection_strength={{selection_strength}}_symmetry_breaking={{symmetry_breaking}}_time_steps={{time_steps}}.jld2"], seed = range(1,int(wildcards.num_seeds)+1))
+	return expand(["data/raw/cumulative/adj_matrix_source={{adj_matrix_source}}_beta_to_B={{beta_to_B}}_cost={{cost}}{{fixed_aspect_flag}}{{fixed_aspect}}_mutation_rate={{mutation_rate}}_nb_phases={{nb_phases}}{{nb_players_flag}}{{nb_players}}_seed={seed}_selection_strength={{selection_strength}}_symmetry_breaking={{symmetry_breaking}}_time_steps={{time_steps}}.jld2"], seed = range(1,int(wildcards.num_seeds)+1))
 
 rule processed_cumulative_data:
   resources:
@@ -225,7 +231,7 @@ rule processed_cumulative_data:
     "scripts/snakemake/postprocess_cumulative.jl",
     raw_cumulative_filename,
   output:
-    "data/processed/cumulative/adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}{num_seeds_flag}{num_seeds}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={time_steps}.csv",
+    "data/processed/cumulative/adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}{fixed_aspect_flag}{fixed_aspect}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}{num_seeds_flag}{num_seeds}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={time_steps}.csv",
   script:
     "scripts/snakemake/postprocess_cumulative.jl"
 
@@ -265,7 +271,7 @@ rule raw_timeseries_data:
     "scripts/snakemake/snakemake_preamble.jl",
     "scripts/snakemake/run_timeseries_simulations.jl",
   output:
-    "data/raw/timeseries/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_seed={seed}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={time_steps}.jld2",
+    "data/raw/timeseries/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}{fixed_aspect_flag}{fixed_aspect}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_seed={seed}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={time_steps}.jld2",
   script:
     "scripts/snakemake/run_timeseries_simulations.jl"
 
@@ -279,7 +285,7 @@ def runtime_min_timeseries_statistics(wildcards):
   return runtime_min
 
 def raw_timeseries_filename(wildcards):
-  return expand(["data/raw/timeseries/B_to_c={{B_to_c}}_adj_matrix_source={{adj_matrix_source}}_beta_to_B={{beta_to_B}}_cost={{cost}}_mutation_rate={{mutation_rate}}_nb_phases={{nb_phases}}{{nb_players_flag}}{{nb_players}}_seed={seed}_selection_strength={{selection_strength}}_symmetry_breaking={symmetry_breaking}_time_steps={{time_steps}}.jld2"], seed = range(1,int(wildcards.num_seeds)+1),
+  return expand(["data/raw/timeseries/B_to_c={{B_to_c}}_adj_matrix_source={{adj_matrix_source}}_beta_to_B={{beta_to_B}}_cost={{cost}}{{fixed_aspect_flag}}{{fixed_aspect}}_mutation_rate={{mutation_rate}}_nb_phases={{nb_phases}}{{nb_players_flag}}{{nb_players}}_seed={seed}_selection_strength={{selection_strength}}_symmetry_breaking={symmetry_breaking}_time_steps={{time_steps}}.jld2"], seed = range(1,int(wildcards.num_seeds)+1),
 	symmetry_breaking = wildcards.symmetry_breaking if hasattr(wildcards, "symmetry_breaking") else symmetry_breaking_vals)
 
 rule processed_timeseries_statistics:
@@ -296,7 +302,7 @@ rule processed_timeseries_statistics:
     "scripts/snakemake/postprocess_timeseries_statistics.jl",
     raw_timeseries_filename,
   output:
-    "data/processed/timeseries_statistics/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}{early_cutoff_fraction_flag}{early_cutoff_fraction}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_num_seeds={num_seeds}_only_mixed_games={only_mixed_games}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={time_steps}.csv",
+    "data/processed/timeseries_statistics/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}{early_cutoff_fraction_flag}{early_cutoff_fraction}{fixed_aspect_flag}{fixed_aspect}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_num_seeds={num_seeds}_only_mixed_games={only_mixed_games}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={time_steps}.csv",
   script:
     "scripts/snakemake/postprocess_timeseries_statistics.jl"
 
@@ -313,9 +319,9 @@ rule processed_mutation_timesteps:
     "src/julia/utils.jl",
     "scripts/snakemake/snakemake_preamble.jl",
     "scripts/snakemake/postprocess_mutation_timesteps.jl",
-    "data/raw/timeseries/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_seed={seed}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={time_steps}.jld2",
+    "data/raw/timeseries/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}{fixed_aspect_flag}{fixed_aspect}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_seed={seed}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={time_steps}.jld2",
   output:
-    "data/processed/mutation_timesteps/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_seed={seed}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={time_steps}.csv",
+    "data/processed/mutation_timesteps/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}{fixed_aspect_flag}{fixed_aspect}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_seed={seed}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={time_steps}.csv",
   script:
     "scripts/snakemake/postprocess_mutation_timesteps.jl"
 
@@ -331,9 +337,9 @@ rule processed_animations:
     "src/julia/utils.jl",
     "scripts/snakemake/snakemake_preamble.jl",
     "scripts/snakemake/plot_animations.jl",
-    "data/raw/timeseries/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_seed={seed}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={time_steps}.jld2",
+    "data/raw/timeseries/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}{fixed_aspect_flag}{fixed_aspect}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_seed={seed}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={time_steps}.jld2",
   output:
-    "plots/animations/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_seed={seed}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={time_steps}.mp4",
+    "plots/animations/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}{fixed_aspect_flag}{fixed_aspect}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_seed={seed}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={time_steps}.mp4",
   script:
     "scripts/snakemake/plot_animations.jl"
 
@@ -372,9 +378,9 @@ rule processed_graph_structure_snapshot:
     "src/julia/utils.jl",
     "scripts/snakemake/snakemake_preamble.jl",
     "scripts/snakemake/postprocess_graph_structure_snapshot.jl",
-    "data/raw/timeseries/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_seed={seed}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={time_steps}.jld2",
+    "data/raw/timeseries/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}{fixed_aspect_flag}{fixed_aspect}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_seed={seed}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={time_steps}.jld2",
   output:
-    "data/processed/graph_structure_snapshot/vertices_B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_seed={seed}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_step={time_step}_time_steps={time_steps}.csv",
+    "data/processed/graph_structure_snapshot/vertices_B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}{fixed_aspect_flag}{fixed_aspect}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_seed={seed}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_step={time_step}_time_steps={time_steps}.csv",
   script:
     "scripts/snakemake/postprocess_graph_structure_snapshot.jl"
 
@@ -431,7 +437,7 @@ rule processed_game_types:
     "scripts/snakemake/postprocess_game_types.jl",
     raw_timeseries_filename,
   output:
-    "data/processed/gametype/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_num_seeds={num_seeds}_only_mixed_games={only_mixed_games}_selection_strength={selection_strength}_time_steps={time_steps}.csv",
+    "data/processed/gametype/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}{fixed_aspect_flag}{fixed_aspect}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_num_seeds={num_seeds}_only_mixed_games={only_mixed_games}_selection_strength={selection_strength}_time_steps={time_steps}.csv",
   script:
     "scripts/snakemake/postprocess_game_types.jl"
 
@@ -452,7 +458,7 @@ rule processed_chimera_indices:
     "scripts/snakemake/postprocess_chimera_indices.jl",
     raw_timeseries_filename,
   output:
-    "data/processed/chimeraindex/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_community_algorithm={community_algorithm}{community_beta_flag}{community_beta}{community_n_iter_flag}{community_n_iter}{community_resolution_flag}{community_resolution}_cost={cost}{covariance_cutoff_fraction_flag}{covariance_cutoff_fraction}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_num_seeds={num_seeds}_selection_strength={selection_strength}_time_steps={time_steps}{walktrap_steps_flag}{walktrap_steps}.csv",
+    "data/processed/chimeraindex/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_community_algorithm={community_algorithm}{community_beta_flag}{community_beta}{community_n_iter_flag}{community_n_iter}{community_resolution_flag}{community_resolution}_cost={cost}{covariance_cutoff_fraction_flag}{covariance_cutoff_fraction}{fixed_aspect_flag}{fixed_aspect}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_num_seeds={num_seeds}_selection_strength={selection_strength}_time_steps={time_steps}{walktrap_steps_flag}{walktrap_steps}.csv",
   script:
     "scripts/snakemake/postprocess_chimera_indices.jl"
 

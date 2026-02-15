@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-@enum GameType chicken battle hero compromise deadlock dilemma staghunt assurance coordination peace harmony concord neutral all_communicative all_noncommunicative disconnected_synchronized_populations
+@enum GameType chicken battle hero compromise deadlock dilemma staghunt assurance coordination peace harmony concord neutral allCommunicative allNoncommunicative disconnectedSynchronizedPopulations
 
 @enum TieType lowTie midTie highTie doubleTie tripleTie basicTie zeroTie
 

@@ -25,8 +25,8 @@ end
 	interaction_adj_matrix = ones(Int64,nb_players,nb_players) - I
 	game_types = game_types_per_strategy_pair(0, 0, 0, 0, nb_phases)
 
-	@test extract_most_common_game_types([1,1,2,1,2,1];game_types,nb_phases,interaction_adj_matrix)[1] == all_communicative
-	@test extract_most_common_game_types([3,3,3,3,4,3];game_types,nb_phases,interaction_adj_matrix)[1] == all_noncommunicative
+	@test extract_most_common_game_types([1,1,2,1,2,1];game_types,nb_phases,interaction_adj_matrix)[1] == allCommunicative
+	@test extract_most_common_game_types([3,3,3,3,4,3];game_types,nb_phases,interaction_adj_matrix)[1] == allNoncommunicative
 
 	B0 = 4
 	beta0 = 2

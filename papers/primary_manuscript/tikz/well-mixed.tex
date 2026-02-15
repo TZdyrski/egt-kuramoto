@@ -129,9 +129,9 @@
       coordination={draw=Paired-I,fill=Paired-I},
       peace={draw=Paired-L,fill=Paired-L},
       neutral={fill=gray,draw=gray},
-      all_communicative={draw=lightgray,fill=lightgray},
-      all_noncommunicative={draw=darkgray,fill=darkgray},
-      disconnected_synchronized_populations={fill=black,draw=black}
+      allCommunicative={draw=lightgray,fill=lightgray},
+      allNoncommunicative={draw=darkgray,fill=darkgray},
+      disconnectedSynchronizedPopulations={fill=black,draw=black}
     },
     ]
     \nextgroupplot[
@@ -243,15 +243,15 @@
 
     % Add all entries to legend
     \expandafter\pgfplotsinvokeforeach\expandafter{\sortedlist}{%
-      \ifthenelse{\equal{#1}{all_communicative}}
+      \ifthenelse{\equal{#1}{allCommunicative}}
         {
-          \addlegendimage{ybar, single ybar legend, all_communicative, draw=black}%
+          \addlegendimage{ybar, single ybar legend, allCommunicative, draw=black}%
           \addlegendentry{all-C}%
         }
         {
-          \ifthenelse{\equal{#1}{all_noncommunicative}}
+          \ifthenelse{\equal{#1}{allNoncommunicative}}
           {
-            \addlegendimage{ybar, single ybar legend, all_noncommunicative, draw=black}%
+            \addlegendimage{ybar, single ybar legend, allNoncommunicative, draw=black}%
             \addlegendentry{all-N}%
           }
           {

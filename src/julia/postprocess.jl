@@ -159,8 +159,8 @@ end
     end
 
     if only_mixed_games
-	    game_types[1:nb_phases,1:nb_phases] .= all_communicative
-	    game_types[nb_phases+1:end,nb_phases+1:end] .= all_noncommunicative
+	    game_types[1:nb_phases,1:nb_phases] .= allCommunicative
+	    game_types[nb_phases+1:end,nb_phases+1:end] .= allNoncommunicative
     end
     return game_types
 end
@@ -172,9 +172,9 @@ function check_all_same_strategy(strategies_per_player::AbstractVector{<:Integer
     # Check if all players were communicative/noncommunicative
     nb_communicative = extract_num_communicative(players_per_strategy)
     if nb_communicative == 0
-        return all_noncommunicative
+        return allNoncommunicative
     elseif nb_communicative == nb_players
-        return all_communicative
+        return allCommunicative
     end
     return nothing
 end
@@ -262,21 +262,21 @@ function get_most_common_game(games::AbstractMatrix{Union{Missing,GameType}},
 		game_counts::Dict{Union{Missing,GameType},Integer};
 		only_mixed_games::Bool=false)
     total_games = sum(values(game_counts))
-    if game_counts[all_communicative] + game_counts[all_noncommunicative] == total_games
+    if game_counts[allCommunicative] + game_counts[allNoncommunicative] == total_games
       # There were no mixed games;
       # however, the all-C/all-N check also shows the population is
       # not entirely communicative or entirely non-communicative
       # This means that the communicative and non-communicative
       # subpopulations are not connected (and therefore do not play any
       # games together)
-      return disconnected_synchronized_populations, games, game_counts
+      return disconnectedSynchronizedPopulations, games, game_counts
     end
 
     if only_mixed_games
 	# Create game count dictionary without CC or NN
 	mixed_game_counts = copy(game_counts)
-	delete!(mixed_game_counts, all_communicative)
-	delete!(mixed_game_counts, all_noncommunicative)
+	delete!(mixed_game_counts, allCommunicative)
+	delete!(mixed_game_counts, allNoncommunicative)
         # Find most common mixed game type
         most_common_game_type = findmax(mixed_game_counts)[2]
     else
@@ -1009,13 +1009,13 @@ function extract_game_types_all_asymm(; B_to_c::Real, selection_strength::Real,
     config["num_seeds"] = num_seeds
 
     # Sort columns alphabetically, but ensure "asymmetry" is first
-    # column and all_communicative/all_noncommunicative are last (if
+    # column and allCommunicative/allNoncommunicative are last (if
     # they exist)
     column_names = names(df_all)
-    synchronized_column_names = filter(col -> col in ["all_communicative", "all_noncommunicative"],
+    synchronized_column_names = filter(col -> col in ["allCommunicative", "allNoncommunicative"],
       column_names)
     sort!(synchronized_column_names)
-    filter!(col -> !(col in ["asymmetry", "all_communicative", "all_noncommunicative"]), column_names)
+    filter!(col -> !(col in ["asymmetry", "allCommunicative", "allNoncommunicative"]), column_names)
     sort!(column_names)
     prepend!(column_names, ["asymmetry"])
     append!(column_names, synchronized_column_names)

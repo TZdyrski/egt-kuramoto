@@ -122,7 +122,7 @@ function decode_delta_encoded(starting_data::AbstractVector,deltas::AbstractMatr
   return state
 end
 
-function decode_delta_encoded_all(starting_data::AbstractVector,deltas::AbstractMatrix,final_time_step::Integer)
+function decode_delta_encoded_all(starting_data::AbstractVector,deltas::AbstractMatrix,final_time_step::Integer=size(deltas,2))
   trimmed_deltas = deltas[:,1:final_time_step]
   state = Matrix{eltype(trimmed_deltas)}(undef, length(starting_data), final_time_step+1)
   cumsum!(state, hcat(starting_data, trimmed_deltas); dims=2)

@@ -65,13 +65,13 @@ md"## Communicative Fraction"
 md"# Time Dependent Features"
 
 # ╔═╡ 60a09648-d129-4005-9d06-df6844d28955
-md"### Maximum Joint Benefit"
+md"### $B/c$: Ratio of maximum joint benefit to cost"
 
 # ╔═╡ cb324cb3-48ea-4a3a-b4c7-cf3d84a9030a
-@bind maximum_joint_benefit PlutoUI.Slider([0.15,0.25]; default=0.15)
+@bind B_to_c PlutoUI.Slider([1.5,2.5]; default=1.5)
 
 # ╔═╡ 507c9c3f-7fd9-4f1a-ad7d-743697a5c580
-maximum_joint_benefit
+B_to_c
 
 # ╔═╡ 4d0adc28-0eaa-481b-934a-a4344a638c22
 md"## Time Series"
@@ -102,41 +102,41 @@ begin
 	end
 
 	local cumulativeDataUrls = Dict(
-		"well-mixed" => "https://zenodo.org/records/17135745/files/cumulative_matrixSource=well-mixed_timesteps=200000000.nc",
-		"c-elegans" => "https://zenodo.org/records/17135745/files/cumulative_matrixSource=c-elegans_timesteps=200000000.nc",
-		"c-elegans-undirected" => "https://zenodo.org/records/17135745/files/cumulative_matrixSource=c-elegans-undirected_timesteps=200000000.nc",
-		"c-elegans-unweighted" => "https://zenodo.org/records/17135745/files/cumulative_matrixSource=c-elegans-unweighted_timesteps=200000000.nc",
+		"well-mixed" => "https://zenodo.org/records/17135745/files/cumulative_adj_matrix_source=well-mixed_time_steps=200000000.nc",
+		"c-elegans" => "https://zenodo.org/records/17135745/files/cumulative_adj_matrix_source=c-elegans_time_steps=200000000.nc",
+		"c-elegans-undirected" => "https://zenodo.org/records/17135745/files/cumulative_adj_matrix_source=c-elegans-undirected_time_steps=200000000.nc",
+		"c-elegans-unweighted" => "https://zenodo.org/records/17135745/files/cumulative_adj_matrix_source=c-elegans-unweighted_time_steps=200000000.nc",
 	)
 	local cumulativeDataFilenames = Dict(
-		"well-mixed" => "cumulative_matrixSource=well-mixed_timesteps=20000.nc",
-		"c-elegans" => "cumulative_matrixSource=c-elegans_timesteps=20000.nc",
-		"c-elegans-undirected" => "cumulative_matrixSource=c-elegans-undirected_timesteps=20000.nc",
-		"c-elegans-unweighted" => "cumulative_matrixSource=c-elegans-unweighted_timesteps=20000.nc",
+		"well-mixed" => "cumulative_adj_matrix_source=well-mixed_time_steps=200000000.nc",
+		"c-elegans" => "cumulative_adj_matrix_source=c-elegans_time_steps=200000000.nc",
+		"c-elegans-undirected" => "cumulative_adj_matrix_source=c-elegans-undirected_time_steps=200000000.nc",
+		"c-elegans-unweighted" => "cumulative_adj_matrix_source=c-elegans-unweighted_time_steps=200000000.nc",
 	)
 	cumulativeDatasets = Dict(k => open_or_download(cumulativeDataFilenames[k],v) for (k,v) in cumulativeDataUrls)
 
 	local timeseriesDataUrls = Dict(
-		"well-mixed" => "https://zenodo.org/records/17135745/files/timeseries-statistics_decimationFactor=1000_matrixSource=well-mixed_timesteps=8000000.nc",
-		"c-elegans" => "https://zenodo.org/records/17135745/files/timeseries-statistics_decimationFactor=1000_matrixSource=c-elegans_timesteps=8000000.nc",
-		"c-elegans-undirected" => "https://zenodo.org/records/17135745/files/timeseries-statistics_decimationFactor=1000_matrixSource=c-elegans-undirected_timesteps=8000000.nc",
-		"c-elegans-unweighted" => "https://zenodo.org/records/17135745/files/timeseries-statistics_decimationFactor=1000_matrixSource=c-elegans-unweighted_timesteps=8000000.nc",
+		"well-mixed" => "https://zenodo.org/records/17135745/files/timeseries_statistics_adj_matrix_source=well-mixed_time_steps=8000000.nc",
+		"c-elegans" => "https://zenodo.org/records/17135745/files/timeseries_statistics_adj_matrix_source=c-elegans_time_steps=8000000.nc",
+		"c-elegans-undirected" => "https://zenodo.org/records/17135745/files/timeseries_statistics_adj_matrix_source=c-elegans-undirected_time_steps=8000000.nc",
+		"c-elegans-unweighted" => "https://zenodo.org/records/17135745/files/timeseries_statistics_adj_matrix_source=c-elegans-unweighted_time_steps=8000000.nc",
 	)
 	local timeseriesDataFilenames = Dict(
-		"well-mixed" => "timeseries-statistics_decimationFactor=1000_matrixSource=well-mixed_timesteps=8000.nc",
-		"c-elegans" => "timeseries-statistics_decimationFactor=1000_matrixSource=c-elegans_timesteps=8000.nc",
-		"c-elegans-undirected" => "timeseries-statistics_decimationFactor=1000_matrixSource=c-elegans-undirected_timesteps=8000.nc",
-		"c-elegans-unweighted" => "timeseries-statistics_decimationFactor=1000_matrixSource=c-elegans-unweighted_timesteps=8000.nc",
+		"well-mixed" => "timeseries_statistics_adj_matrix_source=well-mixed_time_steps=8000000.nc",
+		"c-elegans" => "timeseries_statistics_adj_matrix_source=c-elegans_time_steps=8000000.nc",
+		"c-elegans-undirected" => "timeseries_statistics_adj_matrix_source=c-elegans-undirected_time_steps=8000000.nc",
+		"c-elegans-unweighted" => "timeseries_statistics_adj_matrix_source=c-elegans-unweighted_time_steps=8000000.nc",
 	)
 	timeseriesDatasets = Dict(k => open_or_download(timeseriesDataFilenames[k],v) for (k,v) in timeseriesDataUrls)
 end;
 
 # ╔═╡ 86f70955-e3a7-402c-9a2a-945271d667be
 begin
-	cumulative_da = open_dataset(cumulativeDatasets[matrix_source], driver=:netcdf).layer
+	cumulative_ds = open_dataset(cumulativeDatasets[matrix_source], driver=:netcdf)
 	timeseries_ds = open_dataset(timeseriesDatasets[matrix_source], driver=:netcdf)
 
-	nb_phases = cumulative_da.properties["nb_phases"]
-	cost = cumulative_da.properties["cost"]
+	nb_phases = cumulative_ds.properties["nb_phases"]
+	cost = cumulative_ds.properties["cost"]
 end;
 
 # ╔═╡ a0682454-e0f1-4e8c-b4fc-0066facbd79a
@@ -208,11 +208,11 @@ begin
 end;
 
 # ╔═╡ 1051a191-22b3-4161-9ff9-96f1ed27c68f
-graph = get_graph(matrix_source, cumulative_da.properties);
+graph = get_graph(matrix_source, cumulative_ds.properties);
 
 # ╔═╡ a50ec494-b320-4912-9fbe-61fdabd7230c
 begin
-    local conn_comp = get_strongly_connected_component(matrix_source, cumulative_da.properties);
+    local conn_comp = get_strongly_connected_component(matrix_source, cumulative_ds.properties);
 
     # Calculate connected components
     local conn_comp_index = zeros(Int32, nv(graph))
@@ -263,20 +263,26 @@ begin
 	    ylabel = "Frequency of communicative strategies",
 	    limits = (nothing, nothing, 0-0.05f0, 1+0.05f0),
 	)
-	local data = cumulative_da[
+	local data = cumulative_ds[
 		selection_strength = At(selection_strength),
 		symmetry_breaking = At(symmetry_breaking)]
 
 	# Note: passing data to scatter! works for WGLMakie backend
 	# but must be manually decomposed for CairoMakie backend
-    scatter!(ax, collect(collect(data.maximum_joint_benefit)), collect(data);
+   errorbars!(ax, collect(collect(data.maximum_joint_benefit)),
+			 collect(data.communicative_fraction_mean),
+			 collect(data.communicative_fraction_std);
+			 label="Simulation")
+   scatter!(ax,
+			 collect(collect(data.maximum_joint_benefit)),
+			 collect(data.communicative_fraction_mean);
 			 label="Simulation")
 
 	if matrix_source == "well-mixed"
 		# Add one since n=degree+1 for well-mixed case
 		local nb_effective = mean(indegree(graph))+1
 	    local beta0 = B0 -> 0.95*B0
-		Bs = lookup(cumulative_da, :maximum_joint_benefit)
+		Bs = lookup(cumulative_ds.communicative_fraction_mean, :maximum_joint_benefit)
 		lines!(ax, minimum(Bs)..maximum(Bs),
 			   B0 -> analytic_frac_communicative(B0, beta0(B0);
 					selection_strength, cost, nb_players=nb_effective,
@@ -294,7 +300,7 @@ end
 
 # ╔═╡ eaa6bf62-daea-450c-85f4-b4dd7ad4048b
 begin
-	@enum GameType assurance battle chicken compromise concord coordination deadlock dilemma harmony hero peace staghunt neutral all_communicative all_noncommunicative disconnected_synchronized_populations
+	@enum GameType assurance battle chicken compromise concord coordination deadlock dilemma harmony hero peace staghunt neutral allCommunicative allNoncommunicative disconnectedSynchronizedPopulations
 	const paired_colors = ColorBrewer.palette("Paired", 12)
 	const game_type_colors = Dict(harmony => paired_colors[7],
 	                              chicken => paired_colors[6], # exponential fixation time
@@ -309,11 +315,11 @@ begin
 	                              coordination => paired_colors[9],
 	                              peace => paired_colors[12],
 								  neutral => colorant"grey",
-								  all_communicative => colorant"lightgrey",
-								  all_noncommunicative => colorant"darkgrey",
-								  disconnected_synchronized_populations => colorant"black"
+								  allCommunicative => colorant"lightgrey",
+								  allNoncommunicative => colorant"darkgrey",
+								  disconnectedSynchronizedPopulations => colorant"black"
 	                             )
-	const enum_to_strategy = Dict(parse(Int,match(r"(?<=enum_lookup:)(\d+)",k).match)=> eval(Symbol(v)) for (k,v) in timeseries_ds.most_common_game_types.properties
+	const enum_to_strategy = Dict(parse(Int,match(r"(?<=enum_lookup:)(\d+)",k).match)=> eval(Symbol(v)) for (k,v) in timeseries_ds.properties
 		if startswith(k,"enum_lookup"))
 end;
 
@@ -331,7 +337,7 @@ begin
 
 	local ds = timeseries_ds[
 		selection_strength = At(selection_strength),
-		maximum_joint_benefit = At(maximum_joint_benefit),
+		B_to_c = At(B_to_c),
 		symmetry_breaking = At(symmetry_breaking),
 	]
 
@@ -384,7 +390,7 @@ end
 begin
 	local ds = timeseries_ds[
 		selection_strength = At(selection_strength),
-		maximum_joint_benefit = At(maximum_joint_benefit),
+		B_to_c = At(B_to_c),
 		symmetry_breaking = At(symmetry_breaking),
 	]
 
@@ -418,7 +424,7 @@ end
 begin
 	local ds = timeseries_ds[
 		selection_strength = At(selection_strength),
-		maximum_joint_benefit = At(maximum_joint_benefit),
+		B_to_c = At(B_to_c),
 	]
 
 	if ! any(ismissing.(ds.most_common_game_types))
@@ -464,7 +470,7 @@ end
 begin
 	local ds = timeseries_ds[
 		selection_strength = At(selection_strength),
-		maximum_joint_benefit = At(maximum_joint_benefit),
+		B_to_c = At(B_to_c),
 	]
 
 	if ! any(ismissing.(ds.most_common_game_types_only_mixed_games))
@@ -523,7 +529,7 @@ begin
 	# Get timeseries data
 	local timeseries_data = timeseries_ds.timeseries[
 		selection_strength = At(selection_strength),
-		maximum_joint_benefit = At(maximum_joint_benefit),
+		B_to_c = At(B_to_c),
 		symmetry_breaking = At(symmetry_breaking),
 	]
 
@@ -543,7 +549,7 @@ begin
 		local titleStr = @lift("Time step = "*string(timeseries_data.time_step[$time]))
 
 	    # Create plot
-	    local color_observable = @lift(colors[:, $time])
+	    local color_observable = @lift(colors[$time,:])
 		local fig = Figure()
 	    local ax = Axis(fig[1,1];
 						title=titleStr)
@@ -2651,7 +2657,7 @@ uuid = "8e850ede-7688-5339-a07c-302acd2aaf8d"
 version = "1.59.0+0"
 
 [[deps.oneTBB_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl"]
+deps = ["Artifacts", "JLLWrappers", "LazyArtifacts", "Libdl"]
 git-tree-sha1 = "d5a767a3bb77135a99e433afe0eb14cd7f6914c3"
 uuid = "1317d2d5-d96f-522e-a858-c73665f53c3e"
 version = "2022.0.0+0"

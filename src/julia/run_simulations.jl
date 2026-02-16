@@ -5,7 +5,7 @@ using DrWatson
 include("moran.jl")
 include("utils.jl")
 
-function calc_and_save_cumulative(;selection_strength::Real, symmetry_breaking::Real,
+function calc_cumulative(;selection_strength::Real, symmetry_breaking::Real,
                          adj_matrix_source::String="well-mixed",
                          time_steps::Integer=2_000_000,
 			 nb_phases::Integer=20,
@@ -15,19 +15,6 @@ function calc_and_save_cumulative(;selection_strength::Real, symmetry_breaking::
 			 nb_players::Integer=20,
 			 seed::Integer=12345,
 			 )
-
-    # Load results
-    config = @strdict(adj_matrix_source, time_steps,
-                      selection_strength, symmetry_breaking, nb_phases, cost, beta_to_B, mutation_rate, seed)
-    if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
-	    config["nb_players"] = nb_players
-    end
-    data, _ = produce_or_load(calc_cumulative, config, datadir("raw","cumulative"))
-end
-
-function calc_cumulative(config::Dict)
-    # Unpack values
-    @unpack selection_strength, symmetry_breaking, adj_matrix_source, time_steps, nb_phases, cost, beta_to_B, mutation_rate, seed = config
 
     # Define interaction graph and reproduction graphs
     interaction_adj_matrix, reproduction_adj_matrix = get_adj_matrices(; adj_matrix_source)
@@ -40,21 +27,14 @@ function calc_cumulative(config::Dict)
     step_size_Bs = 0.04
     Bs = B_crit .+ ((0:(nb_Bs - 1)) .- (nb_Bs - 1) / 2) .* step_size_Bs
 
-    # Run the model for weak selection strength
-    @time cumulative_populations = [cumulative(Moran(NormalFormGame(payoff_matrix(nb_phases,
-                                                                                                  B,
-                                                                                                  beta_to_B *
-                                                                                                  B,
-                                                                                                  cost;
-                                                                                                  symmetry_breaking)),
-                                                                     interaction_adj_matrix,
-                                                                     reproduction_adj_matrix,
-                                                                     selection_strength,
-                                                                     mutation_rate),
-                                               time_steps, seed)
-                                    for B in Bs]
+		# Generate model
+		nfgames = [NormalFormGame(payoff_matrix(nb_phases, B, beta_to_B * B, cost; symmetry_breaking)) for B in Bs]
+		models = [Moran(nfgame, interaction_adj_matrix, reproduction_adj_matrix, selection_strength, mutation_rate) for nfgame in nfgames]
 
-    # Plot fraction communcative
+    # Run the model for weak selection strength
+		cumulative_populations = [cumulative(model, time_steps, seed) for model in models]
+
+    # Plot fraction communicative
     nb_communicative = [extract_num_communicative(final_population)
                         for final_population in cumulative_populations]
     fraction_communicative = nb_communicative ./ (time_steps * nb_players)
@@ -63,7 +43,7 @@ function calc_cumulative(config::Dict)
     return @strdict(Bs, nb_players, fraction_communicative)
 end
 
-function calc_and_save_timeseries(;B_to_c::Real, selection_strength::Real, symmetry_breaking::Real,
+function calc_timeseries(;B_to_c::Real, selection_strength::Real, symmetry_breaking::Real,
                          adj_matrix_source::String="well-mixed",
                          time_steps::Integer=80_000,
 			 nb_phases::Integer=20,
@@ -73,19 +53,6 @@ function calc_and_save_timeseries(;B_to_c::Real, selection_strength::Real, symme
 			 nb_players::Integer=20,
 			 seed::Integer=12345,
 			 )
-    # Load results
-    config = @strdict(adj_matrix_source, time_steps, B_to_c, beta_to_B,
-                      symmetry_breaking, selection_strength, nb_phases, cost, mutation_rate, seed)
-    if adj_matrix_source == "well-mixed" || adj_matrix_source == "random-regular-graph" || adj_matrix_source == "random-regular-digraph"
-	    config["nb_players"] = nb_players
-    end
-    data, _ = produce_or_load(calc_timeseries, config, datadir("raw","timeseries"))
-end
-
-
-function calc_timeseries(config::Dict)
-    # Unpack variables
-    @unpack B_to_c, selection_strength, symmetry_breaking, adj_matrix_source, time_steps, nb_phases, cost, beta_to_B, mutation_rate, seed = config
 
     # Define system
     B = cost * B_to_c
@@ -95,17 +62,12 @@ function calc_timeseries(config::Dict)
     # Specify number of players
     nb_players = size(interaction_adj_matrix)[1]
 
+		# Generate model
+		nfgame = NormalFormGame(payoff_matrix(nb_phases, B, beta_to_B * B, cost; symmetry_breaking))
+		model = Moran(nfgame, interaction_adj_matrix, reproduction_adj_matrix, selection_strength, mutation_rate)
+
     # Run the model for weak selection strength
-    initial_actions, deltas, steps_following_mutation = time_series(Moran(NormalFormGame(payoff_matrix(nb_phases,
-                                                                                     B,
-                                                                                     beta_to_B *
-                                                                                     B,
-                                                                                     cost;
-                                                                                     symmetry_breaking)),
-                                                        interaction_adj_matrix,
-                                                        reproduction_adj_matrix,
-                                                        selection_strength, mutation_rate),
-                                  time_steps, seed)
+    initial_actions, deltas, steps_following_mutation = time_series(model, time_steps, seed)
 
     # Package results
     return @strdict(initial_actions, deltas, steps_following_mutation, nb_phases, nb_players, interaction_adj_matrix)

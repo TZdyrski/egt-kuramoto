@@ -9,7 +9,17 @@ using DrWatson
 @quickactivate "Chimera_EGT_Kuramoto"
 include(scriptsdir("snakemake","snakemake_preamble.jl"))
 
-include(srcdir("julia", "postprocess.jl"))
+# Get parameter sets
+loadDict = Dict(pairs(wildcards))
+
+# Define processing functions
+loading_fun = loadDict -> wload(datadir("raw", "timeseries", savename(loadDict, "jld2")))
+processing_fun = dataDict -> Dict("mutation_timesteps" => dataDict["steps_following_mutation"])
+data_generation_fun = DataFrame ∘ processing_fun ∘ loading_fun
 
 # Run code
-extract_mutation_timesteps(; wildcards...)
+result = loadDict |> data_generation_fun
+
+# Write out data
+mkpath(datadir("processed", "mutation_timesteps"))
+CSV.write(datadir("processed","mutation_timesteps",savename(wildcards,"csv")), result)

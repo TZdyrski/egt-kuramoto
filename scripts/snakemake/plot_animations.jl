@@ -6,10 +6,18 @@ dirname(Base.active_project()) != pwd() && exit(run(`julia --project=@. $(@__FIL
 
 # Creates wildcards NamedTuple with snakemake wildcards
 using DrWatson
+using Graphs
 @quickactivate "Chimera_EGT_Kuramoto"
 include(scriptsdir("snakemake","snakemake_preamble.jl"))
 
 include(srcdir("julia", "plotting.jl"))
+include(srcdir("julia", "utils.jl"))
 
 # Run code
-plot_graph_evolution(; wildcards...)
+dataDict = wload(datadir("raw", "timeseries", savename(wildcards,"jld2")))
+graph = SimpleDiGraph(get_adj_matrices(;adj_matrix_source=wildcards.adj_matrix_source)[1])
+result = plot_graph_evolution(dataDict, graph)
+
+# Write out data
+mkpath(plotsdir("animations"))
+save(plotsdir("animations",savename(wildcards,"mp4")), result)

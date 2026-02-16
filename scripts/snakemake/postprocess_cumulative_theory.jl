@@ -6,23 +6,28 @@ dirname(Base.active_project()) != pwd() && exit(run(`julia --project=@. $(@__FIL
 
 # Creates wildcards NamedTuple with snakemake wildcards
 using DrWatson
-using Graphs
+using SimpleWeightedGraphs
 @quickactivate "Chimera_EGT_Kuramoto"
 include(scriptsdir("snakemake","snakemake_preamble.jl"))
 
-include(srcdir("julia", "utils.jl"))
 include(srcdir("julia", "postprocess.jl"))
+include(srcdir("julia", "utils.jl"))
 
 # Get parameter sets
 loadDict = Dict(pairs(wildcards))
+adj_matrix_source = pop!(loadDict,:adj_matrix_source)
 
 # Get data
-graph = SimpleDiGraph(get_adj_matrices(;adj_matrix_source=loadDict[:adj_matrix_source])[1])
+graph = SimpleWeightedDiGraph(get_adj_matrices(;adj_matrix_source)[1])
+
+# Define processing functions
+processing_fun = dataDict -> communicative_fraction_theory(graph; dataDict...)
+rename_col = df -> rename(df, :Bs => :B0)
+data_generation_fun = rename_col ∘ DataFrame ∘ processing_fun
 
 # Run code
-vertex_coords, edge_list = generate_nodes_edges(graph)
+result = loadDict |> data_generation_fun
 
 # Write out data
-mkpath(datadir("processed", "graph_structure"))
-CSV.write(datadir("processed","graph_structure", savename("vertices",wildcards,"csv")), vertex_coords)
-CSV.write(datadir("processed","graph_structure", savename("edges",wildcards,"csv")), edge_list)
+mkpath(datadir("processed", "cumulative_theory"))
+CSV.write(datadir("processed","cumulative_theory",savename(wildcards,"csv")), result)

@@ -6,10 +6,12 @@ dirname(Base.active_project()) != pwd() && exit(run(`julia --project=@. $(@__FIL
 
 # Creates wildcards NamedTuple with snakemake wildcards
 using DrWatson
+using SparseArrays
 @quickactivate "Chimera_EGT_Kuramoto"
 include(scriptsdir("snakemake","snakemake_preamble.jl"))
 
 include(srcdir("julia", "run_simulations.jl"))
 
 # Run code
-calc_and_save_cumulative(; wildcards...)
+dataDict = calc_cumulative(; wildcards...)
+wsave(datadir("raw", "cumulative", savename(wildcards, "jld2")), dataDict)

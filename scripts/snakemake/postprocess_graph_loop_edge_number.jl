@@ -11,5 +11,15 @@ include(scriptsdir("snakemake","snakemake_preamble.jl"))
 
 include(srcdir("julia", "postprocess.jl"))
 
+# Get parameter sets
+loadDict = Dict(pairs(wildcards))
+
+# Get data
+graph = SimpleWeightedDiGraph(get_adj_matrices(;adj_matrix_source=loadDict[:adj_matrix_source])[1])
+
 # Run code
-calc_number_unidirection_bidirectional_edges(; wildcards...)
+result = DataFrame(calc_number_unidirection_bidirectional_edges(graph))
+
+# Write out data
+mkpath(datadir("processed", "graph_loop_edge_number"))
+CSV.write(datadir("processed","graph_loop_edge_number",savename(wildcards,"csv")), result)

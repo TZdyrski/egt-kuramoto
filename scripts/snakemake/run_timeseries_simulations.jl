@@ -12,4 +12,5 @@ include(scriptsdir("snakemake","snakemake_preamble.jl"))
 include(srcdir("julia", "run_simulations.jl"))
 
 # Run code
-calc_and_save_timeseries(; wildcards...)
+dataDict = calc_timeseries(; wildcards...)
+wsave(datadir("raw", "timeseries", savename(wildcards, "jld2")), dataDict)

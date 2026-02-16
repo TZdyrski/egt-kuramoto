@@ -25,13 +25,13 @@
     error bars/y dir=both,error bars/y explicit,
     ]
       \nextgroupplot
-				\addplot table[x=B0,y=communicative_fraction_mean,y error=communicative_fraction_std]{cumulative/adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.csv};
+				\addplot table[x=B0,y=communicative_fraction_mean,y error=communicative_fraction_std]{cumulative/adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv};
       \nextgroupplot[
         ylabel={Communiciative frequency $f_{\text{comm}}$},
       ]
-        \addplot table[x=B0,y=communicative_fraction_mean,y error=communicative_fraction_std]{cumulative/adj_matrix_source=c-elegans-unweighted_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.csv};
+        \addplot table[x=B0,y=communicative_fraction_mean,y error=communicative_fraction_std]{cumulative/adj_matrix_source=c-elegans-unweighted_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv};
       \nextgroupplot[xlabel={Maximum joint benefit $B_0$}]
-        \addplot table[x=B0,y=communicative_fraction_mean,y error=communicative_fraction_std]{cumulative/adj_matrix_source=c-elegans-undirected_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000_type=simulation.csv};
+        \addplot table[x=B0,y=communicative_fraction_mean,y error=communicative_fraction_std]{cumulative/adj_matrix_source=c-elegans-undirected_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv};
   \end{groupplot}
 
   % See below for description of shift;
@@ -44,7 +44,7 @@
   \begin{scope}[shift={({1.4*(\width-45pt+1cm)},{-1/4*(\width/\axisdefaultwidth*\axisdefaultheight-45pt+1cm)})},
 	  rotate=90]
     % Read node coordinates and create nodes
-    \csvreader[head to column names]{\dataSearchPath/graph_structure/vertices_B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_seed=12345_selection_strength=0.2_symmetry_breaking=0.75_time_step=560000_time_steps=8000000.csv}{}%
+    \csvreader[head to column names]{\dataSearchPath/graph_structure_snapshot/vertices_B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_seed=12345_selection_strength=0.2_symmetry_breaking=0.75_time_step=560000_time_steps=8000000.csv}{}%
     {%
       \node[draw, circle, draw=none, index of colormap=\strategyIndex of strategycolors, fill=., inner sep=1.5] (\index) at (\x, \y) {};
     }
@@ -91,7 +91,7 @@
       ylabel={Order Parameter},
       ylabel style={magenta},
     ]
-    \addplot [magenta] table[y=order_parameter] {timeseries_statistics/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv};
+    \addplot [magenta] table[y=order_parameter_mean] {timeseries_statistics/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv};
     \end{axis}
     \begin{axis}[
       name=timeseries,
@@ -131,7 +131,7 @@
         disconnectedSynchronizedPopulations={fill=black,draw=black}
       },
   ]
-    \addplot table [y=communicative_fraction, meta=game_type] {timeseries_statistics/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv};
+    \addplot table [y=communicative_fraction_mean, meta=game_type] {timeseries_statistics/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv};
     \end{axis}
   % Make an invisible axis to create a legend that is the union
   % of all the data table's column names

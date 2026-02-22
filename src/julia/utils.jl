@@ -5,6 +5,7 @@ using LinearAlgebra
 using BlockArrays
 using Random
 using Graphs
+using XLSX
 
 "Add together the elements from the first half of a list with an even number of elements."
 function extract_num_communicative(players_per_strategy::AbstractVector{<:Integer})

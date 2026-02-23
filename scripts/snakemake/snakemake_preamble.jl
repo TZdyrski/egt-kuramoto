@@ -17,36 +17,21 @@ end
 
 # Note: snakemake object is prepopulated by snakemake executable
 wildcards_dict = deepcopy(snakemake.wildcards)
-# Check for and remove optional wildcards
-if haskey(wildcards_dict, "nb_players_flag") && pop!(wildcards_dict, "nb_players_flag") == ""
-  delete!(wildcards_dict, "nb_players")
-end
-if haskey(wildcards_dict, "covariance_cutoff_fraction_flag") && pop!(wildcards_dict, "covariance_cutoff_fraction_flag") == ""
-  delete!(wildcards_dict, "covariance_cutoff_fraction")
-end
-if haskey(wildcards_dict, "community_resolution_flag") && pop!(wildcards_dict, "community_resolution_flag") == ""
-  delete!(wildcards_dict, "community_resolution")
-end
-if haskey(wildcards_dict, "community_beta_flag") && pop!(wildcards_dict, "community_beta_flag") == ""
-  delete!(wildcards_dict, "community_beta")
-end
-if haskey(wildcards_dict, "community_n_iter_flag") && pop!(wildcards_dict, "community_n_iter_flag") == ""
-  delete!(wildcards_dict, "community_n_iter")
-end
-if haskey(wildcards_dict, "walktrap_steps_flag") && pop!(wildcards_dict, "walktrap_steps_flag") == ""
-  delete!(wildcards_dict, "walktrap_steps")
-end
-if haskey(wildcards_dict, "early_cutoff_fraction_flag") && pop!(wildcards_dict, "early_cutoff_fraction_flag") == ""
-  delete!(wildcards_dict, "early_cutoff_fraction")
-end
-if haskey(wildcards_dict, "num_seeds_flag") && pop!(wildcards_dict, "num_seeds_flag") == ""
-  delete!(wildcards_dict, "num_seeds")
-end
 
 # snakemake.wildcards doubles the wildcards: each wildcard has a key
 # with the (string) name of the wildcard as well as a key with the (integer) position
 # Only keep the (string) name key
 filter!(x -> isa(x.first, String), wildcards_dict)
+
+# Remove empty optional arguments (denoted by _flag)
+optional_flags = filter(endswith("_flag"), keys(wildcards_dict))
+for flag in optional_flags
+	if pop!(wildcards_dict, flag) == ""
+		# Remove last 5 character ("_flag") to get parameter name
+		param_name = chop(flag, tail=5)
+		delete!(wildcards_dict, param_name)
+	end
+end
 
 wildcards_dict = Dict((Symbol(k),parse_string(v)) for (k,v) in wildcards_dict)
 

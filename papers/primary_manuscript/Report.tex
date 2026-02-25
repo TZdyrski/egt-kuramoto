@@ -389,21 +389,10 @@ the communicator when $\alpha$ is greater (less) than $1/2$,
 while $\alpha = 0.5$ reproduces the symmetric case.
 \Cref{fig:payoff_matrix} shows the payoff matrix
 for these mixed $CN$ or $NC$ interactions
-and includes the maximum joint benefit $B_0 = 0.15$,
+and includes the maximum joint benefit $B_0$,
 maximum mixed benefit $\beta_0$, cost $c$,
 and sinusoidal Kuramoto coupling
 $f(\Delta \phi) = [1+\cos(\phi_j - \phi_i)]/2$.
-
-Unless otherwise specified,
-each simulation uses
-$m = 20$ phases,
-selection strength of $\delta=0.2$,
-mutation rate of $\mu=\num{1E-4}$,
-cost $c$ of \num{0.1},
-maximum joint benefit $B_0 = 0.15$,
-maximum mixed benefit $\beta_0$ of $\num{0.95} B_0$,
-and runs for \num{8E6} time steps
-(even if only a smaller time series subset is shown).
 
 \subsection{Parameter space}
 \begin{figure*}
@@ -507,6 +496,99 @@ orange ``hero'' and red ``chicken'' regions in
 Therefore, while there is no intrinsic, biological representation
 of ``game types'' at the biochemical level, they offer a valuable interpretability
 tool and a useful way to target model outcomes.
+\end{LineLabel}
+
+\subsection{Simulation parameters}
+\label{sec:simulation_parameters}
+\begin{LineLabel}{R1-3a}
+We have now introduced a number of parameters:
+$B_0$, $\beta_0$, $c$, $\alpha$, $m$.
+In addition,
+our model uses the usual evolutionary game theory parameters:
+selection strength $\delta$ and mutation rate $\mu$
+(\cf{} \cref{sec:evo_setup}).
+Therefore, it is helpful to quickly review the dependencies between the
+parameters and their importance.
+As discussed in \cref{sec:evo_setup},
+the evolution is governed by a Moran process with exponential fitness
+$f_i$:
+\begin{equation*}
+	\delta c
+\begin{bmatrix}
+	 \frac{B_0}{c} f(0) - 1 & 2 \alpha \frac{\beta_0}{B_0}
+		\frac{B_0}{c} f(\Delta \phi) - 1 \\
+   2 (1 - \alpha) \frac{\beta_0}{B_0}
+		\frac{B_0}{c} f(\Delta \phi) & 0
+\end{bmatrix}
+\end{equation*}
+Thus, we can see that the four combinations
+$B_0/c$, $\beta_0/B_0$, $\alpha$, and $\delta c$
+serve to define the relative strengths of four combinations $CC$, $CN$,
+$NC$, and $NN$.
+Therefore, the dynamics are wholly controlled by the
+parameter combinations $B_0/c$, $\beta_0/B_0$, $\alpha$, and $\delta
+c$,
+in addition to the aforementioned mutation rate $\mu$ and discretization
+number $m$.
+\end{LineLabel}
+
+\begin{LineLabel}{R2-7}
+The ratio $B_0/c \approx 2.1$ is the critical joint-benefit benefit strength
+at which the communicative fraction equals $1/2$ when
+in the absence of asymmetry(\ie{} $\alpha =
+1/2$)~\cite{tripp2022evolutionary}.
+Therefore, we follow \cite{tripp2022evolutionary} and choose $B_0/c = 1.5$
+slightly less than the critical point to slightly bias the system towards
+non-communicativeness.
+Likewise, we choose $\beta_0/B_0 = 0.95$ since we biologically expect
+mixed $NC$ communication to be less rewarding than joint $CC$
+communication.
+Both the mutation rate $\mu$ and selection strength $\delta$
+are chosen to be small to allow for analytic approximations
+(see the supplementary materials).
+While we fix a common set of parameters in our results for simplicity,
+we also performed a sensitivity analysis in
+\cref{sec:sensitivity-analysis} to analyze the influence of varying
+these parameters.
+The main results (the chimera-like index $\chi$)
+are largely insensitive to changes in
+most of these parameters.
+The only sensitive parameter is the selection strength $\delta$,
+with stronger $\delta$ increasing the chimera-like effect.
+However, we retain the smaller $\delta$ for analytic tractability.
+\end{LineLabel}
+\begin{LineLabel}{R2-6}
+The $m = 20$ discrete phases approximate a continuous phase
+distribution;
+\cref{fig:sensitivity-analysis-cumulative}
+depicts a convergence analysis
+showing that the communicative fraction
+has converged already for $m=20$, verifying that this is an acceptable
+approximation.
+\end{LineLabel}
+
+Unless otherwise specified,
+each of the following simulations use
+$m = 20$ phases,
+selection strength of $\delta=0.2$,
+mutation rate of $\mu=\num{1E-4}$,
+cost $c$ of \num{0.1},
+maximum joint benefit $B_0 = 0.15$,
+and maximum mixed benefit $\beta_0$ of $\num{0.95} B_0$.
+
+\begin{LineLabel}{R1-15}
+Most runs use \num{8E6} time steps
+to ensure that we have sampled sufficiently many
+mutation periods  $1/\mu$
+(though time series plots show a temporal subset for visual clarity).
+With $\mu=\num{1E-4}$, this means we sample approximately \num{800}
+mutations;
+this high number of mutations allow us
+to efficiently sample the available parameter space.
+The plots of communicative fraction $f_{\text{comm}}$
+use a longer runtime of \num{2E8}
+to collect additional statistics, drive down the sample variance,
+and provide tighter error-bounds on the comparison to analytic theory.
 \end{LineLabel}
 
 \subsection{Complete graphs}\label{sec:complete_graph}

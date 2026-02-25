@@ -270,10 +270,23 @@ phenomenological connections to control theory~\cite{yan2017network},
 and chimera states~\cite{hizanidis2016chimera}.
 
 %\subsection{Outline}
+\begin{LineLabel}{R2-2}
 In this paper,
 we introduce an asymmetric evolutionary Kuramoto model
 and analyze its chimera-like states on the
 \gls{celegans} connectome.
+This payoff asymmetry between communicators ($C$) and non-communicators ($N$)
+models the inherent asymmetry of pre- and post-synaptic junctions:
+if the source neuron is $N$ and the destination neuron is $C$,
+then the destination neuron's payoff is modulated by $2 \alpha$,
+which represents its receptivity to other, non-local chemical
+neurotransmitters~\cite{mishra2017traveling};
+conversely,
+if the source neuron is $C$ and the destination neuron is $N$,
+then the destination neuron's payoff is modulated by $2 (1-\alpha)$,
+representing its ability to spontaneously fire in absence of upstream
+stimuli~\cite{wilson1981spontaneous}.
+\end{LineLabel}
 Our results connect individual neuron fitness and non-trivial brain topology
 to chimera-like brain states.
 Given current technological limitations with direct measurement of in-vivo neuron activity,

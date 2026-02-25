@@ -596,8 +596,13 @@ which occur, on average, every $1/\mu = \num{1E4}$ time steps.
 
 Here, we consider the weighted, directed hermaphroditic \gls{celegans}
 chemical connectome~\cite{cook2019whole}.
+\begin{LineLabel}{R2-5a}
 For reference, \cref{fig:graph} shows the $N = 300$ nodes and the directed edges
 (we exclude the two unconnected neurons CANL/CANR).
+We treat all \gls{celegans} neurons identically
+and do not differentiate between sensory neurons, interneurons, and
+motor neurons.
+\end{LineLabel}
 The nodes are colored according to their strategy at a particular time step,
 with blues representing communicative strategies
 and reds representing non-communicative ones,
@@ -1008,7 +1013,14 @@ and  non-communicative states,
 the \gls{celegans} population remains far more heterogenous
 with a stable, chimeric mix of disordered game types.
 
-Future work will focus on applying the EK model
+\begin{LineLabel}{R2-5b}
+One potential limitation of this work is the identical treatment of
+different neuron types.
+Potential extensions could modulate the $B_0/c$, $\beta_0/c$, and
+$\alpha$ parameters of the different neuron types separately to better
+account for the specialization of these cells.
+\end{LineLabel}
+Additionally, future work will focus on applying the EK model
 to families of generative brain network models~\cite{betzel2016generativea}.
 The limited number of empirical graphs analyzed in this study
 hinders the identification of exact relationships

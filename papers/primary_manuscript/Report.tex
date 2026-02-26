@@ -466,6 +466,36 @@ Each straight line of white dots represent permissible values of the $m = 20$ ph
 $\Delta \phi_i$ across our simulations
 and highlight which regions of parameter space are accessible.
 
+\begin{LineLabel}{R1-5}
+These different game types have multiple roles in the subsequent analysis.
+First, they provide interpretability of the dynamics in
+different regions of parameter space.
+The three-dimensional parameter space depicted in
+\cref{fig:phase-diagram} hosts a wide variety of dynamics
+with varying invasion possibilities,
+fixation times, and stabilities.
+However, by leveraging existing knowledge of classic
+two-player game types,
+we can understand the features of each region.
+Second, they allow us to tailor the model for examining different
+interaction classes.
+Prior studies on neurons frequently use prisoner's dilemma type games;
+our model allows for targeting the ``dilemma'' (yellow) region
+by tuning the parameters $B_0/c$, $\beta_0/c$, and $\alpha$
+(\eg{} the bottom two lines of white dots in
+\cref{fig:phase-diagram-beta_alpha} with $\alpha = 0$ and $\alpha=0.25$)
+Alternatively, it might be desirable to analyze the behaviour
+of game types with exponentially-slow fixation time~\cite{antal2006fixation}:
+chicken, hero, harmony, and battle (the warm-colored game types).
+We see that is possible for our values of $B_0$ and $\beta_0$
+when $\alpha = 0.5$ or $\alpha = 0.75$ (white dots intersect the
+orange ``hero'' and red ``chicken'' regions in
+\cref{fig:phase-diagram-beta_alpha}).
+Therefore, while there is no intrinsic, biological representation
+of ``game types'' at the biochemical level, they offer a valuable interpretability
+tool and a useful way to target model outcomes.
+\end{LineLabel}
+
 \subsection{Complete graphs}\label{sec:complete_graph}
 
 \begin{figure*}

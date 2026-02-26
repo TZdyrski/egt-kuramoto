@@ -1281,6 +1281,7 @@ we define a pair of indices related to
 chimera-like quality and metastability~\cite{shanahan2010metastable}.
 First, we organize the game's nodes
 into $M$ disjoint communities.
+\begin{LineLabel}{R1-4}
 We split the nodes into communities
 using the constant Potts model with a Leiden algorithm
 implemented via the igraph library~\cite{csardi2006igraph}.
@@ -1289,6 +1290,7 @@ with resolution \num{0.1},
 refinement-randomness $\beta = \num{0.01}$,
 and \num{2} iterations of the Leiden algorithm.
 This resulted in $M=6$ communities $C_m$.
+\end{LineLabel}
 
 With these disjoint communities $C_m$, we then calculate
 the time-dependent, community-wise order parameter $\rho_m(t)$

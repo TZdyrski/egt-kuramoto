@@ -1176,9 +1176,17 @@ and a ``reproduction'' graph representing
 \end{LineLabel}
 For simplicity, our reproduction graphs are identical to the interaction graph
 with a single self-loop added to each node.
+\begin{LineLabel}{R1-16}
 These self-loops are necessary in the reproduction graph
 to ensure that each node has positive indegree
 as required by the Moran process described in the next section.
+The addition of these self-loops effectively decreases the probability
+that a selected birth-node reproduces by $1/n_{\text{out}}$,
+where $n_{\text{out}}$ is the out-degree of the birth-node without the
+added self-loop.
+Therefore, the introduction of self-loops slightly biases
+reproduction to nodes with higher numbers of out-neighbors.
+\end{LineLabel}
 
 \subsection{Birth-death Moran process}\label{sec:evo_setup}
 % TODO: Bd is hugely different from death-Birth dynamics (dB);

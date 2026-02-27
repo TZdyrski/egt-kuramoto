@@ -1163,13 +1163,17 @@ when exactly one player is communicative.
 
 \subsection{Population setup}\label{sec:pop_setup}
 
+\begin{LineLabel}{R1-21}
 Given $N$ players, we associate a pair
 of weighted, directed graphs to the population.
-First, we use an interaction graph with $N$ nodes representing players
-and weighted, directed edges representing games between players.
-Second, we implement a reproduction graph with the $N$ nodes
-still representing players
-but the edges now corresponding to the ability of nodes to replace one another.
+On these graphs, the $N$ nodes represent players
+and the weighted, directed edges represent games between players.
+We implement two, related graphs:
+an ``interaction'' graph representing
+\emph{from whom} a player receives payoffs,
+and a ``reproduction'' graph representing
+\emph{to whom} a player can spread its strategy.
+\end{LineLabel}
 For simplicity, our reproduction graphs are identical to the interaction graph
 with a single self-loop added to each node.
 These self-loops are necessary in the reproduction graph

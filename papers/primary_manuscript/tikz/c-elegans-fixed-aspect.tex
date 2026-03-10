@@ -18,22 +18,42 @@
 \begin{document}
 \begin{tikzpicture}
   \begin{groupplot}[
-    group style={group size=3 by 1},
-    fraction communicative chart,
-    ylabel style={blue},
-    y tick label style=blue,
+    group style={
+			group size=2 by 2,
+      horizontal sep=1.5cm,
+      vertical sep=1.5cm,
+    },
+    ymin=0,
+    scaled y ticks=false,
+    yticklabel style={
+      /pgf/number format/fixed,
+      /pgf/number format/precision=3,
+    },
+    grid,
     error bars/y dir=both,error bars/y explicit,
     ]
-      \nextgroupplot[
-        ylabel={Communiciative frequency $f_{\text{comm}}$},
-      ]
-				\addplot table[x=B0,y=communicative_fraction_mean,y error=communicative_fraction_std]{cumulative/adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv};
-      \nextgroupplot[xlabel={Maximum joint benefit $B_0$}]
-        \addplot table[x=B0,y=communicative_fraction_mean,y error=communicative_fraction_std]{cumulative/adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_fixed_aspect=strategy_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv};
-      \nextgroupplot
-        \addplot table[x=B0,y=communicative_fraction_mean,y error=communicative_fraction_std]{cumulative/adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_fixed_aspect=phase_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv};
+			\nextgroupplot[xlabel={Asymmetry $\alpha$},ylabel={Chimera-Like
+			Index $\chi$}, xtick=data, ymax=0.15,
+      enlarge y limits={value=0.15,upper},
+			]
+				\addplot table[y=chimera_index_mean,y error=chimera_index_std]{chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv};
+			\nextgroupplot[xlabel={Asymmetry $\alpha$}, xtick=data,
+			ymax=0.15,
+      enlarge y limits={value=0.15,upper},
+			]
+        \addplot table[y=chimera_index_mean,y error=chimera_index_std]{chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_fixed_aspect=strategy_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv};
+      \nextgroupplot[xlabel={Maximum joint benefit
+			$B_0$},ylabel={Communiciative frequency $f_{\text{comm}}$},only
+			marks,
+			ymax=1.0,
+      enlarge y limits={value=0.15,true},
+			]
+        \addplot table[x=B0,y=communicative_fraction_mean,y error=communicative_fraction_std]{cumulative/adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv};
+			\nextgroupplot[xlabel={Maximum joint benefit $B_0$},only marks,
+			ymax=1.0,
+      enlarge y limits={value=0.15,true},
+			]
+				\addplot table[x=B0,y=communicative_fraction_mean,y error=communicative_fraction_std]{cumulative/adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_fixed_aspect=phase_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv};
   \end{groupplot}
-  \end{axis}
-  \end{scope}
 \end{tikzpicture}
 \end{document}

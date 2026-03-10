@@ -37,6 +37,7 @@ rule manuscript:
     "papers/primary_manuscript/plos2025.bst",
     "papers/primary_manuscript/tikz/preamble.tex",
     "papers/primary_manuscript/tikz/c-elegans.pdf",
+    "papers/primary_manuscript/tikz/c-elegans-fixed-aspect.pdf",
     "papers/primary_manuscript/tikz/chimera-states.pdf",
     "papers/primary_manuscript/tikz/game-types.pdf",
     "papers/primary_manuscript/tikz/model-setup.pdf",
@@ -64,6 +65,18 @@ rule tikz_c_elegans:
     tex="papers/primary_manuscript/tikz/c-elegans.tex",
   output:
     "papers/primary_manuscript/tikz/c-elegans.pdf",
+  shell:
+    "cd papers/primary_manuscript && latexmk -interaction=nonstopmode ../../{input.tex}"
+
+rule tikz_c_elegans_fixed_aspect:
+  input:
+    "data/processed/chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv",
+    "data/processed/chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_fixed_aspect=strategy_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv",
+    "data/processed/cumulative/adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_fixed_aspect=phase_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv",
+    "data/processed/cumulative/adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv",
+    tex="papers/primary_manuscript/tikz/c-elegans-fixed-aspect.tex",
+  output:
+    "papers/primary_manuscript/tikz/c-elegans-fixed-aspect.pdf",
   shell:
     "cd papers/primary_manuscript && latexmk -interaction=nonstopmode ../../{input.tex}"
 

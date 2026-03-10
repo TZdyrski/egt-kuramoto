@@ -44,6 +44,7 @@ rule manuscript:
     "papers/primary_manuscript/tikz/phase-diagram.pdf",
     "papers/primary_manuscript/tikz/well-mixed.pdf",
     "papers/primary_manuscript/tikz/sensitivity-analysis-cumulative.pdf",
+    "papers/primary_manuscript/tikz/sensitivity-analysis-chimera.pdf",
     # Info on number of edges and self loops
     "data/processed/graph_loop_edge_number/adj_matrix_source=c-elegans.csv",
     # Info on mutation times
@@ -161,6 +162,27 @@ rule tikz_sensitivity_analysis_cumulative:
     tex="papers/primary_manuscript/tikz/sensitivity-analysis-cumulative.tex",
   output:
     "papers/primary_manuscript/tikz/sensitivity-analysis-cumulative.pdf",
+  shell:
+    "cd papers/primary_manuscript && latexmk -interaction=nonstopmode ../../{input.tex}"
+
+rule tikz_sensitivity_analysis_chimera:
+  input:
+    expand([
+      "data/processed/chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases={nb_phases}_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv",
+      "data/processed/chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength={selection_strength}_time_steps=8000000.csv",
+      "data/processed/chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B={beta_to_B}_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv",
+      "data/processed/chimeraindex/B_to_c={B_to_c}_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv",
+      "data/processed/chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps={time_steps}.csv",
+      ],
+      beta_to_B = [0.75, 0.95, 1.0, 1.05, 1.25],
+      B_to_c = [1.0,1.5,2.0],
+      nb_phases = [5,10,20,40],
+      selection_strength = [0.02, 0.2, 2.0],
+      time_steps = [80000,800000,8000000,80000000],
+			),
+    tex="papers/primary_manuscript/tikz/sensitivity-analysis-chimera.tex",
+  output:
+    "papers/primary_manuscript/tikz/sensitivity-analysis-chimera.pdf",
   shell:
     "cd papers/primary_manuscript && latexmk -interaction=nonstopmode ../../{input.tex}"
 

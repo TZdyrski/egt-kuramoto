@@ -1,0 +1,102 @@
+%! TeX program = lualatex
+% SPDX-License-Identifier: CC-BY-4.0
+
+\documentclass[tikz]{standalone}
+
+% Import custom style file containing common packages and options
+\usepackage{../preamble}
+
+% Import tikz options and preamble
+\input{preamble}
+
+% Set data search path
+\pgfplotsset{
+    table/search path={../../../data/processed},
+}
+\newcommand\dataSearchPath{../../../data/processed}
+
+\pgfplotscreateplotcyclelist{baselineSecond}{
+    {blue,mark=*},
+    {black,mark=square*},
+    {red!80,mark=triangle*},
+    {red!40,mark=pentagon*},
+    {red!20,mark=diamond*}
+}
+\pgfplotscreateplotcyclelist{baselineThird}{
+    {blue!40,mark=diamond*},
+    {blue!80,mark=*},
+    {black,mark=square*},
+    {red!80,mark=pentagon*},
+    {red!40,mark=+}
+}
+
+\begin{document}
+\begin{tikzpicture}
+  \begin{groupplot}[
+    group style={group size=2 by 3,
+    horizontal sep=2cm,
+    vertical sep=1.5cm,
+    },
+    xtick=data,
+    ymin=0,
+    scaled y ticks=false,
+    yticklabel style={
+      /pgf/number format/fixed,
+      /pgf/number format/precision=3,
+    },
+    enlarge y limits={value=0.15,upper},
+    grid,
+    error bars/y dir=both,error bars/y explicit,
+    ]
+    \nextgroupplot[
+			title={$\beta_0/B_0$},
+      ylabel={Chimera-Like Index $\chi$},
+			cycle list name=baselineSecond,
+    ]
+    \addplot table [y=chimera_index_mean,y error=chimera_index_std] {chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.75_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv};
+    \addplot table [y=chimera_index_mean,y error=chimera_index_std] {chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv};
+    \addplot table [y=chimera_index_mean,y error=chimera_index_std] {chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=1.0_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv};
+    \addplot table [y=chimera_index_mean,y error=chimera_index_std] {chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=1.05_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv};
+    \addplot table [y=chimera_index_mean,y error=chimera_index_std] {chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=1.25_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv};
+		\legend{0.75,0.95,1.0,1.05,1.25}
+    \nextgroupplot[
+			title={$B_0/c$},
+			cycle list name=baselineSecond,
+    ]
+    \addplot table [y=chimera_index_mean,y error=chimera_index_std] {chimeraindex/B_to_c=1.0_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv};
+    \addplot table [y=chimera_index_mean,y error=chimera_index_std] {chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv};
+    \addplot table [y=chimera_index_mean,y error=chimera_index_std] {chimeraindex/B_to_c=2.0_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv};
+		\legend{1.0,1.5,2.0}
+    \nextgroupplot[
+			title={Num.\ phases $m$},
+			cycle list name=baselineThird,
+		]
+    \addplot table [y=chimera_index_mean,y error=chimera_index_std] {chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=5_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv};
+    \addplot table [y=chimera_index_mean,y error=chimera_index_std] {chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=10_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv};
+    \addplot table [y=chimera_index_mean,y error=chimera_index_std] {chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv};
+    \addplot table [y=chimera_index_mean,y error=chimera_index_std] {chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=40_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv};
+		\legend{5,10,20,40}
+    \nextgroupplot[
+			title={Selection strength $\delta$},
+      xlabel={Asymmetry $\alpha$},
+      ylabel={Chimera-Like Index $\chi$},
+			cycle list name=baselineSecond,
+		]
+    \addplot table [y=chimera_index_mean,y error=chimera_index_std]
+		{chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.02_time_steps=8000000.csv};
+    \addplot table [y=chimera_index_mean,y error=chimera_index_std] {chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv};
+    \addplot table [y=chimera_index_mean,y error=chimera_index_std] {chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=2.0_time_steps=8000000.csv};
+		\legend{0.02,0.2,2.0}
+    \nextgroupplot[
+			title={Runtime $T$},
+      xlabel={Asymmetry $\alpha$},
+			cycle list name=baselineThird,
+		]
+    \addplot table [y=chimera_index_mean,y error=chimera_index_std] {chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=80000.csv};
+    \addplot table [y=chimera_index_mean,y error=chimera_index_std] {chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=800000.csv};
+    \addplot table [y=chimera_index_mean,y error=chimera_index_std] {chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv};
+    \addplot table [y=chimera_index_mean,y error=chimera_index_std] {chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=80000000.csv};
+		\legend{80000,800000,8000000,80000000}
+  \end{groupplot}
+\end{tikzpicture}
+\end{document}

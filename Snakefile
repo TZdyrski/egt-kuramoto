@@ -31,47 +31,94 @@ rule all:
 rule manuscript:
   priority: 50 # Increase priority relative to netcdf to it generates first
   input:
-    # Manuscript
-    "papers/primary_manuscript/Report.tex",
     "papers/primary_manuscript/preamble.sty",
     "papers/primary_manuscript/custom-definitions.tex",
     "papers/primary_manuscript/references.bib",
     "papers/primary_manuscript/plos2025.bst",
     "papers/primary_manuscript/tikz/preamble.tex",
-    # tikz/c-elegans.tex
-    "papers/primary_manuscript/tikz/c-elegans.tex",
+    "papers/primary_manuscript/tikz/c-elegans.pdf",
+    "papers/primary_manuscript/tikz/chimera-states.pdf",
+    "papers/primary_manuscript/tikz/game-types.pdf",
+    "papers/primary_manuscript/tikz/model-setup.pdf",
+    "papers/primary_manuscript/tikz/phase-diagram.pdf",
+    "papers/primary_manuscript/tikz/well-mixed.pdf",
+    # Info on number of edges and self loops
+    "data/processed/graph_loop_edge_number/adj_matrix_source=c-elegans.csv",
+    # Info on mutation times
+    "data/processed/mutation_timesteps/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_seed=12345_selection_strength=0.2_symmetry_breaking=0.0_time_steps=8000000.csv",
+    "data/processed/mutation_timesteps/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_seed=12345_selection_strength=0.2_symmetry_breaking=0.0_time_steps=8000000.csv",
+    tex="papers/primary_manuscript/Report.tex",
+  output:
+    "papers/primary_manuscript/Report.pdf",
+  shell:
+    "cd papers/primary_manuscript && latexmk -interaction=nonstopmode ../../{input.tex}"
+
+rule tikz_c_elegans:
+  input:
     "data/processed/graph_structure_snapshot/vertices_B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_seed=12345_selection_strength=0.2_symmetry_breaking=0.75_time_step=560000_time_steps=8000000.csv",
     "data/processed/graph_structure/edges_adj_matrix_source=c-elegans.csv",
     "data/processed/cumulative/adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv",
     "data/processed/cumulative/adj_matrix_source=c-elegans-unweighted_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv",
     "data/processed/cumulative/adj_matrix_source=c-elegans-undirected_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv",
     "data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv",
-    # tikz/c-elegans-fixed-aspect.tex
-    "papers/primary_manuscript/tikz/c-elegans-fixed-aspect.tex",
-    "data/processed/cumulative/adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_fixed_aspect=phase_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv",
-    "data/processed/cumulative/adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_fixed_aspect=strategy_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv",
-    # tikz/chimera-states.tex
-    "papers/primary_manuscript/tikz/chimera-states.tex",
+    tex="papers/primary_manuscript/tikz/c-elegans.tex",
+  output:
+    "papers/primary_manuscript/tikz/c-elegans.pdf",
+  shell:
+    "cd papers/primary_manuscript && latexmk -interaction=nonstopmode ../../{input.tex}"
+
+rule tikz_chimera_states:
+  input:
     "data/processed/chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_community_algorithm=leiden_community_beta=0.01_community_n_iter=2_community_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv",
     "data/processed/graph_structure_snapshot/vertices_B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_seed=12345_selection_strength=0.2_symmetry_breaking=0.0_time_step=560000_time_steps=8000000.csv",
     "data/processed/graph_structure_snapshot/vertices_B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_seed=12345_selection_strength=0.2_symmetry_breaking=1.0_time_step=560000_time_steps=8000000.csv",
     "data/processed/graph_structure/edges_adj_matrix_source=c-elegans.csv",
-    # tikz/game-payoffs.tex
-    "papers/primary_manuscript/tikz/game-payoffs.tex",
-    # tikz/game-types.tex
-    "papers/primary_manuscript/tikz/game-types.tex",
+    tex="papers/primary_manuscript/tikz/chimera-states.tex",
+  output:
+    "papers/primary_manuscript/tikz/chimera-states.pdf",
+  shell:
+    "cd papers/primary_manuscript && latexmk -interaction=nonstopmode ../../{input.tex}"
+
+rule tikz_game_payoffs:
+  input:
+    tex="papers/primary_manuscript/tikz/game-payoffs.tex",
+  output:
+    "papers/primary_manuscript/tikz/game-payoffs.pdf",
+  shell:
+    "cd papers/primary_manuscript && latexmk -interaction=nonstopmode ../../{input.tex}"
+
+rule tikz_game_types:
+  input:
     "data/processed/gametype/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_num_seeds=10_only_mixed_games=false_selection_strength=0.2_time_steps=8000000.csv",
     "data/processed/gametype/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_num_seeds=10_only_mixed_games=true_selection_strength=0.2_time_steps=8000000.csv",
     "data/processed/gametype/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_only_mixed_games=false_selection_strength=0.2_time_steps=8000000.csv",
     "data/processed/gametype/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_only_mixed_games=true_selection_strength=0.2_time_steps=8000000.csv",
-    # tikz/model-setup.tex
-    "papers/primary_manuscript/tikz/model-setup.tex",
+    tex="papers/primary_manuscript/tikz/game-types.tex",
+  output:
+    "papers/primary_manuscript/tikz/game-types.pdf",
+  shell:
+    "cd papers/primary_manuscript && latexmk -interaction=nonstopmode ../../{input.tex}"
+
+rule tikz_model_setup:
+  input:
     "data/processed/graph_structure/vertices_adj_matrix_source=well-mixed.csv",
     "data/processed/graph_structure/edges_adj_matrix_source=well-mixed.csv",
-    # tikz/phase-diagram.tex
-    "papers/primary_manuscript/tikz/phase-diagram.tex",
-    # tikz/well-mixed.tex
-    "papers/primary_manuscript/tikz/well-mixed.tex",
+    tex="papers/primary_manuscript/tikz/model-setup.tex",
+  output:
+    "papers/primary_manuscript/tikz/model-setup.pdf",
+  shell:
+    "cd papers/primary_manuscript && latexmk -interaction=nonstopmode ../../{input.tex}"
+
+rule tikz_phase_diagram:
+  input:
+    tex="papers/primary_manuscript/tikz/phase-diagram.tex",
+  output:
+    "papers/primary_manuscript/tikz/phase-diagram.pdf",
+  shell:
+    "cd papers/primary_manuscript && latexmk -interaction=nonstopmode ../../{input.tex}"
+
+rule tikz_well_mixed:
+  input:
     "data/processed/cumulative_theory/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_nb_players=20_selection_strength=0.2_symmetry_breaking=0.0_type=theory.csv",
     "data/processed/cumulative_theory/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_nb_players=20_selection_strength=0.2_symmetry_breaking=0.25_type=theory.csv",
     "data/processed/cumulative_theory/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_nb_players=20_selection_strength=0.2_symmetry_breaking=0.5_type=theory.csv",
@@ -85,29 +132,23 @@ rule manuscript:
     "data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_num_seeds=10_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.0_time_steps=8000000.csv",
     "data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_num_seeds=10_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv",
     "data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_num_seeds=10_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=1.0_time_steps=8000000.csv",
-    # Info on number of edges and self loops
-    "data/processed/graph_loop_edge_number/adj_matrix_source=c-elegans.csv",
-    # Info on mutation times
-    "data/processed/mutation_timesteps/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_seed=12345_selection_strength=0.2_symmetry_breaking=0.0_time_steps=8000000.csv",
-    "data/processed/mutation_timesteps/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_seed=12345_selection_strength=0.2_symmetry_breaking=0.0_time_steps=8000000.csv",
+    tex="papers/primary_manuscript/tikz/well-mixed.tex",
   output:
-    "papers/primary_manuscript/Report.pdf",
+    "papers/primary_manuscript/tikz/well-mixed.pdf",
   shell:
-    "cd papers/primary_manuscript && latexmk -lualatex -auxdir=latex.aux -interaction=nonstopmode Report.tex"
+    "cd papers/primary_manuscript && latexmk -interaction=nonstopmode ../../{input.tex}"
 
 rule supplementary_information:
   priority: 50 # Increase priority relative to netcdf to it generates first
   input:
-    # Manuscript
-    "papers/primary_manuscript/SupplementaryInformation.tex",
     "papers/primary_manuscript/preamble.sty",
     "papers/primary_manuscript/tikz/preamble.tex",
-    # tikz/game-payoffs.tex
     "papers/primary_manuscript/tikz/game-payoffs.tex",
+    tex="papers/primary_manuscript/SupplementaryInformation.tex",
   output:
     "papers/primary_manuscript/SupplementaryInformation.pdf",
   shell:
-    "cd papers/primary_manuscript && latexmk -lualatex -auxdir=latex.aux -interaction=nonstopmode SupplementaryInformation.tex"
+    "cd papers/primary_manuscript && latexmk -interaction=nonstopmode ../../{input.tex}"
 
 wildcard_constraints:
     adj_matrix_source=r"[a-z\-]+",

@@ -43,6 +43,7 @@ rule manuscript:
     "papers/primary_manuscript/tikz/model-setup.pdf",
     "papers/primary_manuscript/tikz/phase-diagram.pdf",
     "papers/primary_manuscript/tikz/well-mixed.pdf",
+    "papers/primary_manuscript/tikz/sensitivity-analysis-cumulative.pdf",
     # Info on number of edges and self loops
     "data/processed/graph_loop_edge_number/adj_matrix_source=c-elegans.csv",
     # Info on mutation times
@@ -148,6 +149,18 @@ rule tikz_well_mixed:
     tex="papers/primary_manuscript/tikz/well-mixed.tex",
   output:
     "papers/primary_manuscript/tikz/well-mixed.pdf",
+  shell:
+    "cd papers/primary_manuscript && latexmk -interaction=nonstopmode ../../{input.tex}"
+
+rule tikz_sensitivity_analysis_cumulative:
+  input:
+    expand([
+		  "data/processed/cumulative/adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases={nb_phases}_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv",
+      ],
+      nb_phases = [5,10,20,40]),
+    tex="papers/primary_manuscript/tikz/sensitivity-analysis-cumulative.tex",
+  output:
+    "papers/primary_manuscript/tikz/sensitivity-analysis-cumulative.pdf",
   shell:
     "cd papers/primary_manuscript && latexmk -interaction=nonstopmode ../../{input.tex}"
 

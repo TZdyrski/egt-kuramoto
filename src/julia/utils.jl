@@ -5,6 +5,7 @@ using LinearAlgebra
 using BlockArrays
 using Random
 using Graphs
+using SimpleWeightedGraphs
 using XLSX
 
 "Add together the elements from the first half of a list with an even number of elements."
@@ -45,40 +46,44 @@ function payoff_matrix(nb_phases::Integer,
     return payoff_matrix
 end
 
+function add_self_loops_to_dangling_nodes!(graph::AbstractGraph)
+	dangling_node_idxs = findall(outdegree(graph) .== 0)
+
+	# Add self-loops
+	for node_idx in dangling_node_idxs
+		add_edge!(graph, node_idx, node_idx)
+	end
+
+	return graph
+end
+
 # Note: C-elegans removes the 2 disconnected neurons
-function get_adj_matrices(; adj_matrix_source::String, nb_players::Integer = 20, regular_degree::Integer = 10, rng::AbstractRNG=Xoshiro(1))
-    # Define interaction graph without loops
+function get_adj_matrices(; adj_matrix_source::String, nb_players::Integer = 20, regular_degree::Integer = 10, rng::AbstractRNG=Xoshiro(1)) # Define interaction graph without loops
     # Define reproduction graph with loops
     if adj_matrix_source == "well-mixed"
         interaction_adj_matrix = ones(Int64, nb_players, nb_players) - I
-        reproduction_adj_matrix = interaction_adj_matrix + I
     elseif adj_matrix_source == "random-regular-graph"
         interaction_adj_matrix = adjacency_matrix(random_regular_graph(nb_players, regular_degree; rng))
-        reproduction_adj_matrix = interaction_adj_matrix + I
     elseif adj_matrix_source == "random-regular-digraph"
         interaction_adj_matrix = adjacency_matrix(random_regular_digraph(nb_players, regular_degree; rng))
-        reproduction_adj_matrix = interaction_adj_matrix + I
     elseif adj_matrix_source == "c-elegans-unweighted"
         interaction_adj_matrix = collect(round.(get_celegans_connectome()) .!= 0)
-        reproduction_adj_matrix = collect((interaction_adj_matrix + I) .!= 0)
     elseif adj_matrix_source == "c-elegans-undirected"
         interaction_adj_matrix = round.(get_celegans_connectome())
         interaction_adj_matrix = interaction_adj_matrix + transpose(interaction_adj_matrix)
-        reproduction_adj_matrix = interaction_adj_matrix + I
     elseif adj_matrix_source == "c-elegans-undirected-unweighted"
         interaction_adj_matrix = round.(get_celegans_connectome())
         interaction_adj_matrix = interaction_adj_matrix + transpose(interaction_adj_matrix)
         interaction_adj_matrix = collect(interaction_adj_matrix .!= 0)
-        reproduction_adj_matrix = collect((interaction_adj_matrix + I) .!= 0)
     elseif adj_matrix_source == "c-elegans"
         interaction_adj_matrix = round.(get_celegans_connectome())
-        reproduction_adj_matrix = interaction_adj_matrix + I
     else
         throw(ArgumentError("adj_matrix_source must be a string in set [\"well-mixed\", "
                             * "\"c-elegans\", \"c-elegans-unweighted\", "
                             * "\"c-elegans-undirected\", \"c-elegans-undirected-unweighted\", "
 			    * "\"random-regular-graph\", \"random-regular-digraph\"]"))
     end
+		reproduction_adj_matrix = adjacency_matrix(add_self_loops_to_dangling_nodes!(SimpleWeightedDiGraph(interaction_adj_matrix)))
     return interaction_adj_matrix, reproduction_adj_matrix
 end
 

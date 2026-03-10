@@ -1273,18 +1273,22 @@ an ``interaction'' graph representing
 and a ``reproduction'' graph representing
 \emph{to whom} a player can spread its strategy.
 \end{LineLabel}
-For simplicity, our reproduction graphs are identical to the interaction graph
-with a single self-loop added to each node.
 \begin{LineLabel}{R1-16}
+For simplicity, our reproduction graphs are identical to the interaction graph
+with a single self-loop added to each dangling node (\ie{}, each node
+with no out neighbors);
+the well-mixed interaction graph has no dangling nodes,
+and the \gls{celegans} graph has five dangling nodes.
 These self-loops are necessary in the reproduction graph
 to ensure that each node has positive indegree
 as required by the Moran process described in the next section.
-The addition of these self-loops effectively decreases the probability
-that a selected birth-node reproduces by $1/n_{\text{out}}$,
-where $n_{\text{out}}$ is the out-degree of the birth-node without the
-added self-loop.
-Therefore, the introduction of self-loops slightly biases
-reproduction to nodes with higher numbers of out-neighbors.
+The only effect of adding these self-loops is on the (originally)
+dangling nodes: now, if they are selected for reproduction,
+they mutate with probability $\mu$ and do nothing with probability
+$1-\mu$.
+This behaviour, combined with the sparsity of dangling nodes
+(\SI{2}{\percent}), implies that the reproduction graph's self-loops
+should have negligible impact on the overall dynamics.
 \end{LineLabel}
 
 \subsection{Birth-death Moran process}\label{sec:evo_setup}

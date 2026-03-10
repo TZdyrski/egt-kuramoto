@@ -2,6 +2,7 @@
 
 using DrWatson, Test
 using LinearAlgebra
+using Graphs
 quickactivate("..", "Chimera_EGT_Kuramoto")
 
 include(srcdir("julia", "utils.jl"))
@@ -26,13 +27,17 @@ end
 
 @testset "Adjacency matrices" begin
     # Test well-mixed gives all-ones except diagonal (self-loops) for interaction matrix
-    # and all-ones for reproduction matrix
-    @test get_adj_matrices(adj_matrix_source="well-mixed") == (ones(20,20) - I, ones(20,20))
+    # and reproduction matrix
+    @test get_adj_matrices(adj_matrix_source="well-mixed") == (ones(20,20) - I, ones(20,20) - I)
     # Test well-mixed has size (nb_players, nb_players)
-    @test get_adj_matrices(adj_matrix_source="well-mixed",nb_players=5) == (ones(5,5) - I, ones(5,5))
+    @test get_adj_matrices(adj_matrix_source="well-mixed",nb_players=5) == (ones(5,5) - I, ones(5,5) - I)
     # Test that c-elegans has size (300,300) since we remove the 2
     # unconnected neurons
     @test size(get_adj_matrices(adj_matrix_source="c-elegans")[1]) == (300,300)
+		# Test that the c-elegans interaction graph does have dangling nodes
+		@test any(outdegree(SimpleDiGraph(get_adj_matrices(adj_matrix_source="c-elegans")[1])) .== 0)
+		# Test that the c-elegans reproduction graph has no dangling nodes
+		@test !any(outdegree(SimpleDiGraph(get_adj_matrices(adj_matrix_source="c-elegans")[2])) .== 0)
     # Test that c-elegans undirected matrices are symmetric
     @test issymmetric(get_adj_matrices(adj_matrix_source="c-elegans-undirected")[1])
     @test issymmetric(get_adj_matrices(adj_matrix_source="c-elegans-undirected-unweighted")[1])

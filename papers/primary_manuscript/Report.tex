@@ -990,6 +990,58 @@ the system's deviation from a complete chimera state
 arises from both imperfect separation of the coherent/disordered populations
 as well as time fluctuations in the chimeric quality.
 
+\begin{figure*}
+\begin{adjustwidth}{-2.25in}{0in}
+  \centering
+  \includestandalone{tikz/order-parameter}%
+  \caption{
+    \textbf{
+			Intra-community variation.
+    }
+		The community-dependent order parameter $\rho_m(t)$
+		(\cref{eq:order_parameter_community})
+		as a function of time.
+		These six communities are the same as those use in
+		\cref{fig:chimera-index}
+		calculated using the constant Potts
+    model (\cf{} \cref{sec:chimera-metastability-def}).
+		The asymmetry is $\alpha = 0.75$,
+		and the remaining parameters are identical
+		to those used in \cref{fig:c-elegans}.
+  }\label{fig:order_param}
+\end{adjustwidth}
+\end{figure*}
+
+\begin{LineLabel}{R1-14}
+The chimera-like index
+depicted in \cref{fig:chimera-index}
+is a time-averaged statistical quantity,
+but the interplay between synchronicity and disorder
+is best understood as a function of time.
+In particular, the chimera-like states
+are characterized by some communities with low
+order parameter $\rho_m$
+(\cref{eq:order_parameter_community})
+and some with high order parameter.
+Therefore,
+\cref{fig:order_param}
+shows the community parameter for
+each of the six communities as a function of time.
+These are the same six parameters as those used in
+\cref{fig:chimera-index} which were calculated using a constant Potts
+model.
+
+\Cref{fig:chimera-index} clearly depicts the order-parameter variability
+between the six communities.
+Communities 1--4 are mostly disordered, with order parameter $\le 0.6$,
+while communities 5 and 6 are very synchronized, with order parameters
+$\ge 0.95$.
+This bifurcation into ordered and disordered subgroups is a key
+characteristic of chimera-like states,
+showing that the chimera-like index in \cref{fig:chimera-index}
+is depicting a real separation of community coherence.
+\end{LineLabel}
+
 \subsection{Game types}
 \begin{figure*}
 \begin{adjustwidth}{-2.25in}{0in}
@@ -1536,6 +1588,7 @@ the time-dependent, community-wise order parameter $\rho_m(t)$
 as
 \begin{equation}
   \rho_m(t) \coloneqq \frac{1}{N_m} \abs{\sum_{j \in C_m} e^{\im \phi_j}}
+  \label{eq:order_parameter_community}
 \end{equation}
 across members $j$ of community $C_m$ with size $N_m$.
 Then, we define a chimera-like index $\chi$

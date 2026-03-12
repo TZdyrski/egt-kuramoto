@@ -1,0 +1,49 @@
+%! TeX program = lualatex
+% SPDX-License-Identifier: CC-BY-4.0
+
+\documentclass[tikz]{standalone}
+
+% Import custom style file containing common packages and options
+\usepackage{../preamble}
+
+% Import tikz options and preamble
+\input{preamble}
+
+% Set data search path
+\pgfplotsset{
+    table/search path={../../../data/processed},
+}
+\newcommand\dataSearchPath{../../../data/processed}
+
+\begin{document}
+\begin{tikzpicture}
+  \begin{axis}[
+    xlabel={Time $t$},
+    ylabel={Community order parameter $\rho_i$},
+    ymin=0,
+    scaled y ticks=false,
+    yticklabel style={
+      /pgf/number format/fixed,
+      /pgf/number format/precision=3,
+    },
+    enlarge y limits={value=0.15,upper},
+    grid,
+		no markers,
+		legend columns=2,
+		cycle list={
+			{red,solid,},
+			{blue,dotted,},
+			{teal,dashed,},
+			{orange,dashdotted,},
+			{magenta,loosely dashdotdotted,},
+			{black,loosely dashdotted,},
+		},
+		thick,
+    ]
+		\foreach \i in {1,...,6}{
+			\addplot table [y=orderParamGroup\i] {order_parameter/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_seed=1_selection_strength=0.2_sy=0.75_time_steps=8000000.csv};
+		}
+		\legend{1,2,3,4,5,6}
+\end{axis}
+\end{tikzpicture}
+\end{document}

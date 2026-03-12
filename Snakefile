@@ -46,6 +46,7 @@ rule manuscript:
     "papers/primary_manuscript/tikz/sensitivity-analysis-cumulative.pdf",
     "papers/primary_manuscript/tikz/sensitivity-analysis-chimera.pdf",
     "papers/primary_manuscript/tikz/game-snapshot.pdf",
+    "papers/primary_manuscript/tikz/order-parameter.pdf",
     # Info on number of edges and self loops
     "data/processed/graph_loop_edge_number/adj_matrix_source=c-elegans.csv",
     # Info on mutation times
@@ -198,6 +199,15 @@ rule tikz_game_snapshot:
     tex="papers/primary_manuscript/tikz/game-snapshot.tex"
   output:
     "papers/primary_manuscript/tikz/game-snapshot.pdf",
+  shell:
+    "cd papers/primary_manuscript && latexmk -interaction=nonstopmode ../../{input.tex}"
+
+rule tikz_order_parameter:
+  input:
+    "data/processed/order_parameter/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_seed=1_selection_strength=0.2_sy=0.75_time_steps=8000000.csv",
+    tex="papers/primary_manuscript/tikz/order-parameter.tex"
+  output:
+    "papers/primary_manuscript/tikz/order-parameter.pdf",
   shell:
     "cd papers/primary_manuscript && latexmk -interaction=nonstopmode ../../{input.tex}"
 
@@ -390,8 +400,9 @@ def runtime_min_timeseries_statistics(wildcards):
   return runtime_min
 
 def raw_timeseries_filename(wildcards):
-  return expand(["data/raw/timeseries/B_to_c={{B_to_c}}_adj_matrix_source={{adj_matrix_source}}_beta_to_B={{beta_to_B}}_cost={{cost}}{{fixed_aspect_flag}}{{fixed_aspect}}_mutation_rate={{mutation_rate}}_nb_phases={{nb_phases}}{{nb_players_flag}}{{nb_players}}_seed={seed}_selection_strength={{selection_strength}}_symmetry_breaking={symmetry_breaking}_time_steps={{time_steps}}.jld2"], seed = range(1,int(wildcards.num_seeds)+1),
-	symmetry_breaking = wildcards.symmetry_breaking if hasattr(wildcards, "symmetry_breaking") else symmetry_breaking_vals)
+  return expand(["data/raw/timeseries/B_to_c={{B_to_c}}_adj_matrix_source={{adj_matrix_source}}_beta_to_B={{beta_to_B}}_cost={{cost}}{{fixed_aspect_flag}}{{fixed_aspect}}_mutation_rate={{mutation_rate}}_nb_phases={{nb_phases}}{{nb_players_flag}}{{nb_players}}_seed={seed}_selection_strength={{selection_strength}}_symmetry_breaking={symmetry_breaking}_time_steps={{time_steps}}.jld2"],
+    seed = range(1,int(wildcards.num_seeds)+1) if hasattr(wildcards, "num_seeds") else wildcards.seed,
+    symmetry_breaking = wildcards.symmetry_breaking if hasattr(wildcards, "symmetry_breaking") else symmetry_breaking_vals)
 
 rule processed_timeseries_statistics:
   resources:
@@ -584,6 +595,24 @@ rule processed_chimera_indices:
     "data/processed/chimeraindex/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_comm_algorithm={community_algorithm}{community_beta_flag}{community_beta}{community_n_iter_flag}{community_n_iter}{community_resolution_flag}{community_resolution}_cost={cost}{covariance_cutoff_fraction_flag}{covariance_cutoff_fraction}{fixed_aspect_flag}{fixed_aspect}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_num_seeds={num_seeds}_selection_strength={selection_strength}_time_steps={time_steps}{walktrap_steps_flag}{walktrap_steps}.csv",
   script:
     "scripts/snakemake/postprocess_chimera_indices.jl"
+
+rule processed_order_parameter:
+  resources:
+    mem_mb = memory_mb_timeseries,
+    runtime = runtime_min_timeseries_statistics,
+  input:
+    "Project.toml",
+    "Manifest.toml",
+    "src/julia/postprocess.jl",
+    "src/julia/game_taxonomy.jl",
+    "src/julia/utils.jl",
+    "scripts/snakemake/snakemake_preamble.jl",
+    "scripts/snakemake/postprocess_order_parameter.jl",
+    raw_timeseries_filename,
+  output:
+    "data/processed/order_parameter/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_comm_algorithm={community_algorithm}{community_beta_flag}{community_beta}{community_n_iter_flag}{community_n_iter}{community_resolution_flag}{community_resolution}_cost={cost}{covariance_cutoff_fraction_flag}{covariance_cutoff_fraction}{fixed_aspect_flag}{fixed_aspect}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_seed={seed}_selection_strength={selection_strength}_sy={symmetry_breaking}_time_steps={time_steps}{walktrap_steps_flag}{walktrap_steps}.csv",
+  script:
+    "scripts/snakemake/postprocess_order_parameter.jl"
 
 def netcdf_timeseries_inputs(wildcards):
   return expand(["data/raw/timeseries/B_to_c={B_to_c}_adj_matrix_source={{adj_matrix_source}}_beta_to_B={beta_to_B}_cost={cost}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_seed={seed}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={{time_steps}}.jld2"],

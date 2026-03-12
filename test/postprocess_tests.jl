@@ -18,20 +18,25 @@ include(srcdir("julia", "postprocess.jl"))
 	@test extract_order_parameters([0,1,0,2],2) == 1
 end
 
-@testset "Game types" begin
-	# All same strategy
+@testset "Same strategy check" begin
 	nb_phases = 2
-	nb_players = 6
-	interaction_adj_matrix = ones(Int64,nb_players,nb_players) - I
-	game_types = game_types_per_strategy_pair(0, 0, 0, 0, nb_phases)
+	@test check_all_same_strategy([1,1,2,1,2,1],nb_phases) == allCommunicative
+	@test check_all_same_strategy([3,3,3,3,4,3],nb_phases) == allNoncommunicative
+	@test isnothing(check_all_same_strategy([1,2,3,3,4,3],nb_phases))
+end
 
-	@test extract_most_common_game_types([1,1,2,1,2,1];game_types,nb_phases,interaction_adj_matrix)[1] == allCommunicative
-	@test extract_most_common_game_types([3,3,3,3,4,3];game_types,nb_phases,interaction_adj_matrix)[1] == allNoncommunicative
+@testset "Disconnected synchronized check" begin
+	@test check_disconnected_synchronized(Dict{Union{Missing,GameType},Integer}(missing => 4)) == disconnectedSynchronizedPopulations
+	@test isnothing(check_disconnected_synchronized(Dict{Union{Missing,GameType},Integer}(missing => 4, chicken => 1)))
+end
 
+@testset "Game types" begin
 	B0 = 4
 	beta0 = 2
 	cost = 1
 	alpha = 1/2
+	nb_phases = 2
+
 	game_types = game_types_per_strategy_pair(B0, beta0, cost, alpha, nb_phases)
 	# Payoff matrix:
 	#        C(1) C(2) N(3) N(4)
@@ -42,30 +47,60 @@ end
 	@test payoff_matrix(nb_phases, B0, beta0, cost; symmetry_breaking=alpha) ==
 	  [4 0 2 0;0 4 0 2;3 1 1 1;1 3 1 1]
 
+	nb_players = 6
+	interaction_adj_matrix = ones(Int64,nb_players,nb_players) - I
+
 	# Of 15 (double-sided) edges, 10 are neutral
-	@test extract_most_common_game_types([3,3,3,3,3,1];game_types,nb_phases,interaction_adj_matrix)[1] == neutral
+	expected_games = [missing neutral neutral neutral neutral concord;
+									  neutral missing neutral neutral neutral concord;
+									  neutral neutral missing neutral neutral concord;
+									  neutral neutral neutral missing neutral concord;
+									  neutral neutral neutral neutral missing concord;
+										concord concord concord concord concord missing];
+	games, game_counts = count_games([3,3,3,3,3,1];game_types,interaction_adj_matrix)
+	@test isequal(games, expected_games)
+	@test extract_most_common_game_types(game_counts) == neutral
 
 	# All 5 mixed-type games are concord
 	game_types_only_mixed = game_types_per_strategy_pair(B0, beta0, cost, alpha, nb_phases, only_mixed_games=true)
-	@test extract_most_common_game_types([3,3,3,3,3,1];game_types=game_types_only_mixed,nb_phases,interaction_adj_matrix,only_mixed_games=true)[1] == concord
+	expected_games = [missing missing missing missing missing concord;
+									  missing missing missing missing missing concord;
+									  missing missing missing missing missing concord;
+									  missing missing missing missing missing concord;
+									  missing missing missing missing missing concord;
+										concord concord concord concord concord missing];
+	games, game_counts = count_games([3,3,3,3,3,1];game_types=game_types_only_mixed,interaction_adj_matrix)
+	@test isequal(games, expected_games)
+	@test extract_most_common_game_types(game_counts) == concord
 
 	# Of 15 (double-sided) edges, 9 are 1-3 interactions:
 	#        C(1) N(3)
 	# C(1) [ 4    2 ]
 	# N(3) [ 3    1 ] (left-up convention)
 	# which is a concord-type game
-	@test extract_most_common_game_types([3,3,3,1,1,1];game_types,nb_phases,interaction_adj_matrix)[1] == concord
+	expected_games = [missing neutral neutral concord concord concord;
+									  neutral missing neutral concord concord concord;
+									  neutral neutral missing concord concord concord;
+									  concord concord concord missing neutral neutral;
+									  concord concord concord neutral missing neutral;
+										concord concord concord neutral neutral missing];
+	games, game_counts = count_games([3,3,3,1,1,1];game_types,interaction_adj_matrix)
+	@test isequal(games, expected_games)
+	@test extract_most_common_game_types(game_counts) == concord
 
-	# Ensure that repeated evalutions (with optimizations) gives the same result as one repetition
+	# Ensure that repeated evaluations (with optimizations) gives the same result as one repetition
         initial_strategies = [3,2,3,1,4,1]
-        inital_game_type, games, game_counts = extract_most_common_game_types(initial_strategies;game_types,nb_phases,interaction_adj_matrix)
+        games, game_counts = count_games(initial_strategies;game_types,interaction_adj_matrix)
         new_strategies = [3,2,3,2,4,3]
         changes = new_strategies .!= initial_strategies
-        results_partial = extract_most_common_game_types(new_strategies,games,game_counts,changes;game_types,nb_phases,interaction_adj_matrix)
+        games_partial, game_counts_partial = count_games(new_strategies,games,game_counts,changes;game_types,interaction_adj_matrix)
+				game_type_partial = extract_most_common_game_types(game_counts)
 
 	# Compare to just calculating the new game type
-        results_full = extract_most_common_game_types(new_strategies;game_types,nb_phases,interaction_adj_matrix)
-	@test results_partial == results_full
+        games_full, game_counts_full = count_games(new_strategies;game_types,interaction_adj_matrix)
+				game_type_full = extract_most_common_game_types(game_counts_full)
+
+	@test (games_partial, game_counts_partial, game_type_partial) == (games_full, game_counts_full, game_type_full)
 end
 
 @testset "Extract counts" begin

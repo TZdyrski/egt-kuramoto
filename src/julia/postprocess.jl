@@ -26,12 +26,10 @@ include("moran.jl")
 # Declare zero type for sparse matrices
 Base.zero(::Union{Missing,Type{GameType}}) = missing
 
-function extract_most_common_game_types(strategies_per_player::AbstractVector{<:Integer};
-                                        game_types::AbstractMatrix{GameType},
-                                        nb_phases::Integer,
+function count_games(strategies_per_player::AbstractVector{<:Integer};
+                                        game_types::AbstractMatrix{Union{GameType,Missing}},
                                         interaction_adj_matrix::AbstractMatrix{<:Integer},
                                         interaction_adj_matrix_transpose::AbstractMatrix{<:Integer}=transpose(interaction_adj_matrix),
-                                        only_mixed_games::Bool=false,
                                         )
     # Initial run with no pre-calculated games
 
@@ -46,20 +44,18 @@ function extract_most_common_game_types(strategies_per_player::AbstractVector{<:
     game_counts[zero(Union{Missing,GameType})] = num_games
 
     # Now actually run the extraction
-    return extract_most_common_game_types(strategies_per_player, games, game_counts, changes;
-					  game_types, nb_phases, interaction_adj_matrix, interaction_adj_matrix_transpose, only_mixed_games)
+    return count_games(strategies_per_player, games, game_counts, changes;
+					  game_types, interaction_adj_matrix, interaction_adj_matrix_transpose)
 end
 
-function extract_most_common_game_types(strategies_per_player::AbstractVector{<:Integer},
+function count_games(strategies_per_player::AbstractVector{<:Integer},
                                         games::AbstractMatrix{Union{GameType,Missing}},
 																				game_counts::Dict{Union{GameType,Missing},Integer},
                                         changes::AbstractVector,
 																				;
-                                        game_types::AbstractMatrix{GameType},
-                                        nb_phases::Integer,
+																				game_types::AbstractMatrix{Union{GameType,Missing}},
                                         interaction_adj_matrix::AbstractMatrix{<:Integer},
                                         interaction_adj_matrix_transpose::AbstractMatrix{<:Integer}=transpose(interaction_adj_matrix),
-                                        only_mixed_games::Bool=false,
                                         )
 
     changed_idxs = findall(!iszero, changes .!== 0)
@@ -79,70 +75,62 @@ function extract_most_common_game_types(strategies_per_player::AbstractVector{<:
     # Changed nodes are destination nodes
     for col in changed_idxs
       for row = findall(!iszero, interaction_adj_matrix[:, col])
-	  value = interaction_adj_matrix[row, col]
-	  games, game_counts = update_counts(row, col, value, games, game_counts)
+				value = interaction_adj_matrix[row, col]
+				games, game_counts = update_counts(row, col, value, games, game_counts)
       end
     end
 
     # Changed nodes are source nodes
     for row in changed_idxs
       for col = findall(!iszero, interaction_adj_matrix_transpose[:, row])
-          value = interaction_adj_matrix_transpose[col, row]
-	  games, game_counts = update_counts(row, col, value, games, game_counts)
+        value = interaction_adj_matrix_transpose[col, row]
+        games, game_counts = update_counts(row, col, value, games, game_counts)
       end
     end
 
-		function check_all_same_strategy(strategies_per_player::AbstractVector{<:Integer},
-																		 nb_phases::Integer)
-				nb_players = length(strategies_per_player)
-				players_per_strategy = extract_counts(strategies_per_player, nb_phases)
-				# Check if all players were communicative/noncommunicative
-				nb_communicative = extract_num_communicative(players_per_strategy)
-				if nb_communicative == 0
-						return allNoncommunicative
-				elseif nb_communicative == nb_players
-						return allCommunicative
-				end
-				return nothing
+		return games, game_counts
+end
+
+function check_all_same_strategy(strategies_per_player::AbstractVector{<:Integer},
+																 nb_phases::Integer)
+		nb_players = length(strategies_per_player)
+		players_per_strategy = extract_counts(strategies_per_player, nb_phases)
+		# Check if all players were communicative/noncommunicative
+		nb_communicative = extract_num_communicative(players_per_strategy)
+		if nb_communicative == 0
+				return allNoncommunicative
+		elseif nb_communicative == nb_players
+				return allCommunicative
 		end
 
-    # Check if all cooperative or all non-cooperative
-    # Do this after the loop so games and game_counts are updated
-    all_same_strategy = check_all_same_strategy(strategies_per_player, nb_phases)
-    if !isnothing(all_same_strategy)
-      return all_same_strategy, games, game_counts
-    end
+		return nothing
+end
 
-		function get_most_common_game(games::AbstractMatrix{Union{Missing,GameType}},
-				game_counts::Dict{Union{Missing,GameType},Integer};
-				only_mixed_games::Bool=false)
-				total_games = sum(values(game_counts))
-				if game_counts[allCommunicative] + game_counts[allNoncommunicative] == total_games
-					# There were no mixed games;
-					# however, the all-C/all-N check also shows the population is
-					# not entirely communicative or entirely non-communicative
-					# This means that the communicative and non-communicative
-					# subpopulations are not connected (and therefore do not play any
-					# games together)
-					return disconnectedSynchronizedPopulations, games, game_counts
-				end
-
-				if only_mixed_games
-						# Create game count dictionary without CC or NN
-						mixed_game_counts = copy(game_counts)
-						delete!(mixed_game_counts, allCommunicative)
-						delete!(mixed_game_counts, allNoncommunicative)
-						# Find most common mixed game type
-						most_common_game_type = findmax(mixed_game_counts)[2]
-				else
-						# Find most common game type
-						most_common_game_type = findmax(game_counts)[2]
-				end
-
-				return most_common_game_type, games, game_counts
+function check_disconnected_synchronized(
+																game_counts::Dict{Union{GameType,Missing},Integer},
+																)
+		total_games = sum(values(game_counts))
+		if get(game_counts,missing,0) == total_games
+			# There were no mixed games;
+			# however, the all-C/all-N check also shows the population is
+			# not entirely communicative or entirely non-communicative
+			# This means that the communicative and non-communicative
+			# subpopulations are not connected (and therefore do not play any
+			# games together)
+			return disconnectedSynchronizedPopulations
 		end
 
-    return get_most_common_game(games, game_counts; only_mixed_games)
+		return nothing
+end
+
+function extract_most_common_game_types(game_counts::Dict{Union{GameType,Missing},Integer})
+    # Create game count dictionary without missing
+    non_missing_game_counts = copy(game_counts)
+    delete!(non_missing_game_counts, missing)
+		# Find most common game type
+		most_common_game_type = findmax(non_missing_game_counts)[2]
+
+		return most_common_game_type
 end
 
 function extract_order_parameters(players_per_strategy::AbstractVector{<:Integer},
@@ -470,7 +458,7 @@ end
 													 unilateral_benefit_synchronous, cost; symmetry_breaking)
 
 		# Define game type per strategy pair
-		game_types = similar(payoff, GameType)
+		game_types = similar(payoff, Union{GameType,Missing})
 		for idx in eachindex(IndexCartesian(), game_types)
 				row_player_idx = idx[1]
 				col_player_idx = idx[2]
@@ -483,8 +471,8 @@ end
 		end
 
 		if only_mixed_games
-			game_types[1:nb_phases,1:nb_phases] .= allCommunicative
-			game_types[nb_phases+1:end,nb_phases+1:end] .= allNoncommunicative
+			game_types[1:nb_phases,1:nb_phases] .= missing
+			game_types[nb_phases+1:end,nb_phases+1:end] .= missing
 		end
 		return game_types
 end
@@ -507,8 +495,19 @@ function calc_timeseries_statistics(initial_actions::AbstractVector{<:Integer}, 
     game_types = game_types_per_strategy_pair(B_to_c*cost,
                                               beta_to_B*B_to_c*cost, cost,
                                               symmetry_breaking, nb_phases; only_mixed_games)
-    most_common_game_types[time_idx+1], games, game_counts = extract_most_common_game_types(current_actions;
-      game_types, nb_phases, interaction_adj_matrix, interaction_adj_matrix_transpose, only_mixed_games)
+    games, game_counts = count_games(current_actions;
+      game_types, interaction_adj_matrix, interaction_adj_matrix_transpose)
+    # Check if all cooperative, all non-cooperative, or disconnected C/N
+    # Do this after the loop so games and game_counts are updated
+    all_same_strategy = check_all_same_strategy(current_actions, nb_phases)
+    disconnected_synchronized = check_disconnected_synchronized(game_counts)
+    if !isnothing(all_same_strategy)
+      most_common_game_types[time_idx+1] = all_same_strategy
+		elseif !isnothing(disconnected_synchronized)
+      most_common_game_types[time_idx+1] = disconnected_synchronized
+		else
+    	most_common_game_types[time_idx+1] = extract_most_common_game_types(game_counts)
+    end
     action_counts_per_timestep = extract_counts(current_actions, nb_phases)
     nb_communicative = extract_num_communicative(action_counts_per_timestep)
     fraction_communicative[time_idx+1] = nb_communicative / nb_players
@@ -516,8 +515,19 @@ function calc_timeseries_statistics(initial_actions::AbstractVector{<:Integer}, 
 
     for time_idx in 1:time_steps
       current_actions += deltas[:,time_idx]
-	    most_common_game_types[time_idx+1], games, game_counts = extract_most_common_game_types(current_actions,
-	    games, game_counts, deltas[:,time_idx]; nb_phases, game_types, interaction_adj_matrix, interaction_adj_matrix_transpose, only_mixed_games)
+	    games, game_counts = count_games(current_actions, games, game_counts, deltas[:,time_idx];
+				game_types, interaction_adj_matrix, interaction_adj_matrix_transpose)
+      # Check if all cooperative, all non-cooperative, or disconnected C/N
+			# Do this after the loop so games and game_counts are updated
+			all_same_strategy = check_all_same_strategy(current_actions, nb_phases)
+      disconnected_synchronized = check_disconnected_synchronized(game_counts)
+			if !isnothing(all_same_strategy)
+				most_common_game_types[time_idx+1] = all_same_strategy
+			elseif !isnothing(disconnected_synchronized)
+				most_common_game_types[time_idx+1] = disconnected_synchronized
+			else
+	    	most_common_game_types[time_idx+1] = extract_most_common_game_types(game_counts)
+			end
 	    action_counts_per_timestep = extract_counts(current_actions, nb_phases)
 	    nb_communicative = extract_num_communicative(action_counts_per_timestep)
 	    fraction_communicative[time_idx+1] = nb_communicative / nb_players

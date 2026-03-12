@@ -1102,6 +1102,94 @@ Overall, we see that graph structure decreases synchronization
 and asymmetry influences the dominant game types, which, in turn,
 underpin the formation of chimera states.
 
+\begin{figure*}
+\begin{adjustwidth}{-2.25in}{0in}
+  \centering
+  \begin{subcaptiongroup}
+    \stackinset{l}{10pt+\width-45pt+1cm}{t}{0pt}%
+      {\phantomcaption\label{fig:game-snapshot_celegans-full-only-mixed-games}\captiontext*{}}{%
+    \stackinset{l}{10pt}{t}{0pt}%
+      {\phantomcaption\label{fig:game-snapshot_celegans-full}\captiontext*{}}{%
+    {\includestandalone{tikz/game-snapshot}}%
+  }}
+  \end{subcaptiongroup}
+  \caption{
+    \textbf{
+			Game type diversity amongst neurons.
+    }
+    The game types at a single time step
+		amongst all player interactions
+    expressed as a fraction of all games played
+    for different values of the asymmetry $\alpha$.
+    The game types are color-coded according to the legend;
+    additionally, ``all-C'' and ``all-N'' represent when the population
+    is entirely synchronized to communicativeness or non-communicativeness, respectively.
+    The network topologies is the
+    weighted, directed \gls{celegans} connectome.
+    \protect{\subref{fig:game-snapshot_celegans-full}}
+		depicts the fraction played of each game type,
+		including ``communicative'' games between $CC$ pairings
+		and ``neutral'' games between $NN$ pairings,
+		while
+    \protect{\subref{fig:game-snapshot_celegans-full-only-mixed-games}}
+    depict the game types when only considering mixed game types
+		of $CN$ pairings.
+		The snapshot was taken at time $t = 4000000$.
+		All fractions were averaged across 10 seeds.
+  }\label{fig:game-snapshot}
+\end{adjustwidth}
+\end{figure*}
+
+In addition to the time-averaged plurality game type depicted in
+\cref{fig:game-type},
+we can also look at the finer-grained distribution of
+all games played at a single time step.
+\Cref{fig:game-snapshot}
+shows the types of games played as a fraction of all games among all
+\num{3707} directed edges of the \gls{celegans} connectome.
+The snapshot was taken at time $t=4000000$ of the simulation.
+\subref{fig:game-snapshot_celegans-full}
+depicts the fraction of each game,
+including both mixed games ($CN$ interactions)
+as well as $CC$ interactions yielding coordination-type games
+and $NN$ interactions yielding neutral-type games.
+\subref{fig:game-snapshot_celegans-full-only-mixed-games}
+shows the same result excluding $CC$ and $NN$ type games.
+
+The set of all games in \cref{fig:game-snapshot} shows some interesting
+differences when compared to the plurality games in
+\cref{fig:game-type}.
+First,
+the full set of games in
+\cref{fig:game-snapshot_celegans-full}
+displays a far greater variety of games than the neutral and
+coordination games depicted in the plurality metric
+\cref{fig:game-type_celegans-full}.
+This shows that these mixed games---dilemma, staghunt, chicken, hero,
+deadlock, and concord---are present in the population,
+even if they are never frequent enough to become the plurality.
+Similarly, when just looking at mixed-type games in
+\cref{fig:game-snapshot_celegans-full-only-mixed-games},
+we see staghunt games for $\alpha \le 0.25$
+and
+harmony games for $\alpha = 1.0$
+that never became a
+plurality
+in \cref{fig:game-type_celegans-full-only-mixed-games}.
+For $\alpha = 0.5, 0.75$,
+we see much greater similarity between
+\cref{fig:game-snapshot_celegans-full-only-mixed-games}
+and
+\cref{fig:game-type_celegans-full-only-mixed-games},
+implying each game type present becomes the plurality,
+though not necessarily with temporal frequency
+equal to its spatial frequency.
+Thus, we see that the rich array of game types accessible to the system
+in the extended $B_0-\beta_0-\alpha$ phase space of
+\cref{fig:phase-diagram}
+is thoroughly explored, even when all of the game types are not
+necessarily visible in the plurality metric of \cref{fig:game-type}.
+
 \section{Discussion}\label{sec:discussion}
 
 %\subsection{Game-type dynamics}

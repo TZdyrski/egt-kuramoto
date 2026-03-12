@@ -45,6 +45,7 @@ rule manuscript:
     "papers/primary_manuscript/tikz/well-mixed.pdf",
     "papers/primary_manuscript/tikz/sensitivity-analysis-cumulative.pdf",
     "papers/primary_manuscript/tikz/sensitivity-analysis-chimera.pdf",
+    "papers/primary_manuscript/tikz/game-snapshot.pdf",
     # Info on number of edges and self loops
     "data/processed/graph_loop_edge_number/adj_matrix_source=c-elegans.csv",
     # Info on mutation times
@@ -186,6 +187,20 @@ rule tikz_sensitivity_analysis_chimera:
   shell:
     "cd papers/primary_manuscript && latexmk -interaction=nonstopmode ../../{input.tex}"
 
+rule tikz_game_snapshot:
+  input:
+    expand([
+      "data/processed/game_snapshot/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_only_mixed_games={only_mixed_games}_selection_strength=0.2_time_snapshot={time_snapshot}_time_steps=8000000.csv",
+      ],
+      time_snapshot = [400000],
+      only_mixed_games = ["true","false"],
+			),
+    tex="papers/primary_manuscript/tikz/game-snapshot.tex"
+  output:
+    "papers/primary_manuscript/tikz/game-snapshot.pdf",
+  shell:
+    "cd papers/primary_manuscript && latexmk -interaction=nonstopmode ../../{input.tex}"
+
 rule supplementary_information:
   priority: 50 # Increase priority relative to netcdf to it generates first
   input:
@@ -228,6 +243,7 @@ wildcard_constraints:
     seed=r"\d+",
     selection_strength=r"[\d.]+",
     symmetry_breaking=r"[\d.]+",
+    time_snapshot=r"\d*",
     time_steps=r"\d*",
 
 def external_data_filename(wildcards):
@@ -394,6 +410,24 @@ rule processed_timeseries_statistics:
     "data/processed/timeseries_statistics/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}{early_cutoff_fraction_flag}{early_cutoff_fraction}{fixed_aspect_flag}{fixed_aspect}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_num_seeds={num_seeds}_only_mixed_games={only_mixed_games}_selection_strength={selection_strength}_symmetry_breaking={symmetry_breaking}_time_steps={time_steps}.csv",
   script:
     "scripts/snakemake/postprocess_timeseries_statistics.jl"
+
+rule processed_game_snapshot:
+  resources:
+    mem_mb = memory_mb_timeseries,
+    runtime = runtime_min_timeseries_statistics,
+  input:
+    "Project.toml",
+    "Manifest.toml",
+    "src/julia/postprocess.jl",
+    "src/julia/game_taxonomy.jl",
+    "src/julia/utils.jl",
+    "scripts/snakemake/snakemake_preamble.jl",
+    "scripts/snakemake/postprocess_game_snapshot.jl",
+    raw_timeseries_filename,
+  output:
+    "data/processed/game_snapshot/B_to_c={B_to_c}_adj_matrix_source={adj_matrix_source}_beta_to_B={beta_to_B}_cost={cost}{early_cutoff_fraction_flag}{early_cutoff_fraction}{fixed_aspect_flag}{fixed_aspect}_mutation_rate={mutation_rate}_nb_phases={nb_phases}{nb_players_flag}{nb_players}_num_seeds={num_seeds}_only_mixed_games={only_mixed_games}_selection_strength={selection_strength}_time_snapshot={time_snapshot}_time_steps={time_steps}.csv",
+  script:
+    "scripts/snakemake/postprocess_game_snapshot.jl"
 
 rule processed_mutation_timesteps:
   resources:

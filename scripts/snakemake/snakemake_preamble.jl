@@ -35,7 +35,7 @@ end
 
 wildcards_dict = Dict((Symbol(k),parse_string(v)) for (k,v) in wildcards_dict)
 
-integer_params = [:time_steps, :nb_phases, :nb_players, :time_step, :decimation_factor, :community_n_iter, :num_seeds, :seed, :walktrap_steps]
+integer_params = [:time_steps, :time_snapshot, :nb_phases, :nb_players, :time_step, :decimation_factor, :community_n_iter, :num_seeds, :seed, :walktrap_steps]
 wildcards_dict = Dict((k, k in integer_params ? Integer(v) : v) for (k,v) in wildcards_dict)
 bool_params = [:only_mixed_games]
 wildcards_dict = Dict((k, k in bool_params ? parse(Bool,v) : v) for (k,v) in wildcards_dict)

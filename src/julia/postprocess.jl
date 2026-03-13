@@ -242,7 +242,7 @@ function generate_communities(graph::AbstractSimpleWeightedGraph, community_algo
     return communities
 end
 
-function get_chimera_indices(
+function order_parameters_by_community(
 															initial_actions::AbstractVector{<:Integer},
 															deltas::AbstractMatrix{<:Integer},
 															communities::AbstractVector{<:Integer},
@@ -251,7 +251,7 @@ function get_chimera_indices(
 
    num_communities = length(unique(communities))
    num_times = size(deltas,2)
-   phase_parameters = Matrix{Float64}(undef,num_times+1,num_communities)
+   order_parameters = Matrix{Float64}(undef,num_times+1,num_communities)
 
    current_actions = initial_actions
 
@@ -260,28 +260,34 @@ function get_chimera_indices(
 
    # Populate initial phase parameters for each community
    for community_idx = 1:num_communities
-	   phase_parameters[0+1, community_idx] = extract_order_parameters(
+	   order_parameters[0+1, community_idx] = extract_order_parameters(
 	     extract_counts(current_actions[player_indices_by_community[community_idx]],
 	       nb_phases),nb_phases)
    end
 
    # Only update phase parameter for affected community
    for time_idx = 1:num_times
-	   phase_parameters[time_idx+1,:] = phase_parameters[time_idx,:]
+	   order_parameters[time_idx+1,:] = order_parameters[time_idx,:]
 	   current_actions += deltas[:,time_idx]
 
 	   changed_idxs = findall(deltas[:,time_idx] .!= 0)
 	   changed_community_idxs = unique(communities[changed_idxs])
 
 	   for changed_community_idx in changed_community_idxs
-		   phase_parameters[time_idx+1, changed_community_idx] = extract_order_parameters(
+		   order_parameters[time_idx+1, changed_community_idx] = extract_order_parameters(
 		     extract_counts(current_actions[player_indices_by_community[changed_community_idx]],
 		       nb_phases),nb_phases)
 	   end
    end
 
-   metastability = mean(var(phase_parameters;dims=1))
-   chimera_index = mean(var(phase_parameters;dims=2))
+	 return order_parameters
+end
+
+function get_chimera_indices(order_parameters::AbstractMatrix)
+	 # Important: order_parameters should be m-by-n array
+	 # with m time steps and n communities
+   metastability = mean(var(order_parameters;dims=1))
+   chimera_index = mean(var(order_parameters;dims=2))
 
    results = Dict("metastability_index"=>metastability, "chimera_index"=>chimera_index)
    return results

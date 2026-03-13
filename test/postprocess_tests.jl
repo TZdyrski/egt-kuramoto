@@ -117,19 +117,19 @@ end
 	# Always synchronized
 	data = DimArray([1 1 1;1 1 1;2 2 2;1 1 1;2 2 2;2 2 2], (:time_step, :player_index))
 	starting_data, deltas = encode_delta_encoded(transpose(data))
-	@test get_chimera_indices(starting_data, deltas, communities, nb_phases)["metastability_index"] ≈ 0 atol=1e-16
+	@test get_chimera_indices(order_parameters_by_community(starting_data, deltas, communities, nb_phases))["metastability_index"] ≈ 0 atol=1e-16
 
 	# Always disordered
 	data = DimArray([1 2 3;2 3 1;3 2 1;3 1 2;2 1 3;1 2 3], (:time_step, :player_index))
 	starting_data, deltas = encode_delta_encoded(transpose(data))
-	@test get_chimera_indices(starting_data, deltas, communities, nb_phases)["metastability_index"] == 0
+	@test get_chimera_indices(order_parameters_by_community(starting_data, deltas, communities, nb_phases))["metastability_index"] == 0
 
 	# Equal times synchronized and disordered (order parameter = 1 or 0)
 	time_steps = 6
 	corrected = time_steps/(time_steps-1)
 	data = DimArray([1 2 3;1 1 1;2 2 2;3 1 2;1 1 1;1 2 3], (:time_step, :player_index))
 	starting_data, deltas = encode_delta_encoded(transpose(data))
-	@test get_chimera_indices(starting_data, deltas, communities, nb_phases)["metastability_index"] ≈ 1/4*corrected
+	@test get_chimera_indices(order_parameters_by_community(starting_data, deltas, communities, nb_phases))["metastability_index"] ≈ 1/4*corrected
 end
 
 @testset "Chimera index" begin
@@ -139,15 +139,15 @@ end
 	# Both communities fully synchronized
 	data = DimArray([1 1 1 1 1 1;2 2 2 1 1 1], (:time_step, :player_index))
 	starting_data, deltas = encode_delta_encoded(transpose(data))
-	@test get_chimera_indices(starting_data, deltas, communities, nb_phases)["chimera_index"] ≈ 0 atol=1e-16
+	@test get_chimera_indices(order_parameters_by_community(starting_data, deltas, communities, nb_phases))["chimera_index"] ≈ 0 atol=1e-16
 
 	# Both communities fully disordered
 	data = DimArray([1 2 3 3 2 1;3 1 2 1 2 3], (:time_step, :player_index))
 	starting_data, deltas = encode_delta_encoded(transpose(data))
-	@test get_chimera_indices(starting_data, deltas, communities, nb_phases)["chimera_index"] == 0
+	@test get_chimera_indices(order_parameters_by_community(starting_data, deltas, communities, nb_phases))["chimera_index"] == 0
 
 	# Half of the communities synchronized and half disoredered
 	data = DimArray([1 2 3 3 3 3;2 2 2 3 1 2], (:time_step, :player_index))
 	starting_data, deltas = encode_delta_encoded(transpose(data))
-	@test get_chimera_indices(starting_data, deltas, communities, nb_phases)["chimera_index"] == 1/2
+	@test get_chimera_indices(order_parameters_by_community(starting_data, deltas, communities, nb_phases))["chimera_index"] == 1/2
 end

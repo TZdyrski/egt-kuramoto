@@ -26,7 +26,7 @@ communities = generate_communities(graph, pop!(postprocessDict, :community_algor
 
 # Define processing functions
 loading_fun = loadDict -> wload(datadir("raw", "timeseries", savename(loadDict, "jld2")))
-processing_fun = dataDict -> get_chimera_indices(dataDict["initial_actions"], dataDict["deltas"], communities, loadDict[:nb_phases])
+processing_fun = dataDict -> get_chimera_indices(order_parameters_by_community(dataDict["initial_actions"], dataDict["deltas"], communities, loadDict[:nb_phases]))
 data_generation_fun = DataFrame ∘ processing_fun ∘ loading_fun
 
 # Run code

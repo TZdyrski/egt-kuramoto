@@ -120,7 +120,7 @@ function decode_delta_encoded(starting_data::AbstractVector,deltas::AbstractMatr
   # starting_data should be a n-vector
   # and deltas should be an nxm matrix of differences
   # between successive time steps
-  state = starting_data
+	state = deepcopy(starting_data)
   for i = 1:time_step
 	  state .+= deltas[:,i]
   end

@@ -34,4 +34,7 @@ result = loadDict |> apply_all_asymm(apply_seed_avg(data_generation_fun, numSeed
 
 # Write out data
 mkpath(datadir("processed", "chimeraindex"))
-CSV.write(datadir("processed","chimeraindex",savename(wildcards,"csv")), result)
+# Shorten community_ keywords to avoid file name length limit
+wildcards_dict = Dict(pairs(wildcards))
+wildcards_dict = Dict(replace(string(k), "community_" => "comm_") => v for (k,v) in wildcards_dict)
+CSV.write(datadir("processed","chimeraindex",savename(wildcards_dict,"csv")), result)

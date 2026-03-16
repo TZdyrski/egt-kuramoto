@@ -1631,6 +1631,148 @@ between $\rho_m = 0$ and $\rho_m = 1$ gives
 $\lambda = 1/4 = \num{0.25}$.
 %TC:endignore
 
+\subsection{Sensitivity Analysis}
+\label{sec:sensitivity-analysis}
+\begin{figure*}
+\begin{adjustwidth}{-2.25in}{0in}
+  \centering
+  \begin{subcaptiongroup}
+    \stackinset{l}{20pt+\width-45pt+1.5cm}{t}{\width/240*207-45pt+1.5cm}%
+      {\phantomcaption\label{fig:sensitivity-analysis-T}\captiontext*{}}{%
+    \stackinset{l}{20pt+\width-45pt+1.5cm}{t}{\width/240*207-45pt+1.5cm}%
+      {\phantomcaption\label{fig:sensitivity-analysis-delta}\captiontext*{}}{%
+    \stackinset{l}{20pt}{t}{\width/240*207-45pt+1.5cm}%
+      {\phantomcaption\label{fig:sensitivity-analysis-m}\captiontext*{}}{%
+    \stackinset{l}{20pt+\width-45pt+1.5cm}{t}{0pt}%
+      {\phantomcaption\label{fig:sensitivity-analysis-B}\captiontext*{}}{%
+    \stackinset{l}{20pt}{t}{0pt}%
+      {\phantomcaption\label{fig:sensitivity-analysis-beta}\captiontext*{}}{%
+		{\includestandalone{tikz/sensitivity-analysis-chimera}}%
+  }}}}}
+  \end{subcaptiongroup}
+  \caption{
+    \textbf{
+			Sensitivity analysis.
+    }
+		Sensitivity analysis showing how the chimera-like index $\chi$
+		(\cref{eq:chimera_index})
+		varies when the systems parameters are changed.
+		Each is plotted as a function of the asymmetry $\alpha$.
+		The varied parameters are the
+    \protect{\subref{fig:sensitivity-analysis-beta}}
+		maximum mixed benefit to maximum joint benefit ratio
+		$\beta_0/B_0$,
+    \protect{\subref{fig:sensitivity-analysis-B}}
+		maximum joint benefit to cost ratio $B_0/c$,
+    \protect{\subref{fig:sensitivity-analysis-m}}
+		number of phases $m$,
+    \protect{\subref{fig:sensitivity-analysis-delta}}
+		selection strength $\delta$,
+		and
+    \protect{\subref{fig:sensitivity-analysis-T}}
+		simulation run time $T$.
+		Each subplots' legend shows the values of the
+		varied parameter;
+		the value used in the main text always corresponds to a black line,
+		with smaller value using blue-colored lines and larger values
+		displaying red-colored lines.
+		The vertical error bars depict the standard deviation
+		across ten seeds.
+  }\label{fig:sensitivity-analysis}
+\end{adjustwidth}
+\end{figure*}
+
+The simulations use
+a set of parameters to explore a particular portion of the
+system's parameter space.
+\Cref{fig:sensitivity-analysis} extends this analysis
+to a sensitivity analysis across different rays of the parameter space.
+Each of the subplots depicts the variation in chimera-like index $\chi$
+when changing a single parameter, shown in the subplot title.
+The values of this parameter are specified in each subplot's legend,
+with the value used in the main text depicted by a black line,
+smaller values in blue, and larger values in red.
+Additionally, each plot is shown as a function of the asymmetry
+$\alpha$,
+and vertical error bars depict the standard deviation
+of the chimera-like index $\chi$ across ten seeds.
+The subplots depict the sensitivity of the chimera-like index $\chi$
+to changes in
+\subref{fig:sensitivity-analysis-beta}
+maximum mixed benefit to maximum joint benefit ratio
+$\beta_0/B_0$,
+\subref{fig:sensitivity-analysis-B}
+maximum joint benefit to cost ratio $B_0/c$,
+\subref{fig:sensitivity-analysis-m}
+number of phases $m$,
+\subref{fig:sensitivity-analysis-delta}
+selection strength $\delta$,
+and
+\subref{fig:sensitivity-analysis-T}
+simulation run time $T$.
+
+We note that the chimera-like index is relatively insensitive
+to changes in most of the parameters depicted in
+\cref{fig:sensitivity-analysis}.
+The variations with respect to changing parameter in
+\subref{fig:sensitivity-analysis-beta}
+$\beta_0$,
+\subref{fig:sensitivity-analysis-B}
+$B_0$
+and
+\subref{fig:sensitivity-analysis-m}
+number of phases $m$
+are all less than their standard deviation,
+showing they are not statistically significant.
+This insensitivity
+to the number of phases $m$ shows
+that the finite-phase approximation of the continuous phase $\Delta
+\phi$
+has converged for the main-text simulations with $m=20$.
+Likewise,
+variations in the
+\subref{fig:sensitivity-analysis-T}
+runtime $T$ have overlapping run times for all but
+$\alpha = 0.25$ in the longest time $T=80000000$ case,
+showing that the $T = 8000000$ used in the main text
+is representative of the asymptotic dynamics
+where transients have died out.
+
+On the contrary,
+the chimera-like index
+is very sensitive to the
+\subref{fig:sensitivity-analysis-delta}
+selection strength $\delta$.
+Interestingly, increasing the selection strength
+further increases the chimera-like index.
+
+\begin{figure*}
+\begin{adjustwidth}{-2.25in}{0in}
+  \centering
+		\includestandalone{tikz/sensitivity-analysis-cumulative}%
+  \caption{
+		Sensitivity analysis showing how the communicative fraction
+		$f_{\text{comm}}$
+		varies when the number of phases $m$ is changed.
+		The legend shows the values of $m$.
+		The vertical error bars depict the standard deviation
+		across ten seeds.
+  }\label{fig:sensitivity-analysis-cumulative}
+\end{adjustwidth}
+\end{figure*}
+
+Furthermore, as an additional check on the applicability
+of approximating the continuous phase difference $\Delta \phi$
+with $m$ discrete values,
+\cref{fig:sensitivity-analysis-cumulative}
+shows the communicative fraction $f_{\text{comm}}$
+as a function of the maximum joint benefit $B_0$.
+The vertical error bars depict the standard deviation across ten seeds;
+their overlap shows that the communicative fraction has also converged
+for these values of $m$.
+Therefore, the value of $m=20$ used in the main text is a good
+approximation of the continuous phase $\Delta \phi$.
+
 \section*{Acknowledgments}
 We thank Dan Rockmore and the Neukom Institute for their
 cluster-computing support.

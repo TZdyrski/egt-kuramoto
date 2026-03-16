@@ -96,6 +96,12 @@
 % Import tikz options and preamble
 \input{tikz/preamble.tex}
 
+% Set data search path
+\pgfplotsset{
+    table/search path={../../data/processed},
+}
+\newcommand\dataSearchPath{../../data/processed}
+
 \begin{document}
 \vspace*{0.2in}
 
@@ -540,6 +546,7 @@ and the asymptotic, small-$\epsilon$ approximation given by
   }
   \label{eq:analytic_first_term}
 \end{equation}
+
 
 \section{Data availability}
 \subsection{Time-evolution animations}

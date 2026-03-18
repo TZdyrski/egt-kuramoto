@@ -211,12 +211,23 @@ rule tikz_order_parameter:
   shell:
     "cd papers/primary_manuscript && latexmk -interaction=nonstopmode ../../{input.tex}"
 
+rule tikz_selection_strength:
+  input:
+    expand(["data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_num_seeds=1_only_mixed_games=true_selection_strength={selection_strength}_symmetry_breaking=1.0_time_steps=8000000.csv",],
+		selection_strength = [0.02,0.2,2.0]),
+    tex="papers/primary_manuscript/tikz/selection-strength.tex"
+  output:
+    "papers/primary_manuscript/tikz/selection-strength.pdf",
+  shell:
+    "cd papers/primary_manuscript && latexmk -interaction=nonstopmode ../../{input.tex}"
+
 rule supplementary_information:
   priority: 50 # Increase priority relative to netcdf to it generates first
   input:
     "papers/primary_manuscript/preamble.sty",
     "papers/primary_manuscript/tikz/preamble.tex",
     "papers/primary_manuscript/tikz/game-payoffs.tex",
+    "papers/primary_manuscript/tikz/selection-strength.tex",
     tex="papers/primary_manuscript/SupplementaryInformation.tex",
   output:
     "papers/primary_manuscript/SupplementaryInformation.pdf",

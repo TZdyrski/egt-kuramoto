@@ -173,7 +173,7 @@
       xmax=50,
       ymin=0,
       ymax=0.4,
-      legend columns=6,
+      legend columns=3,
       legend to name={CommonLegend4},
       ]
       \def\game{
@@ -189,6 +189,15 @@
       }
     \end{axis}
     \node[anchor=north] (title-x) at ($(group c1r1.south east)!0.5!(group c2r1.south west)-(0,0.5cm)$) {Mixed benefit $\beta/c$};
-    \path (group c1r1.south west) -- node[below={1cm}]{\pgfplotslegendfromname{CommonLegend4}} (group c2r1.south east);
+    \path (group c1r1.south west) -- node[below={1.5cm}]{\pgfplotslegendfromname{CommonLegend4}} (group c1r1.south east);
+		%\path (group c2r1.south west) -- node[below={1.5cm}]{\begin{tabular}{c|l}
+		\node [below={1.5cm},anchor=north west] at (group c2r1.south west) {\begin{tabular}{c|l}
+			Parameter & Select transitions as $\Delta \theta = 0 \to \pi$ \\
+			\hline
+			$B_0/c=1.5$ & chicken $\to$ dilemma $\to$ staghunt \\
+			$\alpha = 1.0$ & deadlock $\to$ harmony $\to$ staghunt \\
+			$\alpha = 0.75$ & hero $\to$ concord $\to$ staghunt \\
+			$\alpha = 0.25$ & chicken $\to$ concord $\to$ staghunt
+		\end{tabular}} (group c2r1.south east);
 \end{tikzpicture}
 \end{document}

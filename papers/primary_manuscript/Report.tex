@@ -411,12 +411,14 @@ $f(\Delta \phi) = [1+\cos(\phi_j - \phi_i)]/2$.
 \begin{adjustwidth}{-2.25in}{0in}
   \centering
   \begin{subcaptiongroup}
+    \stackinset{l}{10pt+\width-45pt+2cm}{t}{\width/240*207-45pt+1.5cm}%
+      {\phantomcaption\label{fig:phase-diagram-table}\captiontext*{}}{%
     \stackinset{l}{10pt+\width-45pt+2cm}{t}{0pt}%
       {\phantomcaption\label{fig:phase-diagram-beta_alpha}\captiontext*{}}{%
     \stackinset{l}{10pt}{t}{0pt}%
       {\phantomcaption\label{fig:phase-diagram-beta_B}\captiontext*{}}{%
     {\includestandalone{tikz/phase-diagram}}%
-  }}
+  }}}
   \end{subcaptiongroup}
   \caption{
     \textbf{
@@ -444,6 +446,19 @@ $f(\Delta \phi) = [1+\cos(\phi_j - \phi_i)]/2$.
     or
     \protect{\subref{fig:phase-diagram-beta_alpha}}
     $\alpha \in [0,0.25,0.5,0.75,1]$.
+		\protect{\subref{fig:phase-diagram-table}}
+		A table showing key transitions between game types
+		to clarify the reading of
+    \protect{\subref{fig:phase-diagram-beta_B}}
+		and
+    \protect{\subref{fig:phase-diagram-beta_alpha}}.
+		The left column describes the fixed parameter,
+		with $B_0/c$ corresponding to white dots on \protect{\subref{fig:phase-diagram-beta_B}}
+		and $\alpha$ to white dots on
+		\protect{\subref{fig:phase-diagram-beta_alpha}}.
+		As the phase difference $\Delta \phi$ increase from $0$ to $\pi$,
+		$\beta = \beta_0 f(\Delta \phi)$ decreases and the dots move to the
+		left, tracing the games in the right column.
   }\label{fig:phase-diagram}
 \end{adjustwidth}
 \end{figure*}
@@ -479,6 +494,16 @@ while \cref{fig:phase-diagram-beta_alpha} shows a $\beta$-$\alpha$ slice.
 Each straight line of white dots represent permissible values of the $m = 20$ phases
 $\Delta \phi_i$ across our simulations
 and highlight which regions of parameter space are accessible.
+\begin{LineLabel}{R2-3}
+The table in \cref{fig:phase-diagram-table}
+shows some select transitions as $\Delta \phi_i$ varies from $0$ to
+$\pi$.
+For instance, when $B_0/c=1.5$---corresponding to the line of white dots
+in \cref{fig:phase-diagram-beta_B}---$\Delta \phi=0$ starts in the
+chicken region and moves left, transitioning to dilemma and then
+staghunt.
+As $\Delta \phi$ increases from $\pi$ to $2\pi$, this process reverses.
+\end{LineLabel}
 
 \begin{LineLabel}{R1-5}
 These different game types have multiple roles in the subsequent analysis.

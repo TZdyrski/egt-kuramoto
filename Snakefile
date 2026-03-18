@@ -65,7 +65,7 @@ rule tikz_c_elegans:
     "data/processed/cumulative/adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv",
     "data/processed/cumulative/adj_matrix_source=c-elegans-unweighted_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv",
     "data/processed/cumulative/adj_matrix_source=c-elegans-undirected_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv",
-    "data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv",
+    "data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=1_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv",
     tex="papers/primary_manuscript/tikz/c-elegans.tex",
   output:
     "papers/primary_manuscript/tikz/c-elegans.pdf",
@@ -146,9 +146,9 @@ rule tikz_well_mixed:
     "data/processed/cumulative/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.5_time_steps=200000000.csv",
     "data/processed/cumulative/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv",
     "data/processed/cumulative/adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=1.0_time_steps=200000000.csv",
-    "data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_num_seeds=10_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.0_time_steps=8000000.csv",
-    "data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_num_seeds=10_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv",
-    "data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_num_seeds=10_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=1.0_time_steps=8000000.csv",
+    "data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_num_seeds=1_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.0_time_steps=8000000.csv",
+    "data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_num_seeds=1_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv",
+    "data/processed/timeseries_statistics/B_to_c=1.5_adj_matrix_source=well-mixed_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_nb_players=20_num_seeds=1_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=1.0_time_steps=8000000.csv",
     tex="papers/primary_manuscript/tikz/well-mixed.tex",
   output:
     "papers/primary_manuscript/tikz/well-mixed.pdf",

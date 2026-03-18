@@ -636,8 +636,6 @@ and provide tighter error-bounds on the comparison to analytic theory.
     to the plurality mixed game type as indicated in the legend.
     The right vertical axes give the order parameter $\rho$
     (\pcref{eq:order_parameter}), in magenta, as a function of time.
-		Both the communicative frequency and order parameter
-		are averaged across 10 seeds.
     The asymmetry is
     \protect{\subref{fig:time-series_well-mixed_alpha-0}}
     $\alpha = 0$,
@@ -694,18 +692,8 @@ magenta line plots depict the order parameter
 $\rho \in [0,1]$
 given by \cref{eq:order_parameter}.
 The order parameter and communicative frequency
-are averaged over 10 seeds.
-Since these results were averaged over 10 seeds,
-the game type shown is the most-frequent among the seeds;
-ties go towards the game type appearing later
-(left-to-right and top-to-bottom reading order)
-in figure 1 of the supplementary materials.
-The horizontal stretches of all-communicative at frequencies
-$f_{\text{comm}} < 1$ represent the average of many seeds
-with $f_{\text{comm}}=1$ and a few seeds
-with $f_{\text{comm}}=0$
-and are colored grey because the majority of seeds at that time step
-are all-communicative.
+are shown for a single seed to demonstrate the mutation-induced jumps
+for a single simulation.
 
 \Cref{fig:time-series_well-mixed_alpha-0} shows the time-variation
 when the system heavily favors non-communicative players
@@ -806,8 +794,6 @@ coexisting with disordered neighboring nodes.
     Scatter plot with the same axes and coloring
     as \protect{\crefrange{fig:time-series_well-mixed_alpha-0}{fig:time-series_well-mixed_alpha-1}}
     showing the communicative frequency, plurality mixed game-types, and order parameter.
-		The communicative frequency and order parameter
-		are both averaged over 10 seeds.
   }\label{fig:c-elegans}
 \end{adjustwidth}
 \end{figure*}
@@ -819,8 +805,9 @@ the entire simulation of \num{2E8} time steps as a function
 of the maximum joint benefit $B_0$ in \num{0.04} steps
 for the \gls{celegans} connectome network topologies.
 All subplots use an asymmetry of $\alpha=0.75$.
-Additionally, all results (except the snapshot \cref{fig:graph})
-show are the average across 10 seeds;
+Additionally, the $B_0$-dependent plots
+\subref{fig:comm-frac_celegans-full}--\subref{fig:comm-frac_celegans-undirected}
+show the average across 10 seeds;
 error bars represent the standard deviation.
 
 We note that the behaviour

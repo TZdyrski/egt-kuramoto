@@ -721,9 +721,21 @@ On the right vertical axes,
 magenta line plots depict the order parameter
 $\rho \in [0,1]$
 given by \cref{eq:order_parameter}.
+\begin{LineLabel}{R2-4}
 The order parameter and communicative frequency
 are shown for a single seed to demonstrate the mutation-induced jumps
 for a single simulation.
+The mutation rate $\mu=\num{1e-4}$ means that a mutation occurs,
+on average, every \num{1e4} time steps;
+for the \num{8e5} time steps, we therefore expect \num{80} mutations.
+These mutations cause the observed dips.
+But we note that there are significantly fewer than \num{80} dips
+shown.
+The quick extinction of mutant invaders
+means that they are often missed when we $80x$-decimate the time-series
+for plotting,
+only observing $\approx 6$ visible mutations.
+\end{LineLabel}
 
 \Cref{fig:time-series_well-mixed_alpha-0} shows the time-variation
 when the system heavily favors non-communicative players

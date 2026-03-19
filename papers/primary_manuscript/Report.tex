@@ -1810,6 +1810,30 @@ for these values of $m$.
 Therefore, the value of $m=20$ used in the main text is a good
 approximation of the continuous phase $\Delta \phi$.
 
+\subsection{Analytic assumptions}\label{sec:analytic-assumptions}
+\begin{LineLabel}{R1-13}
+The communicative frequency
+for the well-mixed population
+in \cref{fig:multi-comm-frac} compared the simulation results to the
+analytic approximation.
+The full derivation of this analytic result is presented in
+Eq.\ 10 in supplementary material,
+but here we will highlight the assumptions made in these approximations.
+The derivation of $f_{\text{comm}}$ is only directly applicable to
+complete graphs, as used in the well-mixed case.
+Additionally, we assume a small mutation rate $\mu \ll 1$
+such that the previous mutation either fixates or goes extinct before
+the next mutation occurs.
+As seen in the time-series plots
+\subref{fig:time-series_well-mixed_alpha-0}--\subref{fig:time-series_well-mixed_alpha-1}
+of \cref{fig:well-mixed} with $\mu = \num{1e-4}$,
+the mutations fixate or go extinct almost immediately (less than the plotting
+sample frequency of 800 time-steps),
+well before the average mutation time of $1/\mu = \num{1e4}$.
+Thus, the two main assumptions (complete graph and $\mu \ll 1$)
+of the derivation are satisfied for our choices of setup and parameters.
+\end{LineLabel}
+
 \section*{Acknowledgments}
 We thank Dan Rockmore and the Neukom Institute for their
 cluster-computing support.

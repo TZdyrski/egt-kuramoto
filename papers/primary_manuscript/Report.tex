@@ -1424,16 +1424,24 @@ and if both are non-communicative ($NN$), the matrix is
 \end{equation}
 with $f(\Delta \phi) = [1+\cos(\phi_j - \phi_i)]/2$
 (\pcref{fig:payoff_matrix}).
-Here, $B_0$, $\beta_0$, $\alpha$, and $c$ are fixed parameters
-defining the game.
+\begin{LineLabel}{R1-12}
+Here, $B_0$, $\beta_0$, $\alpha$, and $c$ are non-dimensional,
+fixed parameters defining the game.
 The cost $c$ represents the penalty paid by communicative players,
 and $B_0$ and $\beta_0$ are the maximum benefits paid with
 joint $CC$ communicators and mixed $CN$ players, respectively.
 The phase-dependent function $f(\Delta \phi)$ encodes
-the influence of phase mismatches.
+sinusoidal-dependence on the phase-mismatch of the standard Kuramoto
+model (shifted up to ensure it's always positive).
 Finally, the benefit asymmetry $\alpha \in [0,1]$ breaks the symmetry
 between the payoff for the communicator and the non-communicator
 when exactly one player is communicative.
+We note that the midpoint $\alpha = 1/2$ corresponds to the symmetric
+case.
+Therefore, we have added a factor of $2$ to both $2 \alpha$ and
+$2(1-\alpha)$, ensuring that the $\alpha=1/2$ reduces to simply $\beta_0
+f(\Delta \phi)$, matching previous work~\cite{tripp2022evolutionary}.
+\end{LineLabel}
 
 \subsection{Population setup}\label{sec:pop_setup}
 

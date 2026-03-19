@@ -1291,16 +1291,66 @@ which is corroborated in our simulations by the inset below
 \cref{fig:game-type_well-mixed-only-mixed-games}.
 
 %\subsection{Chimera states}
+\begin{LineLabel}{R1-6}
 Next, we will discuss the observed chimera states.
 Another study of the \gls{celegans} connectome also found
 chimera-like states using an entirely non-game-theory tool,
 modular neural networks~\cite{hizanidis2016chimera}.
-That study found a maximum chimera-like index of \num{0.12},
-close to our value of \num{0.07} for $\alpha = 0.5$,
-despite the different network models of the \gls{celegans} connectome considered.
-This agreement between two different models of neurons
-reveals that the emergence of chimera states
-is most likely primarily driven by the connectivity structure itself.
+This study applied a Hindmarsh-Rose model of ODEs to the \gls{celegans}
+connectome with both chemical and electrical connections.
+The authors split the connectome into six communities
+using a walktrap algorithm
+and used strong, linear electrical connections within communities
+and weaker, nonlinear chemical connections between communities.
+In contrast, our model uses nonlinear chemical connections between all
+neurons of the experimentally measured chemical
+connectome~\cite{cook2019whole}, but does not include the
+(distinct) electrical connectome.
+The authors found a relatively large metastability index $\lambda$,
+up to $\lambda = 0.07$ for strong inter-community electrical
+connections.
+In contrast,
+our model generated a smaller metastability index
+$\lambda \le 0.03$;
+this is likely due to our homogenous synapse type between-
+and within-communities, suppressing the heterogeneity necessary for
+metastability.
+Furthermore,
+the authors also observed chimera-like states
+with a maximum chimera-like index of \num{0.12}.
+The agreement with our chimera-like index of
+$\chi \approx \numrange{0.08}{0.12}$
+for $\alpha = 0.5$,
+is encouraging;
+the agreement in $\chi$ between two very different models of neurons
+suggests that chimera states
+these chimera states are a robust feature of the \gls{celegans}
+connectome independent of the model.
+\end{LineLabel}
+
+\begin{LineLabel}{R1-23}
+Furthermore, our model offers two novel improvements over a
+Hindmarsh-Rose model: interaction-interpretability
+and computational ease.
+The interpretation of neuron interactions
+using classical 2-player game types offers
+insight into the different behaviors displayed in different regions of
+the parameter space.
+Additionally,
+compared to a system of ODEs like the Hindmarsh-Rose model,
+our discrete-strategy and -phase EGT model
+is less computationally demanding.
+This computational advantage enables wide parameter sweeps
+(see, \eg{}, \cref{sec:sensitivity-analysis})
+for determining which parameter combinations produce the strongest
+chimera-like signals.
+Given the hypothesized role of chimera-like states in
+cognition~\cite{santos2017chimeralike,patton2025changing},
+this computational tool could enable correlating experimental statistics of
+\gls{celegans} chimera states with single-neurons payoffs $B_0$,
+$\beta_0$, \etc{}, improving neuron characterization and enable further
+\textit{in silico} studies.
+\end{LineLabel}
 
 %\section{Conclusion}
 Chimera states of networked oscillators

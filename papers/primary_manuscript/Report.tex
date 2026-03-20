@@ -224,10 +224,24 @@ This tool is useful for studying how local interaction rules
 yield large-scale patterns such as cooperation~\cite{sigmund1999evolutionary}
 and has found use in fields including international politics, ecology,
 and protein folding~\cite{traulsen2023future}.
-Studies~\cite{cohen2009evolutionary,tripp2022evolutionary,poggio2025computational}
+\begin{LineLabel}{R1-18a}
+Studies~\cite{cohen2009evolutionary,madeo2017evolutionary,tripp2022evolutionary,poggio2025computational}
 have even applied EGT to non-reproducing neurons
 by viewing neuron plasticity as an evolutionary process
 where firing patterns change and are ``learned'' over time.
+These studies use a neurogame-theoretic approach:
+players are neurons;
+strategies are dynamical properties like
+firing rates~\cite{cohen2009evolutionary} or
+activation/inhibition~\cite{madeo2017evolutionary};
+and payoffs
+arise from
+firing rate stability~\cite{cohen2009evolutionary}
+or
+emulative/non-emulative neuron
+tendencies~\cite{madeo2017evolutionary}.
+\end{LineLabel}
+
 Evolutionary \emph{graph} theory places evolutionary games
 on graphs to investigate the role of structure in population evolution.
 Prior studies have found that structure
@@ -301,17 +315,24 @@ phenomenological connections to control theory~\cite{yan2017network},
 and chimera states~\cite{hizanidis2016chimera}.
 
 %\subsection{Outline}
-\begin{LineLabel}{R2-2}
 In this paper,
 we introduce an asymmetric evolutionary Kuramoto model
 on graphs
 and analyze its chimera-like states on the
 \gls{celegans} connectome.
+\begin{LineLabel}{R1-18b}
 The newly introduced graph structure is necessary for modeling
 these Kuramoto-like players on structured populations,
 such as neuron connectomes, and it can qualitatively change
 population dynamics by selectively enhancing or suppressing
 cooperation~\cite{allen2014games}.
+This represents a new extension
+of the neurogame-theoretic framework
+by combining both Kuramoto-type oscillators for representing neuron
+phases
+and graph structure for representing connectomes.
+\end{LineLabel}
+\begin{LineLabel}{R2-2}
 Furthermore, this payoff asymmetry between communicators ($C$) and non-communicators ($N$)
 models the inherent asymmetry of pre- and post-synaptic junctions:
 if the source neuron is $N$ and the destination neuron is $C$,

@@ -44,9 +44,9 @@
 \renewcommand{\clipboard@write}[2]{\immediate\write\clipboard@fileout{\noexpand\clipboard{#1}{\expandonce{#2}}}}
 \NewEnviron{LineLabel}[1]{%
   % Create a linelabel with label <mandatory argument>-a
-  \linelabel{#1-a}%
-	\Copy{#1}{\BODY}%
-  \linelabel{#1-b}%
+  \linelabel{#1-a}
+	\Copy{#1}{\BODY}
+  \linelabel{#1-b}
 }
 
 % Create line number cross-referencing command

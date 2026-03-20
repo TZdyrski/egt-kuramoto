@@ -550,6 +550,65 @@ and the asymptotic, small-$\epsilon$ approximation given by
   \label{eq:analytic_first_term}
 \end{equation}
 
+\section{Selection strength}
+\begin{figure*}
+\begin{adjustwidth}{-2.25in}{0in}
+  \centering
+  \begin{subcaptiongroup}
+    \stackinset{l}{20pt}{t}{\width/240*207-45pt+1.5cm}%
+      {\phantomcaption\label{fig:selection_strength-2}\captiontext*{}}{%
+    \stackinset{l}{20pt+\width-45pt+1.5cm}{t}{0pt}%
+      {\phantomcaption\label{fig:selection_strength-02}\captiontext*{}}{%
+    \stackinset{l}{20pt}{t}{0pt}%
+      {\phantomcaption\label{fig:selection_strength-002}\captiontext*{}}{%
+		{\includestandalone{tikz/selection-strength}}%
+  }}}
+  \end{subcaptiongroup}
+  \caption{
+    \textbf{
+			Selection strength impact.
+    }
+    Scatter plots of the instantaneous $f_{\text{comm}}$
+		and order parameter $\rho$ for different values of the selection
+		strength $\delta$, as shown in the subplot titles.
+    The left vertical axes show the instantaneous $f_{\text{comm}}$
+    as a function of time and are color-coded according
+    to the plurality mixed game type as indicated in the legend.
+    The right vertical axes give the order parameter $\rho$
+    Scatter plots use the same axes and coloring as Fig. 3A-3C in the main text
+    showing the communicative frequency, plurality mixed game-types, and order parameter.
+		The symmetry breaking is $\alpha = 1$.
+		The selection strengths shown are
+		\protect{\subref{fig:selection_strength-002}}
+		$\delta = 0.02$,
+		\protect{\subref{fig:selection_strength-02}}
+		$\delta = 0.2$,
+		and
+		\protect{\subref{fig:selection_strength-2}}
+		$\delta = 2.0$.
+  }\label{fig:selection-strength}
+\end{adjustwidth}
+\end{figure*}
+
+The main simulations all used a selection strength of $\delta = 0.2$;
+this was chosen to be sufficiently small that analytic approximations
+could be applied (\cf{} \cref{sec:analytic_comm_frac}).
+However, the sensitivity analysis shows that the system is very
+sensitive to the selection strength, with higher selection $\delta$
+yielding stronger chimera-like states.
+Therefore, \cref{fig:selection-strength} displays time-series data
+from three values of $\delta$: very weak selection $0.02$, (baseline)
+weak selection $0.2$, and strong selection $2.0$.
+The other parameters are the usual values from the main text,
+and the symmetry breaking is $\alpha = 1.0$.
+Interestingly, the very-weak case $\delta = 0.02$ shows that the system
+is unable to maintain communication even in this strongly biased
+$\alpha=1$ regime.
+Both the weak $\delta = 0.2$ and strong $\delta = 2.0$ cases
+successfully maintain communication.
+Furthermore, we see that the stronger selection $\delta = 2.0$
+dampens some of the mutation-induced jumps,
+as is expected by stronger fitness-induced selection.
 
 \section{Phase \vs{} Strategy}
 \begin{figure*}

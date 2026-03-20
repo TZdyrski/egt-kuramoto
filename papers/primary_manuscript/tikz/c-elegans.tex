@@ -9,6 +9,9 @@
 % Import tikz options and preamble
 \input{preamble}
 
+% Include definitions and custom commands
+\input{../custom-definitions}
+
 % Set data search path
 \pgfplotsset{
     table/search path={../../../data/processed},
@@ -18,7 +21,7 @@
 \begin{document}
 \begin{tikzpicture}
   \begin{groupplot}[
-    group style={group size=1 by 3},
+    group style={group size=2 by 2},
     fraction communicative chart,
     ylabel style={blue},
     y tick label style=blue,
@@ -26,58 +29,11 @@
     ]
       \nextgroupplot
 				\addplot table[x=B0,y=communicative_fraction_mean,y error=communicative_fraction_std]{cumulative/adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv};
-      \nextgroupplot[
-        ylabel={Communiciative frequency $f_{\text{comm}}$},
-      ]
+      \nextgroupplot
         \addplot table[x=B0,y=communicative_fraction_mean,y error=communicative_fraction_std]{cumulative/adj_matrix_source=c-elegans-unweighted_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv};
       \nextgroupplot[xlabel={Maximum joint benefit $B_0$}]
         \addplot table[x=B0,y=communicative_fraction_mean,y error=communicative_fraction_std]{cumulative/adj_matrix_source=c-elegans-undirected_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv};
-  \end{groupplot}
-
-  % See below for description of shift;
-  % The origin of this plot is near the (current, rotated) top center;
-  % Without the (1.4, -1/4) factors, this would be at top left of the (2,2) subplot
-  % position; with the (1.4, -1/4) factors, this is effectively the top
-  % left of the (2.4, 3/4) subplot position
-  % This was found (by trial-and-error) to be a good spot for the
-  % (current, rotated) top center of the plot
-  \begin{scope}[shift={({1.4*(\width-45pt+1cm)},{-1/4*(\width/\axisdefaultwidth*\axisdefaultheight-45pt+1cm)})},
-	  rotate=90]
-    % Read node coordinates and create nodes
-    \csvreader[head to column names]{\dataSearchPath/graph_structure_snapshot/vertices_B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_seed=12345_selection_strength=0.2_symmetry_breaking=0.75_time_step=560000_time_steps=8000000.csv}{}%
-    {%
-      \node[draw, circle, draw=none, index of colormap=\strategyIndex of strategycolors, fill=., inner sep=1.5] (\index) at (\x, \y) {};
-    }
-
-    \begin{scope}[on background layer]
-      % Decrease total opacity to prevent high opacity of overlapping edges
-      \begin{scope}[transparency group,opacity=.75]
-      % Read edges and draw connections between nodes
-      \csvreader[head to column names]{\dataSearchPath/graph_structure/edges_adj_matrix_source=c-elegans.csv}{}%
-      {%
-        % Make individual opacity low; multiple overlapping edges can still have high opacity
-        \ifthenelse{\equal{\src}{\dst}}
-        { \path[in=-45,out=45,loop,->,>=latex,line width=0.1,opacity=0.2] (\src) edge (\dst);}
-        { \path[->,>=latex,line width=0.1,opacity=0.2] (\src) edge (\dst);}
-      }
-      \end{scope}
-    \end{scope}
-  \end{scope}
-
-  % Default spacing between subplots is axis width (height) defaulting
-  % to \axisdefaultwidth (\axisdfaultheight) plus default horizontal
-  % (vertical) sep defaulting to 1cm
-  % We subtract 45pt because a fixed 45pt padding is added around the axis
-  % for decorations
-  % Since we change the width, the height is scaled to maintain the
-  % default aspect ratio
-  % So, (\width-45pt+1cm,{-(\width/\axisdefaultwidth*\axisdefaultheight-45pt+1cm)})
-  % with positive x displacement and negative y displacement, would
-  % place the axis where the (2,2) subplot should be.
-  % We want to actually place it lower, where a hypothetical (2, 2+2/3)
-  % subplot would be
-  \begin{scope}[shift={(\width-45pt+1cm,{-5/3*(\width/\axisdefaultwidth*\axisdefaultheight-45pt+1cm)})}]
-    \begin{axis}[
+			\nextgroupplot[
       ymin=0,
       ymax=1,
       enlarge y limits=0.05,
@@ -91,9 +47,25 @@
       ylabel={Order Parameter},
       ylabel style={magenta},
     ]
-    \addplot [magenta] table[y=order_parameter_mean] {timeseries_statistics/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=1_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv};
-    \end{axis}
-    \begin{axis}[
+    \addplot [magenta] table[x=time,y=order_parameter_mean] {timeseries_statistics/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=1_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv};
+  \end{groupplot}
+
+  \begin{groupplot}[
+    group style={group size=2 by 2},
+    ]
+    \nextgroupplot[
+      hide x axis,
+      hide y axis,
+      ]
+    \nextgroupplot[
+      hide x axis,
+      hide y axis,
+      ]
+    \nextgroupplot[
+      hide x axis,
+      hide y axis,
+      ]
+		\nextgroupplot[
       name=timeseries,
       grid,
       ymin=0,
@@ -132,7 +104,51 @@
       },
   ]
     \addplot table [y=communicative_fraction_mean, meta=game_type] {timeseries_statistics/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_early_cutoff_fraction=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=1_only_mixed_games=true_selection_strength=0.2_symmetry_breaking=0.75_time_steps=8000000.csv};
-    \end{axis}
+	\end{groupplot}
+
+  % See below for description of shift;
+  % The origin of this plot is near the (current, rotated) top center;
+  % Without the (1.4, -1/4) factors, this would be at top left of the (2,2) subplot
+  % position; with the (1.4, -1/4) factors, this is effectively the top
+  % left of the (2.4, 3/4) subplot position
+  % This was found (by trial-and-error) to be a good spot for the
+  % (current, rotated) top center of the plot
+  \begin{scope}[shift={({0.4*(\width-45pt+1cm)},{-2.1*(\width/\axisdefaultwidth*\axisdefaultheight-45pt+1cm)})},
+	  rotate=90]
+    % Read node coordinates and create nodes
+    \csvreader[head to column names]{\dataSearchPath/graph_structure_snapshot/vertices_B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_seed=12345_selection_strength=0.2_symmetry_breaking=0.75_time_step=560000_time_steps=8000000.csv}{}%
+    {%
+      \node[draw, circle, draw=none, index of colormap=\strategyIndex of strategycolors, fill=., inner sep=1.5] (\index) at (\x, \y) {};
+    }
+
+    \begin{scope}[on background layer]
+      % Decrease total opacity to prevent high opacity of overlapping edges
+      \begin{scope}[transparency group,opacity=.75]
+      % Read edges and draw connections between nodes
+      \csvreader[head to column names]{\dataSearchPath/graph_structure/edges_adj_matrix_source=c-elegans.csv}{}%
+      {%
+        % Make individual opacity low; multiple overlapping edges can still have high opacity
+        \ifthenelse{\equal{\src}{\dst}}
+        { \path[in=-45,out=45,loop,->,>=latex,line width=0.1,opacity=0.2] (\src) edge (\dst);}
+        { \path[->,>=latex,line width=0.1,opacity=0.2] (\src) edge (\dst);}
+      }
+      \end{scope}
+    \end{scope}
+  \end{scope}
+
+	\begin{scope}[shift={({1.1*(\width-45pt+1cm)},{-2*(\width/\axisdefaultwidth*\axisdefaultheight-45pt+1cm)})}]
+		\node [draw,circle] (wellmixed) {well-mixed};
+		\node [draw,circle,above right=of wellmixed] (unweighted) {unweighted};
+		\node [draw,circle,below right=of wellmixed] (undirected) {undirected};
+		\node [draw,circle,below right=of unweighted] (celegans) {\glsfmtshort{celegans}};
+
+		\draw[thick] (wellmixed) -- node[midway,above left] {0.026} (unweighted);
+		\draw[thick] (wellmixed) -- node[midway,below left] {0.13} (undirected);
+		\draw[thick] (wellmixed) -- node[midway,above] {0.17} (celegans);
+		\draw[thick] (celegans) -- node[midway,above right] {0.18} (unweighted);
+		\draw[thick] (celegans) -- node[midway,below right] {0.06} (undirected);
+	\end{scope}
+
   % Make an invisible axis to create a legend that is the union
   % of all the data table's column names
   \begin{axis}[
@@ -194,7 +210,7 @@
     \addlegendimage{ybar, single ybar legend, fill=magenta, draw=black}%
     \addlegendentry{order parameter}%
   \end{axis}
+  \node[rotate=90,anchor=south] at ($(group c1r1.north west)!0.5!(group c1r2.south west)-(1cm,0)$) {Communicative frequency $f_{\text{comm}}$};
   \path (timeseries.south west) -- node[below={1cm}]{\pgfplotslegendfromname{CElegansLegend}} (timeseries.south east);
-  \end{scope}
 \end{tikzpicture}
 \end{document}

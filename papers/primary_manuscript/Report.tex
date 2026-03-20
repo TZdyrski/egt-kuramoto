@@ -826,18 +826,20 @@ coexisting with disordered neighboring nodes.
 \begin{adjustwidth}{-2.25in}{0in}
   \centering
   \begin{subcaptiongroup}
-    \stackinset{l}{50pt+\width-45pt+1cm}{t}{(\width/240*207-45pt+1cm)*5/3}%
-      {\phantomcaption\label{fig:time-series_celegans-full}\captiontext*{}}{%
-    \stackinset{l}{50pt+\width-45pt+1cm}{t}{(\width/240*207-45pt+1cm)*4/10}%
-      {\phantomcaption\label{fig:graph}\captiontext*{}}{%
+    \stackinset{l}{50pt+\width-45pt+1cm}{t}{(\width/240*207-45pt+1cm)*2}%
+      {\phantomcaption\label{fig:standard_deviation}\captiontext*{}}{%
     \stackinset{l}{50pt}{t}{(\width/240*207-45pt+1cm)*2}%
-      {\phantomcaption\label{fig:comm-frac_celegans-undirected}\captiontext*{}}{%
+      {\phantomcaption\label{fig:time-series_celegans-full}\captiontext*{}}{%
+    \stackinset{l}{50pt+\width-45pt+1cm}{t}{\width/240*207-45pt+1cm}%
+      {\phantomcaption\label{fig:graph}\captiontext*{}}{%
     \stackinset{l}{50pt}{t}{\width/240*207-45pt+1cm}%
+      {\phantomcaption\label{fig:comm-frac_celegans-undirected}\captiontext*{}}{%
+    \stackinset{l}{50pt+\width-45pt+1cm}{t}{0pt}%
       {\phantomcaption\label{fig:comm-frac_celegans-unweighted}\captiontext*{}}{%
     \stackinset{l}{50pt}{t}{0pt}%
       {\phantomcaption\label{fig:comm-frac_celegans-full}\captiontext*{}}{%
     {\includestandalone{tikz/c-elegans}}%
-  }}}}}
+  }}}}}}
   \end{subcaptiongroup}
   \caption{
     \textbf{
@@ -869,6 +871,14 @@ coexisting with disordered neighboring nodes.
     Scatter plot with the same axes and coloring
     as \protect{\crefrange{fig:time-series_well-mixed_alpha-0}{fig:time-series_well-mixed_alpha-1}}
     showing the communicative frequency, plurality mixed game-types, and order parameter.
+    \protect{\psubref{fig:standard_deviation}}
+		A flowchart showing the pairwise standard deviation between the various communicative
+		fractions $f_{\text{comm}}$:
+		``well-mixed'' is \protect{\cref{fig:time-series_well-mixed_alpha-075}},
+		``unweighted'' is \protect{\psubref{fig:comm-frac_celegans-unweighted}},
+		``unundirected'' is \protect{\psubref{fig:comm-frac_celegans-undirected}},
+		and
+		``\glsfmtshort{celegans}'' is \protect{\psubref{fig:comm-frac_celegans-full}}.
   }\label{fig:c-elegans}
 \end{adjustwidth}
 \end{figure*}
@@ -918,6 +928,22 @@ This similarity implies that the connectome's edge weights
 cause most of the deviation
 between the \psubref{fig:comm-frac_celegans-full} full \gls{celegans}
 case and the \cref{fig:multi-comm-frac} well-mixed case.
+
+\begin{LineLabel}{R1-8}
+We can further quantify the relative influence of weightedness and
+directedness by
+comparing (\subref{fig:comm-frac_celegans-full}--\subref{fig:comm-frac_celegans-undirected})
+with the \psubref{fig:time-series_well-mixed_alpha-075} well-mixed case.
+\Cref{fig:standard_deviation} shows the pairwise standard deviations
+calculated between the well-mixed, unweighted, undirected, and full
+\gls{celegans} cases.
+In particular, we see that the unweighted \vs{} \gls{celegans} standard
+deviation is three times larger than the undirected \vs{}
+\gls{celegans} standard deviation.
+Therefore, this implies that the weighted (undirected) edges
+have three times the influence as the directed (unweighted) edges
+in the full \gls{celegans} communicative frequency profile.
+\end{LineLabel}
 
 We can also investigate the time-evolution of the \gls{celegans} system
 using the same parameters as the

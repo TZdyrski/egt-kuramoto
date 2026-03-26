@@ -102,10 +102,10 @@ begin
 	end
 
 	local cumulativeDataUrls = Dict(
-		"well-mixed" => "https://zenodo.org/records/17135745/files/cumulative_adj_matrix_source=well-mixed_time_steps=200000000.nc",
-		"c-elegans" => "https://zenodo.org/records/17135745/files/cumulative_adj_matrix_source=c-elegans_time_steps=200000000.nc",
-		"c-elegans-undirected" => "https://zenodo.org/records/17135745/files/cumulative_adj_matrix_source=c-elegans-undirected_time_steps=200000000.nc",
-		"c-elegans-unweighted" => "https://zenodo.org/records/17135745/files/cumulative_adj_matrix_source=c-elegans-unweighted_time_steps=200000000.nc",
+		"well-mixed" => "https://zenodo.org/records/19235754/files/cumulative_adj_matrix_source=well-mixed_time_steps=200000000.nc",
+		"c-elegans" => "https://zenodo.org/records/19235754/files/cumulative_adj_matrix_source=c-elegans_time_steps=200000000.nc",
+		"c-elegans-undirected" => "https://zenodo.org/records/19235754/files/cumulative_adj_matrix_source=c-elegans-undirected_time_steps=200000000.nc",
+		"c-elegans-unweighted" => "https://zenodo.org/records/19235754/files/cumulative_adj_matrix_source=c-elegans-unweighted_time_steps=200000000.nc",
 	)
 	local cumulativeDataFilenames = Dict(
 		"well-mixed" => "cumulative_adj_matrix_source=well-mixed_time_steps=200000000.nc",
@@ -116,10 +116,10 @@ begin
 	cumulativeDatasets = Dict(k => open_or_download(cumulativeDataFilenames[k],v) for (k,v) in cumulativeDataUrls)
 
 	local timeseriesDataUrls = Dict(
-		"well-mixed" => "https://zenodo.org/records/17135745/files/timeseries_statistics_adj_matrix_source=well-mixed_time_steps=8000000.nc",
-		"c-elegans" => "https://zenodo.org/records/17135745/files/timeseries_statistics_adj_matrix_source=c-elegans_time_steps=8000000.nc",
-		"c-elegans-undirected" => "https://zenodo.org/records/17135745/files/timeseries_statistics_adj_matrix_source=c-elegans-undirected_time_steps=8000000.nc",
-		"c-elegans-unweighted" => "https://zenodo.org/records/17135745/files/timeseries_statistics_adj_matrix_source=c-elegans-unweighted_time_steps=8000000.nc",
+		"well-mixed" => "https://zenodo.org/records/19235754/files/timeseries_statistics_adj_matrix_source=well-mixed_time_steps=8000000.nc",
+		"c-elegans" => "https://zenodo.org/records/19235754/files/timeseries_statistics_adj_matrix_source=c-elegans_time_steps=8000000.nc",
+		"c-elegans-undirected" => "https://zenodo.org/records/19235754/files/timeseries_statistics_adj_matrix_source=c-elegans-undirected_time_steps=8000000.nc",
+		"c-elegans-unweighted" => "https://zenodo.org/records/19235754/files/timeseries_statistics_adj_matrix_source=c-elegans-unweighted_time_steps=8000000.nc",
 	)
 	local timeseriesDataFilenames = Dict(
 		"well-mixed" => "timeseries_statistics_adj_matrix_source=well-mixed_time_steps=8000000.nc",

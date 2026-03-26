@@ -1,0 +1,68 @@
+\ProvidesPackage{peer-review}
+
+\RequirePackage[right]{lineno}
+\linenumbers
+\RequirePackage{verbatim}
+\RequirePackage{xr}
+\RequirePackage{ifthen}
+\RequirePackage{environ}
+\RequirePackage{clipboard}
+\newclipboard{line-numbers}
+\RequirePackage{xcolor}
+\RequirePackage{titling} % change formatting of title
+\RequirePackage{amsmath} % improve math output
+
+\NewDocumentCommand{\docref}{m o}{%
+% First value is paper reference number
+% Second value is reviewer number; if nothing is passed, instead respond
+% to the editor
+  \IfValueTF{#2}%
+  {%
+    \gdef\docRef{Ref: Paper \##1, REPLY TO Reviewer #2}
+  }
+  {%
+    \gdef\docRef{Ref: Paper \##1, REPLY TO Editor}
+  }
+}
+\newcommand{\docRef}{}
+\renewcommand{\maketitlehooka}{%
+  \textbf{\docRef}\par\smallskip
+}
+
+% Define reviewer comment environment
+\newenvironment{reviewerComment}
+  {
+  \begin{quote}
+  \sffamily \small \color{darkgray}
+  }
+  {
+  \end{quote}
+  }
+
+% Expand the second argument
+%\newcommand\clipboard@write   [2] {\immediate\write\clipboard@fileout{\noexpand\clipboard{#1}{\unexpanded{#2}}}}
+\renewcommand{\clipboard@write}[2]{\immediate\write\clipboard@fileout{\noexpand\clipboard{#1}{\expandonce{#2}}}}
+\NewEnviron{LineLabel}[1]{%
+  % Create a linelabel with label <mandatory argument>-a
+  \linelabel{#1-a}
+	\Copy{#1}{\BODY}
+  \linelabel{#1-b}
+}
+
+% Create line number cross-referencing command
+\NewDocumentCommand{\LineRef}{m}{%
+	\ifthenelse{\equal{\ref{#1-a}}{\ref{#1-b}}}{%
+  line~\ref{#1-a}%
+	}{%
+  lines~\ref{#1-a}-\ref{#1-b}%
+	}%
+}
+
+% Create line number cross-referencing command
+% If starred, don't include parentheses
+\NewDocumentCommand{\LineShow}{m}{%
+	\begin{quote}
+		\itshape
+		\Paste{#1}
+	\end{quote}
+}

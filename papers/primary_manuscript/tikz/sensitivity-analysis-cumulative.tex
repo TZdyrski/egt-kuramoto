@@ -1,0 +1,39 @@
+%! TeX program = lualatex
+% SPDX-License-Identifier: CC-BY-4.0
+
+\documentclass[tikz]{standalone}
+
+% Import custom style file containing common packages and options
+\usepackage{../preamble}
+
+% Import tikz options and preamble
+\input{preamble}
+
+% Set data search path
+\pgfplotsset{
+    table/search path={../../../data/processed},
+}
+\newcommand\dataSearchPath{../../../data/processed}
+
+\begin{document}
+\begin{tikzpicture}
+  \begin{axis}[
+    fraction communicative chart,
+		cycle list name={color},
+		only marks,
+    ylabel style={blue},
+    y tick label style=blue,
+    error bars/y dir=both,error bars/y explicit,
+		legend pos=south east,
+		xlabel={Maximum joint benefit $B_0$},
+		ylabel={Communicative frequency $f_{\text{comm}}$},
+    ]
+			\addlegendimage{empty legend}
+			\addplot table[x=B0,y=communicative_fraction_mean,y error=communicative_fraction_std]{cumulative/adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=5_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv};
+			\addplot table[x=B0,y=communicative_fraction_mean,y error=communicative_fraction_std]{cumulative/adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=10_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv};
+			\addplot table[x=B0,y=communicative_fraction_mean,y error=communicative_fraction_std]{cumulative/adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv};
+			\addplot table[x=B0,y=communicative_fraction_mean,y error=communicative_fraction_std]{cumulative/adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=40_num_seeds=10_selection_strength=0.2_symmetry_breaking=0.75_time_steps=200000000.csv};
+		\legend{\textbf{Num.\ Phases $m$},$5$,$10$,$20$,$40$}
+  \end{axis}
+\end{tikzpicture}
+\end{document}

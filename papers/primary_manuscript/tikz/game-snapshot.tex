@@ -1,0 +1,125 @@
+%! TeX program = lualatex
+% SPDX-License-Identifier: CC-BY-4.0
+
+\documentclass[tikz]{standalone}
+
+% Import custom style file containing common packages and options
+\usepackage{../preamble}
+
+% Import tikz options and preamble
+\input{preamble}
+
+% Set data search path
+\pgfplotsset{
+    table/search path={../../../data/processed},
+}
+
+\begin{document}
+\begin{tikzpicture}
+  \begin{groupplot}[
+    group style={group size=2 by 1, vertical sep=0.5cm},
+    ymin=0,
+    ymax=1,
+    enlarge x limits=0.2, % Make room for subcaption labels
+    enlarge y limits=0.05,
+    xtick=data,
+    ]
+    \nextgroupplot
+        % Note: this table names must appear in the `\tablename` loop below
+				\pgfplotstableread{game_snapshot/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_only_mixed_games=false_selection_strength=0.2_time_snapshot=400000_time_steps=8000000.csv}{\loadtable}
+        \pgfplotstableforeachcolumn\loadtable\as\colFull
+        {
+          \ifnum\pgfplotstablecol=0\else%
+            \getNth{\colName}{\colFull}{_}{1}
+            \getNth{\colType}{\colFull}{_}{2}
+            \strcompare{\colType}{mean}{
+              \expandafter\addplot\expandafter[\colName,ybar stacked,draw=none] table[x=asymmetry, y=\colFull] {\loadtable};
+            }{}
+          \fi
+        }
+        \coordinate (plot-top_c-elegans) at (axis cs:0.5,0.998);
+      \nextgroupplot
+        % Note: this table names must appear in the `\tablename` loop below
+				\pgfplotstableread{game_snapshot/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_only_mixed_games=true_selection_strength=0.2_time_snapshot=400000_time_steps=8000000.csv}{\loadtable}
+        \pgfplotstableforeachcolumn\loadtable\as\colFull
+        {
+          \ifnum\pgfplotstablecol=0\else%
+            \getNth{\colName}{\colFull}{_}{1}
+            \getNth{\colType}{\colFull}{_}{2}
+            \strcompare{\colType}{mean}{
+              \expandafter\addplot\expandafter[\colName,ybar stacked,draw=none] table[x=asymmetry, y=\colFull] {\loadtable};
+            }{}
+          \fi
+        }
+    \end{groupplot}
+    % Make an invisible axis to create a legend that is the union
+    % of all the data table's column names
+    \begin{axis}[
+      hide axis,
+      % Needs xmin/xmax/ymin/ymax to create legend entries
+      xmin=10,
+      xmax=50,
+      ymin=0,
+      ymax=0.4,
+      legend columns=6,
+      legend to name={CommonLegend2},
+      ]
+      \def\colNames{}
+      % Note: these table names must be the same as those in the groupplots
+      \pgfplotsforeachungrouped\tablename in
+			{game_snapshot/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_only_mixed_games=false_selection_strength=0.2_time_snapshot=600000_time_steps=8000000.csv,game_snapshot/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_only_mixed_games=true_selection_strength=0.2_time_snapshot=200000_time_steps=8000000.csv} {
+        % Read table
+        \pgfplotstableread\tablename\loadtable
+        % Loop over each column
+        \pgfplotstableforeachcolumn\loadtable\as\colFull
+        {
+          \ifnum\pgfplotstablecol=0\else%
+            \getNth{\colName}{\colFull}{_}{1}
+            \getNth{\colType}{\colFull}{_}{2}
+            \strcompare{\colType}{mean}{
+              \ifx\colNames\empty
+                % Add first column name to empty colNames
+                \edef\colNames{\colName}
+              \else
+                % Add column name to colNames if not already there
+                \IfSubStr{\colNames}{\colName}{}{\edef\colNames{\colNames,\colName}}
+              \fi
+            }{}
+          \fi
+        }
+      }
+
+      % Sort legend entries alphanumerically
+      \expandafter\alphabubblesort\expandafter{\colNames}
+
+      % Add all entries to legend
+      \expandafter\pgfplotsinvokeforeach\expandafter{\sortedlist}{%
+        \ifthenelse{\equal{#1}{allCommunicative}}
+          {
+            \addlegendimage{ybar, single ybar legend, allCommunicative, draw=black}%
+            \addlegendentry{all-C}%
+          }
+          {
+            \ifthenelse{\equal{#1}{allNoncommunicative}}
+            {
+              \addlegendimage{ybar, single ybar legend, allNoncommunicative, draw=black}%
+              \addlegendentry{all-N}%
+            }
+            {
+							\ifthenelse{\equal{#1}{disconnectedSynchronizedPopulations}}
+							{
+                \addlegendimage{ybar, single ybar legend, disconnectedSynchronizedPopulations, draw=black}%
+								\addlegendentry{disconnected}%
+							}
+							{
+								\addlegendimage{ybar, single ybar legend, #1, draw=black}%
+								\addlegendentry{#1}%
+						  }
+            }
+          }
+      }%
+    \end{axis}
+    \node (title-x) at ($(group c1r1.south east)!0.5!(group c2r1.south west)+(0,-0.5cm)$) {Asymmetry $\alpha$};
+		\node[anchor=north] (legend) at ($(title-x)+(0,-0.5cm)$) {\pgfplotslegendfromname{CommonLegend2}};
+\end{tikzpicture}
+\end{document}

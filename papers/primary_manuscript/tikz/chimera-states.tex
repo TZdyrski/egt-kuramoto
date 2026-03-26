@@ -1,0 +1,92 @@
+%! TeX program = lualatex
+% SPDX-License-Identifier: CC-BY-4.0
+
+\documentclass[tikz]{standalone}
+
+% Import custom style file containing common packages and options
+\usepackage{../preamble}
+
+% Import tikz options and preamble
+\input{preamble}
+
+% Set data search path
+\pgfplotsset{
+    table/search path={../../../data/processed},
+}
+\newcommand\dataSearchPath{../../../data/processed}
+
+\begin{document}
+\begin{tikzpicture}
+  \def\hsep{2cm}%
+  \begin{groupplot}[
+    group style={group size=2 by 1,
+    horizontal sep=\hsep,
+    },
+    xlabel={Asymmetry $\alpha$},
+    xtick=data,
+    ymin=0,
+    scaled y ticks=false,
+    yticklabel style={
+      /pgf/number format/fixed,
+      /pgf/number format/precision=3,
+    },
+    enlarge y limits={value=0.15,upper},
+    grid,
+    error bars/y dir=both,error bars/y explicit,
+    ]
+    \nextgroupplot[
+    ylabel={Chimera-Like Index $\chi$},
+    ]
+    \addplot table [y=chimera_index_mean,y error=chimera_index_std] {chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv};
+    \nextgroupplot[
+    ylabel={Metastability Index $\lambda$},
+    ]
+    \addplot table [y=metastability_index_mean,y error=metastability_index_std] {chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=8000000.csv};
+  \end{groupplot}
+  % Shift found by trial and error
+  \begin{scope}[shift={(2.5,-6)},rotate=90]
+    % Read node coordinates and create nodes
+    \csvreader[head to column names]{\dataSearchPath/graph_structure_snapshot/vertices_B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_seed=12345_selection_strength=0.2_symmetry_breaking=0.0_time_step=560000_time_steps=8000000.csv}{}%
+    {%
+      \node[draw, circle, draw=none, index of colormap=\strategyIndex of strategycolors, fill=., inner sep=1.5] (\index) at (\x, \y) {};
+    }
+
+    \begin{scope}[on background layer]
+      % Decrease total opacity to prevent high opacity of overlapping edges
+      \begin{scope}[transparency group,opacity=.75]
+      % Read edges and draw connections between nodes
+      \csvreader[head to column names]{\dataSearchPath/graph_structure/edges_adj_matrix_source=c-elegans.csv}{}%
+      {%
+        % Make individual opacity low; multiple overlapping edges can still have high opacity
+        \ifthenelse{\equal{\src}{\dst}}
+        { \path[in=-45,out=45,loop,->,>=latex,line width=0.1,opacity=0.2] (\src) edge (\dst);}
+        { \path[->,>=latex,line width=0.1,opacity=0.2] (\src) edge (\dst);}
+      }
+      \end{scope}
+    \end{scope}
+  % Default horizontal separation is width plus horizontal separation
+  % minus fixed 45pt for decorations
+  \begin{scope}[shift={(0,{-(\width-45pt+\hsep)})}]
+      % Read node coordinates and create nodes
+      \csvreader[head to column names]{\dataSearchPath/graph_structure_snapshot/vertices_B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_cost=0.1_mutation_rate=0.0001_nb_phases=20_seed=12345_selection_strength=0.2_symmetry_breaking=1.0_time_step=560000_time_steps=8000000.csv}{}%
+      {%
+        \node[draw, circle, draw=none, index of colormap=\strategyIndex of strategycolors, fill=., inner sep=1.5] (\index) at (\x, \y) {};
+      }
+
+      \begin{scope}[on background layer]
+        % Decrease total opacity to prevent high opacity of overlapping edges
+        \begin{scope}[transparency group,opacity=.75]
+        % Read edges and draw connections between nodes
+        \csvreader[head to column names]{\dataSearchPath/graph_structure/edges_adj_matrix_source=c-elegans.csv}{}%
+        {%
+          % Make individual opacity low; multiple overlapping edges can still have high opacity
+          \ifthenelse{\equal{\src}{\dst}}
+          { \path[in=-45,out=45,loop,->,>=latex,line width=0.1,opacity=0.2] (\src) edge (\dst);}
+          { \path[->,>=latex,line width=0.1,opacity=0.2] (\src) edge (\dst);}
+        }
+        \end{scope}
+      \end{scope}
+    \end{scope}
+  \end{scope}
+\end{tikzpicture}
+\end{document}

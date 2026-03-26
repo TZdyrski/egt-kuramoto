@@ -1,0 +1,709 @@
+%! TeX program = lualatex
+% SPDX-License-Identifier: CC-BY-4.0
+
+%% START PLOS TEMPLATE
+\documentclass[10pt,letterpaper]{article}
+\usepackage[top=0.85in,left=2.75in,footskip=0.75in]{geometry}
+
+% amsmath and amssymb packages, useful for mathematical formulas and symbols
+\usepackage{amsmath,amssymb}
+
+% Use adjustwidth environment to exceed column width (see example table in text)
+\usepackage{changepage}
+
+% textcomp package and marvosym package for additional characters
+\usepackage{textcomp,marvosym}
+
+% cite package, to clean up citations in the main text. Do not remove.
+\usepackage{cite}
+
+% Use nameref to cite supporting information files (see Supporting Information section for more info)
+\usepackage{nameref,hyperref}
+
+% line numbers
+\usepackage[right]{lineno}
+
+% ligatures disabled
+\usepackage[nopatch=eqnum]{microtype}
+\DisableLigatures[f]{encoding = *, family = * }
+
+% color can be used to apply background shading to table cells only
+\usepackage[table]{xcolor}
+
+% array package and thick rules for tables
+\usepackage{array}
+
+% create "+" rule type for thick vertical lines
+\newcolumntype{+}{!{\vrule width 2pt}}
+
+% create \thickcline for thick horizontal lines of variable length
+\newlength\savedwidth
+\newcommand\thickcline[1]{%
+  \noalign{\global\savedwidth\arrayrulewidth\global\arrayrulewidth 2pt}%
+  \cline{#1}%
+  \noalign{\vskip\arrayrulewidth}%
+  \noalign{\global\arrayrulewidth\savedwidth}%
+}
+
+% \thickhline command for thick horizontal lines that span the table
+\newcommand\thickhline{\noalign{\global\savedwidth\arrayrulewidth\global\arrayrulewidth 2pt}%
+\hline
+\noalign{\global\arrayrulewidth\savedwidth}}
+
+
+% Remove comment for double spacing
+%\usepackage{setspace}
+%\doublespacing
+
+% Text layout
+\raggedright
+\setlength{\parindent}{0.5cm}
+\textwidth 5.25in
+\textheight 8.75in
+
+% Bold the 'Figure #' in the caption and separate it from the title/caption with a period
+% Captions will be left justified
+\usepackage[aboveskip=1pt,labelfont=bf,labelsep=period,justification=raggedright,singlelinecheck=off]{caption}
+\renewcommand{\figurename}{Fig}
+
+% Please use the included `plos2025.bst` as your BibTeX style
+\bibliographystyle{plos2025}
+
+% Remove brackets from numbering in List of References
+\makeatletter
+\renewcommand{\@biblabel}[1]{\quad#1.}
+\makeatother
+
+% Header and Footer with logo
+\usepackage{lastpage,fancyhdr,graphicx}
+\usepackage{epstopdf}
+%\pagestyle{myheadings}
+\pagestyle{fancy}
+\fancyhf{}
+%\setlength{\headheight}{27.023pt}
+%\lhead{\includegraphics[width=2.0in]{PLOS-submission.eps}}
+\rfoot{\thepage/\pageref{LastPage}}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrule}{\hrule height 2pt \vspace{2mm}}
+\fancyheadoffset[L]{2.25in}
+\fancyfootoffset[L]{2.25in}
+\lfoot{\today}
+%% END PLOS TEMPLATE
+
+% Import custom style file containing common packages and options
+\usepackage{preamble}
+
+% Include definitions and custom commands
+\input{custom-definitions}
+
+% Import tikz options and preamble
+\input{tikz/preamble.tex}
+
+% Set data search path
+\pgfplotsset{
+    table/search path={../../data/processed},
+}
+\newcommand\dataSearchPath{../../data/processed}
+
+\begin{document}
+\vspace*{0.2in}
+
+\begin{flushleft}
+{\Large
+\textbf{Supplementary Information for\\
+``Evolutionary Kuramoto dynamics unravels origins of chimera states
+in neural populations''}
+}
+\newline
+\\
+Thomas Zdyrski,
+Scott Pauls,
+Feng Fu
+\end{flushleft}
+
+\tableofcontents
+\section{Two-player game order graphs}\label{sec:order_graphs}
+\begin{figure*}
+\begin{adjustwidth}{-2.25in}{0in}
+	\centering
+    \includestandalone{tikz/game-payoffs}
+		\caption{}\label{fig:order_graphs}
+\end{adjustwidth}
+\end{figure*}
+
+\Cref{fig:order_graphs} shows the
+order graphs for the 16 symmetric, ordinal two-player games.
+Each sub-panel shows the payoff order for both the column
+and row player.
+The letters correspond to the following payoff matrix
+\begin{equation*}
+  \begin{bNiceMatrix}[first-col,first-row,hvlines]
+    & \textcolor{blue}{C} & \textcolor{blue}{N} \\
+    \textcolor{red}{C} & A & B \\
+    \textcolor{red}{N} & C & D
+  \end{bNiceMatrix}
+\end{equation*}
+The horizontal axis represents the order of row player payoffs,
+and the red lines represent row player options.
+The vertical axis represents the order of column player payoffs,
+and the blue lines represent column player options.
+The arrows show the direction of increasing
+payoff for the relevant player,
+and solid black dots represent Nash equilibria.
+This figure is adapted from the topological taxonomy
+order graphs~\cite{bruns2015names}.
+
+\section{Well-mixed communicative fraction with symmetry breaking}\label{sec:analytic_comm_frac}
+Here, we follow the steady-state communicative fraction derivation
+in the previous EK study~\cite{tripp2022evolutionary}
+and extend it to include a payoff asymmetry $\alpha$.
+To keep the derivation tractable,
+we only consider the well-mixed case.
+We will assume a low mutation rate
+so that any mutation fixates prior to the next mutation.
+We then consider a population with one communicative species $E = (C, \phi_i)$
+and one non-communicative species $F = (N, \phi_j)$.
+Our first goal is to calculate
+the (communicative) $\rho_E$ and (non-communicative) $\rho_F$
+fixation probabilities of a single $E$ or $F$ invader, respectively.
+First, we use our $\alpha$-dependent payoff matrix,
+to calculate the $\alpha$-dependent average payoff
+of each strategy across the entire population,
+\begin{align}
+  \pi_E(k) &= \ab(\frac{k-1}{n-1}) \pab{B_0 - c}
+                + \ab(\frac{n-k}{n-1}) \ab(\beta(\Delta\phi) 2\alpha - c) \\
+           &= \frac{1}{n-1}
+               \ab(k \ab(B_0 - 2 \alpha \beta(\Delta\phi))
+                 + 2 \alpha n \beta(\Delta\phi) - B_0 - (n-1) c)
+\end{align}
+and
+\begin{align}
+  \pi_F(k) &= \ab(\frac{k}{n-1}) \ab(\beta(\Delta\phi) 2 (1-\alpha))
+                + \ab(\frac{n-k-1}{n-1}) \ab(0) \\
+           &= \ab(\frac{k}{n-1}) 2 (1-\alpha) \beta(\Delta\phi)
+\end{align}
+Here, $k \in [0,n]$ is the number of $E$-players
+$\Delta \phi$ is the phase difference between the $E$ and $F$
+strategies,
+and we defined $\beta(\Delta \phi) = \beta_0 f(\Delta \phi)$.
+Note that the first term of $\pi_E$ corresponds
+to the $E$-$E$ payoff, which has $\Delta \phi = 0$,
+hence $B_0 f(\Delta \phi) = B_0$.
+As mentioned in the main text,
+each node has an exponential total fitness
+$f_E = \exp(\delta (n-1) \pi_E)$
+or
+$f_F = \exp(\delta (n-1) \pi_F)$,
+depending on its strategy,
+with selection strength $\delta$.
+
+In this paragraph, we summarize the relevant steps;
+see the prior work~\cite{tripp2022evolutionary}
+for more detailed derivations.
+We now model the Moran process
+as a Markov chain where each state $i \in \Bab{0,1,\ldots,n}$
+is the number of (communicative) $E$ strategies.
+Interestingly, we note that since the Moran process changes, at most,
+one strategy per time step,
+this Markov chain has the same fixation probabilities
+as a (state-dependent) ``gambler's ruin'' problem with ties.
+We denote $x_i$ as the probability that state $i$ will fixate
+to state $n$ with all players using strategy $E$.
+Then, the $E$ and $F$ fixation probabilities defined above are given by
+$\rho_E = x_1$ and $\rho_F = 1 - x_{n-1}$.
+Now, the Markov chain is described by the transition probability $p_{i,j}$
+from state $i$ to state $j$ as
+\begin{align*}
+  p_{0,0} &= 1, \\
+  p_{n,n} &= 1, \\
+  p_{i,i-1} &= \frac{i}{n} \frac{(n-i) f_F(i)}{i f_E(i) + (n-i) f_F(i)} \\
+  p_{i,i+1} &= \frac{n-i}{n} \frac{i f_E(i)}{i f_E(i) + (n-i) f_F(i)} \\
+  p_{i,i} &= 1 - p_{i,i+1} - p_{i,i-1}
+\end{align*}
+Then, we obtain a recurrence relation for $x_i$ by conditioning
+on the outcome of the first step:
+\begin{align*}
+  x_i &= x_{i-1} p_{i,i-1} + x_i p_{i,i} + x_{i+1} p_{i,i+1} \\
+\end{align*}
+with boundary values
+\begin{align*}
+  x_0 &= 0 \\
+  x_1 &= 1
+\end{align*}
+Using the $p_{i,i} = 1 - p_{i,i+1} - p_{i,i-1}$ relation from above
+to replace the $p_{i,i}$ term gives
+\begin{equation*}
+  \pab{x_i - x_{i-1}} \gamma_i = \pab{x_{i+1} - x_i}
+\end{equation*}
+Then, defining $y_i \coloneqq x_i - x_{i-1}$,
+we find $y_1 = x_1$ and $y_{i+1} = \gamma_i y_i$,
+yielding $y_i = \prod_{j=1}^{i-1} \gamma_j x_1$ for $i \ge 2$.
+Finally, we form a telescoping sum to yield
+\begin{equation*}
+  1 - x_1 = x_n - x_1
+  = \sum_{i=1}^{n-1} y_{i+1}
+  = \sum_{i=1}^{n-1} \prod_{j=1}^i \gamma_j x_1
+\end{equation*}
+Solving this for $x_1$ gives
+\begin{equation}
+  \rho_E = x_1 = \frac{1}{1 + \sum_{i=1}^{n-1} \prod_{j=1}^i \gamma_j}
+  \label{eq:comm_fixation_prob}
+\end{equation}
+Likewise, $x_i = \sum_{j=1}^i y_i = \sum_{j=0}^{i-1} y_{i+1}$, so
+\begin{equation*}
+  x_i
+  = x_1 + \sum_{j=1}^{i-1} \prod_{k=1}^j \gamma_k x_1
+  = \frac{1 + \sum_{j=1}^{i-1} \prod_{k=1}^j \gamma_k}
+    {1 + \sum_{j=1}^{n-1} \prod_{k=1}^j \gamma_k}
+\end{equation*}
+Therefore, we find
+\begin{equation*}
+  \rho_F = 1 - x_{n-1}
+  = 1 - \frac{1 + \sum_{j=1}^{n-2} \prod_{k=1}^j \gamma_k}
+    {1 + \sum_{j=1}^{n-1} \prod_{k=1}^j \gamma_k}
+  = \frac{\prod_{k=1}^{n-1} \gamma_k}{1 + \sum_{j=1}^{n-1} \prod_{k=1}^j \gamma_k}
+\end{equation*}
+This implies
+\begin{equation}
+  \frac{\rho_F}{\rho_E} = \prod_{k=1}^{n-1} \gamma_k
+  \label{eq:fixation_prob_ratio}
+\end{equation}
+Therefore, we've found $\rho_E$ and $\rho_F$ for a population
+with two fixed strategies.
+
+Now, we need to derive the form of the $\gamma_k$,
+which will include the new asymmetry factor $\alpha$:
+\begin{align*}
+  \gamma_k &= \frac{f_F(k)}{f_E(k)} \\
+           &= \exp[\delta (n-1) (\pi_F(k) - \pi_E(k))]
+           \\
+           &= \exp\ab[\delta \ab(
+    k 2 (1-\alpha) \beta(\Delta\phi)
+    - k \ab(B_0 - 2 \alpha \beta(\Delta\phi))
+                 - 2 \alpha n \beta(\Delta\phi) + B_0 + (n-1) c)] \\
+      &= \exp\ab[\delta \ab(
+    \ab(2 \beta(\Delta\phi) - B_0) k
+                 + B_0 - 2 \alpha n \beta(\Delta\phi) + (n-1) c)]
+\end{align*}
+We also calculate
+\begin{equation}
+  \begin{aligned}
+    \prod_{k=1}^j  \gamma_k
+      &= \prod_{k=1}^j \exp\ab[\delta \ab(
+      \ab(2 \beta(\Delta\phi_{qr}) - B_0) k
+      + B_0 - 2 \alpha n \beta(\Delta\phi_{qr}) + (n-1) c)]
+      \\
+      &= \exp\ab[\delta \sum_{k=1}^j \ab(
+      \ab(2 \beta(\Delta\phi_{qr}) - B_0) k
+      + B_0 - 2 \alpha n \beta(\Delta\phi_{qr}) + (n-1) c)]
+      \\
+      &= \exp\ab[\delta \ab(
+      \ab(2 \beta(\Delta\phi_{qr}) - B_0) \frac{j(j+1)}{2}
+      + j \ab(B_0 - 2 \alpha n \beta(\Delta\phi_{qr}) + (n-1) c))]
+      \\
+      &= \exp\ab[\delta \ab(
+      \ab(\beta(\Delta\phi_{qr}) - \frac{B_0}{2}) j^2
+      + j \ab(\frac{B_0}{2} + \beta(\Delta\phi_{qr}) (1 - 2 \alpha n)  + (n-1) c))]
+  \end{aligned}
+  \label{eq:gamma_prod}
+\end{equation}
+Additionally, we note that substituting
+\cref{eq:gamma_prod} into \cref{eq:fixation_prob_ratio}
+with $j=n-1$ shows that $\rho_F/\rho_E$
+depends of $\Delta \phi_{qr}$.
+This is in contrast to the $\alpha=0.5$ case~\cite{tripp2022evolutionary}
+where $\rho_F/\rho_E$ simplifies to the $\Delta \phi_{qr}$-independent form
+$\rho_F/\rho_E = \exp \ab(\delta \ab[(n-1)c - B_0 (n-2)/2])$.
+
+Next, we consider the long-time dynamics incorporating more than two strategies.
+By again using the low-mutation-rate assumption,
+we can assume that any mutation either fixates
+or dies out before the next mutation.
+Therefore, the system evolves from one homogeneous state to another
+using the probabilities we just derived.
+We can model this behavior with a new Markov chain
+using the $m=20$ phases and two communicative strategies (C and N)
+to give a $2m$-dimensional state space:
+$\Bab{(C,\phi_1), \ldots (C,\phi_m), (N,\phi_1), \ldots (N,\phi_m)}$.
+Then, the transition probability $\rho_{NC,\Delta \phi_{qr}}$
+from state $(N,\phi_q)$ to state $(C,\phi_r)$ is just $\rho_E$ above.
+Similarly, the probability $\rho_{CN,\Delta \phi_{rq}}$
+that a $(C,\phi_r)$ state is successfully invaded by
+an $(N,\phi_q)$ state is simply $\rho_F$ above.
+By the rotation symmetry of $\phi$, each $\phi_i$ has the same probability of fixation.
+Therefore, consider an arbitrary $\phi_q$ and denote its communicative fixation probability as
+$s_1$ and its non-communicative fixation probability $s_2$.
+We can calculate the ratio of these probabilities
+by incorporating the fixation probabilities against all other $\phi_r$ phases:
+\begin{align}
+  \frac{s_2}{s_1} &= \frac
+    {\sum_{r=1}^{m} \rho_{CN,\Delta \phi_{rq}}}
+    {\sum_{r=1}^{m} \rho_{NC,\Delta \phi_{qr}} }
+  \\
+  &=
+  \frac
+  {\sum_{r=1}^{m} \rho_{NC,\Delta \phi_{qr}}
+    \exp \Bab{
+      \delta (n-1)
+      \bab{
+        (n-1) c + n \beta(\Delta \phi_{qr}) (1 - 2 \alpha)
+        - \frac{n-2}{2} B_0
+      }
+    }
+  }
+  {\sum_{r=1}^{m} \rho_{NC,\Delta \phi_{qr}}}
+  \\
+  &=
+  \bab{
+    \frac
+    {\sum_{r=1}^{m} \frac
+      {\exp \Bab{ \delta (n-1)
+        \bab{
+          (n-1) c + n \beta(\Delta \phi_{qr}) (1 - 2 \alpha) - \frac{n-2}{2} B_0
+        }}
+      }
+      {1 + \sum_{j=1}^{n-1} \exp\Bab{
+        \delta \bab{
+         \pab{\beta(\Delta \phi_{qr}) - B_0/2} j^2
+         + j \pab{B_0/2 + \beta(\Delta \phi_{qr}) (1 - 2 \alpha n) + (n-1) c}
+        }}
+      }
+    }
+    {\sum_{r=1}^{m} \frac{1}
+      {1 + \sum_{j=1}^{n-1} \exp\Bab{
+        \delta \bab{
+         \pab{\beta(\Delta \phi_{qr}) - B_0/2} j^2
+         + j \pab{B_0/2 + \beta(\Delta \phi_{qr}) (1 - 2 \alpha n) + (n-1) c}
+        }}
+      }
+    }
+  }
+  \label{eq:full_analytic_frac}
+\end{align}
+The first equality used \cref{eq:fixation_prob_ratio}
+and the second equality used \cref{eq:comm_fixation_prob}.
+Unlike in the $\alpha = 0.5$ symmetric case~\cite{tripp2022evolutionary},
+the ratio $\rho_F/\rho_E$ depends on $\Delta \phi_{qr}$,
+so we cannot factor the exponential component out of the sum
+and cancel the $\rho_{CN,\Delta \phi_{qr}}$ terms.
+However, we can asymptotically expand $s_2/s_1$ for small
+$B_0/c \coloneqq \epsilon \ll 1$;
+additionally, since all of our simulations use $\beta \propto B$,
+we also assume $\beta/c \sim \epsilon \ll 1$.
+Finally, to simplify the calculation,
+we define the asymptotic expansion of
+$\rho_{NC,\Delta \phi_{qr}} \coloneqq
+\rho_{NC,\Delta \phi_{qr}}^{(0)}
++
+\rho_{NC,\Delta \phi_{qr}}^{(1)}
++
+\order{\epsilon^2}
+$
+where
+$
+\rho_{NC,\Delta \phi_{qr}}^{(i)} \sim \epsilon^i
+$
+depends only on terms of total order $i$ in $B_0/c$ and $\beta/c$.
+
+Then, to first order in $\epsilon$
+we have
+\begin{align*}
+  \frac{s_2}{s_1}
+  &=
+  \frac
+  {\sum_{r=1}^{m} \rho_{NC,\Delta \phi_{qr}}
+    \exp \Bab{
+      \delta (n-1)
+      \bab{
+        (n-1) c + n \beta(\Delta \phi_{qr}) (1 - 2 \alpha)
+        - \frac{n-2}{2} B_0
+      }
+    }
+  }
+  {\sum_{r=1}^{m} \rho_{NC,\Delta \phi_{qr}}}
+  \\
+  &=
+  e^{\delta (n-1)^2 c}
+  \Biggl\{
+  \\
+  &\qquad
+  \frac
+  {\sum_{r=1}^{m}
+    \pab{
+      \rho_{NC,\Delta \phi_{qr}}^{(0)}
+      +
+      \rho_{NC,\Delta \phi_{qr}}^{(1)}
+    }
+    \Bab{1 +
+      \delta (n-1)
+      \bab{
+        n \beta(\Delta \phi_{qr}) (1 - 2 \alpha)
+        - \frac{n-2}{2} B_0
+      }
+    }
+  }
+  {\sum_{r=1}^{m} \pab{
+    \rho_{NC,\Delta \phi_{qr}}^{(0)}
+    +
+    \rho_{NC,\Delta \phi_{qr}}^{(1)}
+  }}
+  \Biggr\}
+  \\
+  &\qquad
+  + \order{\epsilon^2}
+  \\
+  &=
+  e^{\delta (n-1)^2 c}
+  \Biggl\{
+  \frac
+  {\sum_{r=1}^{m}
+    \pab{
+      \rho_{NC,\Delta \phi_{qr}}^{(0)}
+      +
+      \rho_{NC,\Delta \phi_{qr}}^{(1)}
+    }
+  }
+  {\sum_{r=1}^{m} \pab{
+    \rho_{NC,\Delta \phi_{qr}}^{(0)}
+    +
+    \rho_{NC,\Delta \phi_{qr}}^{(1)}
+  }}
+  \\
+  &\qquad
+  +
+  \frac
+  {\sum_{r=1}^{m} \rho_{NC,\Delta \phi_{qr}}^{(0)}
+    \delta (n-1)
+    \bab{
+      n \beta(\Delta \phi_{qr}) (1 - 2 \alpha)
+      - \frac{n-2}{2} B_0
+    }
+  }
+  {\sum_{r=1}^{m} \rho_{NC,\Delta \phi_{qr}}^{(0)}
+  }
+  \Biggr\}
+  + \order{\epsilon^2}
+  \\
+  &=
+  e^{\delta (n-1)^2 c}
+  \Bab{
+    1
+    - \delta (n-1) \frac{n-2}{2} B_0
+    +
+    \frac{\delta n (n-1)}{m} (1 - 2 \alpha)
+    \sum_{r=1}^{m} \beta(\Delta \phi_{qr})
+  }
+  + \order{\epsilon^2}
+  \\
+  &=
+  \exp \Bab{\delta (n-1) \bab{
+    (n-1) c
+    - \frac{n-2}{2} B_0
+    +
+    \frac{n (1 - 2 \alpha)}{m}
+    \sum_{r=1}^{m} \beta(\Delta \phi_{qr})
+  }}
+  + \order{\epsilon^2}
+  \\
+  &=
+  \exp \Bab{ \delta (n-1) \bab{
+    (n-1) c
+    - \frac{n-2}{2} B_0
+    +
+    \frac{n (1 - 2 \alpha)}{2} \beta_0
+  }}
+  + \order{\epsilon^2}
+\end{align*}
+Where, in the last line, we used
+the definition of
+$\beta(\Delta \phi_{qr}) = \beta_0 \bab{1 + \cos(\Delta \phi_{qr})}/2$
+to write
+$\sum_{r=1}^m \beta(\Delta \phi_{qr})
+= \beta_0 \sum_{r=1}^m \Bab{1 + \cos\bab{2 \pi (q-r)/m}}/2
+= m \beta_0/2$
+since the cosine sum gives zero.
+
+Finally, since each $\Delta \phi_i$ is equally likely,
+the probability of fixing to \emph{any}
+communicative state is $m s_1$;
+likewise the total non-communicative fixation probability is $m s_2$.
+Then, since the process must eventually absorb to either $C$ or $N$,
+we have
+$m s_1 + m s_2 = 1$, giving the probability of communicative fixation as
+\begin{equation}
+  m s_1 = \frac{1}{1 + s_2/s_1}
+  \label{eq:full_analytic}
+\end{equation}
+with $s_2/s_1$ given by \cref{eq:full_analytic_frac},
+and the asymptotic, small-$\epsilon$ approximation given by
+\begin{equation}
+  m s_1 = \frac{1}{1 + s_2/s_1}
+  \approx
+  \frac{1}
+  {1 + \exp \Bab{\delta (n-1) \bab{
+    (n-1) c
+    - \frac{n-2}{2} B_0
+    +
+    \frac{n (1 - 2 \alpha)}{2} \beta_0
+    }}
+  }
+  \label{eq:analytic_first_term}
+\end{equation}
+
+\section{Selection strength}
+\begin{figure*}
+\begin{adjustwidth}{-2.25in}{0in}
+  \centering
+  \begin{subcaptiongroup}
+    \stackinset{l}{20pt}{t}{\width/240*207-45pt+1.5cm}%
+      {\phantomcaption\label{fig:selection_strength-2}\captiontext*{}}{%
+    \stackinset{l}{20pt+\width-45pt+1.5cm}{t}{0pt}%
+      {\phantomcaption\label{fig:selection_strength-02}\captiontext*{}}{%
+    \stackinset{l}{20pt}{t}{0pt}%
+      {\phantomcaption\label{fig:selection_strength-002}\captiontext*{}}{%
+		{\includestandalone{tikz/selection-strength}}%
+  }}}
+  \end{subcaptiongroup}
+  \caption{
+    \textbf{
+			Selection strength impact.
+    }
+    Scatter plots of the instantaneous $f_{\text{comm}}$
+		and order parameter $\rho$ for different values of the selection
+		strength $\delta$, as shown in the subplot titles.
+    The left vertical axes show the instantaneous $f_{\text{comm}}$
+    as a function of time and are color-coded according
+    to the plurality mixed game type as indicated in the legend.
+    The right vertical axes give the order parameter $\rho$
+    Scatter plots use the same axes and coloring as Fig. 3A-3C in the main text
+    showing the communicative frequency, plurality mixed game-types, and order parameter.
+		The symmetry breaking is $\alpha = 1$.
+		The selection strengths shown are
+		\protect{\psubref{fig:selection_strength-002}}
+		$\delta = 0.02$,
+		\protect{\psubref{fig:selection_strength-02}}
+		$\delta = 0.2$,
+		and
+		\protect{\psubref{fig:selection_strength-2}}
+		$\delta = 2.0$.
+  }\label{fig:selection-strength}
+\end{adjustwidth}
+\end{figure*}
+
+The main simulations all used a selection strength of $\delta = 0.2$;
+this was chosen to be sufficiently small that analytic approximations
+could be applied (\cf{} \cref{sec:analytic_comm_frac}).
+However, the sensitivity analysis shows that the system is very
+sensitive to the selection strength, with higher selection $\delta$
+yielding stronger chimera-like states.
+Therefore, \cref{fig:selection-strength} displays time-series data
+from three values of $\delta$: very weak selection $0.02$, (baseline)
+weak selection $0.2$, and strong selection $2.0$.
+The other parameters are the usual values from the main text,
+and the symmetry breaking is $\alpha = 1.0$.
+Interestingly, the very-weak case $\delta = 0.02$ shows that the system
+is unable to maintain communication even in this strongly biased
+$\alpha=1$ regime.
+Both the weak $\delta = 0.2$ and strong $\delta = 2.0$ cases
+successfully maintain communication.
+Furthermore, we see that the stronger selection $\delta = 2.0$
+dampens some of the mutation-induced jumps,
+as is expected by stronger fitness-induced selection.
+
+\section{Phase \vs{} Strategy}
+\begin{figure*}
+\begin{adjustwidth}{-2.25in}{0in}
+  \centering
+  \begin{subcaptiongroup}
+    \stackinset{l}{20pt+\width-45pt+1.5cm}{t}{\width/240*207-45pt+1.5cm}%
+      {\phantomcaption\label{fig:frac-comm-phase-fixed}\captiontext*{}}{%
+    \stackinset{l}{20pt}{t}{\width/240*207-45pt+1.5cm}%
+      {\phantomcaption\label{fig:frac-comm-baseline}\captiontext*{}}{%
+    \stackinset{l}{20pt+\width-45pt+1.5cm}{t}{0pt}%
+      {\phantomcaption\label{fig:chimera-strategy-fixed}\captiontext*{}}{%
+    \stackinset{l}{20pt}{t}{0pt}%
+      {\phantomcaption\label{fig:chimera-baseline}\captiontext*{}}{%
+		{\includestandalone{tikz/c-elegans-fixed-aspect}}%
+		}}}}
+  \end{subcaptiongroup}
+  \caption{
+    \textbf{
+			Comparison of strategy vs phase evolution.
+    }
+		Comparison of strategy vs phase evolution on the chimera-like index
+		and communicative fraction.
+		(\protect{\subref{fig:chimera-baseline}},\protect{\subref{fig:chimera-strategy-fixed}})
+		The chimera-like index is shown as a function of asymmetry $\alpha$.
+    \protect{\psubref{fig:chimera-baseline}}
+		is the baseline case with both strategy and phase updated
+		according to the birth-death Moran process,
+		while
+    \protect{\psubref{fig:chimera-strategy-fixed}}
+		keeps the $C/N$ strategy of each player fixed
+		to its random initial value but subjects its phase $\phi_i$
+		to the birth-death Moran process.
+		The vertical error bars depict the standard deviation
+		across ten seeds.
+		(\protect{\subref{fig:frac-comm-baseline}},\protect{\subref{fig:frac-comm-phase-fixed}})
+		The communicative fraction $f_{\text{comm}}$ as a function
+		of the maximum joint benefit $B_0$.
+    \protect{\psubref{fig:frac-comm-baseline}}
+		is the baseline case with both strategy and phase updated
+		according to the birth-death Moran process,
+		while
+    \protect{\psubref{fig:frac-comm-phase-fixed}}
+		has the phase $\phi_i$ of each player fixed
+		to its random initial value while its $C/N$ strategy is subject
+		to the birth-death Moran process.
+  }\label{fig:phase-vs-strategy}
+\end{adjustwidth}
+\end{figure*}
+
+We note that the communicative fraction is only sensitive to the
+players' strategies, so fixing the strategies would be uninformative,
+showing only the random initial distribution.
+Likewise, the chimera-like index is only sensitive to the players'
+phases,
+so fixing the phases would be uninformative, showing only the random
+initial distribution.
+
+First, the \psubref{fig:chimera-strategy-fixed} large chimera-like index
+of the fixed-strategy case shows that phase-evolution is a key part of
+chimera-like evolution.
+Likewise, the \psubref{fig:frac-comm-phase-fixed} similarity of the
+fixed-phase case---and hence, large deviation from the well-mixed
+case---demonstrates that strategy-evolution of \gls{celegans} alone
+introduces qualitatively new
+behavior compared to the well-mixed case.
+Finally, the baseline, co-evolving strategy- and phase-dynamic case
+differs from both the \psubref{fig:chimera-strategy-fixed} fixed-strategy
+and \psubref{fig:frac-comm-phase-fixed} fixed-phase cases.
+This implies that the co-evolving phase and strategy used in the main
+text
+introduces novel dynamics not captured by either the phase or strategy
+alone.
+
+\section{Data availability}
+\subsection{Time-evolution animations}
+The chimera-like quality of the games' populations
+are necessarily time-dependent.
+We found that animations showing the time-evolution
+of players' strategies was a particularly useful way
+to observe this chimera-like quality.
+Therefore, we have included animations
+showing the populations' evolving strategies
+in the supplemental information for a subset of the parameters sampled.
+
+\subsection{Interactive plots}
+While discussing the simulation results in the main manuscript,
+we necessarily focused on a particular region of parameter space.
+Nevertheless, we also performed simulations across a range of parameters
+to ensure the robustness of our results.
+We used a Pluto.jl notebook to organize and visualize the data
+and have made these results available for public analysis.
+Additionally, this notebook includes time-evolution animations
+for all of the simulated parameter combinations.
+
+\bibliography{references.bib}
+
+\end{document}

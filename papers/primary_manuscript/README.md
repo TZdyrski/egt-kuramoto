@@ -25,13 +25,13 @@ sed -i 's/usepackage{standalone}/usepackage[mode=image]{standalone}/' preamble.s
 ```
 Compile the manuscript and supplemental information
 ```bash
-guix time-machine -C channels.scm -- shell --pure -m manifest.scm -- latexmk Report.tex SupplementaryInformation.tex
+guix time-machine -C channels.scm -- shell --pure -m manifest.scm -- latexmk Report.tex S1_Text.tex
 ```
 Move the .bbl files
 ```bash
-mv latex.aux/Report.bbl latex.aux/SupplementaryInformation.bbl .
+mv latex.aux/Report.bbl latex.aux/S1_Text.bbl .
 ```
 Create a zip of files for arxiv
 ```bash
-zip ArxivUpload.zip Report.tex SupplementaryInformation.tex preamble.sty custom-definitions.tex sn-*  Report.bbl SupplementaryInformation.bbl tikz/preamble.tex tikz/*.pdf
+zip ArxivUpload.zip Report.tex S1_Text.tex preamble.sty custom-definitions.tex sn-*  Report.bbl S1_Text.bbl tikz/preamble.tex tikz/*.pdf
 ```

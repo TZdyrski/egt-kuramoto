@@ -130,7 +130,22 @@ in neural populations''}
 \begin{adjustwidth}{-2.25in}{0in}
 	\centering
     \includestandalone{tikz/game-payoffs}
-		\caption{}\label{fig:order_graphs}
+		\caption{
+		Order graphs for the 16 symmetric, ordinal two-player games.
+		Each sub-panel shows the payoff order for both the column
+		and row player.
+		The letters correspond to the payoff matrix
+		in \protect{\cref{eq:SI_payoffmatrix}}.
+		The horizontal axis represents the order of row player payoffs,
+		and the red lines represent row player options.
+		The vertical axis represents the order of column player payoffs,
+		and the blue lines represent column player options.
+		The arrows show the direction of increasing
+		payoff for the relevant player,
+		and solid black dots represent Nash equilibria.
+		This figure is adapted from the topological taxonomy
+		order graphs~\protect{\cite{bruns2015names}}.
+		}\label{fig:order_graphs}
 \end{adjustwidth}
 \end{figure*}
 
@@ -139,13 +154,14 @@ order graphs for the 16 symmetric, ordinal two-player games.
 Each sub-panel shows the payoff order for both the column
 and row player.
 The letters correspond to the following payoff matrix
-\begin{equation*}
+\begin{equation}
   \begin{bNiceMatrix}[first-col,first-row,hvlines]
     & \textcolor{blue}{C} & \textcolor{blue}{N} \\
     \textcolor{red}{C} & A & B \\
     \textcolor{red}{N} & C & D
   \end{bNiceMatrix}
-\end{equation*}
+	\label{eq:SI_payoffmatrix}
+\end{equation}
 The horizontal axis represents the order of row player payoffs,
 and the red lines represent row player options.
 The vertical axis represents the order of column player payoffs,

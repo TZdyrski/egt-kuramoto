@@ -19,11 +19,7 @@
     \newcommand{\betaOnB}{0.95}
     \newcommand{\numPhases}{20}
     \newcommand{\BnaughtOnC}{1.5}
-    \begin{groupplot}[
-      group style={
-        group size=2 by 1,
-        horizontal sep=2cm,
-      },
+    \begin{axis}[
       axis on top,
       domain=0:2.5,
       samples=100,
@@ -43,60 +39,17 @@
         thick,
         smooth,
         no markers,
+				forget plot,
       },
+			ylabel={Asymmetry $\alpha$},
+			ymax=1.25,
+			xlabel={Mixed benefit $\beta/c$},
+      legend columns=2,
+			legend style={
+				at={(1.03,0.5)},
+				anchor=west,
+			},
       ]
-        \nextgroupplot[
-          ylabel={Joint benefit $B_0/c$},
-          ymax=2.5,
-          ]
-
-        % label the x axis
-        \path[name path=xlower] (axis cs:0,0) -- (axis cs:02.5,0);
-        \path[name path=xupper] (axis cs:0,2.5) -- (axis cs:2.5,2.5);
-
-        % label the y axis
-        \path[name path=yleft] (axis cs:0,0) -- (axis cs:0,2.5);
-        \path[name path=yright] (axis cs:2.5,0) -- (axis cs:2.5,2.5);
-
-        % Add lines
-        \addplot[name path=R_S] {x};
-        \addplot[name path=R_T] {x + 1};
-        \addplot[name path=R_P] {1};
-
-        \addplot[name path=S_P] coordinates {(1,0) (1,2.5)};
-        \addplot[draw=none,name path=T_P] coordinates {(0,0) (0,2.5)};
-
-        % Fill in regions
-        \addplot[staghunt] fill between[of=R_T and xupper,
-          soft clip={domain=0:1}];
-        \addplot[concord] fill between[of=R_T and S_P,
-          soft clip={domain y=2:2.5}];
-        \addplot[chicken] fill between[of=R_T and R_S,
-          soft clip={domain=1:2.5}];
-        \addplot[battle] fill between[of=R_S and yright,
-          reverse=false,
-          soft clip={domain y=1:2.5}];
-        \addplot[dilemma] fill between[of=R_P and R_T,
-          soft clip={domain=0:1}];
-        \addplot[deadlock] fill between[of=R_S and yleft,
-          reverse=false,
-          soft clip={domain y=0:1}];
-        \addplot[compromise] fill between[of=R_S and S_P,
-          soft clip={domain y=0:1}];
-        \addplot[hero] fill between[of=S_P and yright,
-          reverse=false,
-          soft clip={domain y=0:1}];
-
-        % Add dots
-        \addplot [only marks,mark=*,mark options={fill=white},
-          domain=0:2*pi, samples=\numPhases+1] ({\betaOnB*\BnaughtOnC*(1+cos(x))/2},
-          {\BnaughtOnC});
-
-        \nextgroupplot[
-          ylabel={Asymmetry $\alpha$},
-          ymax=1.25,
-          ]
-
         % label the x axis
         \path[name path=xlower] (axis cs:0,0) -- (axis cs:2.5,0);
         \path[name path=xupper] (axis cs:0,1.25) -- (axis cs:2.5,1.25);
@@ -163,19 +116,6 @@
           \addplot [only marks,mark=*,mark options={fill=white},
             domain=0:2*pi, samples=\numPhases+1] ({\betaOnB*\BnaughtOnC*(1+cos(x))/2}, \alpha);
         }
-    \end{groupplot}
-    % Make an invisible axis to create a legend that is the union
-    % of all the data table's column names
-    \begin{axis}[
-      hide axis,
-      % Needs xmin/xmax/ymin/ymax to create legend entries
-      xmin=10,
-      xmax=50,
-      ymin=0,
-      ymax=0.4,
-      legend columns=3,
-      legend to name={CommonLegend4},
-      ]
       \def\game{
         staghunt, concord, chicken, battle, dilemma, deadlock, compromise, hero,
         peace, harmony, coordination, assurance
@@ -188,16 +128,5 @@
         }%
       }
     \end{axis}
-    \node[anchor=north] (title-x) at ($(group c1r1.south east)!0.5!(group c2r1.south west)-(0,0.5cm)$) {Mixed benefit $\beta/c$};
-    \path (group c1r1.south west) -- node[below={1.5cm}]{\pgfplotslegendfromname{CommonLegend4}} (group c1r1.south east);
-		%\path (group c2r1.south west) -- node[below={1.5cm}]{\begin{tabular}{c|l}
-		\node [below={1.5cm},anchor=north west] at (group c2r1.south west) {\begin{tabular}{c|l}
-			Parameter & Select transitions as $\Delta \theta = 0 \to \pi$ \\
-			\hline
-			$B_0/c=1.5$ & chicken $\to$ dilemma $\to$ staghunt \\
-			$\alpha = 1.0$ & deadlock $\to$ harmony $\to$ staghunt \\
-			$\alpha = 0.75$ & hero $\to$ concord $\to$ staghunt \\
-			$\alpha = 0.25$ & chicken $\to$ concord $\to$ staghunt
-		\end{tabular}} (group c2r1.south east);
 \end{tikzpicture}
 \end{document}

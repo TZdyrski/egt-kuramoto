@@ -96,7 +96,10 @@
 
 % Import custom style file containing common packages and options
 \usepackage{preamble}
-\usepackage{peer-review}
+
+% Ensure figure references are always Fig
+\crefname{figure}{Fig}{Figs}
+\Crefname{figure}{Fig}{Figs}
 
 % Include definitions and custom commands
 \input{custom-definitions}
@@ -121,14 +124,14 @@ in neural populations}
 \newline
 % Insert author names, affiliations and corresponding author email (do not include titles, positions, or degrees).
 \\
-Thomas Zdyrski\textsuperscript{1*},
-Scott Pauls\textsuperscript{1},
-Feng Fu\textsuperscript{1,2}
+	Thomas Zdyrski\orcidlink{0000-0003-3039-172X}\textsuperscript{1*},
+	Scott Pauls\orcidlink{0000-0002-0281-2868}\textsuperscript{1},
+	Feng Fu\orcidlink{0000-0001-8252-1990}\textsuperscript{1,2}
 \\
 \bigskip
-\textbf{1} Department of Mathematics, Dartmouth College, Hanover, NH, USA
+\textbf{1} Department of Mathematics, Dartmouth College, Hanover, New Hampshire, United States of America
 \\
-\textbf{2} Department of Biomedical Data Science, Geisel School of Medicine at Dartmouth, Hanover, NH, USA
+\textbf{2} Department of Biomedical Data Science, Geisel School of Medicine at Dartmouth, Hanover, New Hampshire, United States of America
 \\
 \bigskip
 
@@ -141,7 +144,6 @@ Feng Fu\textsuperscript{1,2}
 %TC:ignore
 \section*{Abstract}
 Neural synchronization is central to cognition.
-\begin{LineLabel}{R2-1}
 However, incomplete synchronization often produces chimera
 states,
 where coherent and incoherent dynamics coexist.
@@ -153,13 +155,11 @@ In particular, chimera states
 have been suggested as a regulator of
 cognitive integration and regulation
 with varying quality as humans age.
-\end{LineLabel}
 While previous studies
 have explored such chimera states
 using networks of coupled oscillators,
 it remains unclear why neurons commit to communication
 or how chimera states persist.
-\begin{LineLabel}{R1-1a}
 Here, we investigate the coevolution of neuronal phases
 and communication strategies on directed, weighted networks
 where interaction payoffs depend on phase alignment
@@ -172,7 +172,6 @@ Combined, these two generalizations
 enable us to apply the computationally-tractable
 game-theoretic model of Kuramoto models to realistic brain networks
 and analyze the role of connectome structure on neuron communication.
-\end{LineLabel}
 We find that both connection weights and directionality influence the stability
 of communicative strategies---and, consequently,
 full synchronization---as well as the strategic nature of neuronal interactions.
@@ -180,11 +179,9 @@ Applying our framework to the \glsfmtshort{celegans}
 connectome,
 we show that emergent payoff structures, such as the staghunt game,
 control population dynamics.
-\begin{LineLabel}{R1-24a}
 We demonstrate that weighted, directed connectivity
 in the \gls{celegans} connectome is sufficient to generate robust
 chimera states modulated by payoff asymmetries.
-\end{LineLabel}
 Our computational results demonstrate a promising neurogame-theoretic perspective,
 leveraging evolutionary graph theory to shed light on mechanisms
 of neuronal coordination beyond classical synchronization models.
@@ -224,7 +221,6 @@ This tool is useful for studying how local interaction rules
 yield large-scale patterns such as cooperation~\cite{sigmund1999evolutionary}
 and has found use in fields including international politics, ecology,
 and protein folding~\cite{traulsen2023future}.
-\begin{LineLabel}{R1-18a}
 Studies~\cite{cohen2009evolutionary,madeo2017evolutionary,tripp2022evolutionary,poggio2025computational}
 have even applied EGT to non-reproducing neurons
 by viewing neuron plasticity as an evolutionary process
@@ -240,7 +236,6 @@ firing rate stability~\cite{cohen2009evolutionary}
 or
 emulative/non-emulative neuron
 tendencies~\cite{madeo2017evolutionary}.
-\end{LineLabel}
 
 Evolutionary \emph{graph} theory places evolutionary games
 on graphs to investigate the role of structure in population evolution.
@@ -264,7 +259,6 @@ because they exhibit tunable synchronization.
 Prior studies~\cite{antonioni2017coevolution}
 have modelled synchronization with Kuramoto oscillators using EGT
 applied to the prisoner's dilemma game type.
-\begin{LineLabel}{R1-2}
 Other studies~\cite{tripp2022evolutionary}
 generalized this approach to include dynamically changing game types
 by introducing an evolutionary Kuramoto (EK) model
@@ -289,14 +283,12 @@ the discrete phase can be understood as
 the true (continuous) phase's periodic measurement:
 then, a constant phase represents a periodic firing at the measurement frequency
 while a slowly varying phase represents a frequency mismatch.
-\end{LineLabel}
 
 %\subsection{Chimera states}
 One intriguing aspect of neuron oscillations
 is the observation of chimera states~\cite{majhi2019chimera}.
 These states exhibit the simultaneous existence
 of coherent and disordered phases~\cite{abrams2004chimera}.
-\begin{LineLabel}{R1-4a}
 These chimera states have appeared in a variety of topologies,
 including ring oscillators~\cite{abrams2004chimera},
 two-dimensional spatial regions~\cite{shima2004rotating},
@@ -305,7 +297,6 @@ Chimera states arise when a population splits into subcommunities,
 with some synchronized and others disordered;
 these subcommunities can be grouped by spatial region (for spatial systems)
 or by connectivity (for graph systems).
-\end{LineLabel}
 Previous studies have proposed
 chimera states as
 a key component of human cognitive organization~\cite{bansal2019cognitive},
@@ -333,7 +324,6 @@ we introduce an asymmetric evolutionary Kuramoto model
 on graphs
 and analyze its chimera-like states on the
 \gls{celegans} connectome.
-\begin{LineLabel}{R1-18b}
 The newly introduced graph structure is necessary for modeling
 these Kuramoto-like players on structured populations,
 such as neuron connectomes, and it can qualitatively change
@@ -344,8 +334,6 @@ of the neurogame-theoretic framework
 by combining both Kuramoto-type oscillators for representing neuron
 phases
 and graph structure for representing connectomes.
-\end{LineLabel}
-\begin{LineLabel}{R2-2}
 Furthermore, this payoff asymmetry between communicators ($C$) and non-communicators ($N$)
 models the inherent asymmetry of pre- and post-synaptic junctions:
 if the source neuron is $N$ and the destination neuron is $C$,
@@ -357,7 +345,6 @@ if the source neuron is $C$ and the destination neuron is $N$,
 then the destination neuron's payoff is modulated by $2 (1-\alpha)$,
 representing its ability to spontaneously fire in absence of upstream
 stimuli~\cite{wilson1981spontaneous}.
-\end{LineLabel}
 Our results connect individual neuron fitness and non-trivial brain topology
 to chimera-like brain states.
 Given current technological limitations with direct measurement of in-vivo neuron activity,
@@ -507,13 +494,11 @@ hero (``Bach or Stavinsky'' with the lowest two payoffs swapped),
 harmony (game with strong incentive alignment),
 or
 concord (similar to harmony, weaker incentives).
-See Section 2 of the supplementary material
+See Section 2 of the S1 Text
 for order graphs depicting the payoff structure of each game type.
-\begin{LineLabel}{R1-22a}
 While $CC$ interactions are always double-cooperation games
 (denoted ``cooperation'' hereafter for simplicity)
 and $NN$ interactions are always neutral games,
-\end{LineLabel}
 mixed ($CN$ or $NC$) games show a variety of game types,
 (\pcref{fig:phase-diagram}).
 We can visualize these games
@@ -522,12 +507,11 @@ of the three-dimension phase space
 characterized by $\alpha$, $\beta \coloneqq \beta_0 f(\Delta \phi)$,
 and $B_0$.
 \cref{fig:phase-diagram-beta_B} shows a $\beta$-$B_0$ slice of phase space
-and generalizes figure 1 of a prior study~\cite{tripp2022evolutionary},
+and generalizes Fig 1 of a prior study~\cite{tripp2022evolutionary},
 while \cref{fig:phase-diagram-beta_alpha} shows a $\beta$-$\alpha$ slice.
 Each straight line of white dots represent permissible values of the $m = 20$ phases
 $\Delta \phi_i$ across our simulations
 and highlight which regions of parameter space are accessible.
-\begin{LineLabel}{R2-3}
 The table in \cref{fig:phase-diagram-table}
 shows some select transitions as $\Delta \phi_i$ varies from $0$ to
 $\pi$.
@@ -536,9 +520,7 @@ in \cref{fig:phase-diagram-beta_B}---$\Delta \phi=0$ starts in the
 chicken region and moves left, transitioning to dilemma and then
 staghunt.
 As $\Delta \phi$ increases from $\pi$ to $2\pi$, this process reverses.
-\end{LineLabel}
 
-\begin{LineLabel}{R1-5}
 These different game types have multiple roles in the subsequent analysis.
 First, they provide interpretability of the dynamics in
 different regions of parameter space.
@@ -568,11 +550,9 @@ orange ``hero'' and red ``chicken'' regions in
 Therefore, while there is no intrinsic, biological representation
 of ``game types'' at the biochemical level, they offer a valuable interpretability
 tool and a useful way to target model outcomes.
-\end{LineLabel}
 
 \subsection{Simulation parameters}
 \label{sec:simulation_parameters}
-\begin{LineLabel}{R1-3a}
 We have now introduced a number of parameters:
 $B_0$, $\beta_0$, $c$, $\alpha$, $m$.
 In addition,
@@ -602,9 +582,7 @@ parameter combinations $B_0/c$, $\beta_0/B_0$, $\alpha$, and $\delta
 c$,
 in addition to the aforementioned mutation rate $\mu$ and discretization
 number $m$.
-\end{LineLabel}
 
-\begin{LineLabel}{R2-7}
 The ratio $B_0/c \approx 2.1$ is the critical joint-benefit benefit strength
 at which the communicative fraction equals $1/2$ when
 in the absence of asymmetry(\ie{} $\alpha =
@@ -617,7 +595,7 @@ mixed $NC$ communication to be less rewarding than joint $CC$
 communication.
 Both the mutation rate $\mu$ and selection strength $\delta$
 are chosen to be small to allow for analytic approximations
-(see the supplementary materials).
+(see section 2 of S1 Text).
 While we fix a common set of parameters in our results for simplicity,
 we also performed a sensitivity analysis in
 \cref{sec:sensitivity-analysis} to analyze the influence of varying
@@ -628,8 +606,6 @@ most of these parameters.
 The only sensitive parameter is the selection strength $\delta$,
 with stronger $\delta$ increasing the chimera-like effect.
 However, we retain the smaller $\delta$ for analytic tractability.
-\end{LineLabel}
-\begin{LineLabel}{R2-6}
 The $m = 20$ discrete phases approximate a continuous phase
 distribution;
 \cref{fig:sensitivity-analysis-cumulative}
@@ -637,7 +613,6 @@ depicts a convergence analysis
 showing that the communicative fraction
 has converged already for $m=20$, verifying that this is an acceptable
 approximation.
-\end{LineLabel}
 
 Unless otherwise specified,
 each of the following simulations use
@@ -648,7 +623,6 @@ cost $c$ of \num{0.1},
 maximum joint benefit $B_0 = 0.15$,
 and maximum mixed benefit $\beta_0$ of $\num{0.95} B_0$.
 
-\begin{LineLabel}{R1-15}
 Most runs use \num{8E6} time steps
 to ensure that we have sampled sufficiently many
 mutation periods  $1/\mu$
@@ -661,7 +635,6 @@ The plots of communicative fraction $f_{\text{comm}}$
 use a longer runtime of \num{2E8}
 to collect additional statistics, drive down the sample variance,
 and provide tighter error-bounds on the comparison to analytic theory.
-\end{LineLabel}
 
 \subsection{Complete graphs}\label{sec:complete_graph}
 
@@ -719,7 +692,7 @@ on a $N=20$-player, well-mixed population.
 $f_{\text{comm}}$ to the maximum joint benefit $B_0$.
 The marks represent the simulation results
 and the lines represent the full analytic
-result (Eq.\ 10 in supplementary material) for a well-mixed population.
+result (Eq.\ 10 in S1 Text) for a well-mixed population.
 The $B_0$ step size is \num{0.04},
 and the simulations ran for \num{2E8} time steps.
 The results are averaged over 10 seeds
@@ -756,7 +729,6 @@ On the right vertical axes,
 magenta line plots depict the order parameter
 $\rho \in [0,1]$
 given by \cref{eq:order_parameter}.
-\begin{LineLabel}{R2-4}
 The order parameter and communicative frequency
 are shown for a single seed to demonstrate the mutation-induced jumps
 for a single simulation.
@@ -771,7 +743,6 @@ The quick extinction of mutant invaders
 means that they are often missed when we $80\times$-decimate the time-series
 for plotting,
 only observing $\approx 6$ visible mutations.
-\end{LineLabel}
 
 \Cref{fig:time-series_well-mixed_alpha-0} shows the time-variation
 when the system heavily favors non-communicative players
@@ -808,13 +779,11 @@ with only occasional dips due to mutations.
 
 Here, we consider the weighted, directed hermaphroditic \gls{celegans}
 chemical connectome~\cite{cook2019whole}.
-\begin{LineLabel}{R2-5a}
 For reference, \cref{fig:graph} shows the $N = 300$ nodes and the directed edges
 (we exclude the two unconnected neurons CANL/CANR).
 We treat all \gls{celegans} neurons identically
 and do not differentiate between sensory neurons, interneurons, and
 motor neurons.
-\end{LineLabel}
 The nodes are colored according to their strategy at a particular time step,
 with blues representing communicative strategies
 and reds representing non-communicative ones,
@@ -930,7 +899,6 @@ cause most of the deviation
 between the \psubref{fig:comm-frac_celegans-full} full \gls{celegans}
 case and the \cref{fig:multi-comm-frac} well-mixed case.
 
-\begin{LineLabel}{R1-8}
 We can further quantify the relative influence of weightedness and
 directedness by
 comparing (\subref{fig:comm-frac_celegans-full}--\subref{fig:comm-frac_celegans-undirected})
@@ -944,7 +912,6 @@ deviation is three times larger than the undirected \vs{}
 Therefore, this implies that the weighted (undirected) edges
 have three times the influence as the directed (unweighted) edges
 in the full \gls{celegans} communicative frequency profile.
-\end{LineLabel}
 
 We can also investigate the time-evolution of the \gls{celegans} system
 using the same parameters as the
@@ -1027,10 +994,10 @@ the \gls{celegans} case depicts disordered states with discontinuous offsets.
 Time-lapse animations of the system's time evolution
 show a subset of the nodes exhibiting high synchronicity
 with others remaining disordered: this is characteristic of a chimera state.
-Animations depicting this phenomena are available as supplementary videos,
+Animations depicting this phenomena are available as supporting
+information (S1 Video, S2 Video, and S3 Video),
 and an interactive website for exploring the full data set
-through plots and animations is provided in the ``Code availability''
-section at the end of the paper.
+through plots and animations is provided in the ``Code availability''.
 In order to quantify this chimera-like effect, we will investigate
 the chimera-like index $\chi$ (\pcref{eq:chimera_index})
 and metastability index $\lambda$ (\pcref{eq:metastability_index}).
@@ -1101,7 +1068,6 @@ as well as time fluctuations in the chimeric quality.
 \end{adjustwidth}
 \end{figure*}
 
-\begin{LineLabel}{R1-14}
 The chimera-like index
 depicted in \cref{fig:chimera-index}
 is a time-averaged statistical quantity,
@@ -1129,7 +1095,6 @@ This bifurcation into ordered and disordered subgroups is a key
 characteristic of chimera-like states,
 showing that the chimera-like index in \cref{fig:chimera-index}
 is depicting a real separation of community coherence.
-\end{LineLabel}
 
 \subsection{Game types}
 \begin{figure*}
@@ -1206,13 +1171,11 @@ the $\alpha$-dependence of the
 communicative synchronization (``all-C'') fraction
 approximates the communicative frequency $f_{\text{comm}}$
 in \cref{fig:multi-comm-frac} for $B_0=0.15$.
-\begin{LineLabel}{R1-22b}
 In contrast, the
 \psubref{fig:game-type_celegans-full} \gls{celegans} system
 is never synchronized, but instead is virtually always dominated by
 coordination-type games (when both players are communicative, $CC$)
 and neutral-type games (when both players are non-communicative, $NN$).
-\end{LineLabel}
 
 In order to investigate the other game types involved,
 we can also consider the plurality \emph{mixed} game type
@@ -1352,7 +1315,6 @@ which is corroborated in our simulations by the inset below
 \cref{fig:game-type_well-mixed-only-mixed-games}.
 
 %\subsection{Chimera states}
-\begin{LineLabel}{R1-6}
 Next, we will discuss the observed chimera states.
 Another study of the \gls{celegans} connectome also found
 chimera-like states using an entirely non-game-theory tool,
@@ -1387,9 +1349,7 @@ the agreement in $\chi$ between two very different models of neurons
 suggests that chimera states
 these chimera states are a robust feature of the \gls{celegans}
 connectome independent of the model.
-\end{LineLabel}
 
-\begin{LineLabel}{R1-23}
 Furthermore, our model offers two novel improvements over a
 Hindmarsh-Rose model: interaction-interpretability
 and computational ease.
@@ -1411,7 +1371,6 @@ this computational tool could enable correlating experimental statistics of
 \gls{celegans} chimera states with single-neurons payoffs $B_0$,
 $\beta_0$, \etc{}, improving neuron characterization and enable further
 \textit{in silico} studies.
-\end{LineLabel}
 
 %\section{Conclusion}
 Chimera states of networked oscillators
@@ -1426,7 +1385,6 @@ using sinusoidally-coupled Kuramoto oscillators,
 a frequent model for neuron dynamics~\cite{cabral2011role}.
 However, the small-scale evolutionary factors
 leading to chimera-like states remains poorly understood.
-\begin{LineLabel}{R1-1b}
 In this paper, we extended the evolutionary Kuramoto model
 to include weighted, structured interaction graphs
 and an asymmetry between
@@ -1445,20 +1403,17 @@ Simulations of \gls{celegans} neurons
 revealed that the graph's weightedness
 has a much stronger influence on the communication frequency
 than the graph's directedness does.
-\end{LineLabel}
 Finally, while the well-mixed players have homogeneous populations
 that occasionally switch between synchronized communicative
 and  non-communicative states,
 the \gls{celegans} population remains far more heterogenous
 with a stable, chimeric mix of disordered game types.
 
-\begin{LineLabel}{R2-5b}
 One potential limitation of this work is the identical treatment of
 different neuron types.
 Potential extensions could modulate the $B_0/c$, $\beta_0/c$, and
 $\alpha$ parameters of the different neuron types separately to better
 account for the specialization of these cells.
-\end{LineLabel}
 Additionally, future work will focus on applying the EK model
 to families of generative brain network models~\cite{betzel2016generativea}.
 The limited number of empirical graphs analyzed in this study
@@ -1470,7 +1425,6 @@ for fine-tuning the parameters to extract these relations.
 Additionally, since this study only considers a single species' connectome,
 it is unclear if our findings regarding the dependence
 of chimeric activity on graph structure are generalizable.
-\begin{LineLabel}{R1-17}
 Therefore, it is of interest to investigate this connection further
 by applying our EK setup to other model organisms,
 such as that of
@@ -1492,7 +1446,6 @@ payoff);
 thus, connectomes with naturally more high-degree nodes
 would be comparable to our strong-selection $\delta$ case
 with robust chimera-like states.
-\end{LineLabel}
 
 A key takeaway from this study was the importance
 of edge weight on communicativity;
@@ -1502,12 +1455,10 @@ Additionally, the observation of chimeric states
 arising from such simple neurogame-theoretic models
 implies that the nature of neuron interactions is likely
 a key component in producing these critical brain states.
-\begin{LineLabel}{R1-24b}
 We demonstrated that introducing weighted, directed connectivity
 in the \gls{celegans} connectome graph
 was sufficient to generate robust chimera states
 modulated by payoff asymmetry between communicators and non-communicators.
-\end{LineLabel}
 Overall, evolutionary graph theory allowed us
 to connect low-level payoff details for individual neurons
 to high-level phenomena such as chimera-states,
@@ -1554,7 +1505,6 @@ and if both are non-communicative ($NN$), the matrix is
 \end{equation}
 with $f(\Delta \phi) = [1+\cos(\phi_j - \phi_i)]/2$
 (\pcref{fig:payoff_matrix}).
-\begin{LineLabel}{R1-12}
 Here, $B_0$, $\beta_0$, $\alpha$, and $c$ are non-dimensional,
 fixed parameters defining the game.
 The cost $c$ represents the penalty paid by communicative players,
@@ -1571,11 +1521,9 @@ case.
 Therefore, we have added a factor of $2$ to both $2 \alpha$ and
 $2(1-\alpha)$, ensuring that the $\alpha=1/2$ reduces to simply $\beta_0
 f(\Delta \phi)$, matching previous work~\cite{tripp2022evolutionary}.
-\end{LineLabel}
 
 \subsection{Population setup}\label{sec:pop_setup}
 
-\begin{LineLabel}{R1-21}
 Given $N$ players, we associate a pair
 of weighted, directed graphs to the population.
 On these graphs, the $N$ nodes represent players
@@ -1585,8 +1533,6 @@ an ``interaction'' graph representing
 \emph{from whom} a player receives payoffs,
 and a ``reproduction'' graph representing
 \emph{to whom} a player can spread its strategy.
-\end{LineLabel}
-\begin{LineLabel}{R1-16}
 For simplicity, our reproduction graphs are identical to the interaction graph
 with a single self-loop added to each dangling node (\ie{}, each node
 with no out neighbors);
@@ -1602,7 +1548,6 @@ $1-\mu$.
 This behaviour, combined with the sparsity of dangling nodes
 (\SI{2}{\percent}), implies that the reproduction graph's self-loops
 should have negligible impact on the overall dynamics.
-\end{LineLabel}
 
 \subsection{Birth-death Moran process}\label{sec:evo_setup}
 % TODO: Bd is hugely different from death-Birth dynamics (dB);
@@ -1647,8 +1592,8 @@ For simulation times long compared to the mutation turnover time
 $T_{\text{turn}} \gg 1/\mu$,
 the initial, random distribution of strategies will be negligible
 and the time-average will correspond to the long-time limit.
-In section 2 of the supplementary material,
-we derive an analytic expression (Eq.\ 10 of supplementary materials) for
+In section 2 of the S1 Text,
+we derive an analytic expression (Eq.\ 10 of S1 Text) for
 $f_{\text{comm}}$ in the well-mixed case
 by incorporating the benefit asymmetry $\alpha$.
 
@@ -1667,8 +1612,7 @@ and assign a unique name (\eg{} dilemma, deadlock, chicken, \etc{})
 to each strict, symmetric game type.
 However, \cref{fig:phase-diagram-beta_alpha}
 shows that some mixed $CN$ games lie on the border between two game types,
-such as when $\alpha = 1$ or $B/c = 0$
-(bordering game types for $B/c > 0$ and $B/c < 0$, not shown).
+such as when $\alpha = 1$.
 The taxonomy~\cite{bruns2015names} classifies these non-strict games
 according the number and location of ties (``high tie'', ``middle tie'',
 ``double tie'', \etc{}).
@@ -1682,10 +1626,9 @@ the $\alpha = 1$ tie between deadlock and compromise games
 formally corresponds to ``low [dead]lock'',
 but we label it as deadlock;
 similarly, the tie between assurance and staghunt
-is ``mid staghunt'', but we denote it as staghunt.
-Likewise, all of the $B/c = 0$ payoff matrices
-correspond to the ``double harmony'' game type,
-but we denote them as simply ``harmony''.
+is ``mid [stag]hunt'', but we denote it as staghunt,
+while the tie between harmony and peace
+is ``mid harmony'', simplified to harmony.
 Finally, the $NN$ game type is always ``neutral''
 while the $CC$ game type is always ``double cooperation'',
 which we denote as just ``cooperation''.
@@ -1745,7 +1688,6 @@ we define a pair of indices related to
 chimera-like quality and metastability~\cite{shanahan2010metastable}.
 First, we organize the game's nodes
 into $M$ disjoint communities.
-\begin{LineLabel}{R1-4b}
 We split the nodes into communities
 using the constant Potts model with a Leiden algorithm
 implemented via the igraph library~\cite{csardi2006igraph}.
@@ -1754,7 +1696,6 @@ with resolution \num{0.1},
 refinement-randomness $\beta = \num{0.01}$,
 and \num{2} iterations of the Leiden algorithm.
 This resulted in $M=6$ communities $C_m$.
-\end{LineLabel}
 
 With these disjoint communities $C_m$, we then calculate
 the time-dependent, community-wise order parameter $\rho_m(t)$
@@ -1949,13 +1890,12 @@ Therefore, the value of $m=20$ used in the main text is a good
 approximation of the continuous phase $\Delta \phi$.
 
 \subsection{Analytic assumptions}\label{sec:analytic-assumptions}
-\begin{LineLabel}{R1-13}
 The communicative frequency
 for the well-mixed population
 in \cref{fig:multi-comm-frac} compared the simulation results to the
 analytic approximation.
 The full derivation of this analytic result is presented in
-Eq.\ 10 in supplementary material,
+Eq.\ 10 in S1 Text,
 but here we will highlight the assumptions made in these approximations.
 The derivation of $f_{\text{comm}}$ is only directly applicable to
 complete graphs, as used in the well-mixed case.
@@ -1970,7 +1910,6 @@ sample frequency of 800 time-steps),
 well before the average mutation time of $1/\mu = \num{1e4}$.
 Thus, the two main assumptions (complete graph and $\mu \ll 1$)
 of the derivation are satisfied for our choices of setup and parameters.
-\end{LineLabel}
 
 \section*{Acknowledgments}
 We thank Dan Rockmore and the Neukom Institute for their
@@ -2012,20 +1951,6 @@ using the same color scheme as \cref{fig:graph}
 with $B_0/c = 1.5$, $\beta_0/B_0 = 0.95$, $c = 0.1$,
 $\mu = 0.0001$, $m = 20$, $\delta = 0.2$, \num{8E6} time steps,
 and $\alpha = 1$.
-
-\section*{Declarations}
-The authors declare no competing interests.
-
-\section*{Code availability}
-An interactive webpage for exploring the data set is available at
-\url{https://tzdyrski.github.io/egt-kuramoto/notebooks/EKT_Plots.html}.
-Additionally, all source code is available via GitHub
-at \url{https://github.com/TZdyrski/egt-kuramoto/tree/1.1.0}
-or Zenodo at \url{https://doi.org/10.5281/zenodo.17239374}.
-
-\section*{Data availability}
-The raw and processed data for all simulated parameter ranges
-is available on Zenodo at \url{https://doi.org/10.5281/zenodo.19235754}.
 
 \bibliography{references.bib}
 

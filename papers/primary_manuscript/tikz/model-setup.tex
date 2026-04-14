@@ -1,0 +1,66 @@
+%! TeX program = lualatex
+% SPDX-License-Identifier: CC-BY-4.0
+
+\documentclass[tikz]{standalone}
+
+% Import custom style file containing common packages and options
+\usepackage{../preamble}
+
+% Import tikz options and preamble
+\input{preamble}
+
+% Set data search path
+\pgfplotsset{
+    table/search path={../../../data/processed},
+}
+\newcommand\dataSearchPath{../../../data/processed}
+
+\begin{document}
+\begin{tikzpicture}[x=0.3cm,y=0.3cm]
+  \matrix{
+    \begin{scope}[scale=10]
+      % Read node coordinates and create nodes
+      \csvreader[head to column names]{\dataSearchPath/graph_structure/vertices_adj_matrix_source=well-mixed.csv}{}%
+      {%
+        \node[draw, fill=white, circle, inner sep=1.5] (\index) at (\x, \y) {};
+      }
+      \end{scope}
+      &
+      \node (center) {};
+      \node [thick,fill=gray,circle,minimum size=2cm,draw,label=Neuron $i$,label={below:$(s_i,\phi_i)$}] (neuron_i) [left=of center] {};
+      \node [thick,fill=gray,circle,minimum size=2cm,draw,label=Neuron $j$,label={below:$(s_j,\phi_j)$}] (neuron_j) [right=of center] {};
+
+      \draw[- Latex, thick] (neuron_i.center) node [fill,circle,inner sep=2pt] {} -- (neuron_i.north west);
+      \draw[- Latex, thick] (neuron_j.center) node [fill,circle,inner sep=2pt] {}-- (neuron_j.east);
+
+      \draw[- Latex, thick] (neuron_j.south west) -- node[midway,above,anchor=north] (arrow_bot) {$w_{ji}$} (neuron_i.south east);
+      \draw[- Latex, thick] (neuron_i.north east) -- node[midway,below,anchor=south] {$w_{ij}$} (neuron_j.north west);
+
+      \node [align=left,below=of arrow_bot] {Strategy $s_i$: \begin{tabular}{l} \textbf{C}: communicative \\ \textbf{N}: non-communicative\end{tabular}
+          \\[10]
+      Phase difference: $\Delta \phi = \phi_j - \phi_i$};
+    \\
+    \node {
+        $\begin{bNiceMatrix}[first-col,first-row]
+        & C, \phi_i & N, \phi_j \\
+        C, \phi_i & B_0 f(0) - c & 2 \alpha \beta_0 f(\Delta \phi) - c \\
+        N, \phi_j & 2 (1 - \alpha) \beta_0 f(\Delta \phi) & 0
+    \end{bNiceMatrix}$};
+    &
+    \\
+    };
+
+    % Add edges outside of matrix since ``on background layer'' messes up the alignment when inside matrix
+    \begin{scope}[on background layer]
+      % Decrease total opacity to prevent high opacity of overlapping edges
+      \begin{scope}[transparency group,opacity=.75]
+      % Read edges and draw connections between nodes
+        \csvreader[head to column names]{\dataSearchPath/graph_structure/edges_adj_matrix_source=well-mixed.csv}{}%
+      {%
+        % Make individual opacity low; multiple overlapping edges can still have high opacity
+        \path[arrows={- Latex[length=1pt]},line width=0.1,opacity=0.2] (\src) edge (\dst);
+      }
+      \end{scope}
+    \end{scope}
+\end{tikzpicture}
+\end{document}

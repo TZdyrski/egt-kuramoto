@@ -97,5 +97,11 @@
     \addplot table [y=chimera_index_mean,y error=chimera_index_std] {chimeraindex/B_to_c=1.5_adj_matrix_source=c-elegans_beta_to_B=0.95_comm_algorithm=leiden_comm_beta=0.01_comm_n_iter=2_comm_resolution=0.1_cost=0.1_mutation_rate=0.0001_nb_phases=20_num_seeds=10_selection_strength=0.2_time_steps=80000000.csv};
 		\legend{80000,800000,8000000,80000000}
   \end{groupplot}
+	% Add subplot labels
+	\node[anchor=north west, xshift=20pt, yshift=-0pt] at (current bounding box.north west) {\textbf{A}};
+	\node[anchor=north west, xshift=(20pt+\width-45pt+1.5cm), yshift=-0pt] at (current bounding box.north west) {\textbf{B}};
+	\node[anchor=north west, xshift=20pt, yshift=-(\width/240*207-45pt+1.5cm)] at (current bounding box.north west) {\textbf{C}};
+	\node[anchor=north west, xshift=(20pt+\width-45pt+1.5cm), yshift=-(\width/240*207-45pt+1.5cm)] at (current bounding box.north west) {\textbf{D}};
+	\node[anchor=north west, xshift=20pt, yshift=-(\width/240*207-45pt+1.5cm)*2] at (current bounding box.north west) {\textbf{E}};
 \end{tikzpicture}
 \end{document}

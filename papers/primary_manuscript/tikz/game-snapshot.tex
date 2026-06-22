@@ -121,5 +121,8 @@
     \end{axis}
     \node (title-x) at ($(group c1r1.south east)!0.5!(group c2r1.south west)+(0,-0.5cm)$) {Asymmetry $\alpha$};
 		\node[anchor=north] (legend) at ($(title-x)+(0,-0.5cm)$) {\pgfplotslegendfromname{CommonLegend2}};
+		% Add subplot labels
+		\node[anchor=north west, xshift=10pt, yshift=-0pt] at (current bounding box.north west) {\textbf{A}};
+		\node[anchor=north west, xshift=(10pt+\width-45pt+1cm), yshift=-0pt] at (current bounding box.north west) {\textbf{B}};
 \end{tikzpicture}
 \end{document}

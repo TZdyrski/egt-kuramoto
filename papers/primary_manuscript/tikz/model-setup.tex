@@ -61,6 +61,10 @@
         \path[arrows={- Latex[length=1pt]},line width=0.1,opacity=0.2] (\src) edge (\dst);
       }
       \end{scope}
+			% Add subplot labels
+			\node[anchor=north west, xshift=10pt, yshift=-0pt] at (current bounding box.north west) {\textbf{A}};
+			\node[anchor=north west, xshift=10pt+7.3cm, yshift=-0pt] at (current bounding box.north west) {\textbf{B}};
+			\node[anchor=north west, xshift=10pt, yshift=-6.7cm] at (current bounding box.north west) {\textbf{C}};
     \end{scope}
 \end{tikzpicture}
 \end{document}

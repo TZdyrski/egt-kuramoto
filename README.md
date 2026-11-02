@@ -6,7 +6,7 @@ for the
 paper by Thomas Zdyrski, Scott Pausl, and Feng Fu.
 
 An interactive website for exploring the data set is available at
-[https://tzdyrski.github.io/egt-kuramoto/EKT_Plots.html](https://tzdyrski.github.io/egt-kuramoto/EKT_Plots.html)
+[https://tzdyrski.github.io/egt-kuramoto/notebooks/EKT_Plots.html](https://tzdyrski.github.io/egt-kuramoto/notebooks/EKT_Plots.html)
 
 ## Layout
 - `src` Julia source code for running simulations and postprocessing data
